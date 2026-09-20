@@ -26,7 +26,7 @@ namespace ElementalHexTactics3D.Editor
         private const string TilesFolder = "Assets/Sprites/Tiles";
         private const string BattlersFolder = "Assets/Sprites/Battlers";
 
-        [MenuItem("Elemental Hex 3D/Setup 3D Hex Battlefield", false, 1)]
+        [MenuItem("Elemental Hex 3D/Advanced/Regenerate 3D Hex Battlefield", false, 50)]
         public static void SetupBattlefieldInScene()
         {
             Debug.Log("<color=#FF9800><b>[ElementalHex3D]</b></color> Configuring authentic square elemental materials and battlefield...");

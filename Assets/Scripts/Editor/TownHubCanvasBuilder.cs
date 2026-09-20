@@ -81,7 +81,7 @@ namespace ElementalHexTactics3D.Editor
             }
         }
 
-        [MenuItem("Elemental Hex 3D/Build Town Hub Canvas", false, 1)]
+        [MenuItem("Elemental Hex 3D/Rebuild All UI & Town Hub", false, 2)]
         public static void BuildTownHub()
         {
             Debug.Log("<color=#7C4DFF><b>[Town Hub Builder]</b></color> Configuring Hub sprites and building Citadel Hub UI...");
@@ -476,7 +476,7 @@ namespace ElementalHexTactics3D.Editor
             Debug.Log("<color=#4CAF50><b>[Town Hub Builder] SUCCESS!</b></color> Citadel Town Hub seamlessly configured with full.png and interactive hotspot overlays!");
         }
 
-        [MenuItem("Elemental Hex 3D/Export Game Build for TGFI (Windows .exe)", false, 10)]
+        [MenuItem("Elemental Hex 3D/Build Standalone Game (Windows .exe)", false, 1)]
         public static void ExportWindowsBuild()
         {
             EnsureTownHubBuilt();

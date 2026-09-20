@@ -23,7 +23,7 @@ namespace ElementalHexTactics3D.Editor
         private const string FontBoldPath = "Assets/Fonts/Font_Bold.ttf";
         private const string FontRegularPath = "Assets/Fonts/Font_Regular.ttf";
 
-        [MenuItem("Elemental Hex 3D/Generate 2D Title Canvas", false, 2)]
+        [MenuItem("Elemental Hex 3D/Advanced/Regenerate Base Title Canvas", false, 51)]
         public static void GenerateTitleCanvas()
         {
             Debug.Log("<color=#FFD54F><b>[2D UI Builder]</b></color> Configuring UI sprite textures & generating 2D Canvas...");
@@ -313,7 +313,6 @@ namespace ElementalHexTactics3D.Editor
             Debug.Log("<color=#4CAF50><b>[2D UI Builder] SUCCESS!</b></color> 2D Canvas hierarchy, custom fantasy buttons, and modals created cleanly in scene!");
         }
 
-        [MenuItem("Elemental Hex 3D/Remove 2D Title Canvas", false, 3)]
         public static void RemoveTitleCanvas()
         {
             GameObject canvas = GameObject.Find("Canvas_TitleMenu");
