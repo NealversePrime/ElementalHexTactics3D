@@ -67,7 +67,7 @@ namespace ElementalHexTactics3D.Editor
                     if (castle != null)
                     {
                         RectTransform r = castle.GetComponent<RectTransform>();
-                        if (r != null && r.anchoredPosition.x < -700f)
+                        if (r != null && r.anchoredPosition.y < 50f) // old was -11.5f, new is 122.8f
                         {
                             needsRebuild = true;
                         }
@@ -183,8 +183,8 @@ namespace ElementalHexTactics3D.Editor
                 "Building_DemonCastle",
                 buildingsContainer.transform,
                 towerSprite,
-                new Vector2(-624.5f, -11.5f),
-                new Vector2(875f, 875f),
+                new Vector2(-753.3f, 122.8f),
+                new Vector2(735.0f, 735.0f),
                 HubFacilityType.DemonCastle,
                 "✦ DEMON LORD CITADEL ✦",
                 "Sanctum of the exiled sovereign. Unlock Demon Lord System perks, upgrade domain attributes, and issue decrees.",
@@ -196,8 +196,8 @@ namespace ElementalHexTactics3D.Editor
                 "Building_EmancipationForge",
                 buildingsContainer.transform,
                 blacksmithSprite,
-                new Vector2(-314.0f, -195.0f),
-                new Vector2(700f, 700f),
+                new Vector2(-395.6f, -72.6f),
+                new Vector2(385.0f, 385.0f),
                 HubFacilityType.EmancipationForge,
                 "✦ EMANCIPATION FORGE ✦",
                 "The anvil of liberation. Shatter Cursed Slave Collars from rescued demi-humans and forge abyssal dark weaponry.",

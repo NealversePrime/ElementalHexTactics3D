@@ -123,8 +123,8 @@ namespace ElementalHexTactics3D.UI.Hub
 
         private void SnapBuildingNodes()
         {
-            SnapNode("Building_DemonCastle", new Vector2(-624.5f, -11.5f), new Vector2(875f, 875f));
-            SnapNode("Building_EmancipationForge", new Vector2(-314.0f, -195.0f), new Vector2(700f, 700f));
+            SnapNode("Building_DemonCastle", new Vector2(-753.3f, 122.8f), new Vector2(735.0f, 735.0f));
+            SnapNode("Building_EmancipationForge", new Vector2(-395.6f, -72.6f), new Vector2(385.0f, 385.0f));
             SnapNode("Building_AbyssalPortal", new Vector2(-26.5f, -53.5f), new Vector2(427f, 427f));
             SnapNode("Building_MonsterBarracks", new Vector2(313.5f, -55.5f), new Vector2(449f, 449f));
             SnapNode("Building_ManaMineFarm", new Vector2(643.2f, -136.4f), new Vector2(492.5f, 488.8f));
