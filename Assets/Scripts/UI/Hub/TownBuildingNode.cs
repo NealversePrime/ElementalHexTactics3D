@@ -71,7 +71,7 @@ namespace ElementalHexTactics3D.UI.Hub
             ResetVisualState();
         }
 
-        public void Setup(HubFacilityType type, string title, string lore, string status, Graphic graphic, Transform shadow = null)
+        public void Setup(HubFacilityType type, string title, string lore, string status, Graphic graphic, Transform shadow = null, Color? normal = null, Color? hover = null, float scale = 1.03f)
         {
             facilityType = type;
             facilityTitle = title;
@@ -79,9 +79,13 @@ namespace ElementalHexTactics3D.UI.Hub
             facilityStatus = status;
             targetGraphic = graphic;
             groundShadow = shadow;
+            if (normal.HasValue) normalColor = normal.Value;
+            if (hover.HasValue) hoverColor = hover.Value;
+            hoverScaleFactor = scale;
             if (scaleRoot == null) scaleRoot = transform;
             originalScale = scaleRoot.localScale;
             if (groundShadow != null) originalShadowScale = groundShadow.localScale;
+            ResetVisualState();
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -199,3 +203,4 @@ namespace ElementalHexTactics3D.UI.Hub
         }
     }
 }
+

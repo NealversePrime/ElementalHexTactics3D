@@ -11,7 +11,7 @@ namespace ElementalHexTactics3D.Editor
 {
     /// <summary>
     /// Automation builder to construct the Citadel Town Hub ("Edge of the World" sanctuary)
-    /// inside Canvas_TitleMenu with user-generated custom sprites, ground shadows,
+    /// inside Canvas_TitleMenu with user-generated custom sprites, clean hover overlays,
     /// dynamic tooltip banners, facility modals, and seamless 3D hex combat transitions.
     /// Menu item: "Elemental Hex 3D" -> "Build Town Hub Canvas"
     /// </summary>
@@ -19,6 +19,7 @@ namespace ElementalHexTactics3D.Editor
     public static class TownHubCanvasBuilder
     {
         private const string HubDir = "Assets/Sprites/Hub/";
+        private const string FullPath = HubDir + "full.png";
         private const string BgPath = HubDir + "background.png";
         private const string TowerPath = HubDir + "demontower.png";
         private const string BlacksmithPath = HubDir + "blacksmith.png";
@@ -53,6 +54,7 @@ namespace ElementalHexTactics3D.Editor
 
             // 1. Configure and refresh sprites
             AssetDatabase.Refresh();
+            ConfigureSprite(FullPath, false);
             ConfigureSprite(BgPath, false);
             ConfigureSprite(TowerPath, true);
             ConfigureSprite(BlacksmithPath, true);
@@ -63,6 +65,7 @@ namespace ElementalHexTactics3D.Editor
             ConfigureSprite(BtnNormalPath, true);
             ConfigureSprite(PanelFramePath, true);
 
+            Sprite fullSprite = AssetDatabase.LoadAssetAtPath<Sprite>(FullPath);
             Sprite bgSprite = AssetDatabase.LoadAssetAtPath<Sprite>(BgPath);
             Sprite towerSprite = AssetDatabase.LoadAssetAtPath<Sprite>(TowerPath);
             Sprite blacksmithSprite = AssetDatabase.LoadAssetAtPath<Sprite>(BlacksmithPath);
@@ -110,16 +113,24 @@ namespace ElementalHexTactics3D.Editor
             // Ensure TownHubManager component exists on hubRoot
             TownHubManager hubMgr = hubRoot.AddComponent<TownHubManager>();
 
-            // 5. Layer 0: Background Graphic
+            // 5. Layer 0: Full Composite Landscape Painting (1920x1080)
+            // Uses full.png so all terrain, skies, lanterns, and buildings are 100% seamless without floating gaps or color boxes!
             GameObject bgObj = CreateUIObject("Background_Landscape", hubRoot.transform);
             SetStretchAll(bgObj.GetComponent<RectTransform>());
             Image bgImg = bgObj.AddComponent<Image>();
-            if (bgSprite != null)
+            if (fullSprite != null)
+            {
+                bgImg.sprite = fullSprite;
+                bgImg.color = Color.white;
+                bgImg.type = Image.Type.Simple;
+                bgImg.preserveAspect = false;
+            }
+            else if (bgSprite != null)
             {
                 bgImg.sprite = bgSprite;
                 bgImg.color = Color.white;
                 bgImg.type = Image.Type.Simple;
-                bgImg.preserveAspect = false; // Stretches across 1920x1080 cleanly
+                bgImg.preserveAspect = false;
             }
             else
             {
@@ -127,57 +138,36 @@ namespace ElementalHexTactics3D.Editor
             }
             bgImg.raycastTarget = false;
 
-            // 6. Layer 1: Ground Shadows Container (Soft Ambient Occlusion beneath buildings)
-            GameObject shadowContainer = CreateUIObject("Container_GroundShadows", hubRoot.transform);
-            SetStretchAll(shadowContainer.GetComponent<RectTransform>());
-
-            Transform sTower = CreateGroundShadow("Shadow_Tower", shadowContainer.transform, new Vector2(-715f, -170f), new Vector2(380f, 55f));
-            Transform sSmith = CreateGroundShadow("Shadow_Blacksmith", shadowContainer.transform, new Vector2(-390f, -170f), new Vector2(340f, 50f));
-            Transform sPortal = CreateGroundShadow("Shadow_Portal", shadowContainer.transform, new Vector2(-15f, -175f), new Vector2(340f, 55f));
-            Transform sBarrack = CreateGroundShadow("Shadow_Barrack", shadowContainer.transform, new Vector2(325f, -170f), new Vector2(340f, 50f));
-            Transform sMine = CreateGroundShadow("Shadow_Mine", shadowContainer.transform, new Vector2(645f, -170f), new Vector2(280f, 45f));
-            Transform sStatue = CreateGroundShadow("Shadow_Statue", shadowContainer.transform, new Vector2(780f, 75f), new Vector2(240f, 40f));
-
-            // 7. Layer 2: Subtle Ambient Light Spills (Glows under glowing fires & portal)
-            GameObject glowContainer = CreateUIObject("Container_LightSpills", hubRoot.transform);
-            SetStretchAll(glowContainer.GetComponent<RectTransform>());
-
-            CreateGlowSpill("Glow_Forge", glowContainer.transform, new Vector2(-460f, -135f), new Vector2(180f, 180f), new Color(0.2f, 0.6f, 1.0f, 0.35f));
-            CreateGlowSpill("Glow_Portal", glowContainer.transform, new Vector2(-15f, -100f), new Vector2(280f, 280f), new Color(0.25f, 0.75f, 1.0f, 0.40f));
-            CreateGlowSpill("Glow_Barracks", glowContainer.transform, new Vector2(400f, -145f), new Vector2(140f, 140f), new Color(0.2f, 0.5f, 1.0f, 0.30f));
-            CreateGlowSpill("Glow_Mine", glowContainer.transform, new Vector2(665f, -120f), new Vector2(160f, 160f), new Color(0.5f, 0.9f, 1.0f, 0.35f));
-            CreateGlowSpill("Glow_Statue", glowContainer.transform, new Vector2(745f, 135f), new Vector2(180f, 180f), new Color(0.7f, 0.25f, 1.0f, 0.45f));
-
-            // 8. Layer 3: The 6 Interactive Buildings Container
+            // 6. Layer 1: The 6 Interactive Building Hotspot Overlays
+            // In idle state: Alpha is 0 (invisible, perfectly revealing full.png underneath).
+            // On hover: Highlights with subtle golden glow and scale pulse (1.03x), triggering top tooltip banner!
             GameObject buildingsContainer = CreateUIObject("Container_Buildings", hubRoot.transform);
             SetStretchAll(buildingsContainer.GetComponent<RectTransform>());
 
-            // Facility 1: Demon Castle
+            // Facility 1: Demon Castle (Leftmost tower)
             TownBuildingNode nodeCastle = CreateBuildingNode(
                 "Building_DemonCastle",
                 buildingsContainer.transform,
                 towerSprite,
-                new Vector2(-715f, 70f),
-                new Vector2(440f, 520f),
+                new Vector2(-750f, 40f),
+                new Vector2(420f, 740f),
                 HubFacilityType.DemonCastle,
                 "✦ DEMON LORD CITADEL ✦",
                 "Sanctum of the exiled sovereign. Unlock Demon Lord System perks, upgrade domain attributes, and issue decrees.",
-                "<color=#FFCC00>Rank I Citadel • 3 Perks Available</color>",
-                sTower
+                "<color=#FFCC00>Rank I Citadel • 3 Perks Available</color>"
             );
 
-            // Facility 2: Emancipation Forge
+            // Facility 2: Emancipation Forge (Blacksmith)
             TownBuildingNode nodeForge = CreateBuildingNode(
                 "Building_EmancipationForge",
                 buildingsContainer.transform,
                 blacksmithSprite,
-                new Vector2(-390f, -25f),
-                new Vector2(380f, 310f),
+                new Vector2(-384f, -72f),
+                new Vector2(380f, 380f),
                 HubFacilityType.EmancipationForge,
                 "✦ EMANCIPATION FORGE ✦",
                 "The anvil of liberation. Shatter Cursed Slave Collars from rescued demi-humans and forge abyssal dark weaponry.",
-                "<color=#FF8844>Collars Pending: 2 Rescued</color>",
-                sSmith
+                "<color=#FF8844>Collars Pending: 2 Rescued</color>"
             );
 
             // Facility 3: Abyssal Portal (GATEWAY TO 3D BATTLE)
@@ -185,13 +175,12 @@ namespace ElementalHexTactics3D.Editor
                 "Building_AbyssalPortal",
                 buildingsContainer.transform,
                 portalSprite,
-                new Vector2(-15f, -10f),
-                new Vector2(380f, 380f),
+                new Vector2(-26.5f, -54.5f),
+                new Vector2(427f, 427f),
                 HubFacilityType.AbyssalPortal,
                 "✦ ABYSSAL RIFT [ENTER BATTLE] ✦",
                 "Gateway across the sanctuary border. Deploy your vanguard forces onto the 3D Hex tactical battlefield!",
-                "<color=#44FF88>Rift Stable • Click to Embark</color>",
-                sPortal
+                "<color=#44FF88>Rift Stable • Click to Embark</color>"
             );
 
             // Facility 4: Monster Barracks
@@ -199,13 +188,12 @@ namespace ElementalHexTactics3D.Editor
                 "Building_MonsterBarracks",
                 buildingsContainer.transform,
                 barrackSprite,
-                new Vector2(325f, -25f),
-                new Vector2(380f, 330f),
+                new Vector2(314.5f, -55.5f),
+                new Vector2(450f, 450f),
                 HubFacilityType.MonsterBarracks,
                 "✦ MONSTER BARRACKS & DEN ✦",
                 "Warcamp built from leviathan rib bones. Inspect, arm, and recruit companion minions (Goblins, Kobolds, Slimes).",
-                "<color=#66CCFF>Squad: 2/4 Active</color>",
-                sBarrack
+                "<color=#66CCFF>Squad: 2/4 Active</color>"
             );
 
             // Facility 5: Mana Mine & Farm
@@ -213,30 +201,28 @@ namespace ElementalHexTactics3D.Editor
                 "Building_ManaMineFarm",
                 buildingsContainer.transform,
                 mineFarmSprite,
-                new Vector2(645f, -55f),
-                new Vector2(330f, 275f),
+                new Vector2(657.5f, -129f),
+                new Vector2(360f, 340f),
                 HubFacilityType.ManaMine,
                 "✦ MANA MINE & SPORE FARMS ✦",
                 "Subterranean mana crystal veins and blighted dark soil plots. Assign freed outcasts to harvest passive resources.",
-                "<color=#AA88FF>Yield: +50 Mana / Expedition</color>",
-                sMine
+                "<color=#AA88FF>Yield: +50 Mana / Expedition</color>"
             );
 
-            // Facility 6: Ancient Horned Deity Shrine
+            // Facility 6: Ancient Horned Deity Shrine (Cliff Plateau)
             TownBuildingNode nodeStatue = CreateBuildingNode(
                 "Building_AncientDeityShrine",
                 buildingsContainer.transform,
                 statueSprite,
-                new Vector2(780f, 220f),
-                new Vector2(280f, 280f),
+                new Vector2(785.5f, 172.5f),
+                new Vector2(320f, 320f),
                 HubFacilityType.AncientDeityShrine,
                 "✦ ANCIENT DEITY SHRINE ✦",
                 "Colossal horned idol on the cliff's edge. Offer soul embers in the sacrificial brazier for ancient beast summoning (Gacha)!",
-                "<color=#FF55AA>Ritual Ready • 1x Summon Available</color>",
-                sStatue
+                "<color=#FF55AA>Ritual Ready • 1x Summon Available</color>"
             );
 
-            // 9. Layer 4: Top Domain Header & Resource Bar
+            // 7. Layer 2: Top Domain Header & Resource Bar
             GameObject headerBar = CreateUIObject("Panel_TopDomainHeader", hubRoot.transform);
             RectTransform headerRect = headerBar.GetComponent<RectTransform>();
             headerRect.anchorMin = new Vector2(0f, 1f);
@@ -316,7 +302,7 @@ namespace ElementalHexTactics3D.Editor
             // Return to Title Screen Button
             Button btnReturnTitle = CreateSmallButton("Btn_ReturnTitle", headerBar.transform, "🏠 TITLE", fontBold, 13, btnNormal, Color.white, new Vector2(850f, 0f), new Vector2(130f, 36f));
 
-            // 10. Layer 5: Dynamic Header Tooltip Banner (Glow banner showing hovered building info)
+            // 8. Layer 3: Dynamic Header Tooltip Banner (Glow banner showing hovered building info)
             GameObject tooltipBanner = CreateUIObject("Panel_TooltipBanner", hubRoot.transform);
             RectTransform ttRect = tooltipBanner.GetComponent<RectTransform>();
             ttRect.anchorMin = new Vector2(0.5f, 1f);
@@ -375,7 +361,7 @@ namespace ElementalHexTactics3D.Editor
 
             tooltipBanner.SetActive(false);
 
-            // 11. Layer 6: Facility Management Modals
+            // 9. Layer 4: Facility Management Modals
             GameObject modalCastle = CreateFacilityModal("Modal_DemonCastle", hubRoot.transform, "👑 DEMON LORD CITADEL", fontBold, fontRegular, panelFrame, btnNormal,
                 "The core sanctum of your sovereign authority. Here you manage the territory domain, unlock system perks, and spend soul embers to strengthen your vanguard forces.",
                 "Prowess: Tier I\nDomain Radius: Border Wastelands\nDecree: Protected Sanctuary",
@@ -418,7 +404,7 @@ namespace ElementalHexTactics3D.Editor
             modalMine.SetActive(false);
             modalShrine.SetActive(false);
 
-            // 12. Wire serialized fields to TownHubManager
+            // 10. Wire serialized fields to TownHubManager
             SerializedObject soHub = new SerializedObject(hubMgr);
             soHub.FindProperty("txtManaCrystals").objectReferenceValue = txtMana;
             soHub.FindProperty("txtSoulEmbers").objectReferenceValue = txtEmbers;
@@ -439,7 +425,7 @@ namespace ElementalHexTactics3D.Editor
             soHub.FindProperty("btnReturnTitle").objectReferenceValue = btnReturnTitle;
             soHub.ApplyModifiedProperties();
 
-            // 13. Wire townHubPanel to TitleMenuCanvasUI
+            // 11. Wire townHubPanel to TitleMenuCanvasUI
             SerializedObject soMenu = new SerializedObject(titleMenuUI);
             SerializedProperty hubProp = soMenu.FindProperty("townHubPanel");
             if (hubProp != null)
@@ -452,10 +438,10 @@ namespace ElementalHexTactics3D.Editor
             hubRoot.SetActive(false);
 
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-            Debug.Log("<color=#4CAF50><b>[Town Hub Builder] SUCCESS!</b></color> Citadel Town Hub with 6 facilities, ground shadows, tooltips, and modals built cleanly!");
+            Debug.Log("<color=#4CAF50><b>[Town Hub Builder] SUCCESS!</b></color> Citadel Town Hub seamlessly configured with full.png and interactive hotspot overlays!");
         }
 
-        private static TownBuildingNode CreateBuildingNode(string name, Transform parent, Sprite sprite, Vector2 pos, Vector2 size, HubFacilityType type, string title, string lore, string status, Transform shadow)
+        private static TownBuildingNode CreateBuildingNode(string name, Transform parent, Sprite sprite, Vector2 pos, Vector2 size, HubFacilityType type, string title, string lore, string status)
         {
             GameObject obj = CreateUIObject(name, parent);
             RectTransform rect = obj.GetComponent<RectTransform>();
@@ -469,50 +455,20 @@ namespace ElementalHexTactics3D.Editor
             if (sprite != null)
             {
                 img.sprite = sprite;
-                img.color = Color.white;
+                // Idle is invisible (alpha 0) because full.png underneath shows the building perfectly!
+                img.color = new Color(1f, 1f, 1f, 0f);
                 img.preserveAspect = true;
             }
             else
             {
-                img.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+                img.color = new Color(1f, 1f, 1f, 0f);
             }
 
             TownBuildingNode node = obj.AddComponent<TownBuildingNode>();
-            node.Setup(type, title, lore, status, img, shadow);
+            // On hover: fades in with a warm golden highlight (alpha 0.65) and 1.03x scale bounce!
+            node.Setup(type, title, lore, status, img, null, normal: new Color(1f, 1f, 1f, 0f), hover: new Color(1.2f, 1.15f, 0.95f, 0.65f), scale: 1.03f);
 
             return node;
-        }
-
-        private static Transform CreateGroundShadow(string name, Transform parent, Vector2 pos, Vector2 size)
-        {
-            GameObject shadowObj = CreateUIObject(name, parent);
-            RectTransform rect = shadowObj.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.5f, 0.5f);
-            rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = size;
-            rect.anchoredPosition = pos;
-
-            Image img = shadowObj.AddComponent<Image>();
-            img.color = new Color(0.01f, 0.01f, 0.02f, 0.65f); // Deep soft contact shadow
-            img.raycastTarget = false;
-
-            return shadowObj.transform;
-        }
-
-        private static void CreateGlowSpill(string name, Transform parent, Vector2 pos, Vector2 size, Color color)
-        {
-            GameObject glowObj = CreateUIObject(name, parent);
-            RectTransform rect = glowObj.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.5f, 0.5f);
-            rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = size;
-            rect.anchoredPosition = pos;
-
-            Image img = glowObj.AddComponent<Image>();
-            img.color = color;
-            img.raycastTarget = false;
         }
 
         private static GameObject CreateFacilityModal(string name, Transform parent, string title, Font fontBold, Font fontRegular, Sprite panelFrame, Sprite btnSprite, string lore, string stats, string actionLabel, UnityEngine.Events.UnityAction onAction)

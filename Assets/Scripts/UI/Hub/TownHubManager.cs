@@ -347,3 +347,4 @@ namespace ElementalHexTactics3D.UI.Hub
         }
     }
 }
+
