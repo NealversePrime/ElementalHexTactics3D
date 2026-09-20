@@ -41,9 +41,43 @@ namespace ElementalHexTactics3D.Editor
         public static void EnsureTownHubBuilt()
         {
             GameObject canvasObj = GameObject.Find("Canvas_TitleMenu");
-            if (canvasObj != null && canvasObj.transform.Find("Panel_TownHub") == null)
+            if (canvasObj != null)
             {
-                BuildTownHub();
+                Transform hub = canvasObj.transform.Find("Panel_TownHub");
+                bool needsRebuild = false;
+                if (hub == null)
+                {
+                    needsRebuild = true;
+                }
+                else
+                {
+                    // Check if stale boxes exist from earlier iterations
+                    if (hub.Find("Container_GroundShadows") != null || hub.Find("Container_LightSpills") != null)
+                    {
+                        needsRebuild = true;
+                    }
+                    // Check if background image is missing or not using full.png
+                    Image bgImg = hub.Find("Background_Landscape")?.GetComponent<Image>();
+                    if (bgImg == null || bgImg.sprite == null || bgImg.sprite.name != "full")
+                    {
+                        needsRebuild = true;
+                    }
+                    // Check if coordinates need updating to pixel-perfect template match
+                    Transform castle = hub.Find("Container_Buildings/Building_DemonCastle");
+                    if (castle != null)
+                    {
+                        RectTransform r = castle.GetComponent<RectTransform>();
+                        if (r != null && r.anchoredPosition.x < -700f)
+                        {
+                            needsRebuild = true;
+                        }
+                    }
+                }
+
+                if (needsRebuild)
+                {
+                    BuildTownHub();
+                }
             }
         }
 
@@ -140,42 +174,42 @@ namespace ElementalHexTactics3D.Editor
 
             // 6. Layer 1: The 6 Interactive Building Hotspot Overlays
             // In idle state: Alpha is 0 (invisible, perfectly revealing full.png underneath).
-            // On hover: Highlights with subtle golden glow and scale pulse (1.03x), triggering top tooltip banner!
+            // On hover: Highlights with subtle golden glow and scale pulse (1.015x), triggering top tooltip banner!
             GameObject buildingsContainer = CreateUIObject("Container_Buildings", hubRoot.transform);
             SetStretchAll(buildingsContainer.GetComponent<RectTransform>());
 
-            // Facility 1: Demon Castle (Leftmost tower)
+            // Facility 1: Demon Castle (Leftmost tower - Pixel matched to full.png)
             TownBuildingNode nodeCastle = CreateBuildingNode(
                 "Building_DemonCastle",
                 buildingsContainer.transform,
                 towerSprite,
-                new Vector2(-750f, 40f),
-                new Vector2(420f, 740f),
+                new Vector2(-624.5f, -11.5f),
+                new Vector2(875f, 875f),
                 HubFacilityType.DemonCastle,
                 "✦ DEMON LORD CITADEL ✦",
                 "Sanctum of the exiled sovereign. Unlock Demon Lord System perks, upgrade domain attributes, and issue decrees.",
                 "<color=#FFCC00>Rank I Citadel • 3 Perks Available</color>"
             );
 
-            // Facility 2: Emancipation Forge (Blacksmith)
+            // Facility 2: Emancipation Forge (Blacksmith - Pixel matched to full.png)
             TownBuildingNode nodeForge = CreateBuildingNode(
                 "Building_EmancipationForge",
                 buildingsContainer.transform,
                 blacksmithSprite,
-                new Vector2(-384f, -72f),
-                new Vector2(380f, 380f),
+                new Vector2(-314.0f, -195.0f),
+                new Vector2(700f, 700f),
                 HubFacilityType.EmancipationForge,
                 "✦ EMANCIPATION FORGE ✦",
                 "The anvil of liberation. Shatter Cursed Slave Collars from rescued demi-humans and forge abyssal dark weaponry.",
                 "<color=#FF8844>Collars Pending: 2 Rescued</color>"
             );
 
-            // Facility 3: Abyssal Portal (GATEWAY TO 3D BATTLE)
+            // Facility 3: Abyssal Portal (GATEWAY TO 3D BATTLE - Pixel matched to full.png)
             TownBuildingNode nodePortal = CreateBuildingNode(
                 "Building_AbyssalPortal",
                 buildingsContainer.transform,
                 portalSprite,
-                new Vector2(-26.5f, -54.5f),
+                new Vector2(-26.5f, -53.5f),
                 new Vector2(427f, 427f),
                 HubFacilityType.AbyssalPortal,
                 "✦ ABYSSAL RIFT [ENTER BATTLE] ✦",
@@ -183,39 +217,39 @@ namespace ElementalHexTactics3D.Editor
                 "<color=#44FF88>Rift Stable • Click to Embark</color>"
             );
 
-            // Facility 4: Monster Barracks
+            // Facility 4: Monster Barracks (Pixel matched to full.png)
             TownBuildingNode nodeBarracks = CreateBuildingNode(
                 "Building_MonsterBarracks",
                 buildingsContainer.transform,
                 barrackSprite,
-                new Vector2(314.5f, -55.5f),
-                new Vector2(450f, 450f),
+                new Vector2(313.5f, -55.5f),
+                new Vector2(449f, 449f),
                 HubFacilityType.MonsterBarracks,
                 "✦ MONSTER BARRACKS & DEN ✦",
                 "Warcamp built from leviathan rib bones. Inspect, arm, and recruit companion minions (Goblins, Kobolds, Slimes).",
                 "<color=#66CCFF>Squad: 2/4 Active</color>"
             );
 
-            // Facility 5: Mana Mine & Farm
+            // Facility 5: Mana Mine & Farm (Pixel matched to full.png)
             TownBuildingNode nodeMine = CreateBuildingNode(
                 "Building_ManaMineFarm",
                 buildingsContainer.transform,
                 mineFarmSprite,
-                new Vector2(657.5f, -129f),
-                new Vector2(360f, 340f),
+                new Vector2(643.2f, -136.4f),
+                new Vector2(492.5f, 488.8f),
                 HubFacilityType.ManaMine,
                 "✦ MANA MINE & SPORE FARMS ✦",
                 "Subterranean mana crystal veins and blighted dark soil plots. Assign freed outcasts to harvest passive resources.",
                 "<color=#AA88FF>Yield: +50 Mana / Expedition</color>"
             );
 
-            // Facility 6: Ancient Horned Deity Shrine (Cliff Plateau)
+            // Facility 6: Ancient Horned Deity Shrine (Cliff Plateau - Pixel matched to full.png)
             TownBuildingNode nodeStatue = CreateBuildingNode(
                 "Building_AncientDeityShrine",
                 buildingsContainer.transform,
                 statueSprite,
-                new Vector2(785.5f, 172.5f),
-                new Vector2(320f, 320f),
+                new Vector2(786.0f, 174.0f),
+                new Vector2(348f, 348f),
                 HubFacilityType.AncientDeityShrine,
                 "✦ ANCIENT DEITY SHRINE ✦",
                 "Colossal horned idol on the cliff's edge. Offer soul embers in the sacrificial brazier for ancient beast summoning (Gacha)!",
@@ -438,6 +472,7 @@ namespace ElementalHexTactics3D.Editor
             hubRoot.SetActive(false);
 
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             Debug.Log("<color=#4CAF50><b>[Town Hub Builder] SUCCESS!</b></color> Citadel Town Hub seamlessly configured with full.png and interactive hotspot overlays!");
         }
 
@@ -465,8 +500,8 @@ namespace ElementalHexTactics3D.Editor
             }
 
             TownBuildingNode node = obj.AddComponent<TownBuildingNode>();
-            // On hover: fades in with a warm golden highlight (alpha 0.65) and 1.03x scale bounce!
-            node.Setup(type, title, lore, status, img, null, normal: new Color(1f, 1f, 1f, 0f), hover: new Color(1.2f, 1.15f, 0.95f, 0.65f), scale: 1.03f);
+            // On hover: fades in with a warm golden highlight (alpha 0.55) and very subtle 1.015x scale pulse!
+            node.Setup(type, title, lore, status, img, null, normal: new Color(1f, 1f, 1f, 0f), hover: new Color(1.18f, 1.12f, 0.9f, 0.55f), scale: 1.015f);
 
             return node;
         }

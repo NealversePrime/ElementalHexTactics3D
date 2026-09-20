@@ -67,9 +67,91 @@ namespace ElementalHexTactics3D.UI.Hub
                 return;
             }
 
+            // Self-healing: purge any legacy shadow/light containers from earlier iterations
+            PurgeLegacyContainers();
+            EnsureFullBackgroundSprite();
+            SnapBuildingNodes();
+
             UpdateResourceDisplays();
             HideTooltipImmediate();
             CloseAllModals();
+        }
+
+        private void OnEnable()
+        {
+            PurgeLegacyContainers();
+            EnsureFullBackgroundSprite();
+            SnapBuildingNodes();
+        }
+
+        private void PurgeLegacyContainers()
+        {
+            Transform oldShadows = transform.Find("Container_GroundShadows");
+            if (oldShadows != null) DestroyImmediate(oldShadows.gameObject);
+            Transform oldSpills = transform.Find("Container_LightSpills");
+            if (oldSpills != null) DestroyImmediate(oldSpills.gameObject);
+        }
+
+        private void EnsureFullBackgroundSprite()
+        {
+            Transform bg = transform.Find("Background_Landscape");
+            if (bg != null)
+            {
+                Image bgImg = bg.GetComponent<Image>();
+                if (bgImg != null)
+                {
+                    if (bgImg.sprite == null || bgImg.sprite.name != "full")
+                    {
+                        string path = System.IO.Path.Combine(Application.dataPath, "Sprites/Hub/full.png");
+                        if (System.IO.File.Exists(path))
+                        {
+                            byte[] data = System.IO.File.ReadAllBytes(path);
+                            Texture2D tex = new Texture2D(1920, 1080, TextureFormat.RGBA32, false);
+                            if (tex.LoadImage(data))
+                            {
+                                tex.name = "full";
+                                Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                                sp.name = "full";
+                                bgImg.sprite = sp;
+                                bgImg.color = Color.white;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SnapBuildingNodes()
+        {
+            SnapNode("Building_DemonCastle", new Vector2(-624.5f, -11.5f), new Vector2(875f, 875f));
+            SnapNode("Building_EmancipationForge", new Vector2(-314.0f, -195.0f), new Vector2(700f, 700f));
+            SnapNode("Building_AbyssalPortal", new Vector2(-26.5f, -53.5f), new Vector2(427f, 427f));
+            SnapNode("Building_MonsterBarracks", new Vector2(313.5f, -55.5f), new Vector2(449f, 449f));
+            SnapNode("Building_ManaMineFarm", new Vector2(643.2f, -136.4f), new Vector2(492.5f, 488.8f));
+            SnapNode("Building_AncientDeityShrine", new Vector2(786.0f, 174.0f), new Vector2(348f, 348f));
+        }
+
+        private void SnapNode(string name, Vector2 pos, Vector2 size)
+        {
+            Transform t = transform.Find($"Container_Buildings/{name}");
+            if (t != null)
+            {
+                RectTransform rt = t.GetComponent<RectTransform>();
+                if (rt != null)
+                {
+                    rt.anchorMin = new Vector2(0.5f, 0.5f);
+                    rt.anchorMax = new Vector2(0.5f, 0.5f);
+                    rt.pivot = new Vector2(0.5f, 0.5f);
+                    rt.anchoredPosition = pos;
+                    rt.sizeDelta = size;
+                }
+
+                Image img = t.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.color = new Color(1f, 1f, 1f, 0f);
+                }
+            }
         }
 
         private void Start()

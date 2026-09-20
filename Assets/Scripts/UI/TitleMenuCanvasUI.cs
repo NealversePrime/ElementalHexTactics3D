@@ -92,6 +92,14 @@ namespace ElementalHexTactics3D.UI
                 if (hub != null) townHubPanel = hub.gameObject;
             }
 
+            if (townHubPanel != null)
+            {
+                Transform oldShadows = townHubPanel.transform.Find("Container_GroundShadows");
+                if (oldShadows != null) DestroyImmediate(oldShadows.gameObject);
+                Transform oldSpills = townHubPanel.transform.Find("Container_LightSpills");
+                if (oldSpills != null) DestroyImmediate(oldSpills.gameObject);
+            }
+
             AdjustModalLayouts();
             AdjustTitleScreenLayout();
         }
