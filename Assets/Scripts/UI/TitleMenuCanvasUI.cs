@@ -21,6 +21,7 @@ namespace ElementalHexTactics3D.UI
 
         [Header("Root Panels")]
         [SerializeField] private GameObject titlePanel;
+        [SerializeField] private GameObject townHubPanel;
         [SerializeField] private GameObject inGameHudPanel;
         [SerializeField] private GameObject storyModal;
         [SerializeField] private GameObject howToPlayModal;
@@ -56,13 +57,15 @@ namespace ElementalHexTactics3D.UI
 
         // State Tracking
         private bool isInGame = false;
+        private bool isInTownHub = false;
         private bool isPaused = false;
         private GameObject activeModal = null;
         private bool returnToPauseFromOptions = false;
 
         public bool IsInGame => isInGame;
+        public bool IsInTownHub => isInTownHub;
         public bool IsPaused => isPaused || activeModal != null;
-        public bool IsOnTitleScreen => !isInGame && activeModal == null;
+        public bool IsOnTitleScreen => !isInGame && !isInTownHub && activeModal == null;
 
         private void Awake()
         {
@@ -81,6 +84,12 @@ namespace ElementalHexTactics3D.UI
             if (legacy != null && legacy != gameObject)
             {
                 Destroy(legacy);
+            }
+
+            if (townHubPanel == null)
+            {
+                Transform hub = transform.Find("Panel_TownHub");
+                if (hub != null) townHubPanel = hub.gameObject;
             }
 
             AdjustModalLayouts();
@@ -359,9 +368,23 @@ namespace ElementalHexTactics3D.UI
         public void ShowTitleScreen()
         {
             isInGame = false;
+            isInTownHub = false;
             isPaused = false;
 
             if (titlePanel != null) titlePanel.SetActive(true);
+            if (townHubPanel != null) townHubPanel.SetActive(false);
+            if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
+            CloseAllModals();
+        }
+
+        public void ShowTownHub()
+        {
+            isInGame = false;
+            isInTownHub = true;
+            isPaused = false;
+
+            if (titlePanel != null) titlePanel.SetActive(false);
+            if (townHubPanel != null) townHubPanel.SetActive(true);
             if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
             CloseAllModals();
         }
@@ -369,10 +392,26 @@ namespace ElementalHexTactics3D.UI
         public void OnPlayClicked()
         {
             PlaySoundClick();
+            // Enter the Citadel Town Hub first!
+            if (townHubPanel != null)
+            {
+                ShowTownHub();
+            }
+            else
+            {
+                EnterHexBattlefield();
+            }
+        }
+
+        public void EnterHexBattlefield()
+        {
+            PlaySoundClick();
             isInGame = true;
+            isInTownHub = false;
             isPaused = false;
 
             if (titlePanel != null) titlePanel.SetActive(false);
+            if (townHubPanel != null) townHubPanel.SetActive(false);
             if (inGameHudPanel != null) inGameHudPanel.SetActive(true);
             CloseAllModals();
 
@@ -384,12 +423,19 @@ namespace ElementalHexTactics3D.UI
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "ADVENTURE BEGINS!", 
-                    "Rank-F Tamer enters the tactical dungeon plateau. Defeat the tyrant forces!", 
-                    1.4f, 
-                    new Color(0.2f, 0.8f, 1.0f)
+                    "✦ EXPEDITION LAUNCHED ✦", 
+                    "Demon Lord vanguard marches through the Abyssal Rift! Crush the holy invaders!", 
+                    1.8f, 
+                    new Color(0.3f, 0.85f, 1.0f)
                 );
             }
+        }
+
+        public void ReturnToTownHub()
+        {
+            PlaySoundClick();
+            if (pauseModal != null) pauseModal.SetActive(false);
+            ShowTownHub();
         }
 
         public void OpenPauseMenu()
@@ -446,6 +492,10 @@ namespace ElementalHexTactics3D.UI
             {
                 CloseActiveModal();
             }
+            else if (isInTownHub)
+            {
+                ShowTitleScreen();
+            }
             else if (isInGame)
             {
                 if (isPaused) ResumeGame();
@@ -466,10 +516,18 @@ namespace ElementalHexTactics3D.UI
         public void OnReturnTitleClicked()
         {
             PlaySoundClick();
-            ShowTitleScreen();
             if (TurnManager3D.Instance != null)
             {
                 TurnManager3D.Instance.RestartBattle();
+            }
+
+            if (townHubPanel != null)
+            {
+                ShowTownHub();
+            }
+            else
+            {
+                ShowTitleScreen();
             }
         }
 
