@@ -476,6 +476,45 @@ namespace ElementalHexTactics3D.Editor
             Debug.Log("<color=#4CAF50><b>[Town Hub Builder] SUCCESS!</b></color> Citadel Town Hub seamlessly configured with full.png and interactive hotspot overlays!");
         }
 
+        [MenuItem("Elemental Hex 3D/Export Game Build for TGFI (Windows .exe)", false, 10)]
+        public static void ExportWindowsBuild()
+        {
+            EnsureTownHubBuilt();
+
+            string projectRoot = Directory.GetCurrentDirectory();
+            string buildDir = Path.Combine(projectRoot, "Build_TGFI");
+            if (!Directory.Exists(buildDir))
+            {
+                Directory.CreateDirectory(buildDir);
+            }
+
+            string exePath = Path.Combine(buildDir, "ElementalHexTactics3D.exe");
+            string[] scenes = new string[] { "Assets/Scenes/SampleScene.unity" };
+
+            Debug.Log("<color=#7C4DFF><b>[TGFI Exporter]</b></color> Starting Windows 64-bit standalone build for TGFI...");
+
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
+            {
+                scenes = scenes,
+                locationPathName = exePath,
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.None
+            };
+
+            var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            var summary = report.summary;
+
+            if (summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+            {
+                Debug.Log($"<color=#4CAF50><b>[TGFI Exporter] BUILD SUCCESS!</b></color> Output saved to: {exePath} ({summary.totalSize / (1024 * 1024)} MB)");
+                EditorUtility.RevealInFinder(exePath);
+            }
+            else if (summary.result == UnityEditor.Build.Reporting.BuildResult.Failed)
+            {
+                Debug.LogError($"<color=#FF5252><b>[TGFI Exporter] BUILD FAILED!</b></color> Total errors: {summary.totalErrors}");
+            }
+        }
+
         private static TownBuildingNode CreateBuildingNode(string name, Transform parent, Sprite sprite, Vector2 pos, Vector2 size, HubFacilityType type, string title, string lore, string status)
         {
             GameObject obj = CreateUIObject(name, parent);

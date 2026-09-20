@@ -120,3 +120,4 @@ Peralatan Monster berfokus pada **Adaptasi Biome** dan **Memecah Aturan (*Rule B
 2. **Milestone 2 (Likuiditas & Toko):** Mengaktifkan Gold dan merchant sederhana untuk membeli beberapa variasi senjata Infuse elemen dan sepatu anti-hazard.
 3. **Milestone 3 (Upkeep & Sektor Pekerja):** Mengaktifkan panen Food dan sistem upkeep barak monster.
 4. **Milestone 4 (Puncak Meta):** Mengaktifkan Angel Core drop dari Bos dan ritual gacha Titan di Altar.
+
