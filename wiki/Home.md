@@ -32,6 +32,7 @@ flowchart TD
 | [**03. Kinetic Combat & Hazards**](03-Kinetic-Combat-and-Hazards) | Shove physics, Wall-Slam collisions, environmental hazards, and mobility debuffs. |
 | [**04. Units & Attunement**](04-Units-and-Attunement) | Unit stats, archetypes (Commander vs Titan vs Minion), abilities, and FFT Attunement buffs. |
 | [**05. Technical Architecture**](05-Technical-Architecture) | Unity 6 URP architecture, procedural 3D hex meshes, procedural particle VFX engine, and zero-asset design. |
+| [**06. Citadel Hub & Economy**](06-Citadel-Hub-and-Domain-Economy) | Interactive 2D Town Hub, 4-currency ecosystem, merchant gear catalog, and unrealized systems roadmap. |
 
 ---
 

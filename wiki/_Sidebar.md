@@ -6,6 +6,7 @@
 - [**3. Combat & Hazards**](03-Kinetic-Combat-and-Hazards)
 - [**4. Units & Attunement**](04-Units-and-Attunement)
 - [**5. Technical Architecture**](05-Technical-Architecture)
+- [**6. Citadel Hub & Economy**](06-Citadel-Hub-and-Domain-Economy)
 
 ---
 
