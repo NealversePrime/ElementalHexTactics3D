@@ -4,24 +4,24 @@ In **Elemental Hex Tactics 3D**, battles feature a focused **2v2 skirmish** desi
 
 ---
 
-## 📏 Taksonomi 3 Kategori Ukuran Unit (Small, Normal, Big)
+## 📏 3-Tier Unit Size Taxonomy (Small, Normal, Big)
 
-Sistem taktis dan domain **Elemental Hex Tactics 3D** mengklasifikasikan seluruh unit ke dalam **3 tingkatan ukuran (*Size Tiers*)** yang asimetris, baik dari segi peran tempur, interaksi fisika di atas hex grid, hingga slot perlengkapannya:
+The tactical and domain systems of **Elemental Hex Tactics 3D** classify all units into **3 asymmetrical Size Tiers**, governing combat roles, 3D hex physics interactions, and equipment slot allocation:
 
 ```mermaid
 flowchart TD
-    subgraph UnitSizes["3 Kategori Ukuran Unit"]
-        S["🟢 SMALL (Minions & Demi-Humans)<br/>• Skala: ~1.0m - 1.2m<br/>• Mobilitas: Tinggi (Move 3-4)<br/>• Slot: 1-2 Aux / Worker Collar<br/>• Peran: Flanker, Trapper & Pekerja Hub"]
-        N["🔵 NORMAL (Humanoid Shapers)<br/>• Skala: ~1.7m - 1.8m (1x Hex)<br/>• Mobilitas: Fleksibel (Move 3)<br/>• Slot: 5 RPG Gear (Weapon/Armor/Boots/Helm/Ring)<br/>• Peran: Terraformer, Shove Master & Komandan"]
-        B["🔴 BIG (Colossal Titans)<br/>• Skala: ~2.5m - 3.5m (Masif)<br/>• Mobilitas: Berat (Move 2, Heavy/Unshovable)<br/>• Slot: 1 Relic + 2 Scrolls (Biome/Rule Breaking)<br/>• Peran: Apex Striker, Hazard Immune & Consume Land"]
+    subgraph UnitSizes["3 Unit Size Tiers"]
+        S["🟢 SMALL (Minions & Demi-Humans)<br/>• Scale: ~1.0m - 1.2m<br/>• Mobility: High (Move 3-4)<br/>• Slots: 1-2 Aux / Worker Gear<br/>• Role: Flanker, Trapper & Hub Worker"]
+        N["🔵 NORMAL (Humanoid Shapers)<br/>• Scale: ~1.7m - 1.8m (1x Hex)<br/>• Mobility: Flexible (Move 3)<br/>• Slots: 5 RPG Gear (Weapon/Armor/Boots/Helm/Ring)<br/>• Role: Terraformer, Shove Master & Commander"]
+        B["🔴 BIG (Colossal Titans)<br/>• Scale: ~2.5m - 3.5m (Massive)<br/>• Mobility: Heavy (Move 2, Heavy/Unshovable)<br/>• Slots: 1 Relic + 2 Scrolls (Biome/Rule Breaking)<br/>• Role: Apex Striker, Hazard Immune & Consume Land"]
     end
 ```
 
-| Kategori | Representasi Unit | Skala Hex & Tinggi | Slot Perlengkapan | Ketahanan Medan / Fisika | Peran Taktis & Domain |
+| Category | Unit Archetypes | Hex Scale & Height | Equipment Slots | Terrain & Physics Resilience | Tactical & Domain Role |
 | :--- | :--- | :---: | :---: | :--- | :--- |
-| **`Small`** | **Minions & Demi-Humans**<br/>*(Kobold, Cinder Imp, Demon Slime, Dark Elf)* | ~1.0m - 1.2m<br/>(Mungil) | **1–2 Slot Aux**<br/>(Aksesoris/Peralatan Kerja) | **Ringan / Rentan Hazard.** Mudah terlempar jauh saat terkena *Shove*. Rentan terbakar di Magma dan tenggelam di Deep Water. | **Frontline Harassment & Pekerja Domain:** Mengganggu pergerakan musuh, memicu jebakan, atau ditempatkan di *Mana Mine & Farm* untuk panen sumber daya harian. |
-| **`Normal`** | **Humanoid Shapers**<br/>*(Exiled Demon Lord, Holy Inquisitor, Templar)* | ~1.7m - 1.8m<br/>(1x Hex Tile) | **5 Slot RPG Lengkap**<br/>*(Weapon, Armor, Boots, Helm, Ring)* | **Standar.** Terdorong 1 tile saat terkena Push. Membutuhkan gear khusus (cth: *Lava Walkers*) untuk melintasi hazard tanpa cedera. | **Tactical Terraformer & Komandan:** Menentukan elemen medan (*Infuse* Api, Air, Tanah), manipulasi *Turn Order*, dan kombo *Kinetic Wall-Slam*. |
-| **`Big`** | **Colossal Titans**<br/>*(Magma Behemoth, Abyssal Leviathan, Archangel)* | ~2.5m - 3.5m<br/>(Memenuhi Hex) | **3 Slot Spesialis**<br/>*(1 Relic + 2 Scrolls Adaptasi/Rule-Breaking)* | **Masif / Kebal Alami.** Tidak bisa didorong sembarangan (*Heavy Weight*). Kebal bawaan terhadap hazard elemen asal (cth: Titan Magma kebal lahar panas). | **Heavy Anchor & Finisher:** Memakan lahan berelemen (*Siphon/Consume Land*), mengeluarkan skill pemusnah massal (*Cataclysm Ultimate*). Memerlukan **Upkeep Food** berkala. |
+| **`Small`** | **Minions & Demi-Humans**<br/>*(Kobold, Cinder Imp, Demon Slime, Dark Elf Scout)* | ~1.0m - 1.2m<br/>(Compact) | **1–2 Aux Slots**<br/>(Accessories / Work Tools) | **Lightweight / Hazard Vulnerable:** Displaced further upon taking a *Shove*. Susceptible to burning on Magma and drowning in Deep Water. | **Frontline Harassment & Domain Workforce:** Disrupts enemy movements, plants traps, or works in the *Mana Mine & Farm* for daily resource yields. |
+| **`Normal`** | **Humanoid Shapers**<br/>*(Exiled Demon Lord, Holy Inquisitor, Templar)* | ~1.7m - 1.8m<br/>(1x Hex Tile) | **Full 5 RPG Slots**<br/>*(Weapon, Armor, Boots, Helm, Ring)* | **Standard:** Displaced 1 tile upon taking a *Push*. Requires specialized gear (e.g. *Lava Walkers*) to safely traverse hazard terrain. | **Tactical Terraformer & Commander:** Infuses elemental terrain (*Fire, Water, Earth*), manipulates *Turn Order*, and executes *Kinetic Wall-Slam* combos. |
+| **`Big`** | **Colossal Titans**<br/>*(Magma Behemoth, Abyssal Leviathan, Archangel)* | ~2.5m - 3.5m<br/>(Fills Full Hex) | **3 Specialist Slots**<br/>*(1 Relic + 2 Biome/Rule-Breaking Scrolls)* | **Massive / Innate Hazard Immunity:** Immune to conventional shoves (*Heavy Weight / Unshovable*). Innately immune to native elemental hazards (e.g. Magma Titan is immune to lava). | **Heavy Anchor & Finisher:** Consumes elemental ground (*Siphon/Consume Land*), unleashes screen-clearing ultimates (*Cataclysm Ultimate*). Requires recurring **Food Upkeep**. |
 
 ---
 

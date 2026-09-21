@@ -1,130 +1,133 @@
 # 🏰 06. Citadel Town Hub, Domain Economy & Roadmap
 
-Dokumentasi resmi untuk **Citadel Town Hub ("Citadel of the Outcasts at the Edge of the World")**, arsitektur ekonomi 4 mata uang (*The Golden Quadrant*), sistem toko perlengkapan asimetris, serta roadmap fitur yang sudah terealisasi vs belum terealisasi.
+Official documentation for the **Citadel Town Hub ("Citadel of the Outcasts at the Edge of the World")**, the 4-currency economic ecosystem (*The Golden Quadrant*), the asymmetrical equipment commerce system, and the realized vs. unrealized feature roadmap.
 
 ---
 
-## 🧭 1. Ringkasan Visi & Game Loop Makro
+## 🧭 1. Vision Summary & Macro Game Loop
 
-Elemental Hex Tactics 3D menggabungkan taktis heksagonal berbasis fisika elemen (*Divinity: Original Sin 2*, *Into the Breach*) dengan manajemen domain dan pasukan monster (*Brigandine: The Legend of Runersia*).
+**Elemental Hex Tactics 3D** combines reactive elemental hex tactics (*Divinity: Original Sin 2*, *Into the Breach*) with domain management and monster squad conquest (*Brigandine: The Legend of Runersia*).
 
 ```mermaid
 flowchart LR
-    Title["🏠 Title Screen"] -->|"Play"| Hub["🏰 Citadel Town Hub\n(Manajemen Domain & Roster)"]
+    Title["🏠 Title Screen"] -->|"Play"| Hub["🏰 Citadel Town Hub\n(Domain & Roster Management)"]
     
-    subgraph HubLoop["Aktivitas di Hub"]
-        Shop["🛒 Merchant (Beli Gear & Scrolls)"]
-        Forge["⚒️ Emancipation Forge (Infusi & Kalung)"]
-        MineFarm["⛏️ Mine & 🌾 Farm (Panen Sumber Daya)"]
-        Barracks["🐺 Barracks (Roster & Upkeep Pangan)"]
-        Shrine["🔮 Deity Shrine (Gacha Titan Purba)"]
+    subgraph HubLoop["Hub Activities"]
+        Shop["🛒 Merchant (Buy Gear & Scrolls)"]
+        Forge["⚒️ Emancipation Forge (Infusion & Collars)"]
+        MineFarm["⛏️ Mine & 🌾 Farm (Resource Harvest)"]
+        Barracks["🐺 Barracks (Roster & Food Upkeep)"]
+        Shrine["🔮 Deity Shrine (Ancient Titan Awakening)"]
     end
     
     Hub --> HubLoop
-    Hub -->|"Abyssal Portal"| Battle["⚔️ 3D Hex Battlefield\n(Fisika Elemen & Shoves)"]
+    Hub -->|"Abyssal Portal"| Battle["⚔️ 3D Hex Battlefield\n(Elemental Physics & Shoves)"]
     Battle -->|"Pause Menu -> Return to Citadel"| Hub
 ```
 
 ---
 
-## ✅ 2. Fitur yang Sudah Terealisasi (Implemented)
+## ✅ 2. Realized Features (Currently Implemented)
 
-Semua poin di bawah ini telah selesai dikembangkan dan aktif di dalam scene `Assets/Scenes/SampleScene.unity`:
+All items below have been fully developed, validated, and are active in `Assets/Scenes/SampleScene.unity`:
 
 ### A. 2D Interactive Citadel Town Hub
-* **Master Backdrop Canva (`full.png`):** Menggunakan karya kanvas 1920x1080 yang menggabungkan 3 lapisan: pemandangan belakang, 6 bangunan fasilitas, dan lapisan jalan batu depan (*foreground road strip*) sehingga fondasi bangunan menancap alami tanpa melayang.
+* **Master Backdrop Canvas (`full.png`):** Utilizes a unified 1920x1080 master canvas combining three visual layers: background scenery, 6 facility structures, and a foreground stone road strip, anchoring all building foundations naturally to the ground without floating.
 * **Pixel-Perfect Building Hotspot Overlays:**
-  1. **👑 Demon Lord Citadel:** `Pos (-753.3, 122.8)`, `Size 735 x 735` (Skala 1.47x).
-  2. **⚒️ Emancipation Forge:** `Pos (-395.6, -72.6)`, `Size 385 x 385` (Skala 0.77x).
-  3. **🌀 Abyssal Rift Portal:** `Pos (-26.5, -53.5)`, `Size 427 x 427` (Skala 1.00x).
-  4. **🐺 Monster Barracks & Den:** `Pos (313.5, -55.5)`, `Size 449 x 449` (Skala 1.00x).
-  5. **⛏️ Mana Mine & Spore Farms:** `Pos (643.2, -136.4)`, `Size 492.5 x 488.8` (Skala 1.25x).
-  6. **🔮 Ancient Deity Shrine:** `Pos (786.0, 174.0)`, `Size 348 x 348` (Skala 1.00x).
-* **Alpha Feathering:** 15–20 pixel terbawah pada sprite `blacksmith.png` dan `demontower.png` telah di-feathering sehingga garis potongan lurus horizontal hilang dan larut mulus ke dalam bebatuan jalan saat di-hover.
-* **Efek Interaktif & Tooltip Banner:** Hover menampilkan *golden radiance* lembut (`alpha = 0.55`) dan memunculkan banner status di bagian atas layar.
-* **Modal Fasilitas:** Menampilkan dialog interaktif untuk kelima fasilitas domain dan tombol aksi.
-* **Transisi Ekspedisi 3D:** Mengklik Abyssal Portal langsung memberangkatkan pasukan ke medan tempur 3D heksagonal.
-* **Menu Pause & Kembali:** Tombol *Return to Citadel* di menu jeda mengembalikan pemain ke Town Hub secara mulus tanpa reload scene.
-* **Pembersihan Otomatis (*Self-Healing Runtime*):** Script `TownHubManager.cs` dan `TitleMenuCanvasUI.cs` otomatis memusnahkan sisa kotak bayangan lama (`Container_GroundShadows`) dan menyinkronkan posisi koordinat saat game dijalankan.
+  1. **👑 Demon Lord Citadel:** `Pos (-753.3, 122.8)`, `Size 735 x 735` (Scale 1.47x).
+  2. **⚒️ Emancipation Forge:** `Pos (-395.6, -72.6)`, `Size 385 x 385` (Scale 0.77x).
+  3. **🌀 Abyssal Rift Portal:** `Pos (-26.5, -53.5)`, `Size 427 x 427` (Scale 1.00x).
+  4. **🐺 Monster Barracks & Den:** `Pos (313.5, -55.5)`, `Size 449 x 449` (Scale 1.00x).
+  5. **⛏️ Mana Mine & Spore Farms:** `Pos (643.2, -136.4)`, `Size 492.5 x 488.8` (Scale 1.25x).
+  6. **🔮 Ancient Deity Shrine:** `Pos (786.0, 174.0)`, `Size 348 x 348` (Scale 1.00x).
+* **Alpha Feathering:** The bottom 15–20 pixels of `blacksmith.png` and `demontower.png` feature smooth alpha feathering gradients, eliminating harsh horizontal crop lines and seamlessly dissolving into road rocks upon hover.
+* **Interactive Hover Radiance & Dynamic Tooltips:** Hovering over any building activates a gentle golden radiance (`alpha = 0.55`) and triggers a responsive top banner detailing facility lore and actions.
+* **Interactive Facility Modals:** Clicking on buildings opens dedicated modal dialogs with flavor descriptions and action buttons.
+* **3D Expedition Transition:** Clicking the Abyssal Portal smoothly embarks the party directly onto the 3D hexagonal battlefield.
+* **Pause Menu & Citadel Return:** The in-battle pause menu provides a *Return to Citadel* option that transitions back to the Town Hub without reloading the scene.
+* **Self-Healing Runtime Cleanup:** `TownHubManager.cs` and `TitleMenuCanvasUI.cs` automatically purge legacy shadow quads (`Container_GroundShadows`) and synchronize building node coordinates upon game start.
 
 ---
 
-## 📋 3. Fitur yang Belum Terealisasikan (Design Backlog & Roadmap)
+## 📋 3. Unrealized Features (Design Backlog & Roadmap)
 
-Bagian ini merangkum sistem-sistem yang telah selesai dirancang secara konseptual namun belum diimplementasikan ke dalam kode gameplay:
+This section details game systems that have been conceptually designed and balanced, queued for future milestone implementation:
 
-### A. Ekosistem 4 Mata Uang (*The Golden Quadrant*)
-1. **💰 Gold (Emas Perdagangan Universal):**
-   - *Filosofi:* *"Gold is gold, merchant tidak pandang bulu."* Diterima oleh pedagang netral mana pun tanpa memandang faksi/ras pembeli.
-   - *Fungsi:* Membeli perlengkapan jadi (Senjata, Zirah, Sepatu anti-hazard, Kacamata taktis, Relik monster, Gulungan sihir).
-   - *Sumber:* Jarahan kemenangan tempur, konvoi Kekaisaran, dan penjualan barang bekas.
-2. **🍖 Food (Pangan & Logistik Pasukan):**
-   - *Fungsi 1 (Monster Upkeep ala Brigandine):* Biaya pemeliharaan harian monster di barak. Jika cadangan Food kosong, pasukan mengalami status *Starvation* (penalti AP dan penurunan moral, bukan kematian permanen).
-   - *Fungsi 2 (War Banquet / Feast Buffs):* Memasak hidangan sebelum perang untuk memberi buff ketahanan elemen/hazard (contoh: *Lava Stew* untuk kebal api di biome magma).
-   - *Sumber:* Panen berkala di teras perkebunan *Fungal Farm* dan ekspedisi perburuan.
-3. **💎 Mana Stone (Batu Mana & Katalis Arkanum):**
-   - *Fungsi:* Menaikkan tier fasilitas Citadel, membuka pohon teknologi doktrin, serta biaya **Elemental Infusion** di Forge (menginfus senjata polos menjadi berelemen Api, Air, Tanah).
-   - *Sumber:* Ditambang pasif dari *Mana Mine*, atau diserap aktif saat bertarung via skill **`Siphon`** pada tile heksagonal.
-4. **🪽 Angel Core (Inti Malaikat / Trofi Puncak):**
-   - *Fungsi:* Kurban ritual pemanggilan Titan Purba di *Ancient Deity Shrine (Gacha)*, serta melebur segel kalung budak kasta tinggi (*Arch-Inquisitor Cursed Collars*).
-   - *Sumber:* Membantai Bos Malaikat, Seraphim, dan Inkuisitor Tinggi Kekaisaran Suci.
-
----
-
-### B. Sistem Merchant (Belanja Jadi vs Penempaan)
-* **Toko Permanen (*Resident Quartermaster*):** Menyediakan perlengkapan dasar hingga menengah.
-* **Karavan Keliling (*Wandering Rift-Cart*):** Muncul berkala membawa barang-barang spesialis penangkal biome ekstrem (*Lava Walkers*, *Miasma Respirator*, *Scroll of the Vortex*).
-* **Perbedaan Peran:**
-  - **Merchant (Gold):** Membeli barang jadi langsung pakai.
-  - **Forge (Mana Stone & Core):** Menempa ulang, meng-upgrade stat, menginfus elemen baru, dan memecahkan kalung belenggu budak.
+### A. The 4-Currency Ecosystem (*The Golden Quadrant*)
+1. **💰 Gold (Universal Commerce Currency):**
+   - *Design Philosophy:* *"Gold is gold; merchants do not discriminate."* Accepted by pragmatic, neutral traders regardless of the buyer's race or faction.
+   - *Primary Sink:* Purchasing ready-made equipment (Weapons, Armor, Hazard Boots, Tactical Goggles, Monster Relics, Spell Scrolls).
+   - *Sources:* Battle victory bounties, intercepted Holy Empire convoys, and selling salvaged scrap.
+2. **🍖 Food (Sustenance & Troop Logistics):**
+   - *Function 1 (Monster Upkeep ala Brigandine):* Daily sustenance cost for monsters stationed at the barracks. If food runs out, monsters suffer *Starvation* (AP penalties and reduced morale, never permanent death).
+   - *Function 2 (War Banquet / Feast Buffs):* Cooking pre-battle meals that grant hazard resistances (e.g. *Lava Stew* for magma immunity in volcanic biomes).
+   - *Sources:* Regular harvests from the *Fungal Farm* terraces and hunting expeditions.
+3. **💎 Mana Stone (Arcane Catalysts & Construction):**
+   - *Function:* Upgrading Citadel facilities, unlocking doctrine tech trees, and funding **Elemental Infusions** at the Forge (infusing plain gear with Fire, Water, or Earth affinities).
+   - *Sources:* Passive extraction from the *Mana Mine*, or actively harvested in battle via the **`Siphon`** ability on elemental tiles.
+4. **🪽 Angel Core (Divine Relic / Apex Trophy Currency):**
+   - *Function:* Sacrificial fuel to awaken Ancient Titans at the *Ancient Deity Shrine (Gacha)*, and neutralizing high-tier cursed slave collars (*Arch-Inquisitor Collars*) at the Forge.
+   - *Sources:* Defeating Holy Empire Angels, Seraphim, and Grand Inquisitors.
 
 ---
 
-### C. Taksonomi Perlengkapan & Ukuran Asimetris (Small, Normal, Big)
-
-Sesuai dokumen konsep, seluruh unit terbagi menjadi 3 kategori ukuran dengan alokasi slot peralatan yang berbeda secara fundamental:
-
-#### 1. Normal: Humanoid / Shaper (Komandan) — 5 Slot RPG Lengkap
-Peralatan Shaper menentukan **"Elemen apa yang diinfus"** dan **"Di mana mereka bisa melangkah"**.
-* **Weapon:** Menentukan elemen yang diinfus saat serangan mengenai tile (contoh: *Inferno Hammer* ? Infuse Scorched Earth; *Tidecaller Staff* ? Infuse Water Puddle).
-* **Boots:** Navigasi bahaya medan / hazard traversal (contoh: *Lava Walkers* ? berjalan di atas Magma tanpa terbakar; *Frost-Grip Soles* ? tidak tergelincir di Ice Sheet).
-* **Helm:** Penangkal awan atmosfer & gangguan visual (contoh: *Steam-Piercer Goggles* ? kebal Blind di awan Steam/Smoke; *Miasma Respirator* ? kebal racun gas).
-* **Armor:** Mitigasi pertahanan fisik dan sihir standar.
-* **Accessory:** Manipulasi giliran (*Turn Order*) dan inisiatif (contoh: *Haste Ring* ? bertindak lebih awal untuk menata medan sebelum monster bergerak).
-
-#### 2. Big: Colossal Titans (Monster Purba) — 3 Slot Perlengkapan Spesialis
-Peralatan Titan berfokus pada **Adaptasi Biome** dan **Memecah Aturan (*Rule Breaking*)**.
-* **Relic (1 Slot):** *Stat Stick* peningkat atribut dasar (contoh: *Titan Heart* ? +500 HP, +50 ATK).
-* **Scroll 1 (Biome Adaptation):** Kemampuan adaptasi lingkungan (contoh: *Scroll of Inner Fire* ? memunculkan Scorched Earth di bawah kaki tiap turn; *Scroll of Tides* ? bisa berenang di Deep Water).
-* **Scroll 2 (Rule Breaking):** Memanipulasi aturan dasar permainan (contoh: *Scroll of the Vortex* ? memperluas jarak skill `Consume Land` menjadi 2 Hex dan meniup awan asap; *Scroll of Seismic Weight* ? kebal didorong/shove musuh).
-
-#### 3. Small: Minions & Demi-Humans (Outcasts) — 1–2 Slot Aux / Worker Tools
-Monster kecil dan budak yang diselamatkan dari belenggu Kekaisaran Suci.
-* **Aux / Trinket (1 Slot):** Jimat kelincahan atau racun (contoh: *Shadow Cloak* ? kamuflase di kabut uap; *Spike Trap Pouch* ? menaruh ranjau duri di hex).
-* **Worker Tool (Domain Role):** Jika tidak dibawa bertarung, dapat dipasangi alat tambang/cangkul arkanum di *Mana Mine & Farm* untuk meningkatkan output panen harian.
+### B. Merchant System (Direct Purchase vs. Forge Crafting)
+* **Resident Quartermaster:** Stationary merchant providing baseline weapons and standard provisions.
+* **Wandering Rift-Cart:** Periodic nomadic traders selling exotic hazard-navigation gear (*Lava Walkers*, *Miasma Respirators*, *Scroll of the Vortex*).
+* **Clear Functional Division:**
+  - **Merchant (Gold):** Instant purchase of finished goods ready for combat.
+  - **Forge (Mana Stone & Angel Cores):** Upgrading stats, elemental infusions, custom socketing, and shattering slave collars.
 
 ---
 
-### D. Sistem Gacha Altar Dewa Purba (*Ancient Deity Shrine*)
-* Menumbalkan `Angel Core` di kawah api ungu untuk memanggil monster Titan legendaris dengan probabilitas tier bintang/kasta.
-* Titan yang dipanggil memiliki ukuran tubuh raksasa, imunitas bawaan terhadap hazard tertentu, dan skill pamungkas memakan lahan (*Consume*).
+### C. Asymmetrical Equipment & Size Taxonomy (Small, Normal, Big)
+
+Units are organized into 3 size categories with fundamentally distinct equipment slot allocations:
+
+#### 1. Normal: Humanoid / Shaper (Commanders) — 5 Full RPG Slots
+Shaper equipment determines **"Which element is infused"** and **"Where the unit can step"**.
+* **Weapon:** Governs the element infused on attack (e.g. *Inferno Hammer* → Infuse Scorched Earth; *Tidecaller Staff* → Infuse Water Puddle).
+* **Boots:** Hazard navigation and mobility (e.g. *Lava Walkers* → walk across Magma unharmed; *Frost-Grip Soles* → immune to slipping on Ice).
+* **Helm:** Vision protection and atmospheric counters (e.g. *Steam-Piercer Goggles* → immune to Blind in Steam/Smoke; *Miasma Respirator* → poison gas immunity).
+* **Armor:** Standard physical and magical mitigation.
+* **Accessory:** Turn order and initiative manipulation (e.g. *Haste Ring* → act earlier to terraform the map before monsters move).
+
+#### 2. Big: Colossal Titans (Ancient Monsters) — 3 Specialist Slots
+Titan equipment focuses on **Biome Adaptation** and **Rule Breaking**.
+* **Relic (1 Slot):** *Stat Stick* boosting raw attributes (e.g. *Titan Heart* → +500 HP, +50 ATK).
+* **Scroll 1 (Biome Adaptation):** Environmental shaping (e.g. *Scroll of Inner Fire* → spawns Scorched Earth underfoot each turn; *Scroll of Tides* → swim freely through Deep Water).
+* **Scroll 2 (Rule Breaking):** Game rule manipulation (e.g. *Scroll of the Vortex* → expands `Consume Land` radius to 2 hexes and disperses smoke; *Scroll of Seismic Weight* → complete knockback immunity).
+
+#### 3. Small: Minions & Demi-Humans (Outcasts) — 1–2 Aux / Worker Tool Slots
+Rescued demi-humans and compact minions.
+* **Aux / Trinket (1 Slot):** Agility charms or combat tricks (e.g. *Shadow Cloak* → stealth in Steam clouds; *Spike Trap Pouch* → plant spikes on tiles).
+* **Worker Tool (Domain Role):** Equipping enchanted pickaxes or gardening trowels to boost daily yields when assigned to the *Mana Mine & Farm*.
 
 ---
 
-## ⚖️ 4. Analisis Risiko Bloat & Strategi Mitigasi
+### D. Ancient Deity Shrine Summoning System (*Titan Awakening*)
+* Sacrifice `Angel Cores` at the purple brazier to awaken legendary Titans with tiered rarity rates.
+* Summoned Titans boast massive size, innate hazard immunities, high durability, and catastrophic ultimate abilities (*Consume Land / Cataclysm*).
 
-### Apakah Fitur-Fitur Ini Membuat Game Menjadi "Bloat"?
-**Jawaban Singkat: Tidak, asalkan sistemnya saling terhubung (*interlocking*), bukan berdiri sendiri sebagai beban (*isolated chore*).**
+---
 
-| Sistem "Bloat" (Buruk) | Sistem "Cohesive Depth" (Game Kita) |
+## ⚖️ 4. Scope & Bloat Risk Analysis
+
+### Does This Broaden the Scope Into "Feature Bloat"?
+**Short Answer: No, as long as systems are interlocking rather than isolated chores.**
+
+| "Bloated" Design (Anti-Pattern) | "Cohesive Depth" (Our Game) |
 | :--- | :--- |
-| Memiliki 10+ mata uang yang fungsinya mirip dan membingungkan pemain. | **Tepat 4 mata uang orthogonal:** Gold (pasar), Food (pasukan), Mana (basis/sihir), Core (bos/gacha). |
-| Farming/Mining adalah minigame membosankan yang terpisah dari perang. | **Farming/Mining pasif sederhana:** Cukup tempatkan pekerja outcasts untuk menyuplai upkeep pasukan. |
-| Equipment hanya menambah angka stat generik (+5 ATK, +3 DEF). | **Equipment memecahkan puzzle taktis:** Sepatu lava agar bisa lewat magma, kacamata agar bisa menembak menembus uap! |
+| 10+ confusing currencies with overlapping utility. | **Strictly 4 orthogonal currencies:** Gold (market), Food (army), Mana (base/magic), Core (bosses/gacha). |
+| Farming and mining are tedious minigames divorced from war. | **Passive assignment:** Assign rescued outcasts to facilities to support your army's food and mana needs. |
+| Equipment merely adds generic incremental stat inflation (+5 ATK). | **Equipment solves tactical puzzles:** Lava boots allow walking across magma; goggles allow shooting through steam! |
 
-### Strategi Eksekusi Bertahap (Mencegah Over-Engineering):
-1. **Milestone 1 (Fondasi - SELESAI):** Hub 2D interaktif, integrasi visual Canva, dan transisi ke pertempuran 3D.
-2. **Milestone 2 (Likuiditas & Toko):** Mengaktifkan Gold dan merchant sederhana untuk membeli beberapa variasi senjata Infuse elemen dan sepatu anti-hazard.
-3. **Milestone 3 (Upkeep & Sektor Pekerja):** Mengaktifkan panen Food dan sistem upkeep barak monster.
-4. **Milestone 4 (Puncak Meta):** Mengaktifkan Angel Core drop dari Bos dan ritual gacha Titan di Altar.
+### Phased Execution Strategy:
+1. **Milestone 1 (Foundation - COMPLETED):** Interactive 2D Citadel Hub, Canva master integration, and seamless 3D battle transitions.
+2. **Milestone 2 (Liquidity & Shop):** Enable Gold and basic merchant rosters to buy elemental infusion weapons and hazard boots.
+3. **Milestone 3 (Logistics & Workforce):** Implement Food harvests, worker assignments, and monster upkeep costs.
+4. **Milestone 4 (Meta Endgame):** Implement Angel Core boss drops and the Ancient Deity Shrine titan awakening ritual.
 
+---
+
+*Authored by Elang Esa Yudhistira (Neal Sage / NealversePrime) — Solo Game Designer & Programmer.*
