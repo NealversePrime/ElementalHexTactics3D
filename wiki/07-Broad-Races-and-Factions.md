@@ -10,28 +10,33 @@ The world of *Elemental Hex Tactics 3D* is radically divided by doctrines of abs
 
 ```mermaid
 flowchart TD
-    subgraph Hegemony["⚔️ THE PURIST HEGEMONY & HOLY EMPIRE\n(The Oppressors)"]
-        H1["👑 Dogmatic Humans<br/>Crusaders, Grand Inquisitors, Slavemasters"]
-        H2["🧝 High Elves / Pure Elves<br/>Bloodline Supremacists & Spirit Sorcery"]
-        H3["🪽 Celestials / Angels<br/>Executioners of Absolute Light & Smite"]
+    subgraph Hegemony["⚔️ THE PURIST HEGEMONY"]
+        H1["👑 Dogmatic Humans<br/>Inquisitors & Slavers"]
+        H2["🧝 High Elves<br/>Bloodline Elitists"]
+        H3["🪽 Celestials<br/>Executioners of Light"]
     end
 
-    subgraph Conflict["⚡ War of Dogma, Cursed Collars & Cleansing"]
-        Hegemony -->|"Persecution, Slave Chains & Pogroms"| Schism["⚔️ THE GREAT SCHISM"]
-        Schism -->|"Exodus of the Cast-Offs"| Sanctuary
-    end
+    Hegemony -->|"Slave Chains & Purges"| Schism["⚔️ THE GREAT SCHISM<br/>(War of Dogma vs Survival)"]
+    Schism -->|"Exodus to the Badlands"| Sanctuary
 
-    subgraph Sanctuary["🏰 THE OUTCAST SANCTUARY\n(Under the Exiled Demon King)"]
-        S1["🧝 1. Exiled Elvenkind (Dark, Wood, Half-Elves)"]
-        S2["🧌 2. Greenskins / Goblinoids (Goblins, Orcs, Hobgoblins)"]
-        S3["🐺 3. Beastfolk / Demi-Humans (Lupine, Feline, Bovine, Caprine)"]
-        S4["🦎 4. Saurians / Scalefolk (Kobolds, Lizardfolk, Dragonkin)"]
-        S5["⚒️ 5. Renegade Dwarvenkind (Duergar, Exiled Smiths, Gnomes)"]
-        S6["😈 6. Fiendkin / Demonkind (Imps, Horned Fiends, Succubi)"]
-        S7["💀 7. Undead / The Forsaken (Skeletons, Vampires, Ghouls)"]
-        S8["🧪 8. Amorphous / Slimes (Demon Slimes, Oozes, Mimics)"]
-        S9["🗿 9. Elementals & Golemkind (Living Stone, Magma Titans)"]
-        S10["🪽 10. Captured Celestials (War Captives / Altar Fuel Source)"]
+    subgraph Sanctuary["🏰 THE OUTCAST SANCTUARY (Under Demon King)"]
+        direction TB
+        subgraph Col1["Vanguard & Scouts"]
+            S1["🧝 Exiled Elves"]
+            S2["🧌 Greenskins"]
+            S3["🐺 Beastfolk"]
+        end
+        subgraph Col2["Earth & Underfolk"]
+            S4["🦎 Saurians"]
+            S5["⚒️ Renegade Dwarves"]
+            S6["😈 Fiendkin"]
+        end
+        subgraph Col3["Titans & Fuel"]
+            S7["💀 The Forsaken"]
+            S8["🧪 Slimes & Oozes"]
+            S9["🗿 Elementals"]
+            S10["🪽 Bound Angels"]
+        end
     end
 ```
 
@@ -55,15 +60,15 @@ The expulsion of elven kindred from the canopy of silver spires (*The Sylvan Hig
 
 ```mermaid
 flowchart TD
-    Ancestral["🌿 Ancestral Elven Forebears"] --> High["👑 High Elves / Pure Elves\nVenerators of Pure Bloodlines & Spirit Arts\n(Architects of the Purist Hegemony)"]
+    Ancestral["🌿 Ancestral Elves"] --> High["👑 High Elves<br/>Pure Bloodline Elitists"]
 
-    High -->|"Heresy Decree: Taboo Shadow & Void Magic"| Dark["🌑 Dark Elves (Drow)\nExiled to subterranean depths; masters of Void & Mist"]
-    High -->|"Defilement Decree: Primal Spores & Mud Magic"| Wood["🍄 Brown / Wood Elves\nStripped of elven nobility; masters of Flora & Quagmire"]
-    High -->|"Mongrel Decree: Bloodline Polluters"| Half["⚔️ Half-Elves\nHunted, chained in slave collars, and cast into arenas"]
+    High -->|"Heresy: Void Magic"| Dark["🌑 Dark Elves<br/>Subterranean Exiles"]
+    High -->|"Defilement: Flora Magic"| Wood["🍄 Wood Elves<br/>Primal Earth Outcasts"]
+    High -->|"Mongrels: Mixed Blood"| Half["⚔️ Half-Elves<br/>Enslaved Cross-Bloods"]
 
-    Dark -->|"Seeking Haven"| Citadel["🏰 Citadel of the Outcasts\n(Sanctuary at the Edge of the World)"]
-    Wood -->|"Seeking Haven"| Citadel
-    Half -->|"Seeking Haven"| Citadel
+    Dark -->|"Seek Haven"| Citadel["🏰 Outcast Citadel"]
+    Wood -->|"Seek Haven"| Citadel
+    Half -->|"Seek Haven"| Citadel
 ```
 
 ### Exiled Elven Branches in the Sanctuary:
@@ -84,31 +89,25 @@ flowchart TD
 Under the banner of the **Exiled Demon King**, ten broad species pillars find refuge within the *Citadel of the Outcasts*. Each brings distinct morphology, size tiering (*Small/Normal/Big*), hex grid adaptations, and domain utility:
 
 ```mermaid
-flowchart LR
-    Citadel["🏰 CITADEL OF THE OUTCASTS\n(Domain & Skirmish Core)"]
-    
-    subgraph SmallPillars["🟢 SMALL TIER (Agile & Trappers)"]
-        P4["🦎 Saurians (Kobolds)"]
-        P6["😈 Fiendkin (Cinder Imps)"]
-        P8["🧪 Slimes (Demon Slimes)"]
-    end
-    
-    subgraph NormalPillars["🔵 NORMAL TIER (Shapers & Commanders)"]
-        P1["🧝 Exiled Elvenkind"]
-        P2["🧌 Greenskins (Orcs/Hobgoblins)"]
-        P3["🐺 Beastfolk (Lupine/Feline/Bovine)"]
-        P5["⚒️ Renegade Dwarvenkind"]
-        P7["💀 Undead (Forsaken)"]
-    end
-    
-    subgraph BigPillars["🔴 BIG TIER (Colossal Titans)"]
-        P9["🗿 Elementals (Magma Titans)"]
-        P10["🪽 Captured Angels (Fuel Source)"]
-    end
+flowchart TD
+    Citadel["🏰 CITADEL OF THE OUTCASTS<br/>Domain & Skirmish Forces"]
 
-    Citadel --- SmallPillars
-    Citadel --- NormalPillars
-    Citadel --- BigPillars
+    Citadel --> Small["🟢 SMALL TIER<br/>Agile & Trappers"]
+    Citadel --> Normal["🔵 NORMAL TIER<br/>Shapers & Commanders"]
+    Citadel --> Big["🔴 BIG TIER<br/>Colossal Titans"]
+
+    Small --> P4["🦎 Saurians<br/>Kobolds"]
+    Small --> P6["😈 Fiendkin<br/>Cinder Imps"]
+    Small --> P8["🧪 Slimes<br/>Demon Slimes"]
+
+    Normal --> P1["🧝 Exiled Elves<br/>Dark, Wood, Half"]
+    Normal --> P2["🧌 Greenskins<br/>Orcs & Goblins"]
+    Normal --> P3["🐺 Beastfolk<br/>Wolves & Minotaurs"]
+    Normal --> P5["⚒️ Dwarves<br/>Duergar Smiths"]
+    Normal --> P7["💀 Forsaken<br/>Undead Legion"]
+
+    Big --> P9["🗿 Elementals<br/>Magma Titans"]
+    Big --> P10["🪽 Celestials<br/>Bound Angels"]
 ```
 
 ---
@@ -289,23 +288,23 @@ A core narrative pillar of *Elemental Hex Tactics 3D* is freeing the oppressed f
 
 ```mermaid
 flowchart LR
-    subgraph Battlefront["Combat Frontlines"]
-        SlaveUnit["Enslaved Captive Unit\n(Cursed Collar, Locked Stats & AP)"]
-        BossFight["Defeat Inquisitor / Seraph Boss"]
-        DropCore["Trophy Spoils:\n🪽 Angel Core + 💎 Mana Stone"]
+    subgraph Battlefront["Combat Frontline"]
+        Slave["⛓️ Enslaved Captive<br/>Locked AP & Stats"]
+        Boss["⚔️ Defeat Boss<br/>Inquisitor or Seraph"]
+        Spoils["🪽 Angel Core<br/>+ 💎 Mana Stone"]
     end
 
-    subgraph EmancipationForge["⚒️ Emancipation Forge"]
-        Ritual["Runic Melting Process:\nAngel Core neutralizes the explosive ward"]
+    subgraph Forge["⚒️ Emancipation Forge"]
+        Melt["🔥 Runic Melting<br/>Core dissolves ward"]
     end
 
-    subgraph Emancipated["Birth of a Freeman"]
-        FreeUnit["Fully Emancipated Unit:\n• Unlocks Full Equipment Slots\n• Unlocks Signature Racial Traits\n• Max Combat Morale"]
+    subgraph Free["Freed Freeman"]
+        Hero["✨ Free Fighter<br/>Full Stats & Trait"]
     end
 
-    SlaveUnit --> EmancipationForge
-    BossFight --> DropCore --> EmancipationForge
-    EmancipationForge --> Ritual --> FreeUnit
+    Slave --> Forge
+    Boss --> Spoils --> Forge
+    Forge --> Melt --> Hero
 ```
 
 ### Mechanics of the Cursed Slave Collar:
@@ -325,32 +324,31 @@ The 4-currency macro economy (*The Golden Quadrant: Gold, Food, Mana Stone, Ange
 
 ```mermaid
 flowchart TD
-    subgraph Resources["The 4 Domain Currency Pillars"]
-        G["💰 Gold (Universal Commerce)"]
-        F["🍖 Food (Garrison Upkeep & Morale)"]
-        M["💎 Mana Stone (Upgrades & Infusion)"]
-        C["🪽 Angel Core (Titan Awakening & Emancipation)"]
-    end
-
     subgraph Workforce["Species Workforce Allocation"]
-        W_Elves["🧝 Brown Elves & Slimes<br/>Bioluminescent Spore Farming"]
-        W_Greenskins["🧌 Greenskins & Beastfolk<br/>Wild Hunts & Caravan Ambush"]
-        W_Dwarves["⚒️ Dwarves & Kobolds<br/>Subterranean Mana Excavation"]
-        W_Undead["💀 The Forsaken<br/>Zero-Food Sustenance Miners"]
-        W_Trophy["🪽 Fallen Celestials<br/>Harvested from Inquisitor Bosses"]
+        W1["🧝 Wood Elves & Slimes<br/>Bioluminescent Farms"]
+        W2["🧌 Greenskins & Beasts<br/>Wild Hunts & Raids"]
+        W3["⚒️ Dwarves & Kobolds<br/>Subterranean Mines"]
+        W4["🪽 Bound Celestials<br/>Harvested from Bosses"]
     end
 
-    W_Elves --> F
-    W_Greenskins --> G
-    W_Greenskins --> F
-    W_Dwarves --> M
-    W_Undead --> M
-    W_Trophy --> C
+    subgraph Currencies["The 4 Domain Currencies"]
+        F["🍖 Food Provisions"]
+        G["💰 Universal Gold"]
+        M["💎 Mana Stones"]
+        C["🪽 Angel Cores"]
+    end
 
-    F --> Barracks["🐺 Monster Barracks Upkeep"]
-    M --> ForgeFacility["⚒️ Emancipation Forge & Infusions"]
-    C --> ShrineFacility["🔮 Ancient Deity Shrine (Gacha)"]
-    G --> MerchantHub["🛒 Wandering Rift Merchants"]
+    subgraph Facilities["Citadel Facility Sinks"]
+        F1["🐺 Monster Barracks Upkeep"]
+        F2["🛒 Wandering Merchants"]
+        F3["⚒️ Forge & Infusions"]
+        F4["🔮 Ancient Deity Shrine"]
+    end
+
+    W1 --> F --> F1
+    W2 --> G --> F2
+    W3 --> M --> F3
+    W4 --> C --> F4
 ```
 
 ---

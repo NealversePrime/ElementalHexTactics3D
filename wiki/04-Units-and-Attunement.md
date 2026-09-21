@@ -10,11 +10,9 @@ The tactical and domain systems of **Elemental Hex Tactics 3D** classify all uni
 
 ```mermaid
 flowchart TD
-    subgraph UnitSizes["3 Unit Size Tiers"]
-        S["🟢 SMALL (Minions & Demi-Humans)<br/>• Scale: ~1.0m - 1.2m<br/>• Mobility: High (Move 3-4)<br/>• Slots: 1-2 Aux / Worker Gear<br/>• Role: Flanker, Trapper & Hub Worker"]
-        N["🔵 NORMAL (Humanoid Shapers)<br/>• Scale: ~1.7m - 1.8m (1x Hex)<br/>• Mobility: Flexible (Move 3)<br/>• Slots: 5 RPG Gear (Weapon/Armor/Boots/Helm/Ring)<br/>• Role: Terraformer, Shove Master & Commander"]
-        B["🔴 BIG (Colossal Titans)<br/>• Scale: ~2.5m - 3.5m (Massive)<br/>• Mobility: Heavy (Move 2, Heavy/Unshovable)<br/>• Slots: 1 Relic + 2 Scrolls (Biome/Rule Breaking)<br/>• Role: Apex Striker, Hazard Immune & Consume Land"]
-    end
+    S["🟢 SMALL TIER<br/>Minions & Demi-Humans<br/>~1.0m - 1.2m | Move 3-4 | 1-2 Aux Slots"]
+    N["🔵 NORMAL TIER<br/>Humanoid Shapers & Bosses<br/>~1.7m - 1.8m | Move 3 | 5 Full RPG Slots"]
+    B["🔴 BIG TIER<br/>Colossal Titans<br/>~2.5m - 3.5m | Unshovable | 3 Relic/Scroll Slots"]
 ```
 
 | Category | Unit Archetypes | Hex Scale & Height | Equipment Slots | Terrain & Physics Resilience | Tactical & Domain Role |

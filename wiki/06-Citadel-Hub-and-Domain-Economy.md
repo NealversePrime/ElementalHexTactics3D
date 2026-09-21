@@ -10,19 +10,19 @@ Official documentation for the **Citadel Town Hub ("Citadel of the Outcasts at t
 
 ```mermaid
 flowchart LR
-    Title["🏠 Title Screen"] -->|"Play"| Hub["🏰 Citadel Town Hub\n(Domain & Roster Management)"]
+    Title["🏠 Title Screen"] -->|"Play"| Hub["🏰 Citadel Town Hub<br/>(Domain & Roster)"]
     
     subgraph HubLoop["Hub Activities"]
-        Shop["🛒 Merchant (Buy Gear & Scrolls)"]
-        Forge["⚒️ Emancipation Forge (Infusion & Collars)"]
-        MineFarm["⛏️ Mine & 🌾 Farm (Resource Harvest)"]
-        Barracks["🐺 Barracks (Roster & Food Upkeep)"]
-        Shrine["🔮 Deity Shrine (Ancient Titan Awakening)"]
+        Shop["🛒 Merchant"]
+        Forge["⚒️ Forge"]
+        MineFarm["⛏️ Mine & Farm"]
+        Barracks["🐺 Barracks"]
+        Shrine["🔮 Deity Shrine"]
     end
     
     Hub --> HubLoop
-    Hub -->|"Abyssal Portal"| Battle["⚔️ 3D Hex Battlefield\n(Elemental Physics & Shoves)"]
-    Battle -->|"Pause Menu -> Return to Citadel"| Hub
+    Hub -->|"Abyssal Portal"| Battle["⚔️ 3D Hex Battlefield<br/>(Physics & Shoves)"]
+    Battle -->|"Pause Menu"| Hub
 ```
 
 ---
