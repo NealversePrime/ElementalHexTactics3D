@@ -8,6 +8,7 @@
 - [**5. Technical Architecture**](05-Technical-Architecture)
 - [**6. Citadel Hub & Economy**](06-Citadel-Hub-and-Domain-Economy)
 - [**7. Races & Factions**](07-Broad-Races-and-Factions)
+- [**8. Campaign Loop & Story**](08-Campaign-Loop-and-Narrative-Design)
 
 ---
 

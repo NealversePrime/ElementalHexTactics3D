@@ -34,6 +34,7 @@ flowchart TD
 | [**05. Technical Architecture**](05-Technical-Architecture) | Unity 6 URP architecture, procedural 3D hex meshes, procedural particle VFX engine, and zero-asset design. |
 | [**06. Citadel Hub & Economy**](06-Citadel-Hub-and-Domain-Economy) | Interactive 2D Town Hub, 4-currency ecosystem, merchant gear catalog, and unrealized systems roadmap. |
 | [**07. Races & Factions**](07-Broad-Races-and-Factions) | 10 Broad Species Pillars, the Elven Bloodline Schism, Purist Hegemony vs Outcast Sanctuary, and hex traits. |
+| [**08. Campaign Loop & Story**](08-Campaign-Loop-and-Narrative-Design) | Asymmetric 2-Cycle Day, 3-Card Portal Trilemma, Isekai Manhwa premise, and anti-bloat heuristics. |
 
 ---
 
