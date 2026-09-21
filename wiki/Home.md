@@ -34,7 +34,8 @@ flowchart TD
 | [**05. Technical Architecture**](05-Technical-Architecture) | Unity 6 URP setup, procedural 3D hex meshes, procedural particle textures (zero asset packs!). |
 | [**06. Citadel Hub & Economy**](06-Citadel-Hub-and-Domain-Economy) | 2D interactive Citadel canvas, 4-currency system (Gold, Food, Mana, Angel Cores), forge specs. |
 | [**07. Races & Factions**](07-Broad-Races-and-Factions) | The 10 Outcast Species, Elven Bloodline Schism, Purist Hegemony vs Outcast Sanctuary. |
-| [**08. Campaign Loop & Story**](08-Campaign-Loop-and-Narrative-Design) | 2-cycle day loop, 3-card Portal trilemma, isekai manhwa premise, anti-bloat rules. |
+| [**08. Campaign Loop & Mechanics**](08-Campaign-Loop-and-Narrative-Design) | 2-cycle day loop, 3-card Portal trilemma, anti-bloat rules. |
+| [**09. Story: The Last Player**](09-Campaign-Story-The-Last-Player) | Complete interactive campaign script in 2nd-person ('You'), dialogues, and 3 endings. |
 
 ---
 
