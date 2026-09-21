@@ -1,392 +1,664 @@
 # 09. Campaign Story: The Last Player of Omniterra
 
-> **Document Type:** Interactive Narrative Script & Campaign Story Bible  
-> **Perspective:** Second-Person POV (`You` = The Protagonist / Sovereign)  
-> **Protagonist Variable:** `[Player Name]` *(Gender selectable: He / She)*  
-> **Tone:** Gritty Isekai / Transmigration Manhwa × Tactical RPG Drama
+> **Format:** Interactive Campaign Chronicle & Narrative Script  
+> **POV:** Second-Person (`You` = The Protagonist / Sovereign)  
+> **Protagonist Variable:** `[Player Name]` *(Pronouns: He / She)*  
 
 ---
 
-## Prologue: The Cubicle & The 2,000-Hour Obsession
+## 1. The 3:14 AM Incident
 
-You know the routine by heart. 
+It is 3:14 AM on a Tuesday.
 
-Alarm at 6:30 AM. Crowded subway. Fluorescent office lights. Eight hours of soul-crushing spreadsheets. A plastic convenience store bento on the ride back. Sleep. Repeat.
+Your neck aches with that dull, throbbing burn you only get from sitting seven hours in a cheap artificial leather office chair with broken lumbar support. The blue-spectrum glare of your monitor is the only light in your cramped studio apartment. On the desk sits an empty plastic container of instant curry udon, three crushed energy drink cans, and a stack of quarterly performance reports you’re supposed to review before 8:30 AM.
 
-You are [Player Name]. In your world, you are nobody special.
+You don’t care about the reports. You haven't cared for a long time.
+
+On the screen, your party of digital pawns stands on the final hex plateau of **Omniterra**. 
 
 ```
-┌──────────────────────────────────────────────┐
-│  ⚔️ O M N I T E R R A                        │
-│  ~ Tactical Hex Conquest ~                   │
-│                                              │
-│  Highest Dificulty: CALAMITY MODE            │
-│  Player: [Player Name]                       │
-│  Total Playtime: 2,148 Hours                 │
-│  Stream Viewers: 4 (3 Bots, 1 Lurker)        │
-└──────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  OMNITERRA (v1.04b) — [CALAMITY DIFFICULTY]              │
+│  Lobby: 1 Player | Stream: 4 Viewers (3 bots, 1 lurker)  │
+│  Turn 14 — ENEMY PHASE                                   │
+└──────────────────────────────────────────────────────────┘
 ```
 
-Your only sanctuary is a computer screen glowing in the dark at 2:00 AM. You play **Omniterra**—a brutally punishing indie tactical strategy game that promised dynamic elemental terrain, kinetic push physics, and massive titan battles. The game was considered an impossible commercial flop. The subreddit has been dead for months. 
+The game had been dead on arrival. The developers tried to make a turn-based tactics game that was "too realistic"—punishing terrain elevation, unforgiving knockback collisions, dynamic elemental physics that burned down your own units if the wind changed. The Steam reviews called it *"a sadistic math homework simulator."* The small indie studio went bankrupt three months after launch.
 
-Except for you.
+You were the only idiot on earth who stayed.
 
-You've memorized every single hex tile reaction. You know that Magma cooled by Water produces a 3-tile steam cloud. You know that pushing an enemy into an elevated cliff deals 2 collision damage. You know the final boss—**The Exiled Demon Lord at the Edge of the World**—always telegraphs his AoE spell on Turn 4.
+You spent 2,148 hours deconstructing its code. You knew that on pointy-topped hexes, the AI's pathfinding had a dumb floating-point error on diagonal tiles: if you baited the boss into casting toward a water puddle and immediately raised an earthen spire, the collision vector didn't register as a straight bounce—it glitched the enemy's recovery frames, locking them into a three-turn stagger loop.
 
-On this night, you finally do it. On a live stream with 4 viewers, your party executes a flawless 14-turn combo. The Demon Lord collapses in a shower of black embers.
+You execute the cheese. 
+
+*Water Surge. Earth Spire. Tail Shove.*
+
+The final boss—the **Exiled Demon Lord**—slams into the freshly raised stone pillar. The screen flashes white. The sprite collapses into black pixels.
 
 ```
-╔══════════════════════════════════════════════╗
-║  VICTORY — CALAMITY MODE CLEARED!            ║
-║  World First Completion Recorded.            ║
-╚══════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════╗
+║  CAMPAIGN COMPLETE.                                      ║
+║  World First: Calamity Mode Cleared.                     ║
+╚══════════════════════════════════════════════════════════╝
 ```
 
-You lean back in your squeaky desk chair, exhausted and grinning. 
+You let out a dry, cracked laugh. Your throat tastes like lukewarm Red Bull and stale sodium. You did it. Nobody watched. Nobody cares. 
 
-Then, your chat window dings:
+Then your Discord overlay blinks. A direct message from a user with no avatar:
 
-> **[DEV_OMNITERRA]:** *Congratulations, [Player Name]. You are the only person to ever beat Calamity Mode.*  
-> **[DEV_OMNITERRA]:** *You've mastered the Hero's side of the board.*  
-> **[DEV_OMNITERRA]:** *Would you like to try the REAL dificulty?*  
+> **[DEV_OMNITERRA]:** *I watched the stream. You used the diagonal vector glitch on Turn 12. Clever. Dirty, but clever.*  
+> **[DEV_OMNITERRA]:** *Tell me, [Player Name]... what did you think of the Demon Lord? Did he deserve to die?*
+
+Your fingers hover over the mechanical keyboard. You type back:
+
+> **[You]:** *His stats were overtuned. Phase 2 cataclysm is basically impossible without terrain cheese. Bad game balance, honestly.*
+
+The reply comes back instantly:
+
+> **[DEV_OMNITERRA]:** *He wasn't overtuned. He was desperate. You've spent two thousand hours mastering the conqueror's side of the board. Would you like to try the REAL dificulty?*  
 >  
-> `[YES]` / `[NO]`
+> `[ACCEPT]` / `[DECLINE]`
 
-You chuckle, thinking it's an unreleased secret DLC. You click **`[YES]`**.
+You assume it’s a developer branch. A secret patch. A community mod. 
 
-The monitor flashes blinding violet. The floor beneath your desk vanished. Your coffee mug, your keyboard, your hands—everything dissolves into a vortex of rushing static.
+You click **`[ACCEPT]`**.
+
+The fan on your GPU suddenly screams—a high-pitched mechanical shriek that climbs past 10,000 RPM. The monitor glass ripples like dirty water. The room goes dead silent. 
+
+Your vision snaps black.
 
 ---
 
-## Act 1: Chains of the Outcast (Days 1–10)
+## 2. The Weight of the Skull
 
-### Day 1 — Awakening in the Wrong Skin
+The first thing you feel is not magic. It’s pain.
 
-You wake up on cold basalt stone.
+A sickening, agonizing strain pulls down on the base of your skull. You try to lift your head, and the muscles in your neck scream in violent protest. It feels like someone has bolted two ten-pound cast-iron weights directly into your temples.
 
-The air smells of sulfur, damp moss, and old ash. You try to push yourself up, but your arms feel impossibly heavy. When you look down, your hands aren't wrapped around a computer mouse—they are encased in segmented obsidian gauntlets.
+Your hands scrape across freezing, gritty basalt. 
 
-You struggle to your feet. Before you sits an empty, cracked throne carved from a single slab of black volcanic rock. Above you, a shattered stone archway reveals a jagged red sky.
+You look down. Your fingers are encased in heavy, jagged plates of blackened volcanic iron. The metal is cold enough that it burns your skin through the lining. Underneath the cuirass, a thick gambeson smells intensely of rancid mutton tallow, woodsmoke, and ancient, sour sweat. 
 
-> ### ⟦ SYSTEM NOTIFICATION: VESSEL SYNCHRONIZED ⟧
-> **Host Vessel:** The Exiled Demon Lord (Sovereign of the Outcasts)  
-> **True Identity:** `[Player Name]`  
-> **Current HP:** 10 / 10 | **ATK:** 3 | **Move Range:** 3  
-> **Status:** `[Power Seal: 80% Locked]` *(Unlock thru Trust & Milestones)*  
+You reach up with a trembling gauntlet and touch your forehead. 
+
+Curved, ridged bone. Thick as a bull’s horn, curving backward over your ears and jutting toward the ceiling. Your mouth tastes like copper and burnt dirt. When you run your tongue over your gums, your canines are elongated, sharp, and press hard against the inside of your bottom lip.
+
+> ### ⟦ SYSTEM NOTIFICATION: VESSEL SYNCHRONIZATION ⟧
+> **Host Entity:** The Seventh Sovereign (Exiled Demon Lord)  
+> **Soul Inhabitant:** `[Player Name]`  
+> **Physical Integrity:** 10 / 10 HP | **Mana Pool:** Fractured (80% Sealed)  
 >  
-> **⚠️ THE CRUSADE COUNTDOWN:**  
-> The Holy Alliance has mobilized.  
-> **Commander Aethon** marches for the Citadel.  
-> **Days until arrival:** 30 Days.
+> **⚠️ CRUSADE TELEMETRY:**  
+> The Holy Alliance has departed the Sun-Spire.  
+> **Commander Aethon** marches at the vanguard.  
+> **Time to Impact:** 30 Days.
 
-You stare at the floating text. 
+The floating blue text doesn't look like a clean videogame HUD. It flickers erratically in the corner of your right eye, like a dead pixel row on an old CRT television, giving you an immediate migraine.
 
-You aren't the hero who just beat the game. You are the **final boss**. The monster you just spent 2,000 hours learning how to kill. And your own former character—**Commander Aethon**—is marching to chop your head off in 30 days.
+A heavy wooden thud rattles the stone walls.
 
-Heavy iron doors slam open. A massive Orc with a scarred jaw bursts into the chamber, accompanied by a cloaked Dark Elf and a one-armed Dwarf smith.
+The rotting timber gates of the throne hall creak open. Cold mountain air rushes in, carrying the smell of wet soot and rotting moss. 
 
-**Gorath (Orc Warlord):**
-> "Lord! You've been unconscious for three days! The scouts report an Imperial slave convoy crossing the eastern ridge. Fifty collared half-elves bound for the crystal mines!"
+A massive figure limps into the torchlight. Seven feet tall. Greenish-gray skin covered in pale keloid scars. A crude iron cleaver, notched from dozens of parries, hangs from a leather loop on his waist.
 
-You recognize Gorath immediately. In your Calamity playthroughs, you killed this exact Orc on Stage 3 with a basic water-push combo. But right now, he is breathing hard, clutching an iron axe, and looking at you with desperate, terrified loyalty.
+You know him. On Stage 3 of the original game, this was **Orc Warlord Gorath**—a mid-tier brute you used to dispatch in four turns by baiting him into water tiles.
 
-A tiny green Kobold with burn scars on his hands timidly creeps forward, holding a chipped wooden bowl of mushroom soup.
+He isn't a collection of pixels. He has yellowed eyes, chipped tusks, and a deep limp in his left knee that makes him drag his boot with every step. He smells like cheap axle grease and boiled cabbage.
 
-**Pip (Kobold Miner):**
-> "M-My Lord... you're awake. Please... eat. You must be weak."
+**Gorath:**
+> "Hey. You breathing, or should I start digging a hole?"
 
-You look at Pip. In the game, you used Kobold minions as disposable bait to group enemy squads. You never once read their unit bios. 
+His voice is gravel in a cement mixer. He stops five paces from the throne, leaning heavily on his good leg.
 
-Pip's hands are shaking. He isn't a sprite. He's a starving kid who brought you soup.
+**Gorath:**
+> "Scouts from the eastern ridge just came in. An Imperial supply train took the low pass. Four iron wagons, forty conscript guards, and one of those winged bastards hovering over the wagons. They’ve got fifty half-elves in chain-cages. If we don't hit 'em before they clear the canyon, they're inside the deep crystal mines by tomorrow night."
+
+Behind Gorath, a shadow moves. 
+
+A tiny, scaly creature—barely coming up to your waist—peeks out from behind the doorframe. Gray-green reptilian skin, large yellow pupils, and a mouth full of needle teeth. 
+
+**Pip.** The Kobold minion you treated as disposable fodder in every single run. You used to send Kobolds walking into magma to scout enemy positions because their spawn cost was only 20 mana.
+
+Pip is shivering. He’s wearing a burlap sack with holes cut out for his scrawny arms. In his clawed hands, he carries a cracked clay bowl of lukewarm mushroom mush. He approaches the dais on his knees, his chin tucked so low his scales scrape the basalt.
+
+**Pip:**
+> *(Stammering, voice high and thin)*  
+> "M-Master... you were cold for three sunsets. The fire went out. I... I stole some salt from the storeroom for the broth. Don't... please don't feed me to the furnace."
+
+You stare at the kid. 
+
+*Please don't feed me to the furnace.*
+
+In Omniterra's lore descriptions—the flavor text you always skipped with the spacebar—the Demon Lord sacrificed outcasts to the Citadel's core to generate mana stones. The game called it *"Siphon Efficiency: Tier 1."*
+
+You look at Pip’s scarred fingers. The boy genuinely thinks you woke up to burn him alive.
+
+You swallow the dry copper in your mouth.
+
+**`[Player Name]`:**
+> "Give me the bowl, Pip."
+
+The Kobold flinches, shuts his eyes tight, and extends his arms. 
+
+You take the bowl. The broth is bitter, gritty with ash, and tastes completely vile. You drink every drop.
+
+**`[Player Name]`:**
+> "Gorath. Get the cleaver. We're going to the canyon."
+
+Gorath blinks. His yellow eyes narrow with deep suspicion.
+
+**Gorath:**
+> "...You're walking out there yourself? Since when do you leave the throne?"
+
+**`[Player Name]`:**
+> "Since today. Move."
 
 ---
 
-### Day 3 — The Eastern Ridge Ambush
+## 3. The Geometry of Murder
 
-You lead your very first tactical battle.
+The canyon bridge is not an 8x8 grid. It is an ugly, jagged cut through red granite, sixty feet above a dry riverbed full of razor-sharp boulders.
 
-Because you played the Hero's side for thousands of hours, you know the Imperial convoy's exact patrol doctrine. You know they always cross the narrow basalt bridge at midday, flanked by two Inquisitorial wardens and a Celestial Cherub.
+You lie flat on the freezing shale of the northern ridge, peering down through a screen of withered scrub brush. The wind here is deafening—it howls through the gorge like a turbine, stinging your eyes with red grit.
 
-You deploy your outcasts:
-* You order Gorath to hold the southern chokepoint.
-* You tell the Dark Elf archers to take the high eastern ridge for elevation advantage.
-* When the convoy enters the bridge, you cast **`Earth Spire`** behind them, erupting a **Stone Pillar** that cuts off their retreat.
-* You cast **`Water Surge`** on the bridge tiles, turning the dry soil into a **Mud Quagmire** that traps the heavy supply wagons (`⛓️ Immobilized`).
-* Gorath charges forward, slamming the lead Inquisitor backward into your Stone Pillar: **`💥 WALL SLAM! -2`**!
+Below, the Imperial convoy is moving exactly as the code dictated.
 
-The escort shatters in four turns. 
+Two heavily armored foot-knights in polished silver tabards lead the column. Behind them: four heavy iron-caged wagons pulled by blind oxen. Above the center wagon hovers a **Celestial Cherub**—not a cute baby with wings, but a terrifying, faceless mannequin of ivory porcelain and beaten gold, holding an iron flail that drips white incandescent fire.
 
-You pry open the wooden transport cages. Inside are fifty trembling half-elves, each fitted with an iron **Cursed Slave Collar** etched with explosive runes. Among them is a young woman with copper hair and rune-inked fingers.
+Inside the cages, you can hear them: weeping. Desperate, muffled coughing. The clinking of chains.
 
-**Sera (Half-Elf Runecaster):**
-> *(Weeping, clutching her throat)*  
-> "Please... don't trigger the runes. We'll work. We'll carry stone. Just don't detonate us..."
+Gorath crawls up beside you on his belly, his breathing heavy and ragged.
 
-You freeze. You recognize her face. In Omniterra, Sera was the item merchant in the Holy Capital who sold you fire scrolls. You clicked on her shop a thousand times. You never knew she was an escaped slave who had been recaptured.
+**Gorath:**
+> *(Whispering harshly)*  
+> "We can't take 'em front-on. Those knights have enchanted kite shields—arrows won't pierce the plate, and that flying freak will roast us before we cross twenty yards."
 
-Near the wreckage of the convoy, the fallen Celestial Cherub dissolves into golden dust, leaving behind a humming, crystalline sphere: your very first **`🪽 Angel Core`**.
+You stare at the road.
+
+Your gamer brain starts parsing the geometry. It’s an involuntary reflex:
+
+*The canyon road is four yards wide. The southern wall is loose shale—unstable elevation. The bridge floor is porous sandstone. If you cast a standard Fireball, the splash will hit the wooden wagons and incinerate the prisoners. But if you hit the sandstone floor with Water Surge...*
+
+**`[Player Name]`:**
+> "Gorath. Do your boys have ropes?"
+
+**Gorath:**
+> "Yeah. Why?"
+
+**`[Player Name]`:**
+> "We're not shooting the knights. We're breaking the road."
+
+You stand up. 
+
+Your boots—heavy iron sabatons—clank against the rock. Your center of gravity wobbles for a second as the weight of your horns catches the crosswind, but you catch your footing.
+
+You raise your right gauntlet.
+
+The mana inside your chest doesn't feel like an MP bar. It feels like someone poured boiling lead into your subclavian artery. It burns through your lungs, rushes down your arm, and gathers in your palm as a freezing, pressurized roar.
+
+**`[Player Name]`:**
+> **"WATER SURGE!"**
+
+A jet of pale turquoise torrent roars from your gauntlet, arcing across sixty feet of open air and slamming violently into the canyon floor directly beneath the lead wagon's oxen.
+
+The dry sandstone drinks the water, saturates, and collapses into a sucking, viscous quagmire of thick red mud. 
+
+The oxen scream, their hooves sinking instantly to the hocks. The heavy wooden wheels bury themselves up to the iron axles. The entire convoy grinds to a catastrophic, screeching halt.
+
+> ### ⟦ STATUS CONFIRMED: QUAGMIRE TRAP ⟧
+> **Target:** Imperial 4th Vanguard Convoy  
+> **Condition:** `[Immobilized — Turn 1]` *(Move Range: 0)*
+
+The lead knight draws his broadsword with a metallic hiss:
+
+**Imperial Knight:**
+> "Ambush! Protect the cargo! Smite the—"
+
+He doesn't finish. 
+
+You channel the second spell—the one you spent 500 hours perfecting on the competitive ladder:
+
+**`[Player Name]`:**
+> **"EARTH SPIRE!"**
+
+The earth beneath the knight groans. A jagged pillar of solid granite, four feet thick, shoots out of the mud directly behind his heels with the concussive crack of a dynamite blast.
+
+The knight stumbles backward from the shockwave. 
+
+From the high ridge, Gorath roars—a feral, chest-rattling war cry—and drops from a twelve-foot ledge like an anvil. His notched cleaver doesn't strike the knight's shield; he drives his shoulder straight into the man's chest plate.
+
+The kinetic energy carries through. The knight flies three feet backward, his back slamming square into the jagged granite spire.
+
+**`CRACK.`**
+
+The sound of steel caving into ribs makes your stomach heave. It’s not an audio cue; it’s the wet, sickening crunch of bone turning to splintered chalk inside armor. The knight doesn't play a death animation. He slides down the face of the stone pillar, choking on bright arterial blood that froths through the slits of his visor, his legs kicking uselessly in the red mud.
+
+> ### ⟦ KINETIC COLLISION CONFIRMED ⟧
+> **Base Push:** 1 Damage  
+> **Wall-Slam Bonus:** 2 Damage  
+> **Target Status:** `CRITICAL / LUNG COLLAPSE`
+
+The flying Cherub turns toward you. Its porcelain face cracks open, revealing a blinding core of pure radiant light.
+
+Before it can fire, three black-fletched arrows punch straight through its feathered wing-joint. The creature shrieks—a sound like metal scraping against glass—and plummets into the mud, where three Orcs drag it down with iron logging hooks.
+
+Silence falls over the gorge.
+
+The only sounds are the wind, the panting of Gorath's men, and the whimpering coming from inside the wagons.
 
 ---
 
-### Day 5 — The First Sovereign Choice
+## 4. The Girl with the Iron Neck
 
-Back at the Citadel's **Emancipation Forge**, the one-armed Duergar smith, Brynn, examines the Angel Core with wide eyes:
+You walk down the scree slope, sliding in the loose shale.
 
-**Brynn (Forge Master):**
-> "By the stone... an Angel Core. The divine frequency inside this crystal can melt the explosive runes on Sera's collar without detonating the charge. We can save her."
+Gorath is already using the back of his cleaver to smash the padlocks off the wagon cages. The iron doors swing wide.
 
-He pauses, glancing toward the purple braziers of the **Ancient Deity Shrine**:
+Fifty half-elves tumble out onto the bloody mud. They don't look like ethereal fantasy creatures. Their ears are torn; their ribs stick out like bird cages; their bare feet are swollen, black with frostbite and covered in dried sores.
 
-**Brynn:**
-> "...Or, my Lord... we can offer the core at the Shrine. It has enough resonance to awaken the **Magma Titan** sleeping beneath the crater. A titan would give us an unstoppable war engine against the Holy Crusade."
+And around every single neck is a four-inch band of cold-forged iron.
 
-> ### ⟦ SOVEREIGN CHOICE: SACRIFICE OR MERCY? ⟧
+The iron is etched with tiny, glowing golden runes that pulse with a faint, high-frequency whine—like the sound of a camera flash charging.
+
+One of the half-elves—a young woman with dirt matted into her copper braids—collapses at your boots. She crawls on her elbows, pressing her forehead into the muck near your sabatons. Her hands are bloody where she’s been trying to pry the iron collar off her throat.
+
+**Sera:**
+> *(Gasping, voice choked and hoarse)*  
+> "Please... please don't trigger the spark. I can still cast. I know fire circles... I can light the campfires... don't detonate us..."
+
+You stare down at her.
+
+In the game, **Sera** stood behind a counter in the Holy Capital's market square. She had three dialogue barks:
+1. *"Welcome, traveler!"*
+2. *"Care for a fresh scroll?"*
+3. *"May the Light guide your path."*
+
+You bought 400 Fireball scrolls from her during your Calamity run. You never looked at her neck. You never realized that the collar around her throat in this world is an **explosive runic slave band**—designed by the Church to blow a captive's head off if they disobey an Imperial command.
+
+Gorath walks over, wiping black oil and golden blood off his cleaver with his sleeve. In his other hand, he carries a glowing crystalline sphere extracted from the dead Cherub.
+
+It’s warm. It pulses with a gentle, hypnotic lavender luminescence.
+
+**`🪽 Angel Core.`**
+
+**Gorath:**
+> "Clean haul. One core. If we take it up to the Deity Shrine, we can feed it to the brazier. The old scrolls say one core is enough to wake the **Magma Titan** under the south caldera. With a titan guarding the pass, the Holy Alliance won't be able to breach the outer gates for months."
+
+He looks down at Sera, then back at you:
+
+**Gorath:**
+> "...Or Brynn takes it to the forge. The divine frequency in an angel's core is the only thing that neutralizes imperial slave runes. One core melts one collar."
+
+You look at the Angel Core in Gorath’s scarred hand.
+
+Then you look down at Sera. Her collar is pulsing faster—the proximity to your demonic mana is triggering the ward. The skin around her throat is blistering, turning white-hot from the rune's heat. She whimpers, clawing at the metal until her fingernails split and bleed.
+
+*One core. One Titan... or one girl.*
+
+In Omniterra, the math is trivial: **You always pick the Titan.** The Magma Titan has 18 HP, a 7-hex ultimate, and gives you an automatic win on the early defensive missions. Taking a single tier-1 caster over an S-tier titan is an objectively garbage move that would get you laughed off the strategy boards.
+
+You reach out.
+
+You take the glowing Angel Core from Gorath’s hand. 
+
+You don't walk toward the Shrine. You kneel down in the mud, right in front of Sera. 
+
+The heat radiating from her neck scorches your knuckles.
+
+**`[Player Name]`:**
+> "Hold still."
+
+**Sera:**
+> *(Sobbing hysterically)*  
+> "It's gonna blow—it's gonna—"
+
+You press the crystal directly against the central rune of the iron collar.
+
+A violent, ear-splitting hiss erupts between your hands. White steam roars upward, smelling of ozone and burning silver. The Angel Core fractures, its lavender light bleeding into the iron band. The explosive runes flicker, turn gray, and die.
+
+With a heavy **`CLANG`**, the four-inch iron collar unclasps and falls into the mud.
+
+Sera gasps—a ragged, desperate gulp of air that sounds like someone breaking the surface after nearly drowning. She clutches her bruised, blistered neck with both hands, staring at the fallen iron as if it were a venomous snake.
+
+Then she looks up at your obsidian face, your ram horns, your sharp demonic teeth.
+
+She doesn't run. She drops her forehead against the iron of your greave and weeps so hard her whole body shakes.
+
+Behind you, Gorath stands completely frozen. His notched cleaver hangs limp at his side.
+
+**Gorath:**
+> *"...You just threw away a Titan for a half-breed scroll-scribe."*
+
+You stand up, your knees popping with that familiar office-worker ache. Your head throbs under the weight of your horns.
+
+**`[Player Name]`:**
+> "She was my merchant, Gorath. I don't let people blow up my merchants."
+
+Gorath stares at you for three long seconds. Then, slowly, a terrifying, tusk-filled grin spreads across his scarred face.
+
+**Gorath:**
+> "Crazy bastard. You really aren't the same lord who went to sleep three days ago."
+
+He turns toward the canyon, shouting at the top of his lungs:
+
+**Gorath:**
+> "LOAD THE WAGONS! WE'RE BRINGING THEM HOME!"
+
+> ### ⟦ SYSTEM ALERT: UNREGISTERED EVENT ⟧
+> **Host Path Divergence:** 14.8%  
+> **Trust Acquired:** The Cast-off Kin (*Half-Elves / Duergar*)  
+> **Faction Morale:** SURGING  
 >  
-> **Option A: Free Sera at the Forge**  
-> • Break the cursed collar. Sera joins your army as an elemental runecaster.  
-> • Rescued slaves see that you value lives over weapons.  
-> • *Trust Level: +15% with Half-Elves & Duergar.*  
->  
-> **Option B: Awaken the Magma Titan at the Shrine**  
-> • Unleash a Colossal Big-tier unit with 18 HP and `Magma Cataclysm`.  
-> • Immediate military supremacy for upcoming sieges.  
-> • Sera remains collared; outcasts fear you are just another tyrant.  
-> • *Military Power: +40% | Trust Level: -10%.*
-
-*(Dev Note: There is no 'correct' gamer choice here. Do you build an army, or do you save your people? That tension drives the whole first act.)*
+> *Notice: The historical timeline has been permanently broken.*
 
 ---
 
-### Day 10 — Siege of the Ashen Gate
+## 5. The Balmamusa Dilemma (The Cost of Winning)
 
-The Holy Empire does not wait for Day 30. 
+Two weeks later, the war stops being a skirmish.
 
-A high-ranking Inquisitor arrives with siege ladders and armored shock troops to purge the "demon nest" before it grows. You must defend the narrow Ashen Gate.
+You stand in the command tent on the crags overlooking the **Sun-Cross Bastion**. The wind here smells like sulfur and iron slag.
 
-You coordinate your squad across elevated hexes. If you freed Sera, she raises earthen spires that turn enemy charges into wall-slam kill corridors. If you awakened the Titan, it stomps into the choke-point, immune to the enemy's flaming arrows, and clears the breach with a seismic tail shove.
+The fortress is a monstrosity—three tiers of white marble ramparts built into the sheer granite face of the continental divide. It is the bottleneck of the entire hemisphere. If you don't take it, you are trapped in the badlands. If you do take it, the path to the Imperial Capital lies wide open.
 
-When the dust settles, the Inquisitor's army is routed. 
+Inside the tent, your war council is tearing itself apart.
 
-You stand atop the battlements, your obsidian cloak whipping in the wind. Below you, three hundred refugees—Orcs, Elves, Dwarves, Kobolds, and Slimes—drop to their knees. They aren't bowing out of terror anymore. They are looking at a leader who bled to keep them free.
+On the table lies a map drawn on cracked sheepskin. Beside it sits a hollowed-out dwarven mining cylinder filled with volatile, glowing green liquid: **Abyssal Naphtha**.
 
-> ### ⟦ ACT 1 COMPLETE: THE CHAINS SHATTER ⟧
-> **Trust Gauge:** 55%  
-> **Power Seal:** Reduced to 60% locked  
-> **New Ability Unlocked:** `[Siphon Land]`  
->  
-> **⚠️ TIMELINE DIVERGENCE DETECTED:**  
-> Commander Aethon has received word of the defeat at Ashen Gate.  
-> He has altered his route.  
-> *Revised Crusade Arrival: Day 25.*
-
----
-
-## Act 2: The World Schism (Days 11–22)
-
-### Days 11–16 — The Influx & The Famine
-
-Word spreads across the continent: *There is a sanctuary at the Edge of the World where slaves are freed.*
-
-Outcasts flood your gates:
-* **Wood Elves** arrive with spore moss, taking over the Fungal Farms to feed your growing army.
-* **Kobold tunnelers** double the extraction rate in the Mana Mines.
-* **Fiendkin fire-weavers** join the defense forces, eager to burn imperial banners.
-
-You have to manage domain logistics (Food, Mana, Gold) while mediating ugly racial grudges. Beastfolk distrust Orcs; Fiendkin look down on Slimes. You quickly learn that being a Demon Lord is mostly about middle management: resolving food disputes, assigning miners, and keeping people from killing each other.
-
----
-
-### Day 17 — The Truth of Highspire
-
-You launch an expedition into the Imperial border province to liberate a Mana crystal mine. Inside the administrative vaults, your Dark Elf scout, Myriel, discovers classified records stamped with the silver seal of the **High Elf Elders**.
-
-The documents reveal the horrific secret behind the **Elven Bloodline Schism**:
-
-* High Elves are not naturally immortal.
-* Their eternal youth and pure divine sorcery are sustained by **Radiant Crucibles**—magical vats that extract and distill the life-essence of captive demi-humans, Dark Elves, and Wood Elves.
-* The "expulsion" of the other elven races was not an ideological feud. It was **livestock culling**. The High Elves branded their kin as "impure" so they could legally farm them as fuel.
-
-Myriel stares at the documents with trembling hands. She doesn't scream. She just whispers:
+**Brynn (One-Armed Duergar Smith):**
+> *(Slapping his prosthetic hammer on the map)*  
+> "The lower aquifer runs right under their foundation! We drill down, pack forty kegs of this muck into the drainage vaults, and light the fuse! The whole mountain crumbles into the canyon! The 5th Imperial Legion gets buried under three hundred thousand tons of limestone!"
 
 **Myriel (Dark Elf Scout):**
-> "Every child they dragged away... every sister who disappeared into the silver spires... they were melted into glass jars so the elders wouldn't get wrinkles."
+> *(Leaning out of the shadows, eyes cold)*  
+> "And what about the dungeons, Dwarf?"
 
----
+Brynn’s hammer freezes. He looks away.
 
-### Day 18 — The Balmamusa Crucible
+**`[Player Name]`:**
+> "What's in the dungeons, Myriel?"
 
-You reach the **Sun-Cross Bastion**, a colossal fortress guarding the only mountain pass toward the Imperial heartland.
+**Myriel:**
+> "Two thousand human conscripts. Deserters, political prisoners, tax debtors, and demi-human quarry slaves. The Empire keeps them chained on the bottom sub-level to shovel coal for the radiant boilers. If Brynn drops the mountain, they drown in the dark before the stone even hits them."
 
-Your scouts report that 2,000 conscripted human slave-laborers are locked in the deep subterranean dungeons directly below the fortress foundations.
+The tent goes dead silent.
 
-Your lieutenants present two irreconcilable strategies:
+You look at the map. 
 
-> ### ⟦ SOVEREIGN CHOICE: THE BALMAMUSA DILEMMA ⟧
+You remember this mission. In *Omniterra*, Stage 7 was called **"The Fall of Sun-Cross."** You beat it in twelve minutes by triggering the environmental collapse trigger. You didn't know there were prisoners in the dungeon. The game didn't have a dialogue box for them. It just played an explosion sound, rendered a crumbling wall animation, and gave you three gold stars.
+
+**Gorath:**
+> *(Voice quiet, dark)*  
+> "If we don't drop the mountain, boss... we have to go up the stairs. Three tiers of heavy ballistas. Enchanted radiant barricades. We’ll lose half the vanguard before we reach the second gate."
+
+He looks directly at you:
+
+**Gorath:**
+> "Orcs. Wood Elves. Rescued half-elves who picked up spears three days ago. My boys. They'll die on those steps so two thousand human strangers don't get crushed in a cellar."
+
+> ### ⟦ SOVEREIGN CHOICE: THE WEIGHT OF A RUN ⟧
 >  
-> **Plan A: The Mana Core Collapse (Pragmatic / Dark Route)**  
-> Detonate the unstable subterranean mana veins beneath the bastion. The entire mountain collapses. The Imperial 5th Legion dies instantly. Zero allied casualties.  
-> *The Cost:* All 2,000 human slave-laborers in the dungeons are buried alive. The world brands you 'The Butcher of Sun-Cross.'  
+> **PATH A: The Collapse**  
+> • Detonate the aquifers. The fortress falls instantly.  
+> • Allied casualties: Zero.  
+> • Two thousand human prisoners drown in the dark.  
+> • The world names you: *The Butcher of Sun-Cross*.  
 >  
-> **Plan B: The Bloody Ascent (Idealist / Sovereign Route)**  
-> Launch a frontal assault up the narrow elevated hex ridges against heavy ballistas and radiant archers to secure the dungeon keys.  
-> *The Cost:* Severe allied casualties. Named units can die permanently in combat. But the 2,000 human slaves are saved, proving you fight for all mortals, not just monsters.
+> **PATH B: The Bloody Ascent**  
+> • Frontal assault up the narrow elevated hex ridges.  
+> • You must personally lead the breach and fight through ballista kill-zones.  
+> • High allied casualties. Named units may die permanently.  
+> • The prisoners are saved. The world learns that the Demon Lord spares humans.
 
-You make your choice. The consequences echo across your army's loyalty gauges, permanently altering campsite dialogues and merchant prices.
+You look at Gorath. You look at Myriel. You look at your own obsidian gauntlets.
 
----
+In your old life, you optimized everything. You picked the most efficient spreadsheet formula, the shortest subway transfer, the cheapest meal combo, the speedrun strategy that skipped three hours of cutscenes. You spent twenty-seven years avoiding friction.
 
-### Day 21 — The Judas Knife
+You push the explosive cylinder away from the map.
 
-On the eve of victory, disaster strikes your home.
+**`[Player Name]`:**
+> "We're taking the stairs."
 
-An Imperial infiltrator who posed as a refugee detonates a holy signal flare inside the Citadel while your main vanguard is away. An airborne wing of Imperial Seraphim descends directly upon the town hub.
+Gorath lets out a low, breathy whistle. He shakes his head, unhooking his heavy cleaver from his belt.
 
-You rush back into an **emergency defensive skirmish** fought across your Citadel master canvas:
-* You have to choose which buildings to prioritize: if the Forge falls, collar-breaking tech is lost; if the Farms burn, food supplies drop to zero.
-* The outcasts fight with pitchforks and hammers beside your soldiers. Pip throws incendiary spore jars from the mine cart tracks.
+**Gorath:**
+> "...You're an absolute lunatic, boss."
 
-You repel the seraphim, but inside the commander's satchel, you find a personal letter addressed directly to you:
-
-> *"I watched the battle at Sun-Cross. Those weren't demon tactics. You used an echelon rotation that I invented during the Western Campaign three years ago.*  
->  
-> *Who are you? And why are you wearing that crown?*  
->  
-> *I am three days away. We will finish this.*  
->  
-> *— Commander Aethon"*
+**`[Player Name]`:**
+> "Probably. Form up the front line. I’m leading the breach."
 
 ---
 
-## Act 3: The Celestial Lie & Deicide (Days 23–30)
+## 6. Facing Your Own Avatar
 
-### Day 24 — Facing Your Own Ghost
+**Day 25.**
 
-The Crusade arrives at the Edge of the World.
+The final valley before the Holy Capital smells of burning pine and ozone.
 
-A sea of silver armor and white banners blankets the valley. At the head of the host rides **Commander Aethon**—your former player character. Silver hair, gleaming breastplate, enchanted broadsword. 
+Across the salt flats stands an army forty thousand strong. Banners of blinding white silk, silver plate that catches the midday sun like mirrors, and ranks of armored knights with lances ten feet long.
 
-You stand on the battlements and look at him. You spent 2,000 hours moving that avatar across digital hex grids. You chose his stat points. You forged his sword. 
+And at the head of the host rides a single man on an armored white warhorse.
 
-And now he's looking up at you with pure, unyielding hatred.
+Silver-blond hair cut sharp at the jaw. A chased mithril cuirass with three golden suns embossed on the breastplate. At his hip hangs **The Sun-Cleaver**—a broadsword with an obsidian crossguard and a blade forged from crystallized daylight.
 
-> **Aethon:** "Abomination. Your reign ends today."  
-> **You:** "Aethon... I know your formation. Your knights are staggered to guard your left flank. Your archers fire on count three. You're going to use a pincer strike on the west bridge."  
-> **Aethon:** *(Freezing, sword wavering)* "How do you know that? Who told you my orders?!"  
-> **You:** "...Because I wrote them."
+**Commander Aethon.**
+
+You stand at the head of your ragged, terrifying host—a seven-foot demon sovereign surrounded by scarred Orcs, poison-tipped Dark Elves, mud-stained Beastfolk, and freed human conscripts carrying captured imperial pikes.
+
+You stare at Aethon.
+
+You know every inch of that armor. You spent two weeks of your life farming the drop materials for that sword in the *Sun-Spire* raids. You know his base strength is 18, his dexterity scaling is an A-minus, and his startup frames on his signature leap-slash are 0.4 seconds.
+
+He dismounts fifty paces away, walking forward into the neutral zone between the armies. 
+
+You step forward to meet him. Your boots crunch in the dry salt.
+
+When he gets close enough, you see something the game engine never showed you:
+
+His eyes.
+
+They are bloodshot. Deep, purplish bruises hang under his lower lids. The corners of his mouth are pinched tight with exhaustion, and his hands are trembling against the pommel of his blade. He looks like a man who hasn't slept in three weeks.
+
+**Commander Aethon:**
+> *(Voice hoarse, cracking with furious disbelief)*  
+> "Who taught you the echelon rotation?"
+
+You stop six feet from him. Your ram horns cast a long, jagged shadow across his polished silver breastplate.
+
+**`[Player Name]`:**
+> "What?"
+
+**Commander Aethon:**
+> "At the Sun-Cross Bastion. You didn't charge the center. You used a 2-1 staggered diagonal advance with earth cover. I invented that maneuver during the Western Crusade. Nobody outside my inner circle knew the timing."
+
+He draws the Sun-Cleaver. The blade ignites with searing white flame, washing the cold salt flat in blinding light:
+
+**Commander Aethon:**
+> "Who are you?! Are you a deserter from the Academy?! Did you steal the Sovereign's armor?!"
+
+You let out a long, slow breath. The cold air turns into white steam against your lips.
+
+**`[Player Name]`:**
+> "I didn't steal it, Aethon. I got suckered into it because I beat your game on Calamity mode at three in the morning."
+
+Aethon's jaw tightens. He doesn't understand the words, but he hears the calm in your voice—and it terrifies him.
+
+**Commander Aethon:**
+> "The Church warned us. The Demon Lord is a deceiver. A shape-shifter who speaks with familiar voices to break our faith."
+
+**`[Player Name]`:**
+> "Aethon. Look at your sword."
+
+He flinches.
+
+**`[Player Name]`:**
+> "The crossguard has a tiny notch on the left quill. You put it there on Stage 4 when you parried an iron ballista bolt in the mud. Your boots have double-buckles because you hate the way single straps pinch your Achilles tendon when you sprint. You don't take sugar in your tea because your mentor told you it makes a swordsman soft."
+
+Aethon takes half a step backward. His sword wavers. His knuckles are white.
+
+**Commander Aethon:**
+> "How... how do you know that? Nobody knows that."
+
+**`[Player Name]`:**
+> "Because for two thousand hours, Aethon... I was you."
+
+You take off your right gauntlet. 
+
+You drop the heavy volcanic iron into the salt. You hold out your bare hand—pale, scarred from the Angel Core's heat, completely unarmored.
+
+**`[Player Name]`:**
+> "Look behind you, Aethon. Look at the sky above the capital."
+
+He turns his head.
+
+Above the silver spires of the Holy Capital, the sky is not blue. 
+
+It is cracking.
+
+Massive fissures of pulsing, violet-white energy are splitting the clouds like shattered glass. Huge, golden tendrils—miles long, covered in spinning wheels of burning eyes and biological needles—are descending from the upper atmosphere, puncturing the city's cathedrals like hypodermic needles.
+
+The screams carry for miles across the salt flats.
+
+The **Grand Rapture** has begun.
+
+The Church didn't summon angels to save the world. The Grand Patriarch activated the ancient sacrificial array—vaporizing three million devout worshippers in the streets below, distilling their souls into glowing divine fluid to feed the waking parasite inside the celestial dome.
+
+Aethon drops to his knees. The Sun-Cleaver clatters against the salt, its fire extinguishing in the dirt.
+
+He stares at the horror above his home, his chest heaving, his fingers clawing at his face:
+
+**Commander Aethon:**
+> *(Choking on tears)*  
+> "We... we prayed to them. We gave them our tithes. We wore their collars... we killed for them..."
+
+You place your bare, human hand on your former avatar’s armored shoulder.
+
+**`[Player Name]`:**
+> "I know, Aethon. I played the same game."
+
+You look up at the colossal, alien entity descending through the fractured clouds—a nine-hex monstrosity of burning eyes, porcelain flesh, and cosmic hunger.
+
+**`[Player Name]`:**
+> "Pick up the sword. We have one turn left."
 
 ---
 
-### Day 26 — The Revelation of the Solar Archon
+## 7. The Three Endings
 
-Whether through an uneasy parley or storming the Imperial command tent, the veil is torn away.
+After the battle on the Celestial Spire—after the Magma Cataclysm shatters the porcelain dais, after Gorath’s cleaver breaks the Archon's golden crown, after Aethon’s blade pierces its central eye—the cosmic organism collapses into blinding light.
 
-The entity worshipped as the **"God of Light"** is not a deity at all. It is the **Solar Archon**—a parasitic cosmic organism that latched onto the planet ten thousand years ago. It erected a false light dome around the atmosphere, simulating artificial warmth while slowly siphoning the world's natural elemental leylines.
+The false sun dies.
 
-* The Angels are not holy messengers; they are bio-mechanical harvesters.
-* The Grand Patriarch of the Church knows the truth. The entire religion was engineered to herd mortals into massive cities so they could be harvested when the Archon awakens from its hibernation cycle.
+You stand inside the shattered core of the world. Floating before you is the raw, pulsing consciousness of the planet—the dying Elder Will that called you across reality.
 
-The "Developer" who sent you into Omniterra was the dying soul of the world's original elemental core—broadcasting a distress call across reality to find a player capable of seeing both sides of the board.
-
----
-
-### Day 28 — The Grand Rapture & The Glass Bridge Duel
-
-Realizing that the Outcast army has broken the Imperial lines, the **Grand Patriarch** initiates the **Ascension Protocol**.
-
-The cathedrals in the Holy Capital erupt with blinding white radiation. Millions of devout human worshippers are instantly vaporized, dissolved into golden liquid soul-matter to feed the awakening Archon. 
-
-The "Demon Army" becomes the only faction left fighting to save humanity from their own God.
-
-On the shattering glass causeway leading to the Celestial Spire, you face **Commander Aethon** in an emotional duel:
-
-**Aethon:**
-> *(Tears in his eyes, blade smoking with white fire)*  
-> "If we kill God, the dome breaks! The climate goes wild! The cold will return! Humanity survived in a cage, but at least we SURVIVED! What gives you the right to throw us into the dark?!"
-
-**You:**
-> "Because a cage with gilded bars is still a cage, Aethon. You don't have to be a chess piece anymore. Put down the sword."
-
-You fight. You parry every strike because you memorized his attack frames years ago. You disable his weapon and extend your hand. For the first time in history, the Hero and the Demon Lord stand together.
-
----
-
-### Day 30 — Deicide on the Reshaped Grid
-
-You storm the **Celestial Spire** with the combined forces of outcasts and redeemed paladins.
-
-**Final Boss: The Solar Archon**  
-A colossal multi-hex cosmic entity with concentric rings of burning eyes and prism wings that scorch entire hex rows into impassable light voids.
-
-* You cast **Water Surge** to create vast Steam clouds that refract the Archon's divine laser beams.
-* Gorath and the Orcs smash raised Stone Pillars into the Archon's lower carapace for massive wall-slam staggers.
-* The Magma Titan unleashes **`🌋 Magma Cataclysm`**, shattering the celestial dais.
-
-The Archon's shell cracks, exposing its radiant, pulsing core.
-
----
-
-## The Three Endings
-
-The Archon's dying consciousness echoes directly into your mind. The System UI flashes with the final prompt of the game:
+The System UI appears before your retinas one last time, completely devoid of game text, cold stats, or countdown timers:
 
 ```
-╔══════════════════════════════════════════════╗
-║  ⟦ FINAL SOVEREIGN CHOICE ⟧                 ║
-║                                              ║
-║  The cosmic throne is empty.                 ║
-║  The light dome is failing.                  ║
-║                                              ║
-║  What will you choose, [Player Name]?        ║
-║                                              ║
-║  [ENDING A: ASCEND]                          ║
-║  [ENDING B: SHATTER]                         ║
-║  [ENDING C: RETURN]                          ║
-╚══════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════╗
+║  [THE RUN IS OVER]                                       ║
+║                                                          ║
+║  The board is empty, [Player Name].                      ║
+║  The pieces are free.                                    ║
+║                                                          ║
+║  What do you want to do now?                             ║
+║                                                          ║
+║  [ENDING A: ASCEND]                                      ║
+║  [ENDING B: SHATTER]                                     ║
+║  [ENDING C: RETURN]                                      ║
+╚══════════════════════════════════════════════════════════╝
 ```
 
 ---
 
 ### Ending A — ASCEND (The Golden Cage)
-You step into the core and absorb the Archon's power. You become the new God of Omniterra.
+You step forward and take the core into your chest.
 
-The light dome repairs itself. The weather stabilizes. No one starves. But you are now frozen upon an eternal celestial throne, watching the world through cold, mechanical eyes. You never have to return to your cubicle, but you have become the very stasis you sought to destroy. 
+The light floods your veins. The pain in your neck vanishes. Your heavy ram horns dissolve into rings of pure, radiant starlight. You rise above the atmosphere, expanding into the empty throne left by the Archon.
 
-Down in the Citadel, Pip brings warm mushroom soup to an empty throne, wondering where you went.
+With a single thought, you repair the dome. You fix the weather. You balance the rain and the sun like balancing a spreadsheet. No one will ever starve again. No one will ever freeze. 
+
+You have created the perfect game.
+
+Down below, at the gates of the Citadel, Gorath looks up at your golden light with tired, sad eyes. He spits into the dirt, leans on his cleaver, and turns away. 
+
+Pip climbs the basalt steps of the throne room every morning, carrying a chipped bowl of warm mushroom soup to an empty chair, waiting for a friend who became a god.
 
 ---
 
 ### Ending B — SHATTER (The True Canon Ending)
-You raise your obsidian blade and shatter the core into a million pieces.
+You raise your obsidian blade and bring it down with everything you have.
 
-The sky shatters like glass. For the first time in ten thousand years, the false light dome dissolves, revealing the wild, untamed cosmos above—countless stars, swirling auroras, and true seasonal rain.
+The core detonates like a glass cathedral.
 
-The world is not a paradise. It is *free*. Volcanoes churn, winter storms blow across the plains, and the elemental triad—Fire, Water, Earth—pulses through the soil with untamed vitality.
+The shockwave tears across the continent. The false sky shatters completely—peeling away in ribbons of burning light to reveal the wild, terrifying, magnificent universe above. 
 
-You stand at the gates of the Citadel. Beside you stand Gorath, Sera, Myriel, Brynn, Pip, and Commander Aethon. Behind you, humans and monsters sit around the same campfires, sharing bread and tending each other's wounds.
+Cold, real rain begins to fall. 
 
-Your System UI flickers one last time:
+It smells of wet loam, pine needles, and fresh ozone. The wind bites at your skin with genuine winter frost. Volcanoes churn in the distance, their fires dancing with untamed wildness. The elemental leylines surge back into the soil—Fire, Water, and Earth singing through the rocks with chaotic, unguided life.
+
+You walk down the shattered steps of the Celestial Spire.
+
+Waiting for you at the base are your people. 
+
+Gorath with his arm in a sling. Sera holding a battered staff, her bare neck wet with raindrops. Myriel resting against a fractured pillar. Pip jumping up and down in the red mud, waving both clawed hands in the air. 
+
+Beside them stands Commander Aethon, his armor stripped of holy insignia, holding a loaf of bread and talking with an Orc shock-trooper.
+
+The blue System HUD flickers in the corner of your vision:
 
 ```
-╔══════════════════════════════════════════════╗
-║  [SYSTEM DELETED]                            ║
-║  No further objectives.                      ║
-║  Live.                                       ║
-╚══════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════╗
+║  UNINSTALL COMPLETE.                                     ║
+║  All data deleted.                                       ║
+║  Good luck.                                              ║
+╚══════════════════════════════════════════════════════════╝
 ```
 
-The blue interface vanishes forever. You take a deep breath of cold, unscripted mountain air, look at your people, and smile.
+The interface vanishes forever. 
+
+There are no damage numbers. No turn counters. No minimaps. No quest logs.
+
+Gorath grins, tossing you an unwashed apple:
+
+**Gorath:**
+> "Winter’s coming, boss. We got two thousand roofs to build and not enough timber. What’s the plan?"
+
+You catch the apple. You look at the open sky, take a deep breath of the freezing, beautiful air, and smile.
+
+**`[Player Name]`:**
+> "Let's get to work."
 
 ---
 
-### Ending C — RETURN (The Bittersweet Exit)
-You use the core's remaining energy to send yourself home.
+### Ending C — RETURN (The 4:12 AM Epilogue)
+You choose to go back.
 
-You wake up with a jolt. Your forehead is resting on your keyboard. It's 4:12 AM in your cramped apartment. Your lukewarm instant noodles sit on the desk.
+You wake up with a violent gasp, your forehead slamming hard against your keyboard. 
 
-You check your computer screen. The *Omniterra* executable has been completely uninstalled. There is no trace of the game on your hard drive.
+The room is dark. The fan on your PC is humming quietly. Your phone says 4:12 AM. The cold instant curry udon is still sitting on your desk, congealed and waxy. 
 
-The next morning, you ride the subway to work. You sit in your cubicle and open your spreadsheets. But you don't feel empty anymore. You look at your hands—hands that held the line at the Ashen Gate, hands that freed slaves and broke gods.
+You look at your computer monitor. 
 
-On your desktop, you open a blank text document and type the first line:
+The desktop is empty. The *Omniterra* shortcut is gone. The executable is missing from your Steam library. Even the forum threads and YouTube clips you bookmarked return `404 NOT FOUND`. It’s as if the game never existed at all.
 
-> *"Once, there was a sanctuary at the Edge of the World..."*
+You sit in silence for twenty minutes, listening to the hum of the refrigerator.
+
+At 7:00 AM, you put on your cheap polyester suit. You ride the crowded subway. You sit in your cubicle under the buzzing fluorescent bulbs.
+
+Your supervisor drops a heavy folder of quarterly tax projections on your desk:
+
+**Supervisor:**
+> "Need these reconciled by noon, [Player Name]. Don't make any mistakes."
+
+You look at the numbers.
+
+Then you look down at your knuckles. 
+
+Underneath your fingernails—deep in the creases of your skin—is a faint trace of dried red canyon mud that won't wash off. And when you close your eyes, you can still smell the burning cedar and the warm mushroom soup.
+
+You open a new document on your screen. You delete the spreadsheet template. 
+
+And you start typing:
+
+> *"The canyon road was four yards wide. The southern wall was loose shale..."*
