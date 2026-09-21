@@ -1,27 +1,28 @@
 # 02. Elemental Reaction Matrix (Core Triad)
 
-The battlefield in **Elemental Hex Tactics 3D** is living matter. Every hex tile possesses an **Elemental State** and a **Tier Level** governed by [`TerrainReactionSystem.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Combat/TerrainReactionSystem.cs).
+The battlefield in **Elemental Hex Tactics 3D** is living matter. Every hex tile has an **Elemental State** and a **Tier Level**, calcualted on the fly by [`TerrainReactionSystem.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Combat/TerrainReactionSystem.cs).
 
 ---
 
-## 🌋 The Core Triad: Fire, Water, Earth
+## The Core Triad: Fire, Water, Earth
 
 ```mermaid
 flowchart TD
-    Fire["Fire<br/>Damage and Magma"]
-    Water["Water<br/>Flooding and Steam"]
-    Earth["Earth<br/>Walls and Quagmires"]
+    Fire["Fire<br/>Damage & Molten Magma"]
+    Water["Water<br/>Floods & Steam Eruptions"]
+    Earth["Earth<br/>Stone Pillars & Quagmires"]
 
-    Fire <-->|"Steam Cloud and Eruption"| Water
+    Fire <-->|"Steam Cloud & 3-Hex Eruptions"| Water
     Water <-->|"Mud Quagmire Trap"| Earth
-    Earth <-->|"Smother and Baked Mud"| Fire
+    Earth <-->|"Smother & Baked Clay"| Fire
 ```
 
----
+> **Design Note (Why no Air/Wind element?):**  
+> Kept getting asked if I'm gonna add Wind or Lightning. Short answer: no, at least not for the core grid. Three elements is the sweet spot for rock-paper-scissors chemistry. Fire + Water = Steam already handles the "vapor/air" fantasy without needing a 4th spell button that clutters the action bar. Keep it tight.
 
 ---
 
-## ⚡ Quick 2D Cross-Reference Matrix
+## 2D Cross-Reference Matrix
 
 The fastest way to look up any interaction: find the **Target Ground** row on the left, then look under the **Spell Cast** column.
 
@@ -37,12 +38,12 @@ The fastest way to look up any interaction: find the **Target Ground** row on th
 
 ---
 
-## 🎯 Reactions Grouped by Spell Cast
+## Reactions Grouped by Spell Cast
 
-Looking to see what a specific spell in your action bar can accomplish? Check your spell below:
+Quick cheat sheet for what each spell in your action bar does when targeted:
 
-### 💧 Water Surge (`💧 Water`)
-| When Cast On... | Resulting State | Tier | Reaction Name | Tactical Effect |
+### 💧 Water Surge (`Water`)
+| Cast On... | Resulting State | Tier | Reaction Name | Tactical Effect |
 | :--- | :--- | :---: | :--- | :--- |
 | **Molten Magma (T2)** | **Scorched Earth** | 1 | **Steam Cataclysm** | Cools lava to Scorched Earth; **violently erupts Steam on 3 random adjacent hexes**! |
 | **Scorched Earth (T1)** | **Steam Cloud** | 1 | **Steam Eruption** | Quenches burning embers into neutral ground and creates a local Steam Cloud. |
@@ -50,16 +51,16 @@ Looking to see what a specific spell in your action bar can accomplish? Check yo
 | **Mud Quagmire (T1)** | **Shallow Water** | 1 | **Flooded Mud** | Dilutes thick mud back into shallow surface water. |
 | **Barren / Grass (T0)** | **Shallow Water** | 1 | **Water Inundation** | Floods dry soil with shallow water. |
 
-### 🔥 Fireball (`🔥 Fire`)
-| When Cast On... | Resulting State | Tier | Reaction Name | Tactical Effect |
+### 🔥 Fireball (`Fire`)
+| Cast On... | Resulting State | Tier | Reaction Name | Tactical Effect |
 | :--- | :--- | :---: | :--- | :--- |
 | **Water (T1 or T2)** | **Steam Cloud** | 1 | **Steam Cloud** | Instantly boils water away into an obscuring **Steam Cloud (Vapor Cover)**. |
 | **Scorched Earth (T1)** | **Molten Magma** | 2 | **Magma Surge** | Intensifies hot embers into molten **Magma (3 Burn Dmg Hazard)**. |
 | **Mud Quagmire (T1)** | **Scorched Earth** | 1 | **Baked Mud** | Bakes wet mud with intense flame into dry, scorched ground. |
 | **Barren / Grass (T0)** | **Scorched Earth** | 1 | **Scorched Earth** | Chars vegetation and dry soil into Scorched Earth. |
 
-### ⛰️ Earth Spire (`⛰️ Earth`)
-| When Cast On... | Resulting State | Tier | Reaction Name | Tactical Effect |
+### ⛰️ Earth Spire (`Earth`)
+| Cast On... | Resulting State | Tier | Reaction Name | Tactical Effect |
 | :--- | :--- | :---: | :--- | :--- |
 | **Water (T1 or T2)** | **Mud Quagmire** | 1 | **Quagmire Mud Trap** | Mixes earth into water to create sticky **Mud (Immobilize & Cripple Trap)**. |
 | **Barren / Grass / Steam** | **Stone Pillar** | 2 | **Earth Spire** | Raises a solid **+1.0m Stone Pillar obstacle** for **Wall-Slam combos**! |
@@ -68,50 +69,34 @@ Looking to see what a specific spell in your action bar can accomplish? Check yo
 
 ---
 
-## 🧪 Tactical Recipe Finder ("How Do I Create...?")
-
-- **💨 Want a Smokescreen / Mist (Steam Cover)?**
-  - *Best:* Cast `💧 Water` on `🌋 Magma` → Quenches lava + creates **3 adjacent random steam clouds**!
-  - *Fast:* Cast `🔥 Fire` on `💧 Water` or `💧 Water` on `🔥 Scorched` → Creates 1 local steam cloud.
-- **💩 Want an Immobility Trap (Mud Quagmire)?**
-  - Cast `⛰️ Earth Spire` on any `💧 Water` tile → Instantly creates a sticky Mud Trap (Turn 1: Immobilized, Turn 2: Crippled).
-- **⛰️ Want a Solid Wall / Cover (Stone Pillar)?**
-  - Cast `⛰️ Earth Spire` on any `Barren`, `Grass`, or `Steam` tile → Raises a +1.0m obstacle for **`💥 WALL SLAM! -2`** combos.
-- **🌋 Want a Molten Hazard (Magma)?**
-  - Cast `🔥 Fire` on `🔥 Scorched Earth` → Upgrades to Molten Magma (3 Burn Dmg to non-titans).
-
----
-
-## 🔍 In-Depth Breakdown of Key Reactions
+## In-Depth Breakdown of Key Reactions
 
 ### 1. Water on Magma: The 3-Hex Steam Eruption
 When molten **Magma (Tier 2)** is hit by water:
-1. The targeted magma hex cools to **Scorched Earth (Tier 1)**.
+1. The targeted magma hex cools down to **Scorched Earth (Tier 1)**.
 2. In the surrounding ring of 6 adjacent hexes, exactly **3 random tiles** (excluding existing magma or steam) erupt into **`TileState.Steam`**.
-3. Procedural white billowing smoke particle clouds are triggered across all 3 hexes via `CombatVFXManager.Instance.PlaySteamCloud`.
-4. **Tactical Value:** Creates an instant, unpredictable tactical fog bank that provides mist cover (*Vapor Shroud*) and obscures enemy sightlines without blanketing the entire map.
+3. Procedural white billowing smoke particle clouds spawn across all 3 hexes via `CombatVFXManager.Instance.PlaySteamCloud`.
+4. **Why this exists:** Early builds only spawned steam on the 1 target hex, but it felt super underwhelming compared to how scary magma was. Expanding it to 3 adjacent tiles turned water into a panic button that reshapes local sightlines.
 
 ### 2. Earth on Water: The Quagmire Mud Trap
-When `⛰️ Earth Spire` is cast onto a water tile:
-1. The water mixes with dense earth to create **`TileState.Mud`**.
-2. Mud is visibly rendered with a rich, dark clay-brown tint (`#6B4426`).
-3. Stepping or being pushed into Mud denies movement: **Turn 1 = Immobilized (0 Move)**, **Turn 2 = Crippled (1 Move)**.
-4. **Tactical Value:** Establish chokepoints in shallow waterways to halt enemy advances.
+When `Earth Spire` hits water:
+1. Water mixes with earth to create dark clay-brown **`TileState.Mud`** (`#6B4426`).
+2. Stepping or being pushed into Mud denies movement: **Turn 1 = Immobilized (0 Move)**, **Turn 2 = Crippled (1 Move)**.
+3. Great for choking river crossings or locking down melee chargers before they reach your casters.
 
-### 3. Earth Spire: The Movable Wall-Slam Buffer
-When `⛰️ Earth Spire` is cast onto neutral ground (`Barren`, `Grass`, or `Steam`):
-1. A solid **`TileState.StonePillar`** emerges from the ground.
+### 3. Earth Spire: The Pop-Up Wall Slam
+When `Earth Spire` is cast on neutral ground (`Barren`, `Grass`, or `Steam`):
+1. A solid **`TileState.StonePillar`** emerges from the earth.
 2. The hex tile physically pops upward by **+1.0m** in world space.
-3. Pathfinding registers the tile as completely impassable (`movementCost = -1`).
-4. **Tactical Value:** Create your own cover anywhere on flat terrain! Shoving an enemy into this newly raised pillar immediately triggers a **`💥 WALL SLAM! -2`** collision combo.
+3. Pathfinding marks it impassable (`movementCost = -1`).
+4. **The fun part:** You can literally summon your own wall behind an enemy, then use `Push` to slam them into it for **`💥 WALL SLAM! -2`** bonus collision damage!
 
 ---
 
-## ⚡ Ghost UI Predictive System
+## Ghost UI Predictive System
 
-Before committing any elemental spell, hovering over any hex tile renders the **Ghost UI** preview card in the bottom-right corner:
-- **Header:** Reaction name (e.g., `⚡ GHOST UI: Steam Cataclysm & Magma Cool`).
-- **Target:** Hex coordinates and current state/tier.
-- **Output:** The resulting state and tier (highlighted in golden yellow if a reaction occurs).
-- **Description:** A concise italic summary explaining what will happen.
-
+Before committing any elemental spell, hovering over any hex tile renders the **Ghost UI** preview card in the bottom-right viewport:
+* **Header:** Reaction name (e.g. `⚡ GHOST UI: Steam Cataclysm & Magma Cool`).
+* **Target:** Coordinates and current state/tier.
+* **Output:** Resulting state and tier (highlighted yellow if a reaction triggers).
+* **Description:** Quick italic note telling you what's gonna happen before you waste an action.

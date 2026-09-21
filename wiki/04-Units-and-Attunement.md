@@ -1,107 +1,61 @@
 # 04. Units, Archetypes & FFT Attunement
 
-In **Elemental Hex Tactics 3D**, battles feature a focused **2v2 skirmish** designed to showcase deep interplay between humanoid commanders, colossal summoned titans, and responsive terrain.
+Battles in **Elemental Hex Tactics 3D** are designed around tight skirmishes (2v2 demo up to 4v4 in campaign). Instead of managing 20 identical foot-soldiers, each unit represents a distinct archetype with asymmetrical physical presence.
 
 ---
 
-## 📏 3-Tier Unit Size Taxonomy (Small, Normal, Big)
+## 3-Tier Unit Size Taxonomy (Small, Normal, Big)
 
-The tactical and domain systems of **Elemental Hex Tactics 3D** classify all units into **3 asymmetrical Size Tiers**, governing combat roles, 3D hex physics interactions, and equipment slot allocation:
+Units are divided into 3 physical size tiers, which dictates how they interact with push physics, hazard tiles, and how many equipment slots they have:
 
-```mermaid
-flowchart TD
-    S["🟢 SMALL TIER<br/>Minions & Demi-Humans<br/>~1.0m - 1.2m | Move 3-4 | 1-2 Aux Slots"]
-    N["🔵 NORMAL TIER<br/>Humanoid Shapers & Bosses<br/>~1.7m - 1.8m | Move 3 | 5 Full RPG Slots"]
-    B["🔴 BIG TIER<br/>Colossal Titans<br/>~2.5m - 3.5m | Unshovable | 3 Relic/Scroll Slots"]
-```
-
-| Category | Unit Archetypes | Hex Scale & Height | Equipment Slots | Terrain & Physics Resilience | Tactical & Domain Role |
+| Size | Archetypes | In-Game Height | Gear Slots | Physics & Hazard Behavior | Tactical & Domain Role |
 | :--- | :--- | :---: | :---: | :--- | :--- |
-| **`Small`** | **Minions & Demi-Humans**<br/>*(Kobold, Cinder Imp, Demon Slime, Dark Elf Scout)* | ~1.0m - 1.2m<br/>(Compact) | **1–2 Aux Slots**<br/>(Accessories / Work Tools) | **Lightweight / Hazard Vulnerable:** Displaced further upon taking a *Shove*. Susceptible to burning on Magma and drowning in Deep Water. | **Frontline Harassment & Domain Workforce:** Disrupts enemy movements, plants traps, or works in the *Mana Mine & Farm* for daily resource yields. |
-| **`Normal`** | **Humanoid Shapers**<br/>*(Exiled Demon Lord, Holy Inquisitor, Templar)* | ~1.7m - 1.8m<br/>(1x Hex Tile) | **Full 5 RPG Slots**<br/>*(Weapon, Armor, Boots, Helm, Ring)* | **Standard:** Displaced 1 tile upon taking a *Push*. Requires specialized gear (e.g. *Lava Walkers*) to safely traverse hazard terrain. | **Tactical Terraformer & Commander:** Infuses elemental terrain (*Fire, Water, Earth*), manipulates *Turn Order*, and executes *Kinetic Wall-Slam* combos. |
-| **`Big`** | **Colossal Titans**<br/>*(Magma Behemoth, Abyssal Leviathan, Archangel)* | ~2.5m - 3.5m<br/>(Fills Full Hex) | **3 Specialist Slots**<br/>*(1 Relic + 2 Biome/Rule-Breaking Scrolls)* | **Massive / Innate Hazard Immunity:** Immune to conventional shoves (*Heavy Weight / Unshovable*). Innately immune to native elemental hazards (e.g. Magma Titan is immune to lava). | **Heavy Anchor & Finisher:** Consumes elemental ground (*Siphon/Consume Land*), unleashes screen-clearing ultimates (*Cataclysm Ultimate*). Requires recurring **Food Upkeep**. |
+| **`Small`** | **Minions & Demi-Humans**<br/>*(Kobolds, Imps, Slimes, Dark Elf Scouts)* | ~1.0m - 1.2m | **1–2 Aux Slots**<br/>*(Trinkets / Work Tools)* | **Lightweight:** Takes extra displacement on shoves. Very vulnerable to lava & deep water. | Agile harasser, trap planter, or assigned to the *Mana Mine & Farm* as domain workforce. |
+| **`Normal`** | **Humanoid Shapers**<br/>*(Commander, Holy Inquisitors)* | ~1.7m - 1.8m | **5 Full RPG Slots**<br/>*(Weapon, Armor, Boots, Helm, Ring)* | **Standard:** Displaced 1 hex by shoves. Needs gear (like *Lava Walkers*) to cross hazards safely. | Tactical terraformer. Infuses elements, manipulates turn order, executes kinetic push combos. |
+| **`Big`** | **Colossal Titans**<br/>*(Magma Behemoth, Leviathan)* | ~2.5m - 3.5m | **3 Specialist Slots**<br/>*(1 Relic + 2 Scrolls)* | **Unshovable Heavyweight:** Immune to normal shoves and native hazards (Magma Titan walks on lava). | Heavy frontline anchor. Consumes land (*Siphon*), drops screen-wiping ultimates. Requires daily Food upkeep. |
+
+> **Dev Note on Equipment Design:**  
+> The 5 slots on Normal humanoid units aren't for generic "+5 Attack" stat inflation. They solve tactical puzzles: **Weapons** decide which element you infuse on attack, **Boots** let you walk on magma/ice, and **Helms/Goggles** let you aim through steam smokescreens!
 
 ---
 
-## 👥 The 2v2 Skirmish Roster
+## Active Skirmish Roster (Current Demo)
 
-| Unit | Faction | Archetype | Affinity | HP | ATK | Move | Role & Capabilities |
+| Unit | Faction | Archetype | Affinity | HP | ATK | Move | Role & Summary |
 | :--- | :--- | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Commander** | Player | **Commander** | None | 10 | 3 | 3 | Tactical caster. Master of elemental spells (`Fireball`, `Water`, `Earth Spire`), kinetic pushes, and land siphoning. |
-| **Magma Titan** | Player | **Titan** | Fire | 18 | 4 | 2 | Colossal behemoth. Immune to Magma, Deep Water, and Mud. Boasts devastating melee attacks (`Titan Strike`), long `Tail Shove`, and the game-ending `Magma Cataclysm`. |
-| **Dracomancer** | Enemy | **Commander** | Fire | 10 | 3 | 3 | Enemy pyromancer boss. Casts ranged Fireballs and advances aggressively toward player units. |
-| **Demon Slime** | Enemy | **Minion** | None | 8 | 2 | 3 | Mobile frontliner. Uses melee strikes and kinetic shoves to knock player units off elevated ground. |
+| **Commander** | Player | **Commander** | None | 10 | 3 | 3 | Tactical caster. Master of elemental spells (`Fireball`, `Water`, `Earth Spire`), shoves, and siphoning. |
+| **Magma Titan** | Player | **Titan** | Fire | 18 | 4 | 2 | Colossal behemoth. Immune to Magma, Deep Water, and Mud. Uses `Titan Strike`, `Tail Shove`, and `Magma Cataclysm`. |
+| **Dracomancer** | Enemy | **Commander** | Fire | 10 | 3 | 3 | Enemy pyromancer boss. Fires ranged Fireballs and advances aggressively. |
+| **Demon Slime** | Enemy | **Minion** | None | 8 | 2 | 3 | Mobile frontliner. Uses melee strikes and shoves to knock player units off high ground. |
 
 ---
 
-## ⚔️ Unit Abilities & Commands
+## Unit Abilities & Commands
 
-```mermaid
-flowchart LR
-    subgraph CommanderActions["Commander Actions"]
-        F["Fireball<br/>Range 3, Dmg 3"]
-        W["Water Surge<br/>Range 3, Dmg 2"]
-        E["Earth Spire<br/>Range 3, Dmg 2"]
-        P["Push<br/>Range 1, Shove 1"]
-        S["Siphon Land<br/>Gain 1 Core"]
-    end
+### Commander Abilities
+* **`Fireball` (Range 3, Dmg 3):** Fires a projectile. Chars dry ground to Scorched Earth, or boils water into Steam.
+* **`Water Surge` (Range 3, Dmg 2):** Quenches Magma (triggering a 3-hex steam eruption!) and Scorched Earth.
+* **`Earth Spire` (Range 3, Dmg 2):** Raises a solid **`StonePillar`** on flat earth, or turns water into a **`Mud`** quagmire.
+* **`Push` (Range 1, Dmg 1):** Shoves target 1 hex backward. Triggers **Wall-Slam collisions** if blocked.
+* **`Siphon Land`:** Absorbs active elemental ground (`Magma`, `Scorched`, or `Water`), resetting the hex to barren earth and granting **+1 Elemental Core (`★`)**.
 
-    subgraph TitanActions["Titan Actions"]
-        TS["Titan Strike<br/>Range 1, Dmg 4"]
-        TSH["Tail Shove<br/>Range 1, Shove 1"]
-        TSIP["Siphon Land<br/>Gain 1 Core"]
-        CAT["Magma Cataclysm<br/>Radius 1, Dmg 8"]
-    end
-```
-
-### Detailed Ability Breakdown:
-
-#### 1. `🔥 Fireball` (Commander)
-- **Range:** 3 Hexes | **Damage:** 3 HP
-- **Effect:** Launches a fiery projectile. Deals direct damage and transforms terrain (Water → Steam, Scorched → Magma).
-
-#### 2. `💧 Water Surge` (Commander)
-- **Range:** 3 Hexes | **Damage:** 2 HP
-- **Effect:** Hurls an arc of pressurized water. Quenches Magma (spawning 3 steam clouds) and Scorched Earth.
-
-#### 3. `⛰️ Earth Spire` (Commander)
-- **Range:** 3 Hexes | **Damage:** 2 HP
-- **Effect:** Erupts sharp rock spires. Erects a solid **`StonePillar`** on neutral earth, or creates a **`Mud`** quagmire on water.
-
-#### 4. `💨 Kinetic Push` / `💨 Tail Shove` (Universal)
-- **Range:** 1 Hex (Melee) | **Damage:** 1 HP
-- **Effect:** Deals 1 damage and physically shoves the target 1 hex backward. Triggers **Wall-Slam collisions** if blocked.
-
-#### 5. `⚡ Siphon Land` (Commander / Titan)
-- **Range:** Current tile or 6 adjacent neighbors.
-- **Requirement:** Target hex must be active elemental ground (`Magma`, `Scorched`, or `Water`).
-- **Effect:** Consumes the elemental energy from the tile, resetting it to neutral `Barren` ground and granting the unit **+1 Elemental Core** (`★`).
-
-#### 6. `🌋 Magma Cataclysm` (Titan Ultimate)
-- **Cost:** 1 Elemental Core (`★`) | **Range:** 2 Hexes (Target Epicenter)
-- **Area of Effect:** Epicenter + all 6 surrounding neighbor hexes (7 hexes total).
-- **Damage:** **8 Massive Damage** to all enemies caught in the blast radius!
-- **Terrain Eruption:** Upgrades all Scorched tiles to molten Magma, and chars neutral tiles to Scorched.
-- **Sensory Feedback:** Violent camera screen shake (`0.65f`), seismic booming audio, procedural shockwave rings, and soaring fiery embers.
+### Titan Abilities
+* **`Titan Strike` (Range 1, Dmg 4):** Heavy physical smash.
+* **`Tail Shove` (Range 1, Dmg 1):** Heavy knockback tail swipe.
+* **`Siphon Land`:** Harvests adjacent elemental tiles for Cores.
+* **`🌋 Magma Cataclysm` (Ultimate):**
+  * **Cost:** 1 Elemental Core (`★`) | **Range:** 2 Hexes.
+  * **Area of Effect:** Center hex + all 6 surrounding neighbor hexes (7 hexes total!).
+  * **Damage:** **8 Massive Damage** to all enemies in the blast radius!
+  * **Terrain Effect:** Turns neutral tiles into Scorched Earth and upgrades Scorched to molten Magma.
+  * *(Dev Note: 8 damage on 7 hexes sounds broken, but it requires harvesting a core, surviving in range, and positioning carefully. When it hits, it SHOULD feel like an extinction event!)*
 
 ---
 
-## 🧙 FFT Geomancer-Style Attunement
+## FFT Geomancer-Style Attunement
 
-Standing on active environmental tiles passively infuses units with FFT-inspired dynamic buffs evaluated continuously by [`TacticalUnit3D.UpdateAttunement()`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Units/TacticalUnit3D.cs):
+Units standing on active elemental tiles dynamically gain passive buffs via `TacticalUnit3D.UpdateAttunement()`:
 
-### 1. `🔥 Flame Surge`
-- **Trigger:** Unit stands on `Scorched Earth` or `Magma` with Fire Affinity or Titan archetype.
-- **Buff:** **+2 Bonus Attack Damage** on all physical strikes!
-- **Visuals:** Base ring glows radiant fiery orange-gold (`#FF841A`, scale 1.15x).
-- **Immunity:** Titans gain full immunity to Magma burn damage. (Humanoid casters still take damage if immersed in molten lava).
-
-### 2. `💧 Aqua Surge`
-- **Trigger:** Unit stands on `Water` with Water Affinity or Titan archetype.
-- **Buff:** **+1 Bonus Move Range**!
-- **Visuals:** Base ring glows brilliant electric cyan (`#33D9FF`, scale 1.15x).
-
-### 3. `💨 Vapor Shroud`
-- **Trigger:** Unit stands inside a `TileState.Steam` vapor cloud.
-- **Buff:** Conceals the unit inside billowing mist, granting damage mitigation and obscuring sightlines.
-
+* **🔥 Flame Surge:** Stand on `Scorched Earth` or `Magma` $\rightarrow$ **+2 Bonus Attack Damage** on all strikes! Base ring glows fiery orange (`#FF841A`).
+* **💧 Aqua Surge:** Stand in `Water` $\rightarrow$ **+1 Bonus Move Range**! Base ring glows electric cyan (`#33D9FF`).
+* **💨 Vapor Shroud:** Stand inside a `Steam` cloud $\rightarrow$ Billowing mist obscures sightlines and grants damage evasion.

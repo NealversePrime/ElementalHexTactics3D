@@ -353,16 +353,15 @@ flowchart TD
 
 ---
 
-## 🔗 7. Cross-Wiki Directory
+### 7. Cross-Wiki Directory
 
-This document establishes the narrative and racial foundation across the tactical engine:
-* [**01. Overview & Tactical Controls**](01-Overview-and-Controls) — Camera orbit controls, turn economy, and action bar.
-* [**02. Elemental Reaction Matrix**](02-Elemental-Reaction-Matrix) — Fire, Water, and Earth reactions, Steam clouds, and Quagmires.
-* [**03. Kinetic Combat & Hazards**](03-Kinetic-Combat-and-Hazards) — Wall-Slam physics, deep water traps, and mobility denial.
-* [**04. Units, Archetypes & Attunement**](04-Units-and-Attunement) — Skirmish units, 3-tier size taxonomy, and passive tile attunement.
-* [**05. Technical Architecture**](05-Technical-Architecture) — Unity 6 URP architecture, procedural 3D hex meshes, and zero-asset design.
-* [**06. Citadel Hub & Domain Economy**](06-Citadel-Hub-and-Domain-Economy) — 2D Citadel Hub, 4 currencies, and equipment shops.
+* [**01. Overview & Tactical Controls**](01-Overview-and-Controls) — Controls, camera snaps, and turn loop.
+* [**02. Elemental Reaction Matrix**](02-Elemental-Reaction-Matrix) — Triad chemistry, steam clouds, and mud traps.
+* [**03. Kinetic Combat & Hazards**](03-Kinetic-Combat-and-Hazards) — Shove vectors and wall-slam collision physics.
+* [**04. Units & Attunement**](04-Units-and-Attunement) | 3-tier size taxonomy and passive tile buffs.
+* [**05. Technical Architecture**](05-Technical-Architecture) — Zero-asset procedural engine in Unity 6.
+* [**06. Citadel Hub & Economy**](06-Citadel-Hub-and-Domain-Economy) — 2D Citadel canvas and the 4 currencies.
+* [**08. Campaign Loop & Story**](08-Campaign-Loop-and-Narrative-Design) — 2-cycle day loop, 3-card portal, and isekai premise.
 
----
-
-*Authored by Elang Esa Yudhistira (Neal Sage / NealversePrime) — Solo Game Designer & Programmer.*
+> **Design Reflection on Faction Balance:**  
+> Making the 10 species feel mechanically distinct on a hex grid without bloating the code was tricky. The key was giving each race ONE distinct interaction with existing physics: Greenskins get double wall-slam damage, Slimes are immune to wall-slams because they bounce, Beastfolk scale cliffs without AP penalty, and Kobolds tunnel faster in the mines. Simple rules, big emergent variety!

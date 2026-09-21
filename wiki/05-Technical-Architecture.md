@@ -1,32 +1,32 @@
 # 05. Technical Architecture & Systems Design
 
-**Elemental Hex Tactics 3D** is engineered for maximum performance, maintainability, and zero external dependency friction in **Unity 6 (6000.0 URP)**.
+Under the hood, **Elemental Hex Tactics 3D** is engineered to be lightweight, performant, and completely self-contained in **Unity 6 (6000.0 URP)**.
 
 ---
 
-## 🏛️ System Architecture Overview
+## Architecture Overview
 
 ```mermaid
 flowchart TD
-    subgraph GridLayer["Hex Grid and Spatial Layer"]
-        HC["HexCoordinates.cs<br/>Axial and Cube Coordinate Math"]
-        HMB["HexMeshBuilder.cs<br/>Procedural 3D Hex Pillar Geometry"]
-        H3D["HexGrid3D.cs<br/>Plateau Generator and Elevation Map"]
-        HT["HexTile3D.cs<br/>MaterialPropertyBlock and State Machine"]
-        HP["HexPathfinder3D.cs<br/>A* Pathfinding and Reachable Frontiers"]
+    subgraph GridLayer["Grid & Spatial Layer"]
+        HC["HexCoordinates.cs<br/>Axial & Cube Math (q, r, s)"]
+        HMB["HexMeshBuilder.cs<br/>Procedural 3D Pillars"]
+        H3D["HexGrid3D.cs<br/>Plateau Generator"]
+        HT["HexTile3D.cs<br/>MaterialPropertyBlock & States"]
+        HP["HexPathfinder3D.cs<br/>A* Pathfinding"]
     end
 
-    subgraph CombatLayer["Combat and Elemental Chemistry"]
-        TRS["TerrainReactionSystem.cs<br/>Elemental State Evolution Matrix"]
-        PM["PushMechanic3D.cs<br/>Kinetic Vectors and Wall Slam Physics"]
-        VFX["CombatVFXManager.cs<br/>Procedural Particle Shuriken Engine"]
-        CFM["CombatFeedbackManager.cs<br/>Overhead Bars, Texts, Shockwaves"]
+    subgraph CombatLayer["Combat & Chemistry"]
+        TRS["TerrainReactionSystem.cs<br/>Elemental Matrix"]
+        PM["PushMechanic3D.cs<br/>Vectors & Wall Slam Physics"]
+        VFX["CombatVFXManager.cs<br/>In-Memory Procedural VFX"]
+        CFM["CombatFeedbackManager.cs<br/>Overhead Bars & Shakes"]
     end
 
-    subgraph ControlLayer["Camera and Interaction Layer"]
-        CAM["TacticalCameraController.cs<br/>WASD Pan, Q/E 60 Snap, Shake"]
-        HGI["HexGridInteraction3D.cs<br/>Raycasting, Ghost UI, Action Bar"]
-        TM["TurnManager3D.cs<br/>Round Cycle and AI Coordination"]
+    subgraph ControlLayer["Camera & Input"]
+        CAM["TacticalCameraController.cs<br/>WASD & 60-deg Snaps"]
+        HGI["HexGridInteraction3D.cs<br/>Raycasts & Action Bar"]
+        TM["TurnManager3D.cs<br/>Round & AI Coordination"]
     end
 
     GridLayer --> CombatLayer
@@ -35,72 +35,53 @@ flowchart TD
 
 ---
 
-## 💎 The Zero-External-Asset Architecture
+## Why Zero External Asset Store Packages?
 
-A foundational technical goal of this codebase is **100% self-reliance**. The project runs straight out of a clean git clone without requiring any paid Asset Store packages, external plugins, or third-party DLLs.
+One of my core technical goals: **the project must clone and run straight out of the box.** 
 
-### How It Works:
-1. **Procedural 3D Hex Mesh Generation (`HexMeshBuilder.cs`):**
-   - Pointy-topped hexagonal 3D pillars are procedurally calculated and built at runtime.
-   - Generates two submeshes per tile:
-     - **Submesh 0 (Top Surface):** Mapped with edge-to-edge normalized square UVs (normalized [0, 1] x [0, 1]) so any square terrain texture fits seamlessly without seam artifacts.
-     - **Submesh 1 (Pillar Walls):** 6 vertical side quads mapped with seamless vertical cliff UV coordinates.
-2. **Procedural Particle Textures (`CombatVFXManager.cs`):**
-   - Textures for particle systems are baked into memory as C# `Texture2D` instances:
-     - **Soft Glow (`CreateSoftGlowTexture`):** 64x64 smooth radial gradient.
-     - **Star Spark (`CreateCrossSparkTexture`):** 64x64 four-point optical cross spark for sharp impact flashes.
-     - **Cloud Puff (`CreateCloudTexture`):** 64x64 multi-frequency soft billow for smoke and steam clouds.
-   - Mapped to native `Universal Render Pipeline/Particles/Unlit` materials using Additive and Alpha-Blended transparency.
-3. **Unity 6 ParticleSystem Safety Protocol:**
-   - In Unity 6, modifying ParticleSystem duration or looping properties while the system is alive throws editor warnings.
-   - Solved with an atomic helper:
-     ```csharp
-     ParticleSystem ps = obj.AddComponent<ParticleSystem>();
-     ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-     // ...configure main, emission, shape, velocity modules...
-     ```
+No 4GB asset store packages. No broken third-party DLLs. No paid plugins that break every time Unity pushes a patch.
+
+### How it actually works:
+1. **Procedural 3D Hex Meshes (`HexMeshBuilder.cs`):**
+   * Pointy-topped hexagonal 3D pillars are built purely in code at runtime.
+   * Generates two submeshes per tile:
+     * **Submesh 0 (Top Surface):** Normalized square UVs `[0, 1]` so standard terrain textures wrap without ugly seams.
+     * **Submesh 1 (Pillar Walls):** 6 vertical cliff quads with continuous vertical UVs.
+2. **Procedural In-Memory Particle Textures (`CombatVFXManager.cs`):**
+   * Rather than importing 50 particle PNGs, textures are baked directly into memory via C# `Texture2D`:
+     * **Soft Glow:** 64x64 radial gradient for embers and core halos.
+     * **Star Spark:** 64x64 four-point optical cross for melee wall-slam impacts.
+     * **Cloud Puff:** 64x64 multi-frequency billow for steam and smokescreens.
+   * Driven by native URP `Particles/Unlit` materials.
+3. **Unity 6 ParticleSystem Safety Wrapper:**
+   * *(Dev Note: Spent an entire Saturday wondering why Unity 6 was spamming console warnings every time I tweaked a particle system at runtime. Turns out Unity 6 hates modifying duration on active systems. Wrote an atomic helper that stops and clears before modifying modules — zero warnings since!)*
 
 ---
 
-## 🎨 HD-2D Visual Stack (*Triangle Strategy* Style)
+## HD-2D Visual Stack (*Triangle Strategy* Style)
 
-The diorama aesthetic is powered by the URP Volume Profile ([`SampleSceneProfile.asset`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Settings/HD2D_TacticsProfile.asset)):
+The miniature tabletop aesthetic runs on our URP Volume Profile:
 
-### 1. Tilt-Shift Bokeh Depth of Field
-- **Mode:** `Bokeh`
-- **Focus Distance:** `12.0f` (aligned with the main battlefield plateau).
-- **Focal Length:** `65mm`
-- **Aperture:** `f/3.2`
-- **Visual Impact:** Creates a creamy, miniature tabletop diorama effect where units and tiles in the center are crystal sharp, while the far edges and deep abyss blur softly.
-
-### 2. Radiant Bloom
-- **Threshold:** `0.85` | **Intensity:** `1.15` | **Scatter:** `0.65`
-- **Visual Impact:** Molten magma tiles, fiery embers, and spell projectiles radiate vibrant light that spills over neighboring terrain edges.
-
-### 3. ACES Tonemapping & Color Adjustments
-- **Tonemapping Mode:** `ACES`
-- **Post Exposure:** `+0.25` | **Contrast:** `18` | **Saturation:** `15`
-- **Visual Impact:** Deep, rich shadows with saturated elemental hues reminiscent of high-end Japanese tactical RPGs.
+* **Tilt-Shift Bokeh Depth of Field:** Focus distance 12.0m, focal length 65mm, aperture f/3.2. Centers the focus on the active tactical plateau while the surrounding abyss blurs into creamy bokeh.
+* **Radiant Bloom:** Threshold 0.85, intensity 1.15. Makes magma fissures, burning embers, and spell impacts spill vibrant light over neighboring tile edges.
+* **ACES Tonemapping:** Contrast 18, saturation 15. Gives shadows deep contrast and makes saturated elemental hues pop like a Japanese tactics RPG.
 
 ---
 
-## ⚡ Performance & Zero-GC Memory Management
+## Performance & Zero-GC Memory Tricks
 
-To maintain a rock-solid 60+ FPS on all platforms:
+To keep it locked at 60+ FPS without garbage collection hiccups:
 
 1. **`MaterialPropertyBlock` Everywhere:**
-   - [`HexTile3D.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Grid/HexTile3D.cs) uses `MaterialPropertyBlock` for all tile hover, selection, and mud/granite tinting.
-   - **Zero Material Cloning:** No calls to `renderer.material` (which instantiates duplicate material copies and causes GC spikes). All tiles share common material instances while retaining independent per-hex tints.
+   * All per-tile color tinting (hover highlights, mud brown, scorched black) uses `MaterialPropertyBlock`.
+   * **Zero `renderer.material` calls.** Calling `renderer.material` duplicates materials in memory and creates GC spikes. With property blocks, all 60+ tiles share the exact same material instance while looking totally unique.
 2. **UI Click-Through Prevention:**
-   - In [`HexGridInteraction3D.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/InputHandling/HexGridInteraction3D.cs), custom GUI buttons consume the click event via `Event.current.Use()`.
-   - The 3D raycasting system checks `IsPointerOverUI()` before firing, completely preventing clicks on HUD or Action Bar buttons from erroneously clicking 3D hex tiles in the background.
-3. **Axial & Cube Coordinate Mathematics:**
-   - [`HexCoordinates.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Grid/HexCoordinates.cs) implements cube coordinates (q, r, s) where q + r + s = 0.
-   - Manhattan distance between any two hexes is calculated in O(1) time:
-
-     ```text
-     Distance = (|qA - qB| + |rA - rB| + |sA - sB|) / 2
-     ```
-
-   - Fast k-ring radius generation without redundant loops.
-
+   * In `HexGridInteraction3D.cs`, custom GUI buttons consume clicks via `Event.current.Use()`.
+   * Raycasts always check `IsPointerOverUI()` before firing, so clicking an Action Bar button never accidentally commands a unit in the 3D world behind it.
+3. **O(1) Hex Coordinate Distance:**
+   * `HexCoordinates.cs` uses cube coordinates `(q, r, s)` where $q + r + s = 0$. Manhattan distance between any two tiles is a single instantaneous formula:
+   ```csharp
+   public static int Distance(HexCoordinates a, HexCoordinates b) {
+       return (Mathf.Abs(a.Q - b.Q) + Mathf.Abs(a.R - b.R) + Mathf.Abs(a.S - b.S)) / 2;
+   }
+   ```

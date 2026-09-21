@@ -1,87 +1,68 @@
 # 01. Overview, Camera & Tactical Controls
 
-## 🎯 Game Concept & Vision
+## Concept & The Core Pitch
 
-**Elemental Hex Tactics 3D** is a turn-based tactical RPG that merges the spatial combat mechanics of modern tactics games with the emergent systemic chemistry of immersive sims:
+**Elemental Hex Tactics 3D** is a turn-based tactical RPG built around spatial puzzles and elemental chemistry. The design is basically my love letter to a few specific games:
 
-- **The Spatial Puzzle of *Into the Breach*:** Every turn is a puzzle of positioning, push angles, and environmental collision damage. Shoving an enemy is often more devastating than attacking them head-on.
-- **The Systemic Chemistry of *Divinity: Original Sin*:** Elements do not simply deal elemental damage types; they fundamentally transform the 3D terrain beneath your units' feet into pools of magma, quenching vapor clouds, sticky quagmires, and raised stone bastions.
-- **The Dynamic Attunement of *Final Fantasy Tactics*:** Geomancer-inspired environmental attunements reward players for reading the terrain and controlling key tactical ground.
-- **The HD-2D Visual Aesthetic of *Triangle Strategy*:** 2.5D pixel-art standee billboarding across elevated 3D hexagonal pillars with tilt-shift depth-of-field and radiant bloom.
+* **The Spatial Puzzle of *Into the Breach*:** Every turn is about positioning, angles, and kinetic shoves. Smashing an enemy into a stone pillar or knocking them off high ground is usually way more effective than just hitting them with a basic attack.
+* **The Systemic Chemistry of *Divinity: Original Sin*:** Elements aren't just damage numbers—they physically reshape the hex tiles. Fire boils water into blinding steam, water quenches magma, and earth turns puddles into sticky mud quagmires.
+* **The Environmental Attunement of *Final Fantasy Tactics*:** Geomancer-inspired passive buffs. If you stand in fire with fire affinity, you hit harder. If you stand in water, you move faster.
+* **The HD-2D Diorama Aesthetic of *Triangle Strategy*:** 2.5D pixel standees placed on elevated 3D hex pillars with tilt-shift depth-of-field and radiant bloom.
 
 ---
 
-## 🕹️ Tactical Camera Controls
+## Tactical Camera Controls
 
-The camera system is managed by [`TacticalCameraController.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Camera/TacticalCameraController.cs), designed to deliver smooth tactical agency:
+The camera controller lives in [`TacticalCameraController.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Camera/TacticalCameraController.cs).
 
-```mermaid
-flowchart LR
-    A["Camera Controls"] --> B["W / A / S / D<br/>Isometric Panning"]
-    A --> C["Q / E<br/>60° Hexagonal Rotation"]
-    A --> D["Mouse Wheel<br/>Zoom In and Out"]
-    A --> E["Impact Feedback<br/>Camera Shake"]
-```
+### Key Bindings
 
-### Key Bindings:
-| Key / Input | Tactical Function | Notes |
+| Key / Input | Action | What it actually does |
 | :--- | :--- | :--- |
-| **`W` `A` `S` `D`** | **Pan Camera** | Moves the camera target smoothly relative to the current camera orientation. |
-| **`Q`** | **Rotate Left 60°** | Snaps the camera perspective 60° counter-clockwise to align perfectly with the hex grid edges. |
-| **`E`** | **Rotate Right 60°** | Snaps the camera perspective 60° clockwise to align with the hex grid edges. |
-| **`Mouse Scroll`** | **Zoom In / Out** | Smoothly interpolates the camera distance between 5.0m (close inspection) and 25.0m (strategic battlefield overview). |
-| **Middle Mouse Drag** | **Free Pan** | Optional alternative mouse drag for navigation. |
+| **`W` `A` `S` `D`** | **Pan Camera** | Moves the camera target relative to wherever the camera is currently facing. |
+| **`Q`** | **Rotate Left 60°** | Snaps 60° counter-clockwise so the camera always lines up with the hex grid edges. |
+| **`E`** | **Rotate Right 60°** | Snaps 60° clockwise to align with the hex edges. |
+| **`Mouse Scroll`** | **Zoom In / Out** | Smoothly zooms between 5.0m (close-up) and 25.0m (strategic battlefield overview). |
+| **Middle Mouse Drag** | **Free Pan** | Quick drag if you don't wanna use WASD. |
 
-> [!TIP]
-> Pressing **`Q`** or **`E`** uses smoothed spherical interpolation (`Mathf.SmoothDampAngle`). You never lose track of unit positions during rotations!
+> **Dev Note (Why 60° snaps?):**  
+> Originally I had free 360-degree camera rotation like a standard RTS, but playtesters kept getting disoriented trying to figure out which way was "forward" on pointy-topped hexes. Locking the rotation to crisp 60° increments using `Mathf.SmoothDampAngle` completely solved the disorientation while keeping the camera rotation buttery smooth.
 
 ---
 
-## ⏱️ Turn Structure & Action Economy
+## Turn Structure & Action Economy
 
-The turn loop is coordinated by [`TurnManager3D.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Turn/TurnManager3D.cs). Combat proceeds in structured rounds consisting of alternating faction phases.
+Turn management is handled by [`TurnManager3D.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/Turn/TurnManager3D.cs). Combat runs on alternating faction phases (Player Phase $\rightarrow$ Enemy Phase $\rightarrow$ Round Advance).
 
-### Round Progression:
+### Round Progression
+
 1. **Player Phase:**
-   - All Player units (Commander and Magma Titan) refresh their action economy (`ResetTurnActions()`).
-   - Environmental hazards on player tiles are resolved (Magma burns, Deep Water/Mud traps).
-   - Player can select and command units in any order.
-   - When all desired actions are executed, player clicks **`END TURN`**.
+   * All player units refresh their action flags (`ResetTurnActions()`).
+   * Environmental hazard checks resolve for tiles units are standing on (magma burn, deep water/mud turn-denial).
+   * You can command units in any order you want (no rigid initiative lock).
+   * Click **`END TURN`** when done.
 2. **Enemy Phase:**
-   - Enemy squad (Dracomancer and Demon Slime) activates sequentially.
-   - Intelligent AI evaluates closest targets, pathfinds around obstacles and cliffs, advances, and unleashes spells or kinetic shoves.
+   * Enemy units activate sequentially.
+   * AI calcualtes nearest targets, paths around cliffs, advances, and uses spells or shoves.
 3. **Round Advance:**
-   - Debuffs tick down on round completion (`OnTurnEnd()`).
-   - Round counter increments and control returns to the Player.
+   * Status debuffs tick down (`OnTurnEnd()`).
+   * Round counter increments and control flips back to the player.
 
-### Unit Action Economy (Move + Act):
-Each unit has two independent action flags per turn:
-- **`HasMovedThisTurn`:** Unit can move up to its `EffectiveMoveRange` along valid hex paths.
-- **`HasActedThisTurn`:** Unit can execute one combat ability (Spell, Melee Strike, Kinetic Push, or Siphon Land).
-- **`IsExhausted`:** When a unit has both moved and acted, its base ring dims to gray (`ExhaustedColor`) to signal that its turn is complete.
+### Unit Action Economy (Move + Act)
+
+Every unit gets two flags per turn:
+* **`HasMovedThisTurn`:** Move up to your `EffectiveMoveRange` along valid hex paths.
+* **`HasActedThisTurn`:** Cast a spell, make a melee strike, push, or siphon land.
+* **`IsExhausted`:** When a unit does both, its base selection ring dims to gray so you know it's done for the round.
 
 ---
 
-## 🖥️ Tactical HUD & Interface
+## Tactical HUD & Interface
 
-The user interface is drawn cleanly via [`HexGridInteraction3D.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/InputHandling/HexGridInteraction3D.cs) with 100% opaque slate backgrounds to ensure maximum readability:
+UI is rendered thru [`HexGridInteraction3D.cs`](https://github.com/NealversePrime/ElementalHexTactics3D/blob/main/Assets/Scripts/InputHandling/HexGridInteraction3D.cs) using solid slate panels so it stays readable against glowing magma and particle effects:
 
-1. **Top-Left Tactical HUD (`Rect(16, 16, 400, 185)`):**
-   - Displays Round number, Active Turn Phase, Audio Mute toggle, and Camera Shortcuts.
-   - Displays selected unit's Name, Faction, Archetype, HP, ATK, Moved/Acted status, Elemental Attunement, and stored **Elemental Cores**.
-   - When hovering over hexes, displays coordinates, elevation, and terrain state.
-
-2. **Top Turn Announcement Banner:**
-   - Displays turn transitions (`⚔️ ENEMY PHASE`, `ROUND X - PLAYER TURN`, `ENEMY MOVEMENT`, etc.).
-   - **Anti-Overlap System:** Automatically clamped to `minX = 430f` on compact resolutions so it **never** collides with or obscures the top-left HUD panel.
-
-3. **Bottom Action Bar (`Width: 800px`):**
-   - **Universal Move Button:** Toggles movement mode. Shows `[Moved]` when expended.
-   - **Commander Abilities:** `🔥 Fireball (Dmg 3)`, `💧 Water (Dmg 2)`, `⛰️ Earth Spire (Wall/Mud)`, `💨 Push (Shove 1)`, `⚡ Siphon Land`.
-   - **Titan Abilities:** `⚔️ Titan Strike (Heavy Melee)`, `💨 Tail Shove (Kinetic Push)`, `⚡ Siphon Land`, `🌋 Cataclysm (Ultimate)`.
-   - **End Turn Button:** Concludes the player phase immediately.
-
-4. **⚡ Predictive Ghost UI Preview:**
-   - When aiming an elemental spell (`Fireball`, `Water`, or `Earth Spire`) at a hex tile, a predictive tactical card appears in the bottom-right viewport.
-   - Clearly reveals the **predicted reaction name**, resulting tile state, resulting tier level, and tactical description **before** committing the action!
-
+1. **Top-Left Status HUD:** Displays round counter, phase banner, unit HP/ATK, elemental attunements, and stored **Elemental Cores**. Hovering any hex displays its cube coordinates, elevation, and terrain state.
+2. **Top Turn Announcement Banner:** Shows phase changes (`⚔️ ENEMY PHASE`, `ROUND X - PLAYER TURN`).  
+   *(Dev Note: Clamped this to `minX = 430f` on smaller screens because it kept overlapping the top-left unit panel—fixed now!)*
+3. **Bottom Action Bar:** Move toggle, spell buttons (`Fireball`, `Water`, `Earth Spire`), kinetic abilities (`Push`, `Tail Shove`), and Titan ultimates (`Magma Cataclysm`).
+4. **Predictive Ghost UI Preview:** When you hover a spell over a hex tile, a preview card pops up in the bottom-right showing the predicted reaction name, resulting tile state, and description *before* you click to confirm.
