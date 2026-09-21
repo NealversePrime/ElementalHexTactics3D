@@ -82,6 +82,23 @@ namespace ElementalHexTactics3D.Editor
             Debug.Log("<color=#4CAF50><b>[ElementalHex3D]</b></color> 3D Hex Battlefield, 2.5D Units & Combat Systems setup complete!");
         }
 
+        private static void SetupAbyssalRiftConduit(HexGrid3D grid)
+        {
+            if (grid == null) return;
+            HexTile3D riftTile = grid.GetTile(new HexCoordinates(0, -3));
+            if (riftTile != null)
+            {
+                AbyssalRiftConduit3D conduit = riftTile.GetComponent<AbyssalRiftConduit3D>();
+                if (conduit == null)
+                {
+                    conduit = riftTile.gameObject.AddComponent<AbyssalRiftConduit3D>();
+                }
+                conduit.Initialize(riftTile, 2);
+                EditorUtility.SetDirty(riftTile);
+                Debug.Log("<color=#BA68C8><b>[AbyssalRift]</b></color> Configured Abyssal Rift Conduit at (0, -3).");
+            }
+        }
+
         private static void SetupSoundManager()
         {
             SoundManager3D snd = Object.FindFirstObjectByType<SoundManager3D>();
@@ -346,22 +363,38 @@ namespace ElementalHexTactics3D.Editor
             // Ensure Unit Ring Sprite exists
             Sprite ringSprite = EnsureSpriteImporter("Assets/Sprites/UnitRing_Circle.png");
 
-            // 1. Spawn Player 1: Commander (Actor3_3) at (0, -2)
+            // 1. Spawn Player 1: Commander in Citadel Reserve across the Rift
             Sprite playerSprite = LoadSubSprite($"{BattlersFolder}/Actor3_3.png", "Actor3_3_0");
             HexTile3D playerTile = grid.GetTile(new HexCoordinates(0, -2));
             if (playerTile != null)
             {
-                CreateUnitStandee("Unit_Player_Commander", "Commander", UnitFaction.Player, playerSprite, ringSprite, playerTile,
+                GameObject cmdrObj = CreateUnitStandee("Unit_Player_Commander", "Commander", UnitFaction.Player, playerSprite, ringSprite, playerTile,
                     hp: 10, range: 3, archetype: UnitArchetype.Commander, affinity: ElementalAffinity.None, baseAtk: 3, standeeScale: 0.75f);
+                TacticalUnit3D cmdr = cmdrObj.GetComponent<TacticalUnit3D>();
+                if (cmdr != null)
+                {
+                    cmdr.AddElementalCore(1); // Start with 1 Core so player can test summoning Titan immediately!
+                }
+
+                // Commander waits in the Citadel Reserve across the Rift until deployed!
+                playerTile.CurrentOccupant = null;
+                cmdr.CurrentTile = null;
+                cmdrObj.SetActive(false);
             }
 
-            // 2. Spawn Player 2: Allied Titan (FlameFrost Dragon) at (-1, -1)
+            // 2. Spawn Player 2: Allied Titan in Citadel Reserve across the Rift
             Sprite titanSprite = LoadSubSprite($"{BattlersFolder}/FlameFrost Dragon.png", "FlameFrost Dragon_0");
             HexTile3D titanTile = grid.GetTile(new HexCoordinates(-1, -1));
             if (titanTile != null)
             {
-                CreateUnitStandee("Unit_Player_Titan", "Flame Titan (Dragon)", UnitFaction.Player, titanSprite, ringSprite, titanTile,
+                GameObject titanObj = CreateUnitStandee("Unit_Player_Titan", "Flame Titan (Dragon)", UnitFaction.Player, titanSprite, ringSprite, titanTile,
                     hp: 14, range: 2, archetype: UnitArchetype.Titan, affinity: ElementalAffinity.Fire, baseAtk: 4, standeeScale: 1.05f);
+
+                // Titan waits in the Citadel Reserve across the Rift until summoned!
+                titanTile.CurrentOccupant = null;
+                TacticalUnit3D titan = titanObj.GetComponent<TacticalUnit3D>();
+                if (titan != null) titan.CurrentTile = null;
+                titanObj.SetActive(false);
             }
 
             // 3. Spawn Enemy 1: Boss Dracomancer at (0, 2)

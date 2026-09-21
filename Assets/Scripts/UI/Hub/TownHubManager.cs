@@ -300,6 +300,10 @@ namespace ElementalHexTactics3D.UI.Hub
             if (modalBarracks != null) modalBarracks.SetActive(false);
             if (modalMine != null) modalMine.SetActive(false);
             if (modalShrine != null) modalShrine.SetActive(false);
+            if (ExpeditionPortalModalUI.Instance != null && ExpeditionPortalModalUI.Instance.IsOpen)
+            {
+                ExpeditionPortalModalUI.Instance.CloseModal();
+            }
             activeModal = null;
         }
 
@@ -397,14 +401,15 @@ namespace ElementalHexTactics3D.UI.Hub
 
         public void EmbarkToExpedition()
         {
-            PlaySound(sfxPortalEmbark, 1.0f);
+            PlaySound(sfxOpenModal, 0.9f);
             HideTooltipImmediate();
             CloseAllModals();
 
-            if (TitleMenuCanvasUI.Instance != null)
+            if (ExpeditionPortalModalUI.Instance == null)
             {
-                TitleMenuCanvasUI.Instance.EnterHexBattlefield();
+                gameObject.AddComponent<ExpeditionPortalModalUI>();
             }
+            ExpeditionPortalModalUI.Instance.OpenModal();
         }
 
         private void OnReturnTitleClicked()

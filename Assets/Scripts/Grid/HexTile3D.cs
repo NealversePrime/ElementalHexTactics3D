@@ -53,14 +53,21 @@ namespace ElementalHexTactics3D.Grid
 
         public TacticalUnit3D GetOccupant()
         {
-            if (CurrentOccupant is TacticalUnit3D unit) return unit;
+            if (CurrentOccupant is TacticalUnit3D unit)
+            {
+                if (unit != null && unit.gameObject.activeInHierarchy && unit.CurrentHealth > 0)
+                {
+                    return unit;
+                }
+                CurrentOccupant = null;
+            }
 
-            // Proximity fallback: find any unit standing directly on this tile's top position
+            // Proximity fallback: find any active living unit standing directly on this tile's top position
             TacticalUnit3D[] allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
             Vector3 myPos = transform.position;
             foreach (var u in allUnits)
             {
-                if (u == null) continue;
+                if (u == null || !u.gameObject.activeInHierarchy || u.CurrentHealth <= 0) continue;
                 if (u.CurrentTile == this || Vector3.Distance(new Vector3(u.transform.position.x, 0f, u.transform.position.z), new Vector3(myPos.x, 0f, myPos.z)) < 0.65f)
                 {
                     CurrentOccupant = u;

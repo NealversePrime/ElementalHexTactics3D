@@ -193,18 +193,27 @@ namespace ElementalHexTactics3D.Turn
         {
             if (result != BattleResult.InProgress) return;
 
-            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
-            int alivePlayers = 0;
+            TacticalUnit3D[] allUnits = FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            int activePlayers = 0;
+            int reservePlayers = 0;
             int aliveEnemies = 0;
 
-            foreach (var u in units)
+            foreach (var u in allUnits)
             {
                 if (u == null || u.CurrentHealth <= 0) continue;
-                if (u.Faction == UnitFaction.Player) alivePlayers++;
-                else if (u.Faction == UnitFaction.Enemy) aliveEnemies++;
+                if (u.Faction == UnitFaction.Player)
+                {
+                    if (u.gameObject.activeInHierarchy) activePlayers++;
+                    else reservePlayers++;
+                }
+                else if (u.Faction == UnitFaction.Enemy)
+                {
+                    if (u.gameObject.activeInHierarchy) aliveEnemies++;
+                }
             }
 
-            if (alivePlayers == 0 && aliveEnemies > 0)
+            // Defeat only triggers if ALL player units (active on field AND reserve in Citadel) are eliminated
+            if (activePlayers == 0 && reservePlayers == 0 && aliveEnemies > 0)
             {
                 result = BattleResult.Defeat;
                 Debug.Log("<color=#EF5350><b>[Battle Ended] DEFEAT!</b></color> Commander has fallen in battle.");
@@ -214,8 +223,40 @@ namespace ElementalHexTactics3D.Turn
             {
                 result = BattleResult.Victory;
                 Debug.Log("<color=#FFD700><b>[Battle Ended] VICTORY!</b></color> All enemy forces vanquished!");
+
+                // Award Expedition Spoils to Citadel Domain!
+                var activeMission = Campaign.ExpeditionTrilemmaGenerator.CurrentActiveMission;
+                if (activeMission != null && UI.Hub.TownHubManager.Instance != null)
+                {
+                    if (activeMission.RewardMana > 0) UI.Hub.TownHubManager.Instance.AddManaCrystals(activeMission.RewardMana);
+                    if (activeMission.RewardEmbers > 0) UI.Hub.TownHubManager.Instance.AddSoulEmbers(activeMission.RewardEmbers);
+                    if (activeMission.RewardOutcasts > 0) UI.Hub.TownHubManager.Instance.AddFreedOutcasts(activeMission.RewardOutcasts);
+                }
+
+                if (CombatFeedbackManager.Instance != null && activeMission != null)
+                {
+                    CombatFeedbackManager.Instance.ShowBanner(
+                        "👑 EXPEDITION VICTORIOUS! 👑",
+                        $"Secured: {activeMission.GetRewardsSummary()}\nReturn to Citadel or continue testing!",
+                        4.0f,
+                        new Color(1.0f, 0.85f, 0.25f)
+                    );
+                }
+
                 OnBattleEnded?.Invoke(result);
             }
+        }
+
+        /// <summary>
+        /// Resets turn order, round counter, and battle outcome for a freshly generated battlefield.
+        /// </summary>
+        public void ResetBattleState()
+        {
+            StopAllCoroutines();
+            currentRound = 1;
+            result = BattleResult.InProgress;
+            currentPhase = TurnPhase.PlayerTurn;
+            StartPlayerTurn();
         }
 
         /// <summary>

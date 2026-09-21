@@ -1,5 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using ElementalHexTactics3D.Campaign;
+using ElementalHexTactics3D.Units;
+using ElementalHexTactics3D.Combat;
+using ElementalHexTactics3D.CameraControl;
+using ElementalHexTactics3D.Turn;
 
 namespace ElementalHexTactics3D.Grid
 {
@@ -65,6 +70,25 @@ namespace ElementalHexTactics3D.Grid
         }
 
         /// <summary>
+        /// Ensures tile (0, -3) hosts the Abyssal Rift Conduit gateway back to the Citadel.
+        /// </summary>
+        public void EnsureAbyssalRiftConduit()
+        {
+            if (Combat.AbyssalRiftConduit3D.Instance != null) return;
+
+            HexCoordinates riftCoord = new HexCoordinates(0, -3);
+            if (tiles.TryGetValue(riftCoord, out HexTile3D riftTile))
+            {
+                var conduit = riftTile.GetComponent<Combat.AbyssalRiftConduit3D>();
+                if (conduit == null)
+                {
+                    conduit = riftTile.gameObject.AddComponent<Combat.AbyssalRiftConduit3D>();
+                }
+                conduit.Initialize(riftTile, 2);
+            }
+        }
+
+        /// <summary>
         /// Registers existing HexTile3D children already in the scene, preventing accidental destruction on play.
         /// </summary>
         public void RegisterExistingTiles()
@@ -107,6 +131,110 @@ namespace ElementalHexTactics3D.Grid
                 default:
                     return barrenMaterial;
             }
+        }
+
+        [ContextMenu("Generate Randomized Battlefield")]
+        public void GenerateRandomizedBattlefield(ExpeditionMissionData mission = null, int seed = 0)
+        {
+            if (mission == null)
+            {
+                if (seed == 0) seed = UnityEngine.Random.Range(1000, 99999);
+                mission = ExpeditionTrilemmaGenerator.GenerateQuickSkirmish(seed);
+            }
+            else if (seed != 0)
+            {
+                mission.Seed = seed;
+            }
+
+            ExpeditionTrilemmaGenerator.CurrentActiveMission = mission;
+
+            ClearGrid();
+
+            // Clear active rift conduit if one existed
+            if (AbyssalRiftConduit3D.Instance != null)
+            {
+                Destroy(AbyssalRiftConduit3D.Instance);
+            }
+
+            // Generate or cache procedural 3D hex pillar mesh
+            if (sharedPillarMesh == null)
+            {
+                sharedPillarMesh = HexMeshBuilder.CreateHexPillarMesh(hexRadius, pillarDepth);
+            }
+
+            GeneratedBattlefieldData data = HexBattlefieldGenerator.Generate(mission, gridRadius);
+
+            GameObject container = new GameObject("Tiles_Container");
+            container.transform.SetParent(transform, false);
+
+            foreach (var kvp in data.Tiles)
+            {
+                var coord = kvp.Key;
+                var spec = kvp.Value;
+
+                Vector3 worldPos = coord.ToWorldPosition(hexRadius, elevationHeight, spec.ElevationTier);
+
+                GameObject tileObj = new GameObject($"HexTile_{coord.Q}_{coord.R}");
+                tileObj.transform.SetParent(container.transform, false);
+                tileObj.transform.position = worldPos;
+
+                HexTile3D tile = tileObj.AddComponent<HexTile3D>();
+                Material topMat = GetTopMaterial(spec.State, spec.TierLevel);
+                tile.Initialize(coord, spec.ElevationTier, sharedPillarMesh, topMat, sidePillarMaterial);
+                tile.SetState(spec.State, spec.TierLevel);
+
+                tiles[coord] = tile;
+            }
+
+            // Clear previous enemies and spawn new procedural squad
+            TacticalUnitSpawner.ClearAllEnemies();
+            foreach (var enemySpec in data.Enemies)
+            {
+                if (tiles.TryGetValue(enemySpec.Coordinates, out HexTile3D eTile))
+                {
+                    Sprite sSprite = TacticalUnitSpawner.LoadBattlerSprite(enemySpec.BattlerSpriteName);
+                    TacticalUnitSpawner.SpawnUnitStandee(
+                        enemySpec.UnitName,
+                        UnitFaction.Enemy,
+                        sSprite,
+                        eTile,
+                        enemySpec.HP,
+                        enemySpec.Range,
+                        enemySpec.Archetype,
+                        enemySpec.Affinity,
+                        enemySpec.BaseAtk,
+                        enemySpec.Scale
+                    );
+                }
+            }
+
+            // Reset player units to Citadel reserve across the Rift
+            TacticalUnitSpawner.ResetPlayerReserveUnits();
+
+            // Reset Turn Manager to Round 1, Player Turn
+            if (TurnManager3D.Instance != null)
+            {
+                TurnManager3D.Instance.ResetBattleState();
+            }
+
+            // Reset Camera to framing view
+            if (TacticalCameraController.Instance != null)
+            {
+                TacticalCameraController.Instance.ResetToTacticalView();
+            }
+
+            // Announce mission briefing banner
+            if (CombatFeedbackManager.Instance != null)
+            {
+                CombatFeedbackManager.Instance.ShowBanner(
+                    $"✦ {mission.Title.ToUpper()} ✦",
+                    $"{mission.GetArchetypeName()} ({mission.GetThreatStars()}) | {mission.GetModifierTag()}\nSurvey the battlefield, then click [Tear Open Abyssal Rift]!",
+                    3.5f,
+                    new Color(0.35f, 0.85f, 1.0f)
+                );
+            }
+
+            Debug.Log($"<color=#4CAF50><b>[HexGrid3D]</b></color> Procedural battlefield initialized: {mission.Title} (Seed: {mission.Seed}, Tiles: {tiles.Count}, Enemies: {data.Enemies.Count}).");
         }
 
         [ContextMenu("Regenerate Grid")]

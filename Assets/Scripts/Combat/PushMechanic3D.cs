@@ -35,11 +35,15 @@ namespace ElementalHexTactics3D.Combat
             target.TakeDamage(1, "💨 PUSH! -1");
             if (target == null || target.CurrentHealth <= 0) yield break;
 
+            // Check if destination is the Abyssal Rift Conduit consuming an enemy sacrifice
+            bool isRiftSacrifice = (AbyssalRiftConduit3D.Instance != null) &&
+                                   AbyssalRiftConduit3D.Instance.CanSacrificeUnit(target, destTile);
+
             // 2. CASE 1: BLOCKED (Off-grid edge, occupied tile, solid Stone Pillar, or steep cliff > 1)
-            bool isBlocked = (destTile == null) ||
+            bool isBlocked = !isRiftSacrifice && ((destTile == null) ||
                              destTile.IsOccupied ||
                              destTile.State == TileState.StonePillar ||
-                             (target.CurrentTile != null && Mathf.Abs(destTile.Elevation - target.CurrentTile.Elevation) > 1);
+                             (target.CurrentTile != null && Mathf.Abs(destTile.Elevation - target.CurrentTile.Elevation) > 1));
 
             if (isBlocked)
             {
@@ -62,6 +66,13 @@ namespace ElementalHexTactics3D.Combat
 
             List<HexTile3D> pushPath = new List<HexTile3D> { destTile };
             yield return target.MoveAlongPath(pushPath, stepDuration: 0.18f);
+
+            // If consumed by the Abyssal Rift Maw, trigger sacrifice and exit
+            if (isRiftSacrifice)
+            {
+                yield return AbyssalRiftConduit3D.Instance.ConsumeSacrificeRoutine(target, caster);
+                yield break;
+            }
 
             if (target == null || target.CurrentHealth <= 0) yield break;
 

@@ -70,7 +70,18 @@ namespace ElementalHexTactics3D.Units
         public UnitArchetype Archetype => archetype;
         public ElementalAffinity Affinity => affinity;
         public int MaxHealth => maxHealth;
-        public int CurrentHealth => currentHealth;
+        public int CurrentHealth
+        {
+            get => currentHealth;
+            set => currentHealth = Mathf.Clamp(value, 0, maxHealth);
+        }
+
+        public void Revive(int hp = -1)
+        {
+            currentHealth = (hp > 0) ? Mathf.Min(hp, maxHealth) : maxHealth;
+            ClearMobilityDebuffs();
+        }
+
         public int MoveRange => moveRange;
         public int BaseAttackDamage => baseAttackDamage;
 
@@ -691,11 +702,27 @@ namespace ElementalHexTactics3D.Units
         private void Die()
         {
             Debug.Log($"<color=#D32F2F><b>[Defeated]</b></color> {unitName} has fallen in battle!");
-            CombatVFXManager.Instance?.PlayWallSlam(transform.position + Vector3.up * 0.6f, Vector3.up);
             if (currentTile != null && currentTile.CurrentOccupant == this)
             {
                 currentTile.CurrentOccupant = null;
             }
+
+            // Player Titans retreat back to Citadel Reserve across the Rift instead of permanent Destroy!
+            if (faction == UnitFaction.Player && archetype == UnitArchetype.Titan)
+            {
+                if (CombatFeedbackManager.Instance != null)
+                {
+                    CombatFeedbackManager.Instance.SpawnDamageText(transform.position, "RETREATED TO CITADEL", new Color(0.7f, 0.3f, 0.9f), 2f);
+                }
+                currentTile = null;
+                gameObject.SetActive(false);
+                if (TurnManager3D.Instance != null)
+                {
+                    TurnManager3D.Instance.CheckBattleConditions();
+                }
+                return;
+            }
+
             Destroy(gameObject);
 
             if (TurnManager3D.Instance != null)

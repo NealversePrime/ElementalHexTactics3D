@@ -133,6 +133,12 @@ namespace ElementalHexTactics3D.Combat
             if (glowMaterial.HasProperty("_BaseMap")) glowMaterial.SetTexture("_BaseMap", softGlowTex);
             if (glowMaterial.HasProperty("_Surface")) glowMaterial.SetFloat("_Surface", 1f); // Transparent
             if (glowMaterial.HasProperty("_Blend")) glowMaterial.SetFloat("_Blend", 1f); // Additive
+            glowMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            glowMaterial.EnableKeyword("_BLENDMODE_ADD");
+            glowMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            glowMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            glowMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            glowMaterial.SetInt("_ZWrite", 0);
 
             // Spark Material
             sparkMaterial = new Material(particleShader);
@@ -140,6 +146,12 @@ namespace ElementalHexTactics3D.Combat
             sparkMaterial.mainTexture = sharpSparkTex;
             if (sparkMaterial.HasProperty("_BaseMap")) sparkMaterial.SetTexture("_BaseMap", sharpSparkTex);
             if (sparkMaterial.HasProperty("_Surface")) sparkMaterial.SetFloat("_Surface", 1f);
+            sparkMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            sparkMaterial.EnableKeyword("_BLENDMODE_ADD");
+            sparkMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            sparkMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            sparkMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+            sparkMaterial.SetInt("_ZWrite", 0);
 
             // Cloud / Smoke Material (Alpha blended)
             cloudMaterial = new Material(particleShader);
@@ -148,6 +160,12 @@ namespace ElementalHexTactics3D.Combat
             if (cloudMaterial.HasProperty("_BaseMap")) cloudMaterial.SetTexture("_BaseMap", cloudPuffTex);
             if (cloudMaterial.HasProperty("_Surface")) cloudMaterial.SetFloat("_Surface", 1f);
             if (cloudMaterial.HasProperty("_Blend")) cloudMaterial.SetFloat("_Blend", 0f); // Alpha blend
+            cloudMaterial.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            cloudMaterial.EnableKeyword("_BLENDMODE_ALPHA");
+            cloudMaterial.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            cloudMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            cloudMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            cloudMaterial.SetInt("_ZWrite", 0);
         }
 
         private ParticleSystem CreateParticleSystem(GameObject target)
@@ -448,6 +466,121 @@ namespace ElementalHexTactics3D.Combat
 
             ps.Play();
             return embersObj;
+        }
+
+        /// <summary>
+        /// Attaches a continuous swirling violet-black portal vortex to the Abyssal Rift tile.
+        /// </summary>
+        public GameObject AttachRiftVortex(Transform riftParent)
+        {
+            EnsureMaterials();
+            GameObject vortexObj = new GameObject("RiftVortexParticles");
+            vortexObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+            vortexObj.transform.SetParent(riftParent, false);
+            vortexObj.transform.localPosition = new Vector3(0f, 0.05f, 0f);
+
+            ParticleSystem ps = CreateParticleSystem(vortexObj);
+            ParticleSystemRenderer r = vortexObj.GetComponent<ParticleSystemRenderer>();
+            r.material = glowMaterial;
+            r.renderMode = ParticleSystemRenderMode.Billboard;
+
+            var main = ps.main;
+            main.loop = true;
+            main.duration = 2.0f;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(1.0f, 1.8f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0.2f, 0.6f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.25f, 0.5f);
+            main.startColor = new ParticleSystem.MinMaxGradient(new Color(0.8f, 0.1f, 1.5f, 0.9f), new Color(0.3f, 0.02f, 0.6f, 0.9f));
+            main.gravityModifier = -0.2f;
+
+            var em = ps.emission;
+            em.rateOverTime = 12f;
+
+            var shape = ps.shape;
+            shape.shapeType = ParticleSystemShapeType.Circle;
+            shape.radius = 0.7f;
+            shape.rotation = new Vector3(90f, 0f, 0f);
+
+            var sizeOverLifetime = ps.sizeOverLifetime;
+            sizeOverLifetime.enabled = true;
+            AnimationCurve curve = new AnimationCurve();
+            curve.AddKey(0f, 0.4f);
+            curve.AddKey(0.5f, 1.2f);
+            curve.AddKey(1f, 0f);
+            sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, curve);
+
+            ps.Play();
+            return vortexObj;
+        }
+
+        /// <summary>
+        /// Plays a violent upward void vortex and shockwave when an enemy is sacrificed into the Rift.
+        /// </summary>
+        public void PlayRiftSacrifice(Vector3 worldPos)
+        {
+            EnsureMaterials();
+            GameObject vfxObj = new GameObject("VFX_RiftSacrifice");
+            vfxObj.transform.position = worldPos + Vector3.up * 0.1f;
+
+            ParticleSystem ps = CreateParticleSystem(vfxObj);
+            ParticleSystemRenderer r = vfxObj.GetComponent<ParticleSystemRenderer>();
+            r.material = sparkMaterial;
+
+            var main = ps.main;
+            main.loop = false;
+            main.duration = 0.8f;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.4f, 0.7f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(3.0f, 6.0f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.35f, 0.75f);
+            main.startColor = new ParticleSystem.MinMaxGradient(new Color(1.0f, 0.2f, 2.0f, 1f), new Color(0.2f, 0.0f, 0.5f, 1f));
+            main.gravityModifier = -0.5f;
+            main.stopAction = ParticleSystemStopAction.Destroy;
+
+            var em = ps.emission;
+            em.rateOverTime = 0;
+            em.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 32) });
+
+            var shape = ps.shape;
+            shape.shapeType = ParticleSystemShapeType.Cone;
+            shape.angle = 20f;
+            shape.radius = 0.3f;
+            vfxObj.transform.rotation = Quaternion.Euler(-90f, 0f, 0f); // shoot upward
+
+            ps.Play();
+        }
+
+        /// <summary>
+        /// Plays an explosive magma shockwave ring when the Titan erupts through the Rift.
+        /// </summary>
+        public void PlayTitanShockwave(Vector3 worldPos)
+        {
+            EnsureMaterials();
+            GameObject vfxObj = new GameObject("VFX_TitanShockwave");
+            vfxObj.transform.position = worldPos + Vector3.up * 0.1f;
+
+            ParticleSystem ps = CreateParticleSystem(vfxObj);
+            ParticleSystemRenderer r = vfxObj.GetComponent<ParticleSystemRenderer>();
+            r.material = glowMaterial;
+
+            var main = ps.main;
+            main.loop = false;
+            main.duration = 0.6f;
+            main.startLifetime = new ParticleSystem.MinMaxCurve(0.3f, 0.5f);
+            main.startSpeed = new ParticleSystem.MinMaxCurve(4.0f, 8.0f);
+            main.startSize = new ParticleSystem.MinMaxCurve(0.3f, 0.6f);
+            main.startColor = new ParticleSystem.MinMaxGradient(new Color(2.5f, 0.8f, 0.1f, 1f), new Color(2.0f, 0.2f, 0.05f, 1f));
+            main.stopAction = ParticleSystemStopAction.Destroy;
+
+            var em = ps.emission;
+            em.rateOverTime = 0;
+            em.SetBursts(new ParticleSystem.Burst[] { new ParticleSystem.Burst(0f, 36) });
+
+            var shape = ps.shape;
+            shape.shapeType = ParticleSystemShapeType.Circle;
+            shape.radius = 0.5f;
+            shape.rotation = new Vector3(90f, 0f, 0f);
+
+            ps.Play();
         }
 
         private void OnDestroy()
