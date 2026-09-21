@@ -80,9 +80,11 @@ Bagian ini merangkum sistem-sistem yang telah selesai dirancang secara konseptua
 
 ---
 
-### C. Taksonomi Perlengkapan Asimetris (Sesuai Notion)
+### C. Taksonomi Perlengkapan & Ukuran Asimetris (Small, Normal, Big)
 
-#### 1. Humanoid / Shaper (Komandan) — 5 Slot RPG
+Sesuai dokumen konsep, seluruh unit terbagi menjadi 3 kategori ukuran dengan alokasi slot peralatan yang berbeda secara fundamental:
+
+#### 1. Normal: Humanoid / Shaper (Komandan) — 5 Slot RPG Lengkap
 Peralatan Shaper menentukan **"Elemen apa yang diinfus"** dan **"Di mana mereka bisa melangkah"**.
 * **Weapon:** Menentukan elemen yang diinfus saat serangan mengenai tile (contoh: *Inferno Hammer* $\rightarrow$ Infuse Scorched Earth; *Tidecaller Staff* $\rightarrow$ Infuse Water Puddle).
 * **Boots:** Navigasi bahaya medan / hazard traversal (contoh: *Lava Walkers* $\rightarrow$ berjalan di atas Magma tanpa terbakar; *Frost-Grip Soles* $\rightarrow$ tidak tergelincir di Ice Sheet).
@@ -90,11 +92,16 @@ Peralatan Shaper menentukan **"Elemen apa yang diinfus"** dan **"Di mana mereka 
 * **Armor:** Mitigasi pertahanan fisik dan sihir standar.
 * **Accessory:** Manipulasi giliran (*Turn Order*) dan inisiatif (contoh: *Haste Ring* $\rightarrow$ bertindak lebih awal untuk menata medan sebelum monster bergerak).
 
-#### 2. Monsters / Titans — 3 Slot Perlengkapan
-Peralatan Monster berfokus pada **Adaptasi Biome** dan **Memecah Aturan (*Rule Breaking*)**.
+#### 2. Big: Colossal Titans (Monster Purba) — 3 Slot Perlengkapan Spesialis
+Peralatan Titan berfokus pada **Adaptasi Biome** dan **Memecah Aturan (*Rule Breaking*)**.
 * **Relic (1 Slot):** *Stat Stick* peningkat atribut dasar (contoh: *Titan Heart* $\rightarrow$ +500 HP, +50 ATK).
 * **Scroll 1 (Biome Adaptation):** Kemampuan adaptasi lingkungan (contoh: *Scroll of Inner Fire* $\rightarrow$ memunculkan Scorched Earth di bawah kaki tiap turn; *Scroll of Tides* $\rightarrow$ bisa berenang di Deep Water).
 * **Scroll 2 (Rule Breaking):** Memanipulasi aturan dasar permainan (contoh: *Scroll of the Vortex* $\rightarrow$ memperluas jarak skill `Consume Land` menjadi 2 Hex dan meniup awan asap; *Scroll of Seismic Weight* $\rightarrow$ kebal didorong/shove musuh).
+
+#### 3. Small: Minions & Demi-Humans (Outcasts) — 1–2 Slot Aux / Worker Tools
+Monster kecil dan budak yang diselamatkan dari belenggu Kekaisaran Suci.
+* **Aux / Trinket (1 Slot):** Jimat kelincahan atau racun (contoh: *Shadow Cloak* $\rightarrow$ kamuflase di kabut uap; *Spike Trap Pouch* $\rightarrow$ menaruh ranjau duri di hex).
+* **Worker Tool (Domain Role):** Jika tidak dibawa bertarung, dapat dipasangi alat tambang/cangkul arkanum di *Mana Mine & Farm* untuk meningkatkan output panen harian.
 
 ---
 

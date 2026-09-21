@@ -4,6 +4,27 @@ In **Elemental Hex Tactics 3D**, battles feature a focused **2v2 skirmish** desi
 
 ---
 
+## 📏 Taksonomi 3 Kategori Ukuran Unit (Small, Normal, Big)
+
+Sistem taktis dan domain **Elemental Hex Tactics 3D** mengklasifikasikan seluruh unit ke dalam **3 tingkatan ukuran (*Size Tiers*)** yang asimetris, baik dari segi peran tempur, interaksi fisika di atas hex grid, hingga slot perlengkapannya:
+
+```mermaid
+flowchart TD
+    subgraph UnitSizes["3 Kategori Ukuran Unit"]
+        S["🟢 SMALL (Minions & Demi-Humans)<br/>• Skala: ~1.0m - 1.2m<br/>• Mobilitas: Tinggi (Move 3-4)<br/>• Slot: 1-2 Aux / Worker Collar<br/>• Peran: Flanker, Trapper & Pekerja Hub"]
+        N["🔵 NORMAL (Humanoid Shapers)<br/>• Skala: ~1.7m - 1.8m (1x Hex)<br/>• Mobilitas: Fleksibel (Move 3)<br/>• Slot: 5 RPG Gear (Weapon/Armor/Boots/Helm/Ring)<br/>• Peran: Terraformer, Shove Master & Komandan"]
+        B["🔴 BIG (Colossal Titans)<br/>• Skala: ~2.5m - 3.5m (Masif)<br/>• Mobilitas: Berat (Move 2, Heavy/Unshovable)<br/>• Slot: 1 Relic + 2 Scrolls (Biome/Rule Breaking)<br/>• Peran: Apex Striker, Hazard Immune & Consume Land"]
+    end
+```
+
+| Kategori | Representasi Unit | Skala Hex & Tinggi | Slot Perlengkapan | Ketahanan Medan / Fisika | Peran Taktis & Domain |
+| :--- | :--- | :---: | :---: | :--- | :--- |
+| **`Small`** | **Minions & Demi-Humans**<br/>*(Kobold, Cinder Imp, Demon Slime, Dark Elf)* | $\sim 1.0 - 1.2\text{ m}$<br/>(Mungil) | **1–2 Slot Aux**<br/>(Aksesoris/Peralatan Kerja) | **Ringan / Rentan Hazard.** Mudah terlempar jauh saat terkena *Shove*. Rentan terbakar di Magma dan tenggelam di Deep Water. | **Frontline Harassment & Pekerja Domain:** Mengganggu pergerakan musuh, memicu jebakan, atau ditempatkan di *Mana Mine & Farm* untuk panen sumber daya harian. |
+| **`Normal`** | **Humanoid Shapers**<br/>*(Exiled Demon Lord, Holy Inquisitor, Templar)* | $\sim 1.7 - 1.8\text{ m}$<br/>(1x Hex Tile) | **5 Slot RPG Lengkap**<br/>*(Weapon, Armor, Boots, Helm, Ring)* | **Standar.** Terdorong 1 tile saat terkena Push. Membutuhkan gear khusus (cth: *Lava Walkers*) untuk melintasi hazard tanpa cedera. | **Tactical Terraformer & Komandan:** Menentukan elemen medan (*Infuse* Api, Air, Tanah), manipulasi *Turn Order*, dan kombo *Kinetic Wall-Slam*. |
+| **`Big`** | **Colossal Titans**<br/>*(Magma Behemoth, Abyssal Leviathan, Archangel)* | $\sim 2.5 - 3.5\text{ m}$<br/>(Memenuhi Hex) | **3 Slot Spesialis**<br/>*(1 Relic + 2 Scrolls Adaptasi/Rule-Breaking)* | **Masif / Kebal Alami.** Tidak bisa didorong sembarangan (*Heavy Weight*). Kebal bawaan terhadap hazard elemen asal (cth: Titan Magma kebal lahar panas). | **Heavy Anchor & Finisher:** Memakan lahan berelemen (*Siphon/Consume Land*), mengeluarkan skill pemusnah massal (*Cataclysm Ultimate*). Memerlukan **Upkeep Food** berkala. |
+
+---
+
 ## 👥 The 2v2 Skirmish Roster
 
 | Unit | Faction | Archetype | Affinity | HP | ATK | Move | Role & Capabilities |
