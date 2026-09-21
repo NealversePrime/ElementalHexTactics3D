@@ -34,12 +34,12 @@ Semua poin di bawah ini telah selesai dikembangkan dan aktif di dalam scene `Ass
 ### A. 2D Interactive Citadel Town Hub
 * **Master Backdrop Canva (`full.png`):** Menggunakan karya kanvas 1920x1080 yang menggabungkan 3 lapisan: pemandangan belakang, 6 bangunan fasilitas, dan lapisan jalan batu depan (*foreground road strip*) sehingga fondasi bangunan menancap alami tanpa melayang.
 * **Pixel-Perfect Building Hotspot Overlays:**
-  1. **👑 Demon Lord Citadel:** `Pos (-753.3, 122.8)`, `Size 735 x 735` (Skala $1.47\times$).
-  2. **⚒️ Emancipation Forge:** `Pos (-395.6, -72.6)`, `Size 385 x 385` (Skala $0.77\times$).
-  3. **🌀 Abyssal Rift Portal:** `Pos (-26.5, -53.5)`, `Size 427 x 427` (Skala $1.00\times$).
-  4. **🐺 Monster Barracks & Den:** `Pos (313.5, -55.5)`, `Size 449 x 449` (Skala $1.00\times$).
-  5. **⛏️ Mana Mine & Spore Farms:** `Pos (643.2, -136.4)`, `Size 492.5 x 488.8` (Skala $1.25\times$).
-  6. **🔮 Ancient Deity Shrine:** `Pos (786.0, 174.0)`, `Size 348 x 348` (Skala $1.00\times$).
+  1. **👑 Demon Lord Citadel:** `Pos (-753.3, 122.8)`, `Size 735 x 735` (Skala 1.47x).
+  2. **⚒️ Emancipation Forge:** `Pos (-395.6, -72.6)`, `Size 385 x 385` (Skala 0.77x).
+  3. **🌀 Abyssal Rift Portal:** `Pos (-26.5, -53.5)`, `Size 427 x 427` (Skala 1.00x).
+  4. **🐺 Monster Barracks & Den:** `Pos (313.5, -55.5)`, `Size 449 x 449` (Skala 1.00x).
+  5. **⛏️ Mana Mine & Spore Farms:** `Pos (643.2, -136.4)`, `Size 492.5 x 488.8` (Skala 1.25x).
+  6. **🔮 Ancient Deity Shrine:** `Pos (786.0, 174.0)`, `Size 348 x 348` (Skala 1.00x).
 * **Alpha Feathering:** 15–20 pixel terbawah pada sprite `blacksmith.png` dan `demontower.png` telah di-feathering sehingga garis potongan lurus horizontal hilang dan larut mulus ke dalam bebatuan jalan saat di-hover.
 * **Efek Interaktif & Tooltip Banner:** Hover menampilkan *golden radiance* lembut (`alpha = 0.55`) dan memunculkan banner status di bagian atas layar.
 * **Modal Fasilitas:** Menampilkan dialog interaktif untuk kelima fasilitas domain dan tombol aksi.
@@ -86,21 +86,21 @@ Sesuai dokumen konsep, seluruh unit terbagi menjadi 3 kategori ukuran dengan alo
 
 #### 1. Normal: Humanoid / Shaper (Komandan) — 5 Slot RPG Lengkap
 Peralatan Shaper menentukan **"Elemen apa yang diinfus"** dan **"Di mana mereka bisa melangkah"**.
-* **Weapon:** Menentukan elemen yang diinfus saat serangan mengenai tile (contoh: *Inferno Hammer* $\rightarrow$ Infuse Scorched Earth; *Tidecaller Staff* $\rightarrow$ Infuse Water Puddle).
-* **Boots:** Navigasi bahaya medan / hazard traversal (contoh: *Lava Walkers* $\rightarrow$ berjalan di atas Magma tanpa terbakar; *Frost-Grip Soles* $\rightarrow$ tidak tergelincir di Ice Sheet).
-* **Helm:** Penangkal awan atmosfer & gangguan visual (contoh: *Steam-Piercer Goggles* $\rightarrow$ kebal Blind di awan Steam/Smoke; *Miasma Respirator* $\rightarrow$ kebal racun gas).
+* **Weapon:** Menentukan elemen yang diinfus saat serangan mengenai tile (contoh: *Inferno Hammer* ? Infuse Scorched Earth; *Tidecaller Staff* ? Infuse Water Puddle).
+* **Boots:** Navigasi bahaya medan / hazard traversal (contoh: *Lava Walkers* ? berjalan di atas Magma tanpa terbakar; *Frost-Grip Soles* ? tidak tergelincir di Ice Sheet).
+* **Helm:** Penangkal awan atmosfer & gangguan visual (contoh: *Steam-Piercer Goggles* ? kebal Blind di awan Steam/Smoke; *Miasma Respirator* ? kebal racun gas).
 * **Armor:** Mitigasi pertahanan fisik dan sihir standar.
-* **Accessory:** Manipulasi giliran (*Turn Order*) dan inisiatif (contoh: *Haste Ring* $\rightarrow$ bertindak lebih awal untuk menata medan sebelum monster bergerak).
+* **Accessory:** Manipulasi giliran (*Turn Order*) dan inisiatif (contoh: *Haste Ring* ? bertindak lebih awal untuk menata medan sebelum monster bergerak).
 
 #### 2. Big: Colossal Titans (Monster Purba) — 3 Slot Perlengkapan Spesialis
 Peralatan Titan berfokus pada **Adaptasi Biome** dan **Memecah Aturan (*Rule Breaking*)**.
-* **Relic (1 Slot):** *Stat Stick* peningkat atribut dasar (contoh: *Titan Heart* $\rightarrow$ +500 HP, +50 ATK).
-* **Scroll 1 (Biome Adaptation):** Kemampuan adaptasi lingkungan (contoh: *Scroll of Inner Fire* $\rightarrow$ memunculkan Scorched Earth di bawah kaki tiap turn; *Scroll of Tides* $\rightarrow$ bisa berenang di Deep Water).
-* **Scroll 2 (Rule Breaking):** Memanipulasi aturan dasar permainan (contoh: *Scroll of the Vortex* $\rightarrow$ memperluas jarak skill `Consume Land` menjadi 2 Hex dan meniup awan asap; *Scroll of Seismic Weight* $\rightarrow$ kebal didorong/shove musuh).
+* **Relic (1 Slot):** *Stat Stick* peningkat atribut dasar (contoh: *Titan Heart* ? +500 HP, +50 ATK).
+* **Scroll 1 (Biome Adaptation):** Kemampuan adaptasi lingkungan (contoh: *Scroll of Inner Fire* ? memunculkan Scorched Earth di bawah kaki tiap turn; *Scroll of Tides* ? bisa berenang di Deep Water).
+* **Scroll 2 (Rule Breaking):** Memanipulasi aturan dasar permainan (contoh: *Scroll of the Vortex* ? memperluas jarak skill `Consume Land` menjadi 2 Hex dan meniup awan asap; *Scroll of Seismic Weight* ? kebal didorong/shove musuh).
 
 #### 3. Small: Minions & Demi-Humans (Outcasts) — 1–2 Slot Aux / Worker Tools
 Monster kecil dan budak yang diselamatkan dari belenggu Kekaisaran Suci.
-* **Aux / Trinket (1 Slot):** Jimat kelincahan atau racun (contoh: *Shadow Cloak* $\rightarrow$ kamuflase di kabut uap; *Spike Trap Pouch* $\rightarrow$ menaruh ranjau duri di hex).
+* **Aux / Trinket (1 Slot):** Jimat kelincahan atau racun (contoh: *Shadow Cloak* ? kamuflase di kabut uap; *Spike Trap Pouch* ? menaruh ranjau duri di hex).
 * **Worker Tool (Domain Role):** Jika tidak dibawa bertarung, dapat dipasangi alat tambang/cangkul arkanum di *Mana Mine & Farm* untuk meningkatkan output panen harian.
 
 ---
