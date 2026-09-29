@@ -55,16 +55,29 @@ namespace ElementalHexTactics3D.InputHandling
         // Solid texture for 100% opaque UI rendering
         private Texture2D solidWhiteTex;
 
+        public static HexGridInteraction3D Instance { get; private set; }
+
         public HexTile3D HoveredTile => currentHoveredTile;
         public HexTile3D SelectedTile => currentSelectedTile;
         public TacticalUnit3D SelectedUnit => currentSelectedUnit;
         public UnitActionMode CurrentMode => currentMode;
 
+        // Public aliases for CombatHudCanvasUI
+        public HexTile3D CurrentHoveredTile => currentHoveredTile;
+        public HexTile3D CurrentSelectedTile => currentSelectedTile;
+        public TacticalUnit3D CurrentSelectedUnit => currentSelectedUnit;
+        public UnitActionMode CurrentActionMode => currentMode;
+
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+            else if (Instance != this) { Destroy(this); return; }
+        }
+
         private void Start()
         {
             mainCamera = UnityEngine.Camera.main;
             EnsureSolidTexture();
-            UI.CombatHudCanvasUI.EnsureInstance();
 
             // Dynamic Inception Failsafe: Ensure player units wait in Citadel reserve if Rift is not yet opened
             if (AbyssalRiftConduit3D.Instance == null || AbyssalRiftConduit3D.Instance.RiftTile == null)
@@ -182,7 +195,6 @@ namespace ElementalHexTactics3D.InputHandling
 
         private bool IsPointerOverUI(Vector2 guiMousePos)
         {
-            if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return true;
             if (hudRect.Contains(guiMousePos)) return true;
             if (actionBarRect.Contains(guiMousePos)) return true;
             if (isGhostUIVisible && ghostUIRect.Contains(guiMousePos)) return true;
@@ -202,10 +214,9 @@ namespace ElementalHexTactics3D.InputHandling
                 {
                     hitTile = hitUnit.CurrentTile ?? (HexGrid3D.Instance != null ? HexGrid3D.Instance.GetTile(hitUnit.Coordinates) : null);
                 }
-                else if (hit.normal.y > 0.35f)
+                else
                 {
-                    // 2. Otherwise check if we hit a hex tile TOP surface.
-                    // Rejecting vertical side cliff walls (hit.normal.y <= 0.35f) prevents raycasting through void/empty space onto distant cliff sides.
+                    // 2. Otherwise check if we hit a hex tile
                     hitTile = hit.collider.GetComponent<HexTile3D>() ?? hit.collider.GetComponentInParent<HexTile3D>();
                 }
             }
@@ -242,7 +253,7 @@ namespace ElementalHexTactics3D.InputHandling
                     {
                         clickedTile = directHitUnit.CurrentTile ?? clickedTile;
                     }
-                    else if (hit.normal.y > 0.35f)
+                    else
                     {
                         HexTile3D hitTile = hit.collider.GetComponent<HexTile3D>() ?? hit.collider.GetComponentInParent<HexTile3D>();
                         if (hitTile != null) clickedTile = hitTile;
@@ -310,7 +321,7 @@ namespace ElementalHexTactics3D.InputHandling
             }
         }
 
-        private void SelectTile(HexTile3D tile)
+        public void SelectTile(HexTile3D tile)
         {
             if (currentSelectedTile != null)
             {
@@ -325,7 +336,7 @@ namespace ElementalHexTactics3D.InputHandling
             }
         }
 
-        private void SelectUnit(TacticalUnit3D unit)
+        public void SelectUnit(TacticalUnit3D unit)
         {
             if (currentSelectedUnit != null && currentSelectedUnit != unit)
             {
@@ -831,8 +842,7 @@ namespace ElementalHexTactics3D.InputHandling
                 }
 
                 TacticalUnit3D occupant = tile.GetOccupant();
-                UnitFaction casterFaction = (currentSelectedUnit != null) ? currentSelectedUnit.Faction : UnitFaction.Player;
-                if (occupant != null && occupant.Faction != casterFaction && !hitEnemies.Contains(occupant))
+                if (occupant != null && occupant.Faction != currentSelectedUnit.Faction && !hitEnemies.Contains(occupant))
                 {
                     hitEnemies.Add(occupant);
                 }
@@ -1143,13 +1153,6 @@ namespace ElementalHexTactics3D.InputHandling
             if (TurnManager3D.Instance != null && TurnManager3D.Instance.Result != BattleResult.InProgress)
             {
                 return; // Suppress standard HUD when end-game modal is active
-            }
-
-            // Suppress legacy IMGUI HUD when modern uGUI Canvas Combat HUD is active
-            if (UI.CombatHudCanvasUI.Instance != null && UI.CombatHudCanvasUI.Instance.gameObject.activeInHierarchy)
-            {
-                DrawGhostUIPreview();
-                return;
             }
 
             DrawTacticalInfoHUD();

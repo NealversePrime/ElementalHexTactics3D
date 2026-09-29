@@ -602,7 +602,7 @@ namespace ElementalHexTactics3D.UI
             HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
             if (interaction == null) return;
 
-            TacticalUnit3D cmdr = interaction.FindCommanderUnit();
+            TacticalUnit3D cmdr = HexGridInteraction3D.FindCommanderUnit();
             if (cmdr != null && !cmdr.gameObject.activeInHierarchy)
             {
                 interaction.SetActionMode(interaction.CurrentActionMode == UnitActionMode.DeployCommander 
@@ -622,7 +622,7 @@ namespace ElementalHexTactics3D.UI
             HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
             if (interaction == null) return;
 
-            TacticalUnit3D titan = interaction.FindTitanUnit();
+            TacticalUnit3D titan = HexGridInteraction3D.FindTitanUnit();
             if (titan != null && !titan.gameObject.activeInHierarchy)
             {
                 interaction.SetActionMode(interaction.CurrentActionMode == UnitActionMode.SummonTitan 
@@ -799,7 +799,7 @@ namespace ElementalHexTactics3D.UI
             bool riftExists = (AbyssalRiftConduit3D.Instance != null && AbyssalRiftConduit3D.Instance.RiftTile != null);
             bool isRiftSelected = (interaction.CurrentSelectedTile != null && riftExists && AbyssalRiftConduit3D.Instance.RiftTile == interaction.CurrentSelectedTile);
             bool isDeployMode = (currentMode == UnitActionMode.DeployCommander || currentMode == UnitActionMode.SummonTitan);
-            bool noActiveUnits = !interaction.HasActivePlayerUnitsOnField();
+            bool noActiveUnits = !HexGridInteraction3D.HasActivePlayerUnitsOnField();
 
             if (!riftExists && selectedUnit == null)
             {
@@ -857,8 +857,8 @@ namespace ElementalHexTactics3D.UI
 
         private void UpdateRiftPanelButtons(HexGridInteraction3D interaction, bool isPlayerTurn, bool noActiveUnits, UnitActionMode currentMode)
         {
-            TacticalUnit3D cmdr = interaction.FindCommanderUnit();
-            TacticalUnit3D titan = interaction.FindTitanUnit();
+            TacticalUnit3D cmdr = HexGridInteraction3D.FindCommanderUnit();
+            TacticalUnit3D titan = HexGridInteraction3D.FindTitanUnit();
 
             bool cmdrInReserve = (cmdr != null && !cmdr.gameObject.activeInHierarchy);
             bool titanInReserve = (titan != null && !titan.gameObject.activeInHierarchy);
@@ -978,7 +978,7 @@ namespace ElementalHexTactics3D.UI
             // Summon Titan from Commander
             if (btnSummonTitanAbility != null)
             {
-                TacticalUnit3D reserveTitan = interaction.FindTitanUnit();
+                TacticalUnit3D reserveTitan = HexGridInteraction3D.FindTitanUnit();
                 bool titanInReserve = (reserveTitan != null && !reserveTitan.gameObject.activeInHierarchy);
                 bool shouldShowSummon = isCommander && titanInReserve;
 

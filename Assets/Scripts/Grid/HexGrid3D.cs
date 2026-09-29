@@ -20,7 +20,7 @@ namespace ElementalHexTactics3D.Grid
         [SerializeField] private int gridRadius = 4;
         [SerializeField] private float hexRadius = 1.0f;
         [SerializeField] private float elevationHeight = 0.6f;
-        [SerializeField] private float pillarDepth = 3.5f;
+        [SerializeField] private float pillarDepth = 1.2f;
 
         [Header("Elemental Materials Library (Square Textures)")]
         [SerializeField] private Material barrenMaterial;
@@ -156,10 +156,10 @@ namespace ElementalHexTactics3D.Grid
                 Destroy(AbyssalRiftConduit3D.Instance);
             }
 
-            // Generate or cache procedural 3D hex pillar mesh with extended cliffside skirts
+            // Generate or cache procedural 3D hex pillar mesh
             if (sharedPillarMesh == null)
             {
-                sharedPillarMesh = HexMeshBuilder.CreateHexPillarMesh(hexRadius, Mathf.Max(3.5f, pillarDepth));
+                sharedPillarMesh = HexMeshBuilder.CreateHexPillarMesh(hexRadius, pillarDepth);
             }
 
             GeneratedBattlefieldData data = HexBattlefieldGenerator.Generate(mission, gridRadius);
