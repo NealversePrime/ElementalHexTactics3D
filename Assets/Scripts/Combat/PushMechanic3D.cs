@@ -51,7 +51,7 @@ namespace ElementalHexTactics3D.Combat
                 Debug.Log($"<color=#EF5350><b>[Wall Slam!]</b></color> {target.UnitName}'s push was blocked {slamCause} Took 2 collision damage.");
                 yield return new WaitForSeconds(0.15f);
                 TacticalCameraController.Instance?.Shake(0.32f, 0.35f);
-                SoundManager3D.Instance?.PlaySlam(1.3f);
+                SoundManager3D.Instance?.PlayWallSlam(1.2f);
                 Vector3 slamPos = target.transform.position + Vector3.up * 0.5f;
                 CombatVFXManager.Instance?.PlayWallSlam(slamPos, Vector3.up);
                 if (target != null && target.CurrentHealth > 0)
@@ -82,7 +82,7 @@ namespace ElementalHexTactics3D.Combat
                 Debug.Log($"<color=#FF3D00><b>[Hazard Ignition!]</b></color> {target.UnitName} was pushed into molten Magma!");
                 yield return new WaitForSeconds(0.1f);
                 TacticalCameraController.Instance?.Shake(0.35f, 0.40f);
-                SoundManager3D.Instance?.PlaySpellCast(isFire: true);
+                SoundManager3D.Instance?.PlayFireball();
                 CombatVFXManager.Instance?.PlayFireBurst(destTile.GetTopCenterPosition());
             }
             else if (destTile.State == TileState.Water && destTile.TierLevel >= 2)
@@ -90,7 +90,7 @@ namespace ElementalHexTactics3D.Combat
                 Debug.Log($"<color=#0288D1><b>[Deep Water Submersion!]</b></color> {target.UnitName} was plunged into Deep Water!");
                 yield return new WaitForSeconds(0.1f);
                 TacticalCameraController.Instance?.Shake(0.22f, 0.25f);
-                SoundManager3D.Instance?.PlaySpellCast(isFire: false);
+                SoundManager3D.Instance?.PlayWaterSurge();
                 CombatVFXManager.Instance?.PlayWaterSplash(destTile.GetTopCenterPosition());
             }
             else if (destTile.State == TileState.Mud)
@@ -98,6 +98,7 @@ namespace ElementalHexTactics3D.Combat
                 Debug.Log($"<color=#8D6E63><b>[Mud Trap!]</b></color> {target.UnitName} was plunged into sticky Mud!");
                 yield return new WaitForSeconds(0.1f);
                 TacticalCameraController.Instance?.Shake(0.18f, 0.20f);
+                SoundManager3D.Instance?.PlayMudTrap();
             }
         }
 

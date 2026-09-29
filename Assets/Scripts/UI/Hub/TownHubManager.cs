@@ -84,6 +84,7 @@ namespace ElementalHexTactics3D.UI.Hub
             PurgeLegacyContainers();
             EnsureFullBackgroundSprite();
             SnapBuildingNodes();
+            Combat.SoundManager3D.Instance?.PlayHubBGM();
         }
 
         private void PurgeLegacyContainers()

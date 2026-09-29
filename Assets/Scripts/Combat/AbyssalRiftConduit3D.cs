@@ -90,7 +90,7 @@ namespace ElementalHexTactics3D.Combat
 
             // Dimensional Breach VFX & Feedback
             TacticalCameraController.Instance?.Shake(0.5f, 0.45f);
-            SoundManager3D.Instance?.PlaySpellCast(false);
+            SoundManager3D.Instance?.PlayRiftOpen();
             CombatVFXManager.Instance?.PlayRiftSacrifice(spawnPos);
             CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.2f, "🌀 ABYSSAL RIFT TORN OPEN!", new Color(0.7f, 0.2f, 1.0f), 2.2f);
             CombatFeedbackManager.Instance?.ShowBanner("🌀 DIMENSIONAL BREACH", $"Citadel Rift Gateway anchored at {targetTile.Coordinates}!", 1.5f, new Color(0.6f, 0.2f, 0.95f));
@@ -216,7 +216,7 @@ namespace ElementalHexTactics3D.Combat
 
             // 1. Audio & Camera Shake
             TacticalCameraController.Instance?.Shake(0.45f, 0.45f);
-            SoundManager3D.Instance?.PlaySlam(1.5f);
+            SoundManager3D.Instance?.PlayRiftDevour();
 
             // 2. Procedural Void Implosion VFX
             CombatVFXManager.Instance?.PlayRiftSacrifice(pos);
@@ -309,7 +309,7 @@ namespace ElementalHexTactics3D.Combat
 
             // 2. Camera shock & VFX
             TacticalCameraController.Instance?.Shake(0.35f, 0.35f);
-            SoundManager3D.Instance?.PlaySpellCast(false);
+            SoundManager3D.Instance?.PlayVanguardEmergence();
             CombatVFXManager.Instance?.PlayRiftSacrifice(spawnPos);
             CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.2f, "👑 COMMANDER ARRIVED!", new Color(0.7f, 0.3f, 1.0f), 2.0f);
 
@@ -329,7 +329,7 @@ namespace ElementalHexTactics3D.Combat
             if (unit == null) yield break;
 
             Vector3 pos = unit.transform.position;
-            SoundManager3D.Instance?.PlaySpellCast(false);
+            SoundManager3D.Instance?.PlayRiftOpen();
             CombatVFXManager.Instance?.PlayRiftSacrifice(pos);
             CombatFeedbackManager.Instance?.SpawnDamageText(pos + Vector3.up * 1.0f, "🌀 RECALLED TO CITADEL", new Color(0.7f, 0.4f, 1.0f), 1.5f);
 
@@ -368,7 +368,8 @@ namespace ElementalHexTactics3D.Combat
 
             // 2. Camera shock & VFX
             TacticalCameraController.Instance?.Shake(0.6f, 0.5f);
-            SoundManager3D.Instance?.PlaySlam(1.6f);
+            SoundManager3D.Instance?.PlayVanguardEmergence();
+            SoundManager3D.Instance?.PlayTitanStrike();
             CombatVFXManager.Instance?.PlayTitanShockwave(spawnPos);
             CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.5f, "🌋 TITAN EMERGENCE!", new Color(1f, 0.4f, 0f), 2.2f);
 

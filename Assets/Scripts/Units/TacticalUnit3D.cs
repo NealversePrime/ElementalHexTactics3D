@@ -542,7 +542,7 @@ namespace ElementalHexTactics3D.Units
                 Debug.Log($"<color=#FF3D00><b>[Hazard Burn!]</b></color> {unitName} stepped into molten Magma! Took 3 burn damage.");
                 TakeDamage(3, "🔥 MAGMA BURN! -3");
                 TacticalCameraController.Instance?.Shake(0.32f, 0.35f);
-                SoundManager3D.Instance?.PlaySpellCast(isFire: true);
+                SoundManager3D.Instance?.PlayFireball();
             }
             // 2. Deep Water Submersion (Tier 2) -> Turn 1 Immobilize, Turn 2 Cripple
             else if (tile.State == TileState.Water && tile.TierLevel >= 2)
@@ -554,7 +554,7 @@ namespace ElementalHexTactics3D.Units
                     Debug.Log($"<color=#0288D1><b>[Deep Water Submerged!]</b></color> {unitName} plunged into Deep Water! Immobilized 1 round.");
                     CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "🌊 SUBMERGED! (Immobilized)", new Color(0.2f, 0.8f, 1.0f), 1.5f);
                     TacticalCameraController.Instance?.Shake(0.2f, 0.25f);
-                    SoundManager3D.Instance?.PlaySpellCast(isFire: false);
+                    SoundManager3D.Instance?.PlayWaterSurge();
                 }
             }
             // 3. Mud Quagmire Trap -> Turn 1 Immobilize, Turn 2 Cripple
@@ -567,6 +567,7 @@ namespace ElementalHexTactics3D.Units
                     Debug.Log($"<color=#8D6E63><b>[Mud Quagmire Trap!]</b></color> {unitName} caught in sticky Mud! Immobilized 1 round.");
                     CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "💩 MUD TRAP! (Immobilized)", new Color(0.75f, 0.55f, 0.35f), 1.5f);
                     TacticalCameraController.Instance?.Shake(0.18f, 0.20f);
+                    SoundManager3D.Instance?.PlayMudTrap();
                 }
             }
             // 4. Safe / Dry ground outside hazards -> Immediately frees unit from fluid traps!
@@ -672,6 +673,7 @@ namespace ElementalHexTactics3D.Units
 
             currentHealth = Mathf.Max(0, currentHealth - amount);
             Debug.Log($"<color=#EF5350><b>[Damage]</b></color> {unitName} took {amount} dmg! HP: {currentHealth}/{maxHealth}");
+            SoundManager3D.Instance?.PlayGetHit();
 
             // Trigger floating combat text
             string label = !string.IsNullOrEmpty(customLabel) ? customLabel : $"-{amount}";

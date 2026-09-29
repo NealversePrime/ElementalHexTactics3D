@@ -142,7 +142,7 @@ namespace ElementalHexTactics3D.Turn
                     Debug.Log($"<color=#FF3D00><b>[Turn Hazard]</b></color> {u.UnitName} is standing in molten Magma! Took 3 burn damage.");
                     u.TakeDamage(3, "🔥 MAGMA BURN! -3");
                     TacticalCameraController.Instance?.Shake(0.32f, 0.35f);
-                    SoundManager3D.Instance?.PlaySpellCast(isFire: true);
+                    SoundManager3D.Instance?.PlayFireball();
                     yield return new WaitForSeconds(0.35f);
                 }
                 else if (tile != null && tile.State == TileState.Water && tile.TierLevel >= 2)
@@ -155,7 +155,7 @@ namespace ElementalHexTactics3D.Turn
                             Debug.Log($"<color=#0288D1><b>[Turn Hazard]</b></color> {u.UnitName} is submerged in Deep Water! Immobilized 1 turn.");
                             CombatFeedbackManager.Instance?.SpawnDamageText(u.transform.position, "🌊 SUBMERGED! (Immobilized)", new Color(0.2f, 0.8f, 1.0f), 1.5f);
                             TacticalCameraController.Instance?.Shake(0.2f, 0.25f);
-                            SoundManager3D.Instance?.PlaySpellCast(isFire: false);
+                            SoundManager3D.Instance?.PlayWaterSurge();
                             yield return new WaitForSeconds(0.35f);
                         }
                     }
@@ -170,6 +170,7 @@ namespace ElementalHexTactics3D.Turn
                             Debug.Log($"<color=#8D6E63><b>[Turn Hazard]</b></color> {u.UnitName} is stuck in Mud! Immobilized 1 turn.");
                             CombatFeedbackManager.Instance?.SpawnDamageText(u.transform.position, "💩 MUD TRAP! (Immobilized)", new Color(0.75f, 0.55f, 0.35f), 1.5f);
                             TacticalCameraController.Instance?.Shake(0.18f, 0.20f);
+                            SoundManager3D.Instance?.PlayMudTrap();
                             yield return new WaitForSeconds(0.35f);
                         }
                     }
@@ -217,6 +218,7 @@ namespace ElementalHexTactics3D.Turn
             {
                 result = BattleResult.Defeat;
                 Debug.Log("<color=#EF5350><b>[Battle Ended] DEFEAT!</b></color> Commander and reserves have fallen.");
+                SoundManager3D.Instance?.PlayDefeat();
                 
                 var activeMission = Campaign.ExpeditionTrilemmaGenerator.CurrentActiveMission;
                 Campaign.CampaignManager.Instance.OnBattleCompleted(result, activeMission);
@@ -226,6 +228,7 @@ namespace ElementalHexTactics3D.Turn
             {
                 result = BattleResult.Victory;
                 Debug.Log("<color=#FFD700><b>[Battle Ended] VICTORY!</b></color> All enemy forces vanquished!");
+                SoundManager3D.Instance?.PlayVictory();
 
                 var activeMission = Campaign.ExpeditionTrilemmaGenerator.CurrentActiveMission;
                 Campaign.CampaignManager.Instance.OnBattleCompleted(result, activeMission);
@@ -420,6 +423,7 @@ namespace ElementalHexTactics3D.Turn
 
                     CombatFeedbackManager.Instance.ShowBanner(bannerTitle, bannerMsg, 1.1f, new Color(1.0f, 0.45f, 0.1f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+                    SoundManager3D.Instance?.PlayFireball();
 
                     Vector3 casterHand = enemy.transform.position + Vector3.up * 0.8f;
                     Vector3 targetChest = targetPlayer.transform.position + Vector3.up * 0.8f;
@@ -440,6 +444,7 @@ namespace ElementalHexTactics3D.Turn
                 {
                     CombatFeedbackManager.Instance.ShowBanner("MINION ATTACK!", $"{enemy.UnitName} strikes {targetPlayer.UnitName}!", 1.0f, new Color(0.95f, 0.35f, 0.2f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+                    SoundManager3D.Instance?.PlayMonsterAttack();
                     targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
                     yield return new WaitForSeconds(0.5f);
                 }

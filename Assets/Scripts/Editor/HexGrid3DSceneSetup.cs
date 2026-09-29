@@ -26,6 +26,23 @@ namespace ElementalHexTactics3D.Editor
         private const string TilesFolder = "Assets/Sprites/Tiles";
         private const string BattlersFolder = "Assets/Sprites/Battlers";
 
+        static HexGrid3DSceneSetup()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                AssetDatabase.Refresh();
+                SetupSoundManager();
+            };
+        }
+
+        [MenuItem("Elemental Hex 3D/Audio/Refresh and Wire Audio SFX", false, 60)]
+        public static void RefreshAudioClips()
+        {
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            SetupSoundManager();
+            Debug.Log("<color=#4CAF50><b>[SoundManager3D]</b></color> Audio clips refreshed and wired successfully!");
+        }
+
         [MenuItem("Elemental Hex 3D/Advanced/Regenerate 3D Hex Battlefield", false, 50)]
         public static void SetupBattlefieldInScene()
         {
@@ -107,6 +124,8 @@ namespace ElementalHexTactics3D.Editor
                 GameObject sndObj = new GameObject("SoundManager3D");
                 snd = sndObj.AddComponent<SoundManager3D>();
             }
+            snd.LoadAudioClips();
+            UnityEditor.EditorUtility.SetDirty(snd);
         }
 
         private static void SetupCombatFeedback()

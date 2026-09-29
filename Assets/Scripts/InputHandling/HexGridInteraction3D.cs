@@ -854,7 +854,7 @@ namespace ElementalHexTactics3D.InputHandling
             {
                 yield return currentSelectedUnit.PlayAttackLunge(targetEnemy.transform.position, 0.22f);
                 TacticalCameraController.Instance?.Shake(0.25f, 0.25f);
-                SoundManager3D.Instance?.PlaySlam(1.1f);
+                SoundManager3D.Instance?.PlayTitanStrike();
                 int totalDmg = currentSelectedUnit.EffectiveAttackDamage;
                 string label = (currentSelectedUnit.BonusAttackDamage > 0)
                     ? $"-{totalDmg} CRIT!"
@@ -871,7 +871,7 @@ namespace ElementalHexTactics3D.InputHandling
                 Vector3 casterPos = currentSelectedUnit.transform.position + Vector3.up * 0.8f;
                 Vector3 targetPos = targetTile.GetTopCenterPosition() + Vector3.up * 0.4f;
 
-                SoundManager3D.Instance?.PlaySpellCast(element == ElementType.Fire);
+                SoundManager3D.Instance?.PlaySpellCast(element);
 
                 if (CombatFeedbackManager.Instance != null)
                 {
@@ -885,6 +885,7 @@ namespace ElementalHexTactics3D.InputHandling
         {
             if (currentSelectedUnit != null)
             {
+                SoundManager3D.Instance?.PlayKineticPush();
                 yield return currentSelectedUnit.PlayAttackLunge(targetUnit.transform.position, 0.22f);
                 yield return PushMechanic3D.ExecutePushRoutine(currentSelectedUnit, targetUnit, HexGrid3D.Instance);
             }

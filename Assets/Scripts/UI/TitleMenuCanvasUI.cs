@@ -385,6 +385,7 @@ namespace ElementalHexTactics3D.UI
             CloseAllModals();
 
             UpdatePlayButtonLabel();
+            Combat.SoundManager3D.Instance?.PlayHubBGM();
         }
 
         private void UpdatePlayButtonLabel()
@@ -416,6 +417,7 @@ namespace ElementalHexTactics3D.UI
             if (townHubPanel != null) townHubPanel.SetActive(true);
             if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
             CloseAllModals();
+            Combat.SoundManager3D.Instance?.PlayHubBGM();
         }
 
         public void OnPlayClicked()
@@ -443,6 +445,7 @@ namespace ElementalHexTactics3D.UI
             if (townHubPanel != null) townHubPanel.SetActive(false);
             if (inGameHudPanel != null) inGameHudPanel.SetActive(true);
             CloseAllModals();
+            Combat.SoundManager3D.Instance?.PlayBattleBGM();
 
             if (TacticalCameraController.Instance != null)
             {
