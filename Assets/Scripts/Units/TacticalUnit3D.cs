@@ -284,6 +284,7 @@ namespace ElementalHexTactics3D.Units
         private void Awake()
         {
             EnsureComponents();
+            AutoUpgradeLegacySprites();
         }
 
         private void Start()
@@ -302,9 +303,11 @@ namespace ElementalHexTactics3D.Units
 
         public void AutoUpgradeLegacySprites()
         {
-            if (faction == UnitFaction.Player)
+            if (archetype == UnitArchetype.Titan)
             {
-                if (archetype == UnitArchetype.Titan && (unitName.Contains("Dragon") || StandeeSprite == null || StandeeSprite.name.Contains("Dragon") || StandeeSprite.name.Contains("FlameFrost")))
+                // Flame Titan upgrade: Player Titan or any Titan using FlameFrost / Dragon
+                if (affinity == ElementalAffinity.Fire || unitName.Contains("Flame") || unitName.Contains("Dragon") || 
+                    StandeeSprite == null || (StandeeSprite != null && (StandeeSprite.name.Contains("Dragon") || StandeeSprite.name.Contains("FlameFrost"))))
                 {
                     Sprite s = TacticalUnitSpawner.LoadBattlerSprite("magmadragon.png");
                     if (s != null)
@@ -314,14 +317,27 @@ namespace ElementalHexTactics3D.Units
                         Transform st = transform.Find("Standee");
                         if (st != null) st.localScale = Vector3.one * 1.15f;
                     }
+                    Sprite p = TacticalUnitSpawner.LoadPortraitSprite("magmadragonportrait.png");
+                    if (p != null)
+                    {
+                        SetPortraitSprite(p);
+                    }
                 }
-                else if (archetype == UnitArchetype.Commander && (unitName == "Commander" || StandeeSprite == null || StandeeSprite.name.Contains("Actor3_3")))
+            }
+            else if (archetype == UnitArchetype.Commander && faction == UnitFaction.Player)
+            {
+                if (unitName == "Commander" || StandeeSprite == null || StandeeSprite.name.Contains("Actor3_3"))
                 {
                     Sprite s = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
                     if (s != null)
                     {
                         SetStandeeSprite(s);
                         SetUnitName("Demon Lord");
+                    }
+                    Sprite p = TacticalUnitSpawner.LoadPortraitSprite("demonlordportrait.png");
+                    if (p != null)
+                    {
+                        SetPortraitSprite(p);
                     }
                 }
             }

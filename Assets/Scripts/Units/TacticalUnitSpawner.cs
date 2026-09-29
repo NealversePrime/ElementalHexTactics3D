@@ -147,8 +147,18 @@ namespace ElementalHexTactics3D.Units
                 return LoadPortraitSprite("minotaurportrait.png");
             if (lower.Contains("siren") || lower.Contains("sorceress"))
                 return LoadPortraitSprite("sirentportrait.png");
-            if (lower.Contains("magma") || lower.Contains("imp"))
+            if (lower.Contains("imp") || lower.Contains("saboteur"))
                 return LoadPortraitSprite("magmaimp.png");
+
+            // Titans & Wild Monsters Roster
+            if (lower.Contains("dragon") || lower.Contains("magmadragon") || lower.Contains("flame titan") || lower.Contains("magma dragon") || lower.Contains("titan"))
+                return LoadPortraitSprite("magmadragonportrait.png");
+            if (lower.Contains("sea") || lower.Contains("leviathan") || lower.Contains("sealeviathan"))
+                return LoadPortraitSprite("sealeviathanportrait.png");
+            if (lower.Contains("earth") || lower.Contains("behemoth") || lower.Contains("earthbehemoth") || lower.Contains("terra"))
+                return LoadPortraitSprite("earthbehemothportrait.png");
+            if (lower.Contains("shadow") || lower.Contains("hound") || lower.Contains("shadowhound") || lower.Contains("wolf") || lower.Contains("alpha") || lower.Contains("stalker"))
+                return LoadPortraitSprite("shadowhoundportrait.png");
 
             // Holy Crusade Enemy Roster
             if (lower.Contains("paladin") || lower.Contains("hero") || lower.Contains("crusade commander"))
@@ -329,6 +339,24 @@ namespace ElementalHexTactics3D.Units
 
             if (primaryTitan != null)
             {
+                // Auto-upgrade legacy dragon sprite to Magma Dragon titan
+                if (primaryTitan.StandeeSprite == null || primaryTitan.StandeeSprite.name.Contains("Dragon") || primaryTitan.UnitName.Contains("Dragon") || primaryTitan.StandeeSprite.name.Contains("FlameFrost"))
+                {
+                    Sprite titanSprite = LoadBattlerSprite("magmadragon.png");
+                    if (titanSprite != null)
+                    {
+                        primaryTitan.SetStandeeSprite(titanSprite);
+                        primaryTitan.SetUnitName("Flame Titan");
+                        Transform st = primaryTitan.transform.Find("Standee");
+                        if (st != null) st.localScale = Vector3.one * 1.15f;
+                    }
+                    Sprite pSprite = LoadPortraitSprite("magmadragonportrait.png");
+                    if (pSprite != null)
+                    {
+                        primaryTitan.SetPortraitSprite(pSprite);
+                    }
+                }
+
                 if (primaryTitan.CurrentTile != null && primaryTitan.CurrentTile.CurrentOccupant == primaryTitan)
                 {
                     primaryTitan.CurrentTile.CurrentOccupant = null;

@@ -389,35 +389,42 @@ namespace ElementalHexTactics3D.Editor
                 playerSprite = LoadSubSprite($"{BattlersFolder}/Actor3_3.png", "Actor3_3_0");
             }
             HexTile3D playerTile = grid.GetTile(new HexCoordinates(0, -2));
-            if (playerTile != null)
+            if (playerTile != null && playerSprite != null)
             {
                 GameObject cmdrObj = CreateUnitStandee("Unit_Player_Commander", "Demon Lord", UnitFaction.Player, playerSprite, ringSprite, playerTile,
                     hp: 12, range: 3, archetype: UnitArchetype.Commander, affinity: ElementalAffinity.None, baseAtk: 3, standeeScale: 0.85f);
                 TacticalUnit3D cmdr = cmdrObj.GetComponent<TacticalUnit3D>();
                 if (cmdr != null)
                 {
+                    Sprite cmdrPortrait = LoadSubSprite("Assets/Sprites/Portraits/demonlordportrait.png", "");
+                    if (cmdrPortrait != null) cmdr.SetPortraitSprite(cmdrPortrait);
                     cmdr.AddElementalCore(1); // Start with 1 Core so player can test summoning Titan immediately!
                 }
 
                 // Commander waits in the Citadel Reserve across the Rift until deployed!
                 playerTile.CurrentOccupant = null;
-                cmdr.CurrentTile = null;
+                if (cmdr != null) cmdr.CurrentTile = null;
                 cmdrObj.SetActive(false);
             }
 
             // 2. Spawn Player 2: Allied Titan in Citadel Reserve across the Rift
             Sprite titanSprite = LoadSubSprite($"{BattlersFolder}/magmadragon.png", "");
-            if (titanSprite == null) titanSprite = LoadSubSprite($"{BattlersFolder}/FlameFrost Dragon.png", "FlameFrost Dragon_0");
             HexTile3D titanTile = grid.GetTile(new HexCoordinates(-1, -1));
             if (titanTile != null && titanSprite != null)
             {
                 GameObject titanObj = CreateUnitStandee("Unit_Player_Titan", "Flame Titan", UnitFaction.Player, titanSprite, ringSprite, titanTile,
                     hp: 16, range: 2, archetype: UnitArchetype.Titan, affinity: ElementalAffinity.Fire, baseAtk: 4, standeeScale: 1.15f);
 
+                TacticalUnit3D titan = titanObj.GetComponent<TacticalUnit3D>();
+                if (titan != null)
+                {
+                    Sprite titanPortrait = LoadSubSprite("Assets/Sprites/Portraits/magmadragonportrait.png", "");
+                    if (titanPortrait != null) titan.SetPortraitSprite(titanPortrait);
+                    titan.CurrentTile = null;
+                }
+
                 // Titan waits in the Citadel Reserve across the Rift until summoned!
                 titanTile.CurrentOccupant = null;
-                TacticalUnit3D titan = titanObj.GetComponent<TacticalUnit3D>();
-                if (titan != null) titan.CurrentTile = null;
                 titanObj.SetActive(false);
             }
 

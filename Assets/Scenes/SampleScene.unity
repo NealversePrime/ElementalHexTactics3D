@@ -1741,7 +1741,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 30f5e1d52ef5ce647b032c1887817cc0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d850c83bade04458b81ffc342e14fe8e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2777,7 +2777,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 30f5e1d52ef5ce647b032c1887817cc0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d850c83bade04458b81ffc342e14fe8e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4022,7 +4022,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de1beee9000b8246b265a1e6f49c62f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.Units.TacticalUnit3D
-  unitName: Flame Titan (Dragon)
+  unitName: Flame Titan
   faction: 0
   archetype: 1
   affinity: 1
@@ -4473,7 +4473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de1beee9000b8246b265a1e6f49c62f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.Units.TacticalUnit3D
-  unitName: Flame Titan (Dragon)
+  unitName: Flame Titan
   faction: 0
   archetype: 1
   affinity: 1
@@ -6406,7 +6406,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 30f5e1d52ef5ce647b032c1887817cc0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d850c83bade04458b81ffc342e14fe8e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -9668,7 +9668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de1beee9000b8246b265a1e6f49c62f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.Units.TacticalUnit3D
-  unitName: Flame Titan (Dragon)
+  unitName: Flame Titan
   faction: 0
   archetype: 1
   affinity: 1
@@ -18469,7 +18469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de1beee9000b8246b265a1e6f49c62f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.Units.TacticalUnit3D
-  unitName: Flame Titan (Dragon)
+  unitName: Flame Titan
   faction: 0
   archetype: 1
   affinity: 1
@@ -20403,7 +20403,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 30f5e1d52ef5ce647b032c1887817cc0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d850c83bade04458b81ffc342e14fe8e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -21007,7 +21007,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 30f5e1d52ef5ce647b032c1887817cc0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d850c83bade04458b81ffc342e14fe8e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -27657,7 +27657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7de1beee9000b8246b265a1e6f49c62f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.Units.TacticalUnit3D
-  unitName: Flame Titan (Dragon)
+  unitName: Flame Titan
   faction: 0
   archetype: 1
   affinity: 1
