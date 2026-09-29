@@ -288,10 +288,43 @@ namespace ElementalHexTactics3D.Units
 
         private void Start()
         {
+            AutoUpgradeLegacySprites();
             ReacquireCurrentTile();
             EnsureCollider();
             UpdateAttunement();
             UpdateBaseRingVisuals();
+        }
+
+        private void OnEnable()
+        {
+            AutoUpgradeLegacySprites();
+        }
+
+        public void AutoUpgradeLegacySprites()
+        {
+            if (faction == UnitFaction.Player)
+            {
+                if (archetype == UnitArchetype.Titan && (unitName.Contains("Dragon") || StandeeSprite == null || StandeeSprite.name.Contains("Dragon") || StandeeSprite.name.Contains("FlameFrost")))
+                {
+                    Sprite s = TacticalUnitSpawner.LoadBattlerSprite("magmadragon.png");
+                    if (s != null)
+                    {
+                        SetStandeeSprite(s);
+                        SetUnitName("Flame Titan");
+                        Transform st = transform.Find("Standee");
+                        if (st != null) st.localScale = Vector3.one * 1.15f;
+                    }
+                }
+                else if (archetype == UnitArchetype.Commander && (unitName == "Commander" || StandeeSprite == null || StandeeSprite.name.Contains("Actor3_3")))
+                {
+                    Sprite s = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
+                    if (s != null)
+                    {
+                        SetStandeeSprite(s);
+                        SetUnitName("Demon Lord");
+                    }
+                }
+            }
         }
 
         public void Initialize(

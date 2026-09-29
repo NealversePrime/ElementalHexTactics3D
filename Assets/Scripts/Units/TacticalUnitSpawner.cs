@@ -51,6 +51,18 @@ namespace ElementalHexTactics3D.Units
 #if UNITY_EDITOR
             string assetPath = "Assets/Sprites/Battlers/" + fileName;
             Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            if (edSprite == null)
+            {
+                Object[] allAssets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(assetPath);
+                foreach (var a in allAssets)
+                {
+                    if (a is Sprite s)
+                    {
+                        edSprite = s;
+                        break;
+                    }
+                }
+            }
             if (edSprite != null)
             {
                 spriteCache[fileName] = edSprite;
@@ -89,6 +101,18 @@ namespace ElementalHexTactics3D.Units
 #if UNITY_EDITOR
             string assetPath = "Assets/Sprites/Portraits/" + fileName;
             Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            if (edSprite == null)
+            {
+                Object[] allAssets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(assetPath);
+                foreach (var a in allAssets)
+                {
+                    if (a is Sprite s)
+                    {
+                        edSprite = s;
+                        break;
+                    }
+                }
+            }
             if (edSprite != null)
             {
                 spriteCache[cacheKey] = edSprite;
