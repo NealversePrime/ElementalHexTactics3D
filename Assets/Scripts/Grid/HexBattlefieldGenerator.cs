@@ -300,18 +300,23 @@ namespace ElementalHexTactics3D.Grid
 
             if (arch == MissionArchetype.WildTitanHunt)
             {
-                string[] dragonSprites = new string[] { "Sun Dragon.png", "Blue Dragon.png", "Shadow Dragon.png", "Green Dragon.png" };
-                boss.BattlerSpriteName = dragonSprites[rng.Next(dragonSprites.Length)];
-                boss.UnitName = (boss.BattlerSpriteName.Contains("Sun")) ? "Sun Dragon Titan" :
-                               (boss.BattlerSpriteName.Contains("Blue")) ? "Abyssal Sea Dragon" :
-                               (boss.BattlerSpriteName.Contains("Shadow")) ? "Void Shadow Dragon" : "Primordial Drake";
+                var wildTitans = new (string sprite, string name, ElementalAffinity aff, int hp, int range, int atk)[]
+                {
+                    ("magmadragon.png", "Wild Magma Dragon", ElementalAffinity.Fire, 18, 2, 4),
+                    ("sealeviathan.png", "Abyssal Sea Leviathan", ElementalAffinity.Water, 16, 3, 3),
+                    ("earthbehemoth.png", "Terra Earth Behemoth", ElementalAffinity.Earth, 20, 2, 3),
+                    ("shadowhound.png", "Abyssal Shadow Alpha", ElementalAffinity.None, 16, 3, 4)
+                };
+
+                var pickedTitan = wildTitans[rng.Next(wildTitans.Length)];
+                boss.BattlerSpriteName = pickedTitan.sprite;
+                boss.UnitName = pickedTitan.name;
                 boss.Archetype = UnitArchetype.Titan;
-                boss.Affinity = boss.BattlerSpriteName.Contains("Sun") ? ElementalAffinity.Fire :
-                                boss.BattlerSpriteName.Contains("Blue") ? ElementalAffinity.Water : ElementalAffinity.None;
-                boss.HP = 16 + threat * 2;
-                boss.Range = 2;
-                boss.BaseAtk = 4 + (threat >= 4 ? 1 : 0);
-                boss.Scale = 1.05f;
+                boss.Affinity = pickedTitan.aff;
+                boss.HP = pickedTitan.hp + threat * 2;
+                boss.Range = pickedTitan.range;
+                boss.BaseAtk = pickedTitan.atk + (threat >= 4 ? 1 : 0);
+                boss.Scale = 1.15f;
             }
             else if (arch == MissionArchetype.VanguardSabotage)
             {
@@ -338,14 +343,20 @@ namespace ElementalHexTactics3D.Grid
 
             data.Enemies.Add(boss);
 
-            // 2. Spawn 1-3 Minions/Escorts from Holy Crusade Roster
+            // 2. Spawn 1-3 Minions/Escorts
             int minionCount = Mathf.Clamp(1 + (threat / 2), 1, 3);
-            var crusadeRoster = new (string sprite, string name, ElementalAffinity aff, int hp, int range, int atk)[]
-            {
-                ("holyshielder.png", "Crusader Templar", ElementalAffinity.Earth, 12, 2, 2),
-                ("holyarcher.png", "Sunfire Ranger", ElementalAffinity.Wind, 8, 3, 3),
-                ("holysaintess.png", "Saintess Envoy", ElementalAffinity.Water, 8, 3, 2)
-            };
+            var minionPool = (arch == MissionArchetype.WildTitanHunt)
+                ? new (string sprite, string name, ElementalAffinity aff, int hp, int range, int atk)[]
+                {
+                    ("shadowhound.png", "Shadow Hound", ElementalAffinity.None, 8, 3, 3),
+                    ("shadowhound.png", "Abyssal Stalker", ElementalAffinity.None, 7, 3, 3)
+                }
+                : new (string sprite, string name, ElementalAffinity aff, int hp, int range, int atk)[]
+                {
+                    ("holyshielder.png", "Crusader Templar", ElementalAffinity.Earth, 12, 2, 2),
+                    ("holyarcher.png", "Sunfire Ranger", ElementalAffinity.Wind, 8, 3, 3),
+                    ("holysaintess.png", "Saintess Envoy", ElementalAffinity.Water, 8, 3, 2)
+                };
 
             for (int i = 0; i < minionCount && candidateTiles.Count > 0; i++)
             {
@@ -361,7 +372,7 @@ namespace ElementalHexTactics3D.Grid
                 HexCoordinates mCoord = candidateTiles[pickIdx];
                 candidateTiles.RemoveAt(pickIdx);
 
-                var chosenUnit = crusadeRoster[i % crusadeRoster.Length];
+                var chosenUnit = minionPool[i % minionPool.Length];
 
                 data.Enemies.Add(new GeneratedEnemySpec
                 {

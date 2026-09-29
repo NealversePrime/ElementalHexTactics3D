@@ -406,12 +406,13 @@ namespace ElementalHexTactics3D.Editor
             }
 
             // 2. Spawn Player 2: Allied Titan in Citadel Reserve across the Rift
-            Sprite titanSprite = LoadSubSprite($"{BattlersFolder}/FlameFrost Dragon.png", "FlameFrost Dragon_0");
+            Sprite titanSprite = LoadSubSprite($"{BattlersFolder}/magmadragon.png", "");
+            if (titanSprite == null) titanSprite = LoadSubSprite($"{BattlersFolder}/FlameFrost Dragon.png", "FlameFrost Dragon_0");
             HexTile3D titanTile = grid.GetTile(new HexCoordinates(-1, -1));
-            if (titanTile != null)
+            if (titanTile != null && titanSprite != null)
             {
-                GameObject titanObj = CreateUnitStandee("Unit_Player_Titan", "Flame Titan (Dragon)", UnitFaction.Player, titanSprite, ringSprite, titanTile,
-                    hp: 14, range: 2, archetype: UnitArchetype.Titan, affinity: ElementalAffinity.Fire, baseAtk: 4, standeeScale: 1.05f);
+                GameObject titanObj = CreateUnitStandee("Unit_Player_Titan", "Flame Titan", UnitFaction.Player, titanSprite, ringSprite, titanTile,
+                    hp: 16, range: 2, archetype: UnitArchetype.Titan, affinity: ElementalAffinity.Fire, baseAtk: 4, standeeScale: 1.15f);
 
                 // Titan waits in the Citadel Reserve across the Rift until summoned!
                 titanTile.CurrentOccupant = null;

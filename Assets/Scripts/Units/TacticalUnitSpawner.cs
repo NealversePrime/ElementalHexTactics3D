@@ -123,8 +123,16 @@ namespace ElementalHexTactics3D.Units
                 return LoadPortraitSprite("minotaurportrait.png");
             if (lower.Contains("siren") || lower.Contains("sorceress"))
                 return LoadPortraitSprite("sirentportrait.png");
-            if (lower.Contains("magma") || lower.Contains("imp"))
+            if (lower.Contains("imp"))
                 return LoadPortraitSprite("magmaimp.png");
+            if (lower.Contains("magma") || lower.Contains("flame") || lower.Contains("dragon") || lower.Contains("ignis"))
+                return LoadPortraitSprite("magmadragonportrait.png");
+            if (lower.Contains("sea") || lower.Contains("leviathan"))
+                return LoadPortraitSprite("sealeviathanportrait.png");
+            if (lower.Contains("earth") || lower.Contains("behemoth") || lower.Contains("golem") || lower.Contains("terra"))
+                return LoadPortraitSprite("earthbehemothportrait.png");
+            if (lower.Contains("shadow") || lower.Contains("hound") || lower.Contains("wolf"))
+                return LoadPortraitSprite("shadowhoundportrait.png");
 
             // Holy Crusade Enemy Roster
             if (lower.Contains("paladin") || lower.Contains("hero") || lower.Contains("crusade commander"))
@@ -305,6 +313,17 @@ namespace ElementalHexTactics3D.Units
 
             if (primaryTitan != null)
             {
+                // Auto-upgrade legacy dragon sprite to Magma Dragon titan
+                if (primaryTitan.StandeeSprite == null || primaryTitan.StandeeSprite.name.Contains("Dragon") || primaryTitan.UnitName.Contains("Dragon"))
+                {
+                    Sprite titanSprite = LoadBattlerSprite("magmadragon.png");
+                    if (titanSprite != null)
+                    {
+                        primaryTitan.SetStandeeSprite(titanSprite);
+                        primaryTitan.SetUnitName("Flame Titan");
+                    }
+                }
+
                 if (primaryTitan.CurrentTile != null && primaryTitan.CurrentTile.CurrentOccupant == primaryTitan)
                 {
                     primaryTitan.CurrentTile.CurrentOccupant = null;
