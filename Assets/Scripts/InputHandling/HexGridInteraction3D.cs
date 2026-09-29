@@ -78,6 +78,7 @@ namespace ElementalHexTactics3D.InputHandling
         {
             mainCamera = UnityEngine.Camera.main;
             EnsureSolidTexture();
+            UI.CombatHudCanvasUI.EnsureInstance();
 
             // Dynamic Inception Failsafe: Ensure player units wait in Citadel reserve if Rift is not yet opened
             if (AbyssalRiftConduit3D.Instance == null || AbyssalRiftConduit3D.Instance.RiftTile == null)
@@ -195,6 +196,7 @@ namespace ElementalHexTactics3D.InputHandling
 
         private bool IsPointerOverUI(Vector2 guiMousePos)
         {
+            if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return true;
             if (hudRect.Contains(guiMousePos)) return true;
             if (actionBarRect.Contains(guiMousePos)) return true;
             if (isGhostUIVisible && ghostUIRect.Contains(guiMousePos)) return true;
@@ -214,9 +216,10 @@ namespace ElementalHexTactics3D.InputHandling
                 {
                     hitTile = hitUnit.CurrentTile ?? (HexGrid3D.Instance != null ? HexGrid3D.Instance.GetTile(hitUnit.Coordinates) : null);
                 }
-                else
+                else if (hit.normal.y > 0.35f)
                 {
-                    // 2. Otherwise check if we hit a hex tile
+                    // 2. Otherwise check if we hit a hex tile TOP surface.
+                    // Rejecting vertical cliff walls (hit.normal.y <= 0.35f) prevents raycasting through void/empty space onto distant cliff sides.
                     hitTile = hit.collider.GetComponent<HexTile3D>() ?? hit.collider.GetComponentInParent<HexTile3D>();
                 }
             }
@@ -253,7 +256,7 @@ namespace ElementalHexTactics3D.InputHandling
                     {
                         clickedTile = directHitUnit.CurrentTile ?? clickedTile;
                     }
-                    else
+                    else if (hit.normal.y > 0.35f)
                     {
                         HexTile3D hitTile = hit.collider.GetComponent<HexTile3D>() ?? hit.collider.GetComponentInParent<HexTile3D>();
                         if (hitTile != null) clickedTile = hitTile;
@@ -1153,6 +1156,13 @@ namespace ElementalHexTactics3D.InputHandling
             if (TurnManager3D.Instance != null && TurnManager3D.Instance.Result != BattleResult.InProgress)
             {
                 return; // Suppress standard HUD when end-game modal is active
+            }
+
+            // Suppress legacy IMGUI HUD when modern uGUI Canvas Combat HUD is active
+            if (UI.CombatHudCanvasUI.Instance != null && UI.CombatHudCanvasUI.Instance.gameObject.activeInHierarchy)
+            {
+                DrawGhostUIPreview();
+                return;
             }
 
             DrawTacticalInfoHUD();
