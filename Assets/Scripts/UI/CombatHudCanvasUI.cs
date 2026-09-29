@@ -740,14 +740,6 @@ namespace ElementalHexTactics3D.UI
                         attunementBadgeText.text = "💧 Wave Attuned";
                         if (attunementBadgeBg != null) attunementBadgeBg.color = new Color(0.05f, 0.35f, 0.65f, 0.85f);
                         break;
-                    case ElementalAffinity.Earth:
-                        attunementBadgeText.text = "🛡️ Earth Attuned";
-                        if (attunementBadgeBg != null) attunementBadgeBg.color = new Color(0.35f, 0.45f, 0.15f, 0.85f);
-                        break;
-                    case ElementalAffinity.Wind:
-                        attunementBadgeText.text = "🌪️ Gale Attuned";
-                        if (attunementBadgeBg != null) attunementBadgeBg.color = new Color(0.15f, 0.55f, 0.45f, 0.85f);
-                        break;
                     default:
                         attunementBadgeText.text = "⚪ Neutral";
                         if (attunementBadgeBg != null) attunementBadgeBg.color = new Color(0.25f, 0.25f, 0.28f, 0.85f);
