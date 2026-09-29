@@ -267,7 +267,6 @@ namespace ElementalHexTactics3D.Combat
             {
                 HexTile3D tile = grid.GetTile(coord);
                 if (tile == null) continue;
-                if (tile == attachedTile) continue; // Don't block the rift itself
                 
                 TacticalUnit3D occ = tile.GetOccupant();
                 if (occ != null && occ.gameObject.activeInHierarchy && occ.CurrentHealth > 0) continue;
@@ -304,6 +303,7 @@ namespace ElementalHexTactics3D.Combat
             unit.gameObject.SetActive(true);
             unit.SnapToTile(targetTile);
             unit.Revive();
+            unit.ResetTurnActions();
 
             Debug.Log($"<color=#BA68C8><b>[Vanguard Arrival!]</b></color> {unit.UnitName} emerged from the Abyssal Rift onto {targetTile.Coordinates}!");
 
@@ -362,6 +362,7 @@ namespace ElementalHexTactics3D.Combat
             titan.gameObject.SetActive(true);
             titan.SnapToTile(targetTile);
             titan.Revive();
+            titan.ResetTurnActions();
 
             Debug.Log($"<color=#FF5722><b>[Titan Emergence!]</b></color> {titan.UnitName} burst through the Abyssal Rift onto {targetTile.Coordinates}!");
 

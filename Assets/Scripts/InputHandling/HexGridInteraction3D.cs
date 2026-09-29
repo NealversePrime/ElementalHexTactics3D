@@ -259,17 +259,21 @@ namespace ElementalHexTactics3D.InputHandling
                     return;
                 }
 
-                // 2. ABYSSAL RIFT BASE PANEL SELECTION
+                // 2. UNIT SELECTION ON CLICKED TILE (Prioritize living unit over empty Rift)
+                TacticalUnit3D unitOnClickedTile = directHitUnit ?? (clickedTile != null ? clickedTile.GetOccupant() : null);
+                if (unitOnClickedTile != null && unitOnClickedTile.gameObject.activeInHierarchy && unitOnClickedTile.CurrentHealth > 0)
+                {
+                    SelectTile(clickedTile);
+                    SelectUnit(unitOnClickedTile);
+                    return;
+                }
+
+                // 3. ABYSSAL RIFT BASE PANEL SELECTION (Empty Rift tile clicked)
                 if (clickedTile != null && AbyssalRiftConduit3D.Instance != null && AbyssalRiftConduit3D.Instance.RiftTile == clickedTile)
                 {
                     ClearUnitSelection();
                     SelectTile(clickedTile);
-                    // If Commander is still in reserve, prime deployment immediately!
-                    TacticalUnit3D cmdr = FindCommanderUnit();
-                    if (cmdr != null && !cmdr.gameObject.activeInHierarchy && currentMode != UnitActionMode.DeployCommander)
-                    {
-                        SetActionMode(UnitActionMode.DeployCommander);
-                    }
+                    SetActionMode(UnitActionMode.None);
                     return;
                 }
 
@@ -682,15 +686,20 @@ namespace ElementalHexTactics3D.InputHandling
             // 1. Tear open the Abyssal Rift Conduit on the chosen tile!
             AbyssalRiftConduit3D conduit = AbyssalRiftConduit3D.OpenRiftAt(targetTile, radius: 2);
             SelectTile(targetTile);
+            ClearUnitSelection();
+            SetActionMode(UnitActionMode.None);
 
-            yield return new WaitForSeconds(0.35f);
-
-            // 2. Immediately deploy the Commander out of the newly opened Rift!
-            TacticalUnit3D cmdr = FindCommanderUnit();
-            if (cmdr != null)
+            if (CombatFeedbackManager.Instance != null)
             {
-                yield return ExecuteDeployCommanderRoutine(cmdr, targetTile);
+                CombatFeedbackManager.Instance.ShowBanner(
+                    "🌀 ABYSSAL RIFT ESTABLISHED",
+                    "Gateway opened! Click the Rift or choose a Vanguard from the bar below.",
+                    2.2f,
+                    new Color(0.65f, 0.25f, 0.95f)
+                );
             }
+
+            yield return null;
         }
 
         private IEnumerator ExecuteDeployCommanderRoutine(TacticalUnit3D cmdr, HexTile3D targetTile)
@@ -699,6 +708,7 @@ namespace ElementalHexTactics3D.InputHandling
 
             yield return AbyssalRiftConduit3D.Instance.ExecuteDeployUnitRoutine(cmdr, targetTile, HexGrid3D.Instance);
 
+            cmdr.ResetTurnActions();
             SelectTile(targetTile);
             SelectUnit(cmdr);
         }
@@ -709,6 +719,7 @@ namespace ElementalHexTactics3D.InputHandling
 
             yield return AbyssalRiftConduit3D.Instance.ExecuteTitanSummonRoutine(titan, targetTile, HexGrid3D.Instance);
 
+            titan.ResetTurnActions();
             SelectTile(targetTile);
             SelectUnit(titan);
         }
@@ -1188,7 +1199,7 @@ namespace ElementalHexTactics3D.InputHandling
                 curX += 280f + spacing;
                 string tearLabel = (currentMode == UnitActionMode.TearRift)
                     ? "<b>[Targeting Entry...]</b>\n<size=10>(Click Any Open Hex)</size>"
-                    : "<b>🌀 Tear Open Abyssal Rift</b>\n<size=10>(Choose Landing Hex & Deploy)</size>";
+                    : "<b>🌀 Tear Open Abyssal Rift</b>\n<size=10>(Choose Landing Hex & Open Rift)</size>";
 
                 if (DrawOpaqueButton(tearRect, tearLabel,
                     new Color(0.45f, 0.15f, 0.70f, 1f), new Color(0.75f, 0.25f, 1.0f, 1f),
@@ -1236,8 +1247,8 @@ namespace ElementalHexTactics3D.InputHandling
 
                 bool cmdrInReserve = (cmdr != null && !cmdr.gameObject.activeInHierarchy);
                 bool titanInReserve = (titan != null && !titan.gameObject.activeInHierarchy);
-                bool canDeployCmdr = isPlayerTurn && cmdrInReserve;
-                bool canSummonTitan = isPlayerTurn && (cmdr != null && cmdr.ElementalCores >= 1) && (titan != null);
+                bool canDeployCmdr = isPlayerTurn && (cmdrInReserve || (cmdr != null && cmdr.gameObject.activeInHierarchy));
+                bool canSummonTitan = isPlayerTurn && ((noActiveUnits && titanInReserve) || (cmdr != null && cmdr.ElementalCores >= 1) || (!titanInReserve && titan != null));
 
                 // Base Panel Title Banner
                 Rect titleRect = new Rect(curX, btnY, 180f, btnH);
@@ -1248,12 +1259,12 @@ namespace ElementalHexTactics3D.InputHandling
                 GUI.Label(titleRect, titleText, titleStyle);
 
                 // 1. Deploy Commander Button
-                Rect cmdrRect = new Rect(curX, btnY, 170f, btnH);
-                curX += 170f + spacing;
+                Rect cmdrRect = new Rect(curX, btnY, 175f, btnH);
+                curX += 175f + spacing;
                 string cmdrLabel;
                 if (!cmdrInReserve)
                 {
-                    cmdrLabel = "<color=#90A4AE>👤 Commander\n<size=10>(On Field)</size></color>";
+                    cmdrLabel = "👤 Commander\n<size=10>(On Field - Click to Pick)</size>";
                 }
                 else
                 {
@@ -1266,14 +1277,32 @@ namespace ElementalHexTactics3D.InputHandling
                     new Color(0.40f, 0.15f, 0.65f, 1f), new Color(0.70f, 0.30f, 1.0f, 1f),
                     currentMode == UnitActionMode.DeployCommander, canDeployCmdr))
                 {
-                    SetActionMode(currentMode == UnitActionMode.DeployCommander ? UnitActionMode.None : UnitActionMode.DeployCommander);
+                    if (cmdrInReserve)
+                    {
+                        SetActionMode(currentMode == UnitActionMode.DeployCommander ? UnitActionMode.None : UnitActionMode.DeployCommander);
+                    }
+                    else if (cmdr != null && cmdr.gameObject.activeInHierarchy)
+                    {
+                        SelectTile(cmdr.CurrentTile);
+                        SelectUnit(cmdr);
+                    }
                 }
 
                 // 2. Summon Titan Button
-                Rect titanRect = new Rect(curX, btnY, 170f, btnH);
-                curX += 170f + spacing;
+                Rect titanRect = new Rect(curX, btnY, 175f, btnH);
+                curX += 175f + spacing;
                 string titanLabel;
-                if (cmdr != null && cmdr.ElementalCores < 1)
+                if (!titanInReserve)
+                {
+                    titanLabel = "🌋 Titan\n<size=10>(On Field - Click to Pick)</size>";
+                }
+                else if (noActiveUnits)
+                {
+                    titanLabel = (currentMode == UnitActionMode.SummonTitan)
+                        ? "<b>[Summoning...]</b>\n<size=10>(Click Hex)</size>"
+                        : "🌋 Deploy Titan\n<size=10>(Free Vanguard)</size>";
+                }
+                else if (cmdr != null && cmdr.ElementalCores < 1)
                 {
                     titanLabel = "<color=#90A4AE>🌋 Summon Titan\n<size=10>(Req 1 Core)</size></color>";
                 }
@@ -1283,16 +1312,22 @@ namespace ElementalHexTactics3D.InputHandling
                 }
                 else
                 {
-                    titanLabel = titanInReserve
-                        ? "🌋 Summon Titan\n<size=10>(1 Core)</size>"
-                        : "🌋 Warp Titan\n<size=10>(Redeploy & Slam)</size>";
+                    titanLabel = "🌋 Summon Titan\n<size=10>(1 Core)</size>";
                 }
 
                 if (DrawOpaqueButton(titanRect, titanLabel,
                     new Color(0.75f, 0.25f, 0.12f, 1f), new Color(1.0f, 0.40f, 0.15f, 1f),
                     currentMode == UnitActionMode.SummonTitan, canSummonTitan))
                 {
-                    SetActionMode(currentMode == UnitActionMode.SummonTitan ? UnitActionMode.None : UnitActionMode.SummonTitan);
+                    if (titanInReserve)
+                    {
+                        SetActionMode(currentMode == UnitActionMode.SummonTitan ? UnitActionMode.None : UnitActionMode.SummonTitan);
+                    }
+                    else if (titan != null && titan.gameObject.activeInHierarchy)
+                    {
+                        SelectTile(titan.CurrentTile);
+                        SelectUnit(titan);
+                    }
                 }
 
                 // End Turn Button placed on far right
