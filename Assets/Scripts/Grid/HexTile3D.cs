@@ -171,6 +171,13 @@ namespace ElementalHexTactics3D.Grid
                 transform.localPosition = restingLocalPosition;
             }
 
+            // Keep unit standing on top surface so they are never swallowed or buried inside the tile
+            TacticalUnit3D occupant = GetOccupant();
+            if (occupant != null)
+            {
+                occupant.transform.position = GetTopCenterPosition();
+            }
+
             if (HexGrid3D.Instance != null)
             {
                 Material mat = HexGrid3D.Instance.GetTopMaterial(state, tierLevel);

@@ -878,7 +878,128 @@ namespace ElementalHexTactics3D.InputHandling
                     yield return CombatFeedbackManager.Instance.SpawnSpellProjectile(casterPos, targetPos, projColor, 0.26f);
                 }
             }
-            TerrainReactionSystem.ApplySpell(targetTile, element, damage: dmg);
+
+            // Check for Earth Pillar Seismic Ejection when a unit is standing on flat ground
+            TacticalUnit3D targetOccupant = targetTile.GetOccupant();
+            TerrainReactionResult reaction = TerrainReactionSystem.PredictReaction(targetTile.State, targetTile.TierLevel, element);
+
+            if (element == ElementType.Earth && targetOccupant != null && reaction.ResultingState == TileState.StonePillar)
+            {
+                yield return ExecuteEarthPillarEjectionRoutine(currentSelectedUnit, targetOccupant, targetTile, dmg);
+            }
+            else
+            {
+                TerrainReactionSystem.ApplySpell(targetTile, element, damage: dmg);
+            }
+        }
+
+        private IEnumerator ExecuteEarthPillarEjectionRoutine(TacticalUnit3D caster, TacticalUnit3D occupant, HexTile3D targetTile, int damage)
+        {
+            if (occupant == null || targetTile == null || HexGrid3D.Instance == null) yield break;
+
+            HexGrid3D grid = HexGrid3D.Instance;
+            HexCoordinates targetCoords = targetTile.Coordinates;
+
+            // 1. Initial Earth Pillar Eruption Impact & Damage
+            occupant.TakeDamage(damage, $"⛰️ EARTH PILLAR! -{damage}");
+            TacticalCameraController.Instance?.Shake(0.38f, 0.38f);
+            SoundManager3D.Instance?.PlayEarthSpire();
+            SoundManager3D.Instance?.PlayWallSlam(1.2f);
+            CombatVFXManager.Instance?.PlayWallSlam(targetTile.GetTopCenterPosition(), Vector3.up);
+
+            // If unit died from initial damage, erect pillar and finish
+            if (occupant == null || occupant.CurrentHealth <= 0)
+            {
+                targetTile.SetState(TileState.StonePillar, 2);
+                yield break;
+            }
+
+            // 2. Detach occupant from targetTile before elevating into a solid obstacle
+            if (targetTile.CurrentOccupant == occupant)
+            {
+                targetTile.CurrentOccupant = null;
+            }
+            occupant.CurrentTile = null;
+
+            // 3. Elevate tile into a Stone Pillar!
+            targetTile.SetState(TileState.StonePillar, 2);
+
+            // 4. Determine Ejection Destination
+            HexCoordinates primaryDir = (caster != null)
+                ? PushMechanic3D.GetPushDirection(caster.Coordinates, targetCoords)
+                : HexCoordinates.Directions[0];
+
+            HexCoordinates primaryDest = targetCoords + primaryDir;
+            HexTile3D primaryTile = grid.GetTile(primaryDest);
+
+            bool primaryBlocked = (primaryTile == null) ||
+                                  primaryTile.IsOccupied ||
+                                  primaryTile.State == TileState.StonePillar ||
+                                  (Mathf.Abs(primaryTile.Elevation - targetTile.Elevation) > 1);
+
+            HexTile3D finalDestTile = null;
+
+            if (!primaryBlocked)
+            {
+                finalDestTile = primaryTile;
+            }
+            else
+            {
+                // Primary path blocked! Trigger Wall Slam collision
+                Debug.Log($"<color=#EF5350><b>[Seismic Wall Slam!]</b></color> {occupant.UnitName} was thrown into an obstacle by the erupting pillar!");
+                yield return new WaitForSeconds(0.1f);
+                TacticalCameraController.Instance?.Shake(0.35f, 0.35f);
+                SoundManager3D.Instance?.PlayWallSlam(1.3f);
+                Vector3 slamVfxPos = primaryTile != null ? primaryTile.GetTopCenterPosition() : occupant.transform.position + Vector3.up * 0.5f;
+                CombatVFXManager.Instance?.PlayWallSlam(slamVfxPos, Vector3.up);
+                occupant.TakeDamage(2, "💥 WALL SLAM! -2");
+
+                if (occupant == null || occupant.CurrentHealth <= 0) yield break;
+
+                // Pick an open neighbor around the pillar to land on
+                List<HexTile3D> validNeighbors = new List<HexTile3D>();
+                foreach (var dir in HexCoordinates.Directions)
+                {
+                    HexTile3D nTile = grid.GetTile(targetCoords + dir);
+                    if (nTile != null && !nTile.IsOccupied && nTile.State != TileState.StonePillar)
+                    {
+                        if (Mathf.Abs(nTile.Elevation - targetTile.Elevation) <= 1)
+                        {
+                            validNeighbors.Add(nTile);
+                        }
+                    }
+                }
+
+                if (validNeighbors.Count > 0)
+                {
+                    finalDestTile = validNeighbors[Random.Range(0, validNeighbors.Count)];
+                }
+                else
+                {
+                    finalDestTile = targetTile;
+                }
+            }
+
+            // 5. Displace occupant to destination
+            if (finalDestTile != null && finalDestTile != targetTile)
+            {
+                CombatFeedbackManager.Instance?.SpawnDamageText(
+                    occupant.transform.position + Vector3.up * 1.0f,
+                    "⛰️ SEISMIC LAUNCH!",
+                    new Color(0.85f, 0.55f, 0.25f),
+                    1.6f
+                );
+
+                yield return occupant.MoveAlongPath(new List<HexTile3D> { finalDestTile }, stepDuration: 0.16f);
+                occupant.SnapToTile(finalDestTile);
+                occupant.ResolveTileHazardOnLanding(finalDestTile);
+            }
+            else
+            {
+                occupant.SnapToTile(targetTile);
+            }
+
+            yield return new WaitForSeconds(0.15f);
         }
 
         private IEnumerator ExecutePlayerPush(TacticalUnit3D targetUnit)
@@ -1471,12 +1592,12 @@ namespace ElementalHexTactics3D.InputHandling
                     SetActionMode(currentMode == UnitActionMode.WaterSurge ? UnitActionMode.None : UnitActionMode.WaterSurge);
                 }
 
-                // COMMANDER ABILITY: Earth Spire
+                // COMMANDER ABILITY: Earth Pillar
                 Rect earthRect = new Rect(curX, btnY, 105f, btnH);
                 curX += 105f + spacing;
                 string earthLabel = (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn)
-                    ? "<color=#90A4AE>⛰️ Earth Spire\n<size=10>(Acted)</size></color>"
-                    : "⛰️ Earth Spire\n<size=10>(Wall/Mud)</size>";
+                    ? "<color=#90A4AE>⛰️ Earth Pillar\n<size=10>(Acted)</size></color>"
+                    : "⛰️ Earth Pillar\n<size=10>(Pillar/Mud)</size>";
                 if (DrawOpaqueButton(earthRect, earthLabel,
                     new Color(0.40f, 0.28f, 0.18f, 1f), new Color(0.70f, 0.52f, 0.30f, 1f),
                     currentMode == UnitActionMode.EarthSpire, canCombat))

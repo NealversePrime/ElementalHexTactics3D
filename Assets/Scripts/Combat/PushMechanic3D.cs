@@ -116,7 +116,7 @@ namespace ElementalHexTactics3D.Combat
             return true;
         }
 
-        private static HexCoordinates GetPushDirection(HexCoordinates from, HexCoordinates to)
+        public static HexCoordinates GetPushDirection(HexCoordinates from, HexCoordinates to)
         {
             HexCoordinates diff = to - from;
 
