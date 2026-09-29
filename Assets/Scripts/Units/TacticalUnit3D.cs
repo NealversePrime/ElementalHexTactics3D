@@ -25,7 +25,9 @@ namespace ElementalHexTactics3D.Units
     {
         None,
         Fire,
-        Water
+        Water,
+        Earth,
+        Wind
     }
 
     /// <summary>
