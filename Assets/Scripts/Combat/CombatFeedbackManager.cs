@@ -211,7 +211,7 @@ namespace ElementalHexTactics3D.Combat
             DrawTurnBanner();
             DrawOverheadHealthBars();
             DrawFloatingTexts();
-            DrawEndGameModal();
+            // Legacy DrawEndGameModal superseded by CampaignManager and PostBattleResultsUI
         }
 
         private void DrawTurnBanner()

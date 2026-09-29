@@ -48,6 +48,7 @@ namespace ElementalHexTactics3D.Campaign
         public int RewardMana;
         public int RewardEmbers;
         public int RewardOutcasts;
+        public int RewardFood;
         public int RewardDoomClockDays;
 
         public string GetArchetypeName()
@@ -96,6 +97,7 @@ namespace ElementalHexTactics3D.Campaign
             if (RewardMana > 0) s += $"<color=#00E5FF>💎 +{RewardMana} Mana</color>  ";
             if (RewardEmbers > 0) s += $"<color=#FF7043>🔥 +{RewardEmbers} Embers</color>  ";
             if (RewardOutcasts > 0) s += $"<color=#81C784>👥 +{RewardOutcasts} Outcasts</color>  ";
+            if (RewardFood > 0) s += $"<color=#FFA726>🍖 +{RewardFood} Food</color>  ";
             if (RewardDoomClockDays > 0) s += $"<color=#FFD54F>⏳ +{RewardDoomClockDays}d Crusade Delay</color>";
             return s.Trim();
         }

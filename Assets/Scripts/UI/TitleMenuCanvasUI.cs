@@ -383,6 +383,27 @@ namespace ElementalHexTactics3D.UI
             if (townHubPanel != null) townHubPanel.SetActive(false);
             if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
             CloseAllModals();
+
+            UpdatePlayButtonLabel();
+        }
+
+        private void UpdatePlayButtonLabel()
+        {
+            if (btnPlay == null) return;
+            Text playTxt = btnPlay.GetComponentInChildren<Text>();
+            if (playTxt == null) return;
+
+            if (ElementalHexTactics3D.Campaign.CampaignSaveManager.HasSaveFile())
+            {
+                var save = ElementalHexTactics3D.Campaign.CampaignSaveManager.LoadSaveData();
+                if (save != null && save.currentDay > 1)
+                {
+                    playTxt.text = $"⚔️ CONTINUE RUN (DAY {save.currentDay})";
+                    return;
+                }
+            }
+
+            playTxt.text = "⚔️ START EXPEDITION";
         }
 
         public void ShowTownHub()

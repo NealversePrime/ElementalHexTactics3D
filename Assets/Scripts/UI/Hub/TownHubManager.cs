@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using ElementalHexTactics3D.Combat;
+using ElementalHexTactics3D.Campaign;
 
 namespace ElementalHexTactics3D.UI.Hub
 {
@@ -54,6 +55,7 @@ namespace ElementalHexTactics3D.UI.Hub
         public int ManaCrystals => manaCrystals;
         public int SoulEmbers => soulEmbers;
         public int FreedOutcasts => freedOutcasts;
+        public int Food => CampaignManager.Instance != null ? CampaignManager.Instance.Food : 50;
 
         private void Awake()
         {
@@ -184,6 +186,14 @@ namespace ElementalHexTactics3D.UI.Hub
         public void AddFreedOutcasts(int amount)
         {
             freedOutcasts = Mathf.Max(0, freedOutcasts + amount);
+            UpdateResourceDisplays();
+        }
+
+        public void SetResources(int mana, int embers, int outcasts)
+        {
+            manaCrystals = Mathf.Max(0, mana);
+            soulEmbers = Mathf.Max(0, embers);
+            freedOutcasts = Mathf.Max(0, outcasts);
             UpdateResourceDisplays();
         }
 
@@ -432,6 +442,181 @@ namespace ElementalHexTactics3D.UI.Hub
                 AudioSource.PlayClipAtPoint(clip, Camera.main != null ? Camera.main.transform.position : Vector3.zero, volume);
             }
         }
+
+        #region Calendar & Campaign HUD
+
+        private Texture2D hudBgTex;
+        private Texture2D solidTex;
+        private bool showResetConfirmModal = false;
+
+        private void EnsureHudBgTex()
+        {
+            if (hudBgTex == null)
+            {
+                hudBgTex = new Texture2D(1, 1);
+                hudBgTex.SetPixel(0, 0, new Color(0.06f, 0.08f, 0.12f, 0.94f));
+                hudBgTex.Apply();
+            }
+            if (solidTex == null)
+            {
+                solidTex = new Texture2D(1, 1);
+                solidTex.SetPixel(0, 0, Color.white);
+                solidTex.Apply();
+            }
+        }
+
+        private void OnGUI()
+        {
+            // Only render when inside Town Hub and no expedition modal or results modal is open
+            if (TitleMenuCanvasUI.Instance == null || !TitleMenuCanvasUI.Instance.IsInTownHub) return;
+            if (ExpeditionPortalModalUI.Instance != null && ExpeditionPortalModalUI.Instance.IsOpen) return;
+            if (PostBattleResultsUI.Instance != null && PostBattleResultsUI.Instance.IsOpen) return;
+
+            EnsureHudBgTex();
+
+            float barW = Mathf.Min(1320f, Screen.width - 40f);
+            float barH = 46f;
+            float barX = (Screen.width - barW) * 0.5f;
+            float barY = 12f;
+
+            Rect barRect = new Rect(barX, barY, barW, barH);
+
+            // Draw Bar Background
+            GUI.color = Color.white;
+            GUI.DrawTexture(barRect, hudBgTex);
+
+            // Bottom Border
+            GUI.color = new Color(0.35f, 0.45f, 0.65f, 0.85f);
+            GUI.DrawTexture(new Rect(barRect.x, barRect.y + barRect.height - 2, barRect.width, 2), solidTex);
+            GUI.color = Color.white;
+
+            int day = CampaignManager.Instance != null ? CampaignManager.Instance.CurrentDay : 1;
+            int daysUntil = CampaignManager.Instance != null ? CampaignManager.Instance.DaysUntilCrusade : 24;
+            int foodStock = CampaignManager.Instance != null ? CampaignManager.Instance.Food : 50;
+            string actStr = CampaignManager.Instance != null ? CampaignManager.Instance.ActTitle : "Act I: Survival";
+
+            string doomColor = (daysUntil <= 3) ? "#FF5252" : (daysUntil <= 7) ? "#FFB74D" : "#81C784";
+            string foodColor = (foodStock <= 15) ? "#FF5252" : "#FFA726";
+
+            GUIStyle hudStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleLeft,
+                fontSize = 12,
+                fontStyle = FontStyle.Bold,
+                richText = true
+            };
+            hudStyle.normal.textColor = Color.white;
+
+            Rect textRect = new Rect(barRect.x + 14f, barRect.y, barRect.width - 230f, barRect.height);
+            string info = $"☀️ <b>DAY {day}</b> ({actStr})  |  ⏳ CRUSADE IN: <color={doomColor}><b>{daysUntil} DAYS</b></color>  |  🍖 FOOD: <color={foodColor}><b>{foodStock}</b></color>  |  💎 <b>{manaCrystals}</b>  |  🔥 <b>{soulEmbers}</b>  |  👥 <b>{freedOutcasts}</b>";
+            GUI.Label(textRect, info, hudStyle);
+
+            // Auto-Save Indicator
+            GUIStyle saveStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleRight,
+                fontSize = 10,
+                fontStyle = FontStyle.Italic,
+                richText = true
+            };
+            saveStyle.normal.textColor = new Color(0.6f, 0.85f, 0.6f, 0.9f);
+            Rect saveRect = new Rect(barRect.x + barRect.width - 225f, barRect.y, 90f, barRect.height);
+            GUI.Label(saveRect, "💾 Auto-Saved", saveStyle);
+
+            // Reset Campaign Button
+            Rect btnResetRect = new Rect(barRect.x + barRect.width - 120f, barRect.y + 7f, 105f, 32f);
+            Color oldBg = GUI.backgroundColor;
+            GUI.backgroundColor = new Color(0.85f, 0.25f, 0.25f, 0.95f);
+            if (GUI.Button(btnResetRect, "<b>🔄 Reset Run</b>"))
+            {
+                showResetConfirmModal = true;
+            }
+            GUI.backgroundColor = oldBg;
+
+            // Reset Confirmation Modal Dialog
+            if (showResetConfirmModal)
+            {
+                DrawResetConfirmModal();
+            }
+        }
+
+        private void DrawResetConfirmModal()
+        {
+            // Dimmer Background
+            GUI.color = new Color(0f, 0f, 0f, 0.65f);
+            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), solidTex);
+            GUI.color = Color.white;
+
+            float modalW = 460f;
+            float modalH = 220f;
+            float modalX = (Screen.width - modalW) * 0.5f;
+            float modalY = (Screen.height - modalH) * 0.5f;
+            Rect modalRect = new Rect(modalX, modalY, modalW, modalH);
+
+            // Modal Body
+            GUI.color = new Color(0.10f, 0.12f, 0.18f, 0.98f);
+            GUI.DrawTexture(modalRect, solidTex);
+
+            // Modal Border
+            GUI.color = new Color(0.9f, 0.3f, 0.3f, 1f);
+            GUI.DrawTexture(new Rect(modalRect.x, modalRect.y, modalRect.width, 3), solidTex);
+            GUI.DrawTexture(new Rect(modalRect.x, modalRect.y + modalRect.height - 3, modalRect.width, 3), solidTex);
+            GUI.DrawTexture(new Rect(modalRect.x, modalRect.y, 3, modalRect.height), solidTex);
+            GUI.DrawTexture(new Rect(modalRect.x + modalRect.width - 3, modalRect.y, 3, modalRect.height), solidTex);
+            GUI.color = Color.white;
+
+            // Header Title
+            GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize = 18,
+                fontStyle = FontStyle.Bold,
+                richText = true
+            };
+            titleStyle.normal.textColor = new Color(1f, 0.4f, 0.4f);
+            GUI.Label(new Rect(modalX, modalY + 18f, modalW, 30f), "⚠️ RESTART CAMPAIGN RUN?", titleStyle);
+
+            // Warning Desc
+            GUIStyle descStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize = 12,
+                wordWrap = true,
+                richText = true
+            };
+            descStyle.normal.textColor = new Color(0.9f, 0.9f, 0.95f);
+            GUI.Label(new Rect(modalX + 25f, modalY + 55f, modalW - 50f, 75f),
+                "Are you sure you want to abandon current progress?\n\nAll days, food stock, domain resources, and crusade timers will be reset back to <b>Day 1</b>.", descStyle);
+
+            // Buttons: Confirm vs Cancel
+            float btnW = 160f;
+            float btnH = 40f;
+            float btnY = modalY + modalH - 58f;
+
+            Color oldBg = GUI.backgroundColor;
+
+            // Confirm Button
+            GUI.backgroundColor = new Color(0.85f, 0.20f, 0.20f, 1f);
+            if (GUI.Button(new Rect(modalX + 45f, btnY, btnW, btnH), "<b>Yes, Reset Run</b>"))
+            {
+                showResetConfirmModal = false;
+                if (CampaignManager.Instance != null)
+                {
+                    CampaignManager.Instance.ResetCampaign();
+                }
+            }
+
+            // Cancel Button
+            GUI.backgroundColor = new Color(0.25f, 0.35f, 0.50f, 1f);
+            if (GUI.Button(new Rect(modalX + modalW - btnW - 45f, btnY, btnW, btnH), "<b>Cancel</b>"))
+            {
+                showResetConfirmModal = false;
+            }
+
+            GUI.backgroundColor = oldBg;
+        }
+
+        #endregion
     }
 }
 

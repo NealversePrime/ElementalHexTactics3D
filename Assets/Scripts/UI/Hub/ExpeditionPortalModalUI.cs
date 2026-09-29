@@ -59,12 +59,7 @@ namespace ElementalHexTactics3D.UI.Hub
 
         public void GenerateNewTrilemma()
         {
-            int cycle = 1;
-            if (TownHubManager.Instance != null)
-            {
-                // Threat scales gently with domain progression
-                cycle = Mathf.Max(1, TownHubManager.Instance.FreedOutcasts / 5);
-            }
+            int cycle = (CampaignManager.Instance != null) ? CampaignManager.Instance.CurrentDay : 1;
             currentCards = ExpeditionTrilemmaGenerator.GenerateTrilemma(cycle);
             selectedCardIndex = 0;
         }
@@ -155,23 +150,40 @@ namespace ElementalHexTactics3D.UI.Hub
             DrawSolidPanel(modalWindowRect, new Color(0.08f, 0.10f, 0.14f, 0.98f), new Color(0.35f, 0.25f, 0.55f, 1f), 3);
 
             // 3. Header
-            float headerH = 90f;
-            Rect headerRect = new Rect(winX, winY + 15f, winW, headerH);
+            float headerH = 100f;
+            Rect headerRect = new Rect(winX, winY + 12f, winW, headerH);
             GUILayout.BeginArea(headerRect);
             GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
             {
                 alignment = TextAnchor.UpperCenter,
-                fontSize = 26,
+                fontSize = 24,
                 fontStyle = FontStyle.Bold,
                 richText = true
             };
             titleStyle.normal.textColor = new Color(1f, 0.85f, 0.35f);
             GUILayout.Label("🌀 <b>ABYSSAL EXPEDITION GATEWAY</b> 🌀", titleStyle);
 
-            GUIStyle subStyle = new GUIStyle(GUI.skin.label)
+            // Calendar HUD Strip
+            int cDay = CampaignManager.Instance != null ? CampaignManager.Instance.CurrentDay : 1;
+            int cUntil = CampaignManager.Instance != null ? CampaignManager.Instance.DaysUntilCrusade : 24;
+            int cFood = CampaignManager.Instance != null ? CampaignManager.Instance.Food : 50;
+            string actStr = CampaignManager.Instance != null ? CampaignManager.Instance.ActTitle : "Act I: Survival";
+            string doomCol = (cUntil <= 3) ? "#FF5252" : (cUntil <= 7) ? "#FFB74D" : "#81C784";
+            string foodCol = (cFood <= 15) ? "#FF5252" : "#FFA726";
+
+            GUIStyle hudStyle = new GUIStyle(GUI.skin.label)
             {
                 alignment = TextAnchor.UpperCenter,
                 fontSize = 13,
+                fontStyle = FontStyle.Bold,
+                richText = true
+            };
+            GUILayout.Label($"☀️ <b>DAY {cDay}</b> ({actStr})   |   ⏳ CRUSADE IN: <color={doomCol}><b>{cUntil} DAYS</b></color>   |   🍖 FOOD: <color={foodCol}><b>{cFood}</b></color>", hudStyle);
+
+            GUIStyle subStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.UpperCenter,
+                fontSize = 12,
                 fontStyle = FontStyle.Italic,
                 richText = true
             };
@@ -187,7 +199,7 @@ namespace ElementalHexTactics3D.UI.Hub
             }
 
             // 4. Render 3 Trilemma Cards (Tarot 5:8 Ratio: ~460w x 640h)
-            float cardAreaY = winY + 105f;
+            float cardAreaY = winY + 115f;
             float cardW = (winW - 140f) / 3f;
             float cardH = winH - 185f;
             float cardGap = 35f;

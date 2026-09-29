@@ -216,7 +216,10 @@ namespace ElementalHexTactics3D.Turn
             if (activePlayers == 0 && reservePlayers == 0 && aliveEnemies > 0)
             {
                 result = BattleResult.Defeat;
-                Debug.Log("<color=#EF5350><b>[Battle Ended] DEFEAT!</b></color> Commander has fallen in battle.");
+                Debug.Log("<color=#EF5350><b>[Battle Ended] DEFEAT!</b></color> Commander and reserves have fallen.");
+                
+                var activeMission = Campaign.ExpeditionTrilemmaGenerator.CurrentActiveMission;
+                Campaign.CampaignManager.Instance.OnBattleCompleted(result, activeMission);
                 OnBattleEnded?.Invoke(result);
             }
             else if (aliveEnemies == 0)
@@ -224,21 +227,15 @@ namespace ElementalHexTactics3D.Turn
                 result = BattleResult.Victory;
                 Debug.Log("<color=#FFD700><b>[Battle Ended] VICTORY!</b></color> All enemy forces vanquished!");
 
-                // Award Expedition Spoils to Citadel Domain!
                 var activeMission = Campaign.ExpeditionTrilemmaGenerator.CurrentActiveMission;
-                if (activeMission != null && UI.Hub.TownHubManager.Instance != null)
-                {
-                    if (activeMission.RewardMana > 0) UI.Hub.TownHubManager.Instance.AddManaCrystals(activeMission.RewardMana);
-                    if (activeMission.RewardEmbers > 0) UI.Hub.TownHubManager.Instance.AddSoulEmbers(activeMission.RewardEmbers);
-                    if (activeMission.RewardOutcasts > 0) UI.Hub.TownHubManager.Instance.AddFreedOutcasts(activeMission.RewardOutcasts);
-                }
+                Campaign.CampaignManager.Instance.OnBattleCompleted(result, activeMission);
 
                 if (CombatFeedbackManager.Instance != null && activeMission != null)
                 {
                     CombatFeedbackManager.Instance.ShowBanner(
                         "👑 EXPEDITION VICTORIOUS! 👑",
-                        $"Secured: {activeMission.GetRewardsSummary()}\nReturn to Citadel or continue testing!",
-                        4.0f,
+                        $"Secured: {activeMission.GetRewardsSummary()}",
+                        2.5f,
                         new Color(1.0f, 0.85f, 0.25f)
                     );
                 }

@@ -28,28 +28,44 @@ namespace ElementalHexTactics3D.Campaign
 
         /// <summary>
         /// Generates a set of 3 contrasting mission cards for the given campaign day/cycle.
+        /// Incorporates rogue-lite guardrails (guaranteed sabotage when doom clock is low,
+        /// guaranteed food when famine threatens, day-based threat scaling).
         /// </summary>
         public static List<ExpeditionMissionData> GenerateTrilemma(int cycle = 1)
         {
             List<ExpeditionMissionData> cards = new List<ExpeditionMissionData>();
-            int baseSeed = Environment.TickCount + cycle * 37;
+
+            int day = (CampaignManager.Instance != null) ? CampaignManager.Instance.CurrentDay : cycle;
+            int daysUntilCrusade = (CampaignManager.Instance != null) ? CampaignManager.Instance.DaysUntilCrusade : 24;
+            int currentFood = (CampaignManager.Instance != null) ? CampaignManager.Instance.Food : 50;
+
+            int baseSeed = Environment.TickCount + day * 37 + cycle * 13;
             System.Random rng = new System.Random(baseSeed);
 
-            // Card 1: Resource Scavenge / Crystal Vein Raid (Economy)
+            // Compute threat level based on campaign progression
+            int baseThreat = (day <= 8) ? 1 : (day <= 18) ? 2 : 3;
+
+            // Card 1: Resource Scavenge / Crystal & Ration Vein Raid (Economy & Food)
             int seed1 = rng.Next(10000, 99999);
+            bool lowFoodAlert = currentFood < 20;
+            int foodReward = lowFoodAlert ? (25 + rng.Next(20)) : (15 + rng.Next(15));
+
             cards.Add(new ExpeditionMissionData
             {
-                MissionId = $"EXP_{cycle}_SCAVENGE",
-                Title = "Crystal Vein Extraction",
-                Description = "A subterranean mana fissure exposed by crusader drilling. Raid before their supply train arrives.",
+                MissionId = $"EXP_{day}_SCAVENGE",
+                Title = lowFoodAlert ? "Emergency Supply Depot Raid" : "Crystal Vein Extraction",
+                Description = lowFoodAlert 
+                    ? "Imperial supply wagons loaded with grain and cured meats. Seize rations before Citadel famine strikes!"
+                    : "A subterranean mana fissure exposed by crusader drilling. Raid before their supply train arrives.",
                 Archetype = MissionArchetype.ResourceScavenge,
-                ThreatLevel = Mathf.Clamp(cycle, 1, 3),
+                ThreatLevel = Mathf.Clamp(baseThreat, 1, 3),
                 Biome = (seed1 % 2 == 0) ? BiomeTheme.FloodedBasin : BiomeTheme.VerdantHighlands,
                 Modifier = (seed1 % 3 == 0) ? StageModifier.HeavyDeluge : StageModifier.None,
                 Seed = seed1,
                 RewardMana = 90 + rng.Next(40),
                 RewardEmbers = 25 + rng.Next(15),
                 RewardOutcasts = 1 + rng.Next(2),
+                RewardFood = foodReward,
                 RewardDoomClockDays = 0
             });
 
@@ -57,39 +73,43 @@ namespace ElementalHexTactics3D.Campaign
             int seed2 = rng.Next(10000, 99999);
             cards.Add(new ExpeditionMissionData
             {
-                MissionId = $"EXP_{cycle}_RESCUE",
+                MissionId = $"EXP_{day}_RESCUE",
                 Title = "Slave Convoy Ambush",
                 Description = "Holy crusaders transporting caged beastkin and demonic outcasts across the rocky crags. Ambush the escort!",
                 Archetype = MissionArchetype.RescueRecruit,
-                ThreatLevel = Mathf.Clamp(cycle + 1, 2, 4),
+                ThreatLevel = Mathf.Clamp(baseThreat + 1, 2, 4),
                 Biome = (seed2 % 2 == 0) ? BiomeTheme.AncientCrusadeRuins : BiomeTheme.VerdantHighlands,
                 Modifier = (seed2 % 3 == 0) ? StageModifier.StoneFortress : StageModifier.None,
                 Seed = seed2,
                 RewardMana = 40 + rng.Next(20),
                 RewardEmbers = 40 + rng.Next(20),
                 RewardOutcasts = 3 + rng.Next(3),
+                RewardFood = 5 + rng.Next(10),
                 RewardDoomClockDays = 0
             });
 
             // Card 3: High Threat - Vanguard Sabotage OR Wild Titan Hunt
+            // GUARDRAIL: If Crusade is 3 days or fewer away, ALWAYS offer Vanguard Sabotage!
             int seed3 = rng.Next(10000, 99999);
-            bool isTitanHunt = (cycle % 2 == 0) || (rng.Next(100) < 45);
+            bool forceSabotage = (daysUntilCrusade <= 3);
+            bool isTitanHunt = !forceSabotage && ((day % 2 == 0) || (rng.Next(100) < 45));
 
             if (isTitanHunt)
             {
                 cards.Add(new ExpeditionMissionData
                 {
-                    MissionId = $"EXP_{cycle}_TITAN_HUNT",
+                    MissionId = $"EXP_{day}_TITAN_HUNT",
                     Title = "Ancient Dragon Apex Incursion",
                     Description = "A primordial dragon slumbering near a volatile rift. Slay or dominate the beast for supreme power!",
                     Archetype = MissionArchetype.WildTitanHunt,
-                    ThreatLevel = Mathf.Clamp(cycle + 2, 3, 5),
+                    ThreatLevel = Mathf.Clamp(baseThreat + 2, 3, 5),
                     Biome = BiomeTheme.VolcanicRupture,
                     Modifier = StageModifier.VolcanicSurge,
                     Seed = seed3,
                     RewardMana = 150 + rng.Next(60),
                     RewardEmbers = 120 + rng.Next(50),
                     RewardOutcasts = 0,
+                    RewardFood = 10 + rng.Next(10),
                     RewardDoomClockDays = 1
                 });
             }
@@ -97,18 +117,21 @@ namespace ElementalHexTactics3D.Campaign
             {
                 cards.Add(new ExpeditionMissionData
                 {
-                    MissionId = $"EXP_{cycle}_SABOTAGE",
-                    Title = "Crusader Vanguard Outpost Sabotage",
-                    Description = "Holy Inquisitors constructing siege ballistas. Infiltrate their camp, execute their officers, and stall the crusade.",
+                    MissionId = $"EXP_{day}_SABOTAGE",
+                    Title = forceSabotage ? "⚠️ CRITICAL: Vanguard Encampment Assault" : "Crusader Vanguard Outpost Sabotage",
+                    Description = forceSabotage
+                        ? "The Crusade vanguard is at our gates! Slay their vanguard captains immediately to buy the Citadel crucial days!"
+                        : "Holy Inquisitors constructing siege ballistas. Infiltrate their camp, execute their officers, and stall the crusade.",
                     Archetype = MissionArchetype.VanguardSabotage,
-                    ThreatLevel = Mathf.Clamp(cycle + 1, 2, 4),
+                    ThreatLevel = Mathf.Clamp(baseThreat + 1, 2, 4),
                     Biome = BiomeTheme.AncientCrusadeRuins,
                     Modifier = (seed3 % 2 == 0) ? StageModifier.DenseMist : StageModifier.None,
                     Seed = seed3,
                     RewardMana = 75 + rng.Next(30),
                     RewardEmbers = 80 + rng.Next(30),
                     RewardOutcasts = 1 + rng.Next(2),
-                    RewardDoomClockDays = 2 // Key reward: delays Crusade Countdown!
+                    RewardFood = 10 + rng.Next(10),
+                    RewardDoomClockDays = forceSabotage ? 3 : 2 // Bonus delay when urgent!
                 });
             }
 
