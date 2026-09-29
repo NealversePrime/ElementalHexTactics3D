@@ -42,7 +42,6 @@ namespace ElementalHexTactics3D.InputHandling
         private TacticalUnit3D currentSelectedUnit;
 
         private UnitActionMode currentMode = UnitActionMode.None;
-        private TacticalUnit3D pendingDeployUnit;
         private readonly HashSet<HexTile3D> activeTargetTiles = new HashSet<HexTile3D>();
 
         private UnityEngine.Camera mainCamera;
@@ -350,10 +349,6 @@ namespace ElementalHexTactics3D.InputHandling
         public void SetActionMode(UnitActionMode mode)
         {
             currentMode = mode;
-            if (mode != UnitActionMode.DeployCommander)
-            {
-                pendingDeployUnit = null;
-            }
             ClearTargetHighlights();
             bool isDeployMode = (mode == UnitActionMode.DeployCommander || mode == UnitActionMode.SummonTitan || mode == UnitActionMode.TearRift);
             if (!isDeployMode && currentSelectedUnit == null) return;
@@ -539,20 +534,6 @@ namespace ElementalHexTactics3D.InputHandling
             return null;
         }
 
-        public static List<TacticalUnit3D> FindPlayerMinions()
-        {
-            List<TacticalUnit3D> minions = new List<TacticalUnit3D>();
-            TacticalUnit3D[] all = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            foreach (var u in all)
-            {
-                if (u.Faction == UnitFaction.Player && u.Archetype == UnitArchetype.Minion)
-                {
-                    minions.Add(u);
-                }
-            }
-            return minions;
-        }
-
         private void ExecuteAction(HexTile3D targetTile)
         {
             switch (currentMode)
@@ -661,13 +642,12 @@ namespace ElementalHexTactics3D.InputHandling
                 case UnitActionMode.DeployCommander:
                     if (AbyssalRiftConduit3D.Instance != null && HexGrid3D.Instance != null)
                     {
-                        TacticalUnit3D unitToDeploy = pendingDeployUnit ?? FindCommanderUnit();
-                        if (unitToDeploy != null)
+                        TacticalUnit3D cmdr = FindCommanderUnit();
+                        if (cmdr != null)
                         {
                             ClearTargetHighlights();
-                            StartCoroutine(ExecuteDeployCommanderRoutine(unitToDeploy, targetTile));
+                            StartCoroutine(ExecuteDeployCommanderRoutine(cmdr, targetTile));
                             SetActionMode(UnitActionMode.None);
-                            pendingDeployUnit = null;
                         }
                     }
                     break;
@@ -1410,38 +1390,28 @@ namespace ElementalHexTactics3D.InputHandling
                 GUIStyle titleStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, fontSize = 11 };
                 GUI.Label(titleRect, titleText, titleStyle);
 
-                // 1. Deploy Commander Button (Demon Lord)
+                // 1. Deploy Commander Button
                 Rect cmdrRect = new Rect(curX, btnY, 175f, btnH);
                 curX += 175f + spacing;
-                bool isCmdrDeploying = (currentMode == UnitActionMode.DeployCommander && (pendingDeployUnit == null || pendingDeployUnit == cmdr));
                 string cmdrLabel;
                 if (!cmdrInReserve)
                 {
-                    cmdrLabel = "👑 Demon Lord\n<size=10>(On Field - Pick)</size>";
+                    cmdrLabel = "👤 Commander\n<size=10>(On Field - Click to Pick)</size>";
                 }
                 else
                 {
-                    cmdrLabel = isCmdrDeploying
+                    cmdrLabel = (currentMode == UnitActionMode.DeployCommander)
                         ? "<b>[Deploying...]</b>\n<size=10>(Click Hex)</size>"
-                        : "👑 Demon Lord\n<size=10>(Free Vanguard)</size>";
+                        : "👤 Deploy Commander\n<size=10>(Free Vanguard)</size>";
                 }
 
                 if (DrawOpaqueButton(cmdrRect, cmdrLabel,
                     new Color(0.40f, 0.15f, 0.65f, 1f), new Color(0.70f, 0.30f, 1.0f, 1f),
-                    isCmdrDeploying, canDeployCmdr))
+                    currentMode == UnitActionMode.DeployCommander, canDeployCmdr))
                 {
                     if (cmdrInReserve)
                     {
-                        if (isCmdrDeploying)
-                        {
-                            pendingDeployUnit = null;
-                            SetActionMode(UnitActionMode.None);
-                        }
-                        else
-                        {
-                            pendingDeployUnit = cmdr;
-                            SetActionMode(UnitActionMode.DeployCommander);
-                        }
+                        SetActionMode(currentMode == UnitActionMode.DeployCommander ? UnitActionMode.None : UnitActionMode.DeployCommander);
                     }
                     else if (cmdr != null && cmdr.gameObject.activeInHierarchy)
                     {
@@ -1489,78 +1459,6 @@ namespace ElementalHexTactics3D.InputHandling
                     {
                         SelectTile(titan.CurrentTile);
                         SelectUnit(titan);
-                    }
-                }
-
-                // 3. Minion Deployment Buttons (Basalt Vanguard, Siren Sorceress, Magma Imp, etc.)
-                List<TacticalUnit3D> minions = FindPlayerMinions();
-                foreach (var minion in minions)
-                {
-                    if (minion == null) continue;
-                    bool inReserve = !minion.gameObject.activeInHierarchy;
-                    bool isSelectedForDeploy = (currentMode == UnitActionMode.DeployCommander && pendingDeployUnit == minion);
-                    bool canDeploy = isPlayerTurn && (inReserve || minion.gameObject.activeInHierarchy);
-
-                    string icon = minion.Affinity switch
-                    {
-                        ElementalAffinity.Earth => "🛡️",
-                        ElementalAffinity.Water => "🌊",
-                        ElementalAffinity.Fire => "🔥",
-                        _ => "⚔️"
-                    };
-
-                    Color baseCol = minion.Affinity switch
-                    {
-                        ElementalAffinity.Earth => new Color(0.32f, 0.40f, 0.18f, 1f),
-                        ElementalAffinity.Water => new Color(0.15f, 0.32f, 0.55f, 1f),
-                        ElementalAffinity.Fire => new Color(0.55f, 0.22f, 0.12f, 1f),
-                        _ => new Color(0.28f, 0.28f, 0.40f, 1f)
-                    };
-                    Color hotCol = minion.Affinity switch
-                    {
-                        ElementalAffinity.Earth => new Color(0.50f, 0.65f, 0.28f, 1f),
-                        ElementalAffinity.Water => new Color(0.22f, 0.50f, 0.85f, 1f),
-                        ElementalAffinity.Fire => new Color(0.85f, 0.35f, 0.18f, 1f),
-                        _ => new Color(0.45f, 0.45f, 0.68f, 1f)
-                    };
-
-                    string mLabel;
-                    if (!inReserve)
-                    {
-                        mLabel = $"{icon} {minion.UnitName}\n<size=10>(On Field - Pick)</size>";
-                    }
-                    else if (isSelectedForDeploy)
-                    {
-                        mLabel = $"<b>[{minion.UnitName}...]</b>\n<size=10>(Click Hex)</size>";
-                    }
-                    else
-                    {
-                        mLabel = $"{icon} {minion.UnitName}\n<size=10>(Deploy Vanguard)</size>";
-                    }
-
-                    Rect mRect = new Rect(curX, btnY, 150f, btnH);
-                    curX += 150f + spacing;
-
-                    if (DrawOpaqueButton(mRect, mLabel, baseCol, hotCol, isSelectedForDeploy, canDeploy))
-                    {
-                        if (inReserve)
-                        {
-                            if (isSelectedForDeploy)
-                            {
-                                pendingDeployUnit = null;
-                                SetActionMode(UnitActionMode.None);
-                            }
-                            else
-                            {
-                                pendingDeployUnit = minion;
-                                SetActionMode(UnitActionMode.DeployCommander);
-                            }
-                        }
-                        else if (minion.gameObject.activeInHierarchy)
-                        {
-                            SelectTile(minion.CurrentTile);
-                            SelectUnit(minion);
-                        }
                     }
                 }
 

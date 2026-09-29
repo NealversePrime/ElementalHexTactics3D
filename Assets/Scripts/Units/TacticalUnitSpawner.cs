@@ -88,11 +88,10 @@ namespace ElementalHexTactics3D.Units
             int baseAtk = 2,
             float standeeScale = 0.75f)
         {
-            if (tile == null) return null;
-
             string goName = $"Unit_{faction}_{unitName.Replace(" ", "")}";
             GameObject unitObj = new GameObject(goName);
-            unitObj.transform.position = tile.GetTopCenterPosition();
+            Vector3 pos = (tile != null) ? tile.GetTopCenterPosition() : Vector3.zero;
+            unitObj.transform.position = pos;
 
             // Standee Child (2D Billboard)
             GameObject standeeObj = new GameObject("Standee");
@@ -122,7 +121,7 @@ namespace ElementalHexTactics3D.Units
             TacticalUnit3D unit = unitObj.AddComponent<TacticalUnit3D>();
             unit.Initialize(unitName, faction, standeeSprite, tile, hp, range, archetype, affinity, baseAtk);
 
-            tile.CurrentOccupant = unit;
+            if (tile != null) tile.CurrentOccupant = unit;
             return unit;
         }
 
@@ -144,7 +143,7 @@ namespace ElementalHexTactics3D.Units
 
         /// <summary>
         /// Ensures only one Commander and one Titan exist in scene, resets them to Citadel reserve,
-        /// purges any duplicate instances, and restores their health and readiness.
+        /// purges any duplicate instances, restores their health and readiness, and ensures all allied units exist.
         /// </summary>
         public static void ResetPlayerReserveUnits()
         {
@@ -193,7 +192,7 @@ namespace ElementalHexTactics3D.Units
                 }
                 else
                 {
-                    // Deduplicate minions by name if needed
+                    // Deduplicate minions by name
                     if (seenMinionNames.Contains(u.UnitName))
                     {
                         if (u.CurrentTile != null && u.CurrentTile.CurrentOccupant == u)
@@ -220,6 +219,17 @@ namespace ElementalHexTactics3D.Units
 
             if (primaryCmdr != null)
             {
+                // Auto-upgrade legacy placeholder sprite to Demon Lord if still using Actor3_3 or named generic Commander
+                if (primaryCmdr.StandeeSprite == null || primaryCmdr.StandeeSprite.name.Contains("Actor3_3") || primaryCmdr.UnitName == "Commander")
+                {
+                    Sprite dlSprite = LoadBattlerSprite("DemonLord.png");
+                    if (dlSprite != null)
+                    {
+                        primaryCmdr.SetStandeeSprite(dlSprite);
+                        primaryCmdr.SetUnitName("Demon Lord");
+                    }
+                }
+
                 if (primaryCmdr.CurrentTile != null && primaryCmdr.CurrentTile.CurrentOccupant == primaryCmdr)
                 {
                     primaryCmdr.CurrentTile.CurrentOccupant = null;
@@ -240,6 +250,55 @@ namespace ElementalHexTactics3D.Units
                 primaryTitan.Revive();
                 primaryTitan.ResetTurnActions();
                 primaryTitan.gameObject.SetActive(false);
+            }
+
+            // Ensure our newly created allied vanguard roster exists in reserve
+            EnsureAlliedRosterExists();
+        }
+
+        public static void EnsureAlliedRosterExists()
+        {
+            var allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            bool hasBasalt = false;
+            bool hasSiren = false;
+            bool hasMagma = false;
+
+            foreach (var u in allUnits)
+            {
+                if (u == null || u.Faction != UnitFaction.Player) continue;
+                if (u.UnitName == "Basalt Vanguard") hasBasalt = true;
+                if (u.UnitName == "Siren Sorceress") hasSiren = true;
+                if (u.UnitName == "Magma Imp") hasMagma = true;
+            }
+
+            if (!hasBasalt)
+            {
+                Sprite sp = LoadBattlerSprite("BasaltVanguard.png");
+                if (sp != null)
+                {
+                    TacticalUnit3D u = SpawnUnitStandee("Basalt Vanguard", UnitFaction.Player, sp, null, 14, 2, UnitArchetype.Minion, ElementalAffinity.Earth, 3, 0.85f);
+                    if (u != null) { u.gameObject.SetActive(false); }
+                }
+            }
+
+            if (!hasSiren)
+            {
+                Sprite sp = LoadBattlerSprite("SirenSorceress.png");
+                if (sp != null)
+                {
+                    TacticalUnit3D u = SpawnUnitStandee("Siren Sorceress", UnitFaction.Player, sp, null, 8, 3, UnitArchetype.Minion, ElementalAffinity.Water, 2, 0.80f);
+                    if (u != null) { u.gameObject.SetActive(false); }
+                }
+            }
+
+            if (!hasMagma)
+            {
+                Sprite sp = LoadBattlerSprite("MagmaImp.png");
+                if (sp != null)
+                {
+                    TacticalUnit3D u = SpawnUnitStandee("Magma Imp", UnitFaction.Player, sp, null, 6, 2, UnitArchetype.Minion, ElementalAffinity.Fire, 3, 0.70f);
+                    if (u != null) { u.gameObject.SetActive(false); }
+                }
             }
         }
     }

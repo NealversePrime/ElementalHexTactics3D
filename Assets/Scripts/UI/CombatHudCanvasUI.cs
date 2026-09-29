@@ -152,6 +152,7 @@ namespace ElementalHexTactics3D.UI
             if (card != null)
             {
                 unitCardRoot = card.gameObject;
+                portraitImage = card.Find("Portrait_Frame/Portrait_Image")?.GetComponent<Image>();
                 unitNameText = card.Find("Txt_UnitName")?.GetComponent<Text>();
                 unitArchetypeText = card.Find("Txt_Archetype")?.GetComponent<Text>();
                 turnStatusText = card.Find("Txt_TurnStatus")?.GetComponent<Text>();
@@ -676,6 +677,13 @@ namespace ElementalHexTactics3D.UI
             if (unitCardRoot != null && !unitCardRoot.activeSelf)
             {
                 unitCardRoot.SetActive(true);
+            }
+
+            // Portrait Avatar
+            if (portraitImage != null)
+            {
+                portraitImage.sprite = selected.StandeeSprite;
+                portraitImage.color = (selected.StandeeSprite != null) ? Color.white : new Color(1f, 1f, 1f, 0f);
             }
 
             // Unit Name & Archetype

@@ -65,10 +65,35 @@ namespace ElementalHexTactics3D.Units
         private bool isMoving = false;
         private bool isSelected = false;
 
-        public string UnitName => unitName;
+        public string UnitName { get => unitName; set => unitName = value; }
         public UnitFaction Faction => faction;
         public UnitArchetype Archetype => archetype;
         public ElementalAffinity Affinity => affinity;
+
+        public Sprite StandeeSprite
+        {
+            get
+            {
+                if (spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+                return (spriteRenderer != null) ? spriteRenderer.sprite : null;
+            }
+            set
+            {
+                if (spriteRenderer == null) spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+                if (spriteRenderer != null) spriteRenderer.sprite = value;
+            }
+        }
+
+        public void SetStandeeSprite(Sprite newSprite)
+        {
+            StandeeSprite = newSprite;
+        }
+
+        public void SetUnitName(string newName)
+        {
+            unitName = newName;
+            gameObject.name = $"Unit_{faction}_{newName.Replace(" ", "")}";
+        }
         public int MaxHealth => maxHealth;
         public int CurrentHealth
         {
