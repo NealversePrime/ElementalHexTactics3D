@@ -550,6 +550,7 @@ namespace ElementalHexTactics3D.UI
             HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
             if (interaction == null) return;
 
+            interaction.ClearUnitSelection();
             interaction.SetActionMode(interaction.CurrentActionMode == UnitActionMode.TearRift
                 ? UnitActionMode.None
                 : UnitActionMode.TearRift);
@@ -809,7 +810,7 @@ namespace ElementalHexTactics3D.UI
             bool isDeployMode = (currentMode == UnitActionMode.DeployCommander || currentMode == UnitActionMode.SummonTitan);
             bool noActiveUnits = !HexGridInteraction3D.HasActivePlayerUnitsOnField();
 
-            if (!riftExists && selectedUnit == null)
+            if (!riftExists)
             {
                 if (unanchoredSection != null) unanchoredSection.SetActive(true);
                 if (riftPanelSection != null) riftPanelSection.SetActive(false);
