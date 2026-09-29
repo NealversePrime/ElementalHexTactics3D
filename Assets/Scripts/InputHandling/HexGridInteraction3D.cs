@@ -1141,6 +1141,13 @@ namespace ElementalHexTactics3D.InputHandling
                 return; // Suppress standard HUD when end-game modal is active
             }
 
+            // Suppress legacy IMGUI HUD when modern uGUI Canvas Combat HUD is active
+            if (UI.CombatHudCanvasUI.Instance != null && UI.CombatHudCanvasUI.Instance.gameObject.activeInHierarchy)
+            {
+                DrawGhostUIPreview();
+                return;
+            }
+
             DrawTacticalInfoHUD();
             DrawActionBarHUD();
             DrawGhostUIPreview();

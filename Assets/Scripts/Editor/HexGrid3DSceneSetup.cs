@@ -32,6 +32,7 @@ namespace ElementalHexTactics3D.Editor
             {
                 AssetDatabase.Refresh();
                 SetupSoundManager();
+                CombatHudCanvasBuilder.GenerateCombatHud();
             };
         }
 

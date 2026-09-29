@@ -269,6 +269,8 @@ namespace ElementalHexTactics3D.Editor
             inGameMenuRect.sizeDelta = new Vector2(150f, 42f);
             inGameMenuRect.anchoredPosition = new Vector2(-20f, -20f);
 
+            CombatHudCanvasBuilder.GenerateCombatHud();
+
             hudPanelObj.SetActive(false);
 
             // 11. Wire references to TitleMenuCanvasUI via SerializedObject

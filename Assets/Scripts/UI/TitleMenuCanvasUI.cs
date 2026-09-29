@@ -443,7 +443,14 @@ namespace ElementalHexTactics3D.UI
 
             if (titlePanel != null) titlePanel.SetActive(false);
             if (townHubPanel != null) townHubPanel.SetActive(false);
-            if (inGameHudPanel != null) inGameHudPanel.SetActive(true);
+            if (inGameHudPanel != null)
+            {
+                inGameHudPanel.SetActive(true);
+                if (inGameHudPanel.GetComponent<CombatHudCanvasUI>() == null)
+                {
+                    inGameHudPanel.AddComponent<CombatHudCanvasUI>();
+                }
+            }
             CloseAllModals();
             Combat.SoundManager3D.Instance?.PlayBattleBGM();
 
