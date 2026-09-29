@@ -98,7 +98,8 @@ namespace ElementalHexTactics3D.Editor
             SetStretchAll(portraitImgObj.GetComponent<RectTransform>());
             Image portraitImg = portraitImgObj.AddComponent<Image>();
             portraitImg.preserveAspect = true;
-            Sprite cmdrSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Battlers/DemonLord.png");
+            Sprite cmdrSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Portraits/demonlordportrait.png");
+            if (cmdrSprite == null) cmdrSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Battlers/DemonLord.png");
             if (cmdrSprite == null) cmdrSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Battlers/Actor3_3.png");
             if (cmdrSprite != null) portraitImg.sprite = cmdrSprite;
 

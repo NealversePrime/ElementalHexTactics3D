@@ -86,6 +86,29 @@ namespace ElementalHexTactics3D.Units
             }
         }
 
+        [SerializeField] private Sprite portraitSprite;
+
+        public Sprite PortraitSprite
+        {
+            get
+            {
+                if (portraitSprite != null) return portraitSprite;
+                Sprite p = TacticalUnitSpawner.GetPortraitForUnit(unitName);
+                if (p != null)
+                {
+                    portraitSprite = p;
+                    return portraitSprite;
+                }
+                return StandeeSprite;
+            }
+            set => portraitSprite = value;
+        }
+
+        public void SetPortraitSprite(Sprite newSprite)
+        {
+            portraitSprite = newSprite;
+        }
+
         public void SetStandeeSprite(Sprite newSprite)
         {
             StandeeSprite = newSprite;

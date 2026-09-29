@@ -682,8 +682,8 @@ namespace ElementalHexTactics3D.UI
             // Portrait Avatar
             if (portraitImage != null)
             {
-                portraitImage.sprite = selected.StandeeSprite;
-                portraitImage.color = (selected.StandeeSprite != null) ? Color.white : new Color(1f, 1f, 1f, 0f);
+                portraitImage.sprite = selected.PortraitSprite;
+                portraitImage.color = (selected.PortraitSprite != null) ? Color.white : new Color(1f, 1f, 1f, 0f);
             }
 
             // Unit Name & Archetype

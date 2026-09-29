@@ -76,6 +76,58 @@ namespace ElementalHexTactics3D.Units
             return null;
         }
 
+        public static Sprite LoadPortraitSprite(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return null;
+
+            string cacheKey = "Portrait_" + fileName;
+            if (spriteCache.TryGetValue(cacheKey, out Sprite cached) && cached != null)
+            {
+                return cached;
+            }
+
+#if UNITY_EDITOR
+            string assetPath = "Assets/Sprites/Portraits/" + fileName;
+            Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            if (edSprite != null)
+            {
+                spriteCache[cacheKey] = edSprite;
+                return edSprite;
+            }
+#endif
+
+            string filePath = Path.Combine(Application.dataPath, "Sprites/Portraits", fileName);
+            if (File.Exists(filePath))
+            {
+                byte[] bytes = File.ReadAllBytes(filePath);
+                Texture2D tex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
+                if (tex.LoadImage(bytes))
+                {
+                    tex.name = Path.GetFileNameWithoutExtension(fileName);
+                    Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                    spriteCache[cacheKey] = sp;
+                    return sp;
+                }
+            }
+
+            return null;
+        }
+
+        public static Sprite GetPortraitForUnit(string unitName)
+        {
+            if (string.IsNullOrEmpty(unitName)) return null;
+            string lower = unitName.ToLowerInvariant();
+            if (lower.Contains("demon") || lower.Contains("lord") || lower.Contains("commander"))
+                return LoadPortraitSprite("demonlordportrait.png");
+            if (lower.Contains("basalt") || lower.Contains("minotaur") || lower.Contains("vanguard"))
+                return LoadPortraitSprite("minotaurportrait.png");
+            if (lower.Contains("siren") || lower.Contains("sorceress"))
+                return LoadPortraitSprite("sirentportrait.png");
+            if (lower.Contains("magma") || lower.Contains("imp"))
+                return LoadPortraitSprite("magmaimp.png");
+            return null;
+        }
+
         public static TacticalUnit3D SpawnUnitStandee(
             string unitName,
             UnitFaction faction,
