@@ -382,13 +382,17 @@ namespace ElementalHexTactics3D.Editor
             // Ensure Unit Ring Sprite exists
             Sprite ringSprite = EnsureSpriteImporter("Assets/Sprites/UnitRing_Circle.png");
 
-            // 1. Spawn Player 1: Commander in Citadel Reserve across the Rift
-            Sprite playerSprite = LoadSubSprite($"{BattlersFolder}/Actor3_3.png", "Actor3_3_0");
+            // 1. Spawn Player 1: Demon Lord Commander in Citadel Reserve across the Rift
+            Sprite playerSprite = LoadSubSprite($"{BattlersFolder}/DemonLord.png", "");
+            if (playerSprite == null)
+            {
+                playerSprite = LoadSubSprite($"{BattlersFolder}/Actor3_3.png", "Actor3_3_0");
+            }
             HexTile3D playerTile = grid.GetTile(new HexCoordinates(0, -2));
             if (playerTile != null)
             {
-                GameObject cmdrObj = CreateUnitStandee("Unit_Player_Commander", "Commander", UnitFaction.Player, playerSprite, ringSprite, playerTile,
-                    hp: 10, range: 3, archetype: UnitArchetype.Commander, affinity: ElementalAffinity.None, baseAtk: 3, standeeScale: 0.75f);
+                GameObject cmdrObj = CreateUnitStandee("Unit_Player_Commander", "Demon Lord", UnitFaction.Player, playerSprite, ringSprite, playerTile,
+                    hp: 12, range: 3, archetype: UnitArchetype.Commander, affinity: ElementalAffinity.None, baseAtk: 3, standeeScale: 0.85f);
                 TacticalUnit3D cmdr = cmdrObj.GetComponent<TacticalUnit3D>();
                 if (cmdr != null)
                 {
@@ -414,6 +418,39 @@ namespace ElementalHexTactics3D.Editor
                 TacticalUnit3D titan = titanObj.GetComponent<TacticalUnit3D>();
                 if (titan != null) titan.CurrentTile = null;
                 titanObj.SetActive(false);
+            }
+
+            // 2b. Spawn Player Ally 1: Basalt Vanguard (Earth Tank)
+            Sprite basaltSprite = LoadSubSprite($"{BattlersFolder}/BasaltVanguard.png", "");
+            if (basaltSprite != null && playerTile != null)
+            {
+                GameObject basaltObj = CreateUnitStandee("Unit_Player_BasaltVanguard", "Basalt Vanguard", UnitFaction.Player, basaltSprite, ringSprite, playerTile,
+                    hp: 14, range: 2, archetype: UnitArchetype.Minion, affinity: ElementalAffinity.Earth, baseAtk: 3, standeeScale: 0.85f);
+                TacticalUnit3D basalt = basaltObj.GetComponent<TacticalUnit3D>();
+                if (basalt != null) basalt.CurrentTile = null;
+                basaltObj.SetActive(false);
+            }
+
+            // 2c. Spawn Player Ally 2: Siren Sorceress (Water Support)
+            Sprite sirenSprite = LoadSubSprite($"{BattlersFolder}/SirenSorceress.png", "");
+            if (sirenSprite != null && playerTile != null)
+            {
+                GameObject sirenObj = CreateUnitStandee("Unit_Player_SirenSorceress", "Siren Sorceress", UnitFaction.Player, sirenSprite, ringSprite, playerTile,
+                    hp: 8, range: 3, archetype: UnitArchetype.Minion, affinity: ElementalAffinity.Water, baseAtk: 2, standeeScale: 0.80f);
+                TacticalUnit3D siren = sirenObj.GetComponent<TacticalUnit3D>();
+                if (siren != null) siren.CurrentTile = null;
+                sirenObj.SetActive(false);
+            }
+
+            // 2d. Spawn Player Ally 3: Magma Imp (Fire Demolitionist)
+            Sprite magmaSprite = LoadSubSprite($"{BattlersFolder}/MagmaImp.png", "");
+            if (magmaSprite != null && playerTile != null)
+            {
+                GameObject magmaObj = CreateUnitStandee("Unit_Player_MagmaImp", "Magma Imp", UnitFaction.Player, magmaSprite, ringSprite, playerTile,
+                    hp: 6, range: 2, archetype: UnitArchetype.Minion, affinity: ElementalAffinity.Fire, baseAtk: 3, standeeScale: 0.70f);
+                TacticalUnit3D magma = magmaObj.GetComponent<TacticalUnit3D>();
+                if (magma != null) magma.CurrentTile = null;
+                magmaObj.SetActive(false);
             }
 
             // 3. Spawn Enemy 1: Boss Dracomancer at (0, 2)

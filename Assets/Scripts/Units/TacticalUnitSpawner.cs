@@ -151,6 +151,7 @@ namespace ElementalHexTactics3D.Units
             TacticalUnit3D[] units = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             TacticalUnit3D primaryCmdr = null;
             TacticalUnit3D primaryTitan = null;
+            HashSet<string> seenMinionNames = new HashSet<string>();
 
             foreach (var u in units)
             {
@@ -192,12 +193,27 @@ namespace ElementalHexTactics3D.Units
                 }
                 else
                 {
-                    // Any other player minion/summon outside Commander/Titan: clear and deactivate or destroy
+                    // Deduplicate minions by name if needed
+                    if (seenMinionNames.Contains(u.UnitName))
+                    {
+                        if (u.CurrentTile != null && u.CurrentTile.CurrentOccupant == u)
+                        {
+                            u.CurrentTile.CurrentOccupant = null;
+                        }
+                        if (Application.isPlaying) Object.Destroy(u.gameObject);
+                        else Object.DestroyImmediate(u.gameObject);
+                        continue;
+                    }
+                    seenMinionNames.Add(u.UnitName);
+
+                    // Player minion/summon outside Commander/Titan: clear, revive, reset and store in reserve
                     if (u.CurrentTile != null && u.CurrentTile.CurrentOccupant == u)
                     {
                         u.CurrentTile.CurrentOccupant = null;
                     }
                     u.CurrentTile = null;
+                    u.Revive();
+                    u.ResetTurnActions();
                     u.gameObject.SetActive(false);
                 }
             }
