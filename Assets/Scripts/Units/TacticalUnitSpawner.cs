@@ -117,14 +117,25 @@ namespace ElementalHexTactics3D.Units
         {
             if (string.IsNullOrEmpty(unitName)) return null;
             string lower = unitName.ToLowerInvariant();
-            if (lower.Contains("demon") || lower.Contains("lord") || lower.Contains("commander"))
+            if (lower.Contains("demon") || lower.Contains("lord") || (lower.Contains("commander") && !lower.Contains("paladin") && !lower.Contains("crusade")))
                 return LoadPortraitSprite("demonlordportrait.png");
-            if (lower.Contains("basalt") || lower.Contains("minotaur") || lower.Contains("vanguard"))
+            if (lower.Contains("basalt") || lower.Contains("minotaur") || (lower.Contains("vanguard") && !lower.Contains("crusade")))
                 return LoadPortraitSprite("minotaurportrait.png");
             if (lower.Contains("siren") || lower.Contains("sorceress"))
                 return LoadPortraitSprite("sirentportrait.png");
             if (lower.Contains("magma") || lower.Contains("imp"))
                 return LoadPortraitSprite("magmaimp.png");
+
+            // Holy Crusade Enemy Roster
+            if (lower.Contains("paladin") || lower.Contains("hero") || lower.Contains("crusade commander"))
+                return LoadPortraitSprite("paladinportrait.png");
+            if (lower.Contains("shielder") || lower.Contains("templar") || lower.Contains("shield"))
+                return LoadPortraitSprite("holyshielderportrait.png");
+            if (lower.Contains("archer") || lower.Contains("ranger") || lower.Contains("inquisitor"))
+                return LoadPortraitSprite("holyarcherportrait.png");
+            if (lower.Contains("saintess") || lower.Contains("priestess") || lower.Contains("envoy") || lower.Contains("cleric"))
+                return LoadPortraitSprite("holysaintessportrait.png");
+
             return null;
         }
 

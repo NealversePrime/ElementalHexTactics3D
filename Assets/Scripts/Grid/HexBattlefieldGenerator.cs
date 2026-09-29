@@ -315,24 +315,22 @@ namespace ElementalHexTactics3D.Grid
             }
             else if (arch == MissionArchetype.VanguardSabotage)
             {
-                boss.BattlerSpriteName = "Dracomancer.png";
-                boss.UnitName = "Inquisitor Dracomancer";
+                boss.BattlerSpriteName = "paladin.png";
+                boss.UnitName = "Chosen Hero";
                 boss.Archetype = UnitArchetype.Commander;
-                boss.Affinity = ElementalAffinity.Fire;
-                boss.HP = 12 + threat * 2;
+                boss.Affinity = ElementalAffinity.None;
+                boss.HP = 14 + threat * 2;
                 boss.Range = 3;
-                boss.BaseAtk = 3 + (threat >= 3 ? 1 : 0);
+                boss.BaseAtk = 4 + (threat >= 3 ? 1 : 0);
                 boss.Scale = 0.85f;
             }
             else
             {
-                string[] bossSprites = new string[] { "Emperor Slime.png", "Father Slime.png", "Dracomancer.png" };
-                boss.BattlerSpriteName = bossSprites[rng.Next(bossSprites.Length)];
-                boss.UnitName = boss.BattlerSpriteName.Contains("Emperor") ? "Emperor Slime" :
-                                boss.BattlerSpriteName.Contains("Father") ? "Grand Patriarch Slime" : "Outpost Commander";
+                boss.BattlerSpriteName = "paladin.png";
+                boss.UnitName = "Crusade Commander";
                 boss.Archetype = UnitArchetype.Commander;
                 boss.Affinity = ElementalAffinity.None;
-                boss.HP = 10 + threat * 2;
+                boss.HP = 12 + threat * 2;
                 boss.Range = 2;
                 boss.BaseAtk = 3;
                 boss.Scale = 0.85f;
@@ -340,9 +338,14 @@ namespace ElementalHexTactics3D.Grid
 
             data.Enemies.Add(boss);
 
-            // 2. Spawn 1-3 Minions/Escorts
+            // 2. Spawn 1-3 Minions/Escorts from Holy Crusade Roster
             int minionCount = Mathf.Clamp(1 + (threat / 2), 1, 3);
-            string[] minionSprites = new string[] { "Demon Slime.png", "Sword Slime.png", "Bat Slime.png", "Horn Slime.png", "Spikey Slime.png", "Turtle Slime.png" };
+            var crusadeRoster = new (string sprite, string name, ElementalAffinity aff, int hp, int range, int atk)[]
+            {
+                ("holyshielder.png", "Crusader Templar", ElementalAffinity.Earth, 12, 2, 2),
+                ("holyarcher.png", "Sunfire Ranger", ElementalAffinity.Wind, 8, 3, 3),
+                ("holysaintess.png", "Saintess Envoy", ElementalAffinity.Water, 8, 3, 2)
+            };
 
             for (int i = 0; i < minionCount && candidateTiles.Count > 0; i++)
             {
@@ -358,20 +361,19 @@ namespace ElementalHexTactics3D.Grid
                 HexCoordinates mCoord = candidateTiles[pickIdx];
                 candidateTiles.RemoveAt(pickIdx);
 
-                string mSprite = minionSprites[rng.Next(minionSprites.Length)];
-                string mName = mSprite.Replace(".png", "");
+                var chosenUnit = crusadeRoster[i % crusadeRoster.Length];
 
                 data.Enemies.Add(new GeneratedEnemySpec
                 {
                     Coordinates = mCoord,
-                    UnitName = mName,
-                    BattlerSpriteName = mSprite,
+                    UnitName = chosenUnit.name,
+                    BattlerSpriteName = chosenUnit.sprite,
                     Archetype = UnitArchetype.Minion,
-                    Affinity = ElementalAffinity.None,
-                    HP = 6 + (threat >= 3 ? 2 : 0),
-                    Range = 2,
-                    BaseAtk = 2,
-                    Scale = 0.70f
+                    Affinity = chosenUnit.aff,
+                    HP = chosenUnit.hp + (threat >= 3 ? 2 : 0),
+                    Range = chosenUnit.range,
+                    BaseAtk = chosenUnit.atk,
+                    Scale = 0.80f
                 });
             }
         }

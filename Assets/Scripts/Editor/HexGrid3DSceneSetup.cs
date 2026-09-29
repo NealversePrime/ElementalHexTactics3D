@@ -453,22 +453,40 @@ namespace ElementalHexTactics3D.Editor
                 magmaObj.SetActive(false);
             }
 
-            // 3. Spawn Enemy 1: Boss Dracomancer at (0, 2)
-            Sprite enemySprite = LoadSubSprite($"{BattlersFolder}/Dracomancer.png", "Dracomancer_0");
-            HexTile3D enemyTile = grid.GetTile(new HexCoordinates(0, 2));
-            if (enemyTile != null)
+            // 3. Spawn Enemy 1: Boss Chosen Hero (Commander) at (0, 2)
+            Sprite paladinSprite = LoadSubSprite($"{BattlersFolder}/paladin.png", "");
+            HexTile3D paladinTile = grid.GetTile(new HexCoordinates(0, 2));
+            if (paladinTile != null && paladinSprite != null)
             {
-                CreateUnitStandee("Unit_Enemy_Dracomancer", "Dracomancer", UnitFaction.Enemy, enemySprite, ringSprite, enemyTile,
-                    hp: 12, range: 3, archetype: UnitArchetype.Commander, affinity: ElementalAffinity.Fire, baseAtk: 3, standeeScale: 0.80f);
+                CreateUnitStandee("Unit_Enemy_HolyPaladin", "Chosen Hero", UnitFaction.Enemy, paladinSprite, ringSprite, paladinTile,
+                    hp: 14, range: 3, archetype: UnitArchetype.Commander, affinity: ElementalAffinity.None, baseAtk: 4, standeeScale: 0.85f);
             }
 
-            // 4. Spawn Enemy 2: Minion Demon Slime at (1, 1)
-            Sprite slimeSprite = LoadSubSprite($"{BattlersFolder}/Demon Slime.png", "Demon Slime_0");
-            HexTile3D slimeTile = grid.GetTile(new HexCoordinates(1, 1));
-            if (slimeTile != null)
+            // 4. Spawn Enemy 2: Crusader Templar (Frontline Tank) at (-1, 2)
+            Sprite shielderSprite = LoadSubSprite($"{BattlersFolder}/holyshielder.png", "");
+            HexTile3D shielderTile = grid.GetTile(new HexCoordinates(-1, 2));
+            if (shielderTile != null && shielderSprite != null)
             {
-                CreateUnitStandee("Unit_Enemy_DemonSlime", "Demon Slime", UnitFaction.Enemy, slimeSprite, ringSprite, slimeTile,
-                    hp: 8, range: 2, archetype: UnitArchetype.Minion, affinity: ElementalAffinity.None, baseAtk: 2, standeeScale: 0.70f);
+                CreateUnitStandee("Unit_Enemy_HolyShielder", "Crusader Templar", UnitFaction.Enemy, shielderSprite, ringSprite, shielderTile,
+                    hp: 12, range: 2, archetype: UnitArchetype.Minion, affinity: ElementalAffinity.Earth, baseAtk: 2, standeeScale: 0.85f);
+            }
+
+            // 5. Spawn Enemy 3: Sunfire Ranger (Ranged Inquisitor) at (1, 2)
+            Sprite archerSprite = LoadSubSprite($"{BattlersFolder}/holyarcher.png", "");
+            HexTile3D archerTile = grid.GetTile(new HexCoordinates(1, 2));
+            if (archerTile != null && archerSprite != null)
+            {
+                CreateUnitStandee("Unit_Enemy_HolyArcher", "Sunfire Ranger", UnitFaction.Enemy, archerSprite, ringSprite, archerTile,
+                    hp: 8, range: 3, archetype: UnitArchetype.Minion, affinity: ElementalAffinity.Wind, baseAtk: 3, standeeScale: 0.80f);
+            }
+
+            // 6. Spawn Enemy 4: Saintess Envoy (Support Healer) at (0, 3)
+            Sprite saintessSprite = LoadSubSprite($"{BattlersFolder}/holysaintess.png", "");
+            HexTile3D saintessTile = grid.GetTile(new HexCoordinates(0, 3));
+            if (saintessTile != null && saintessSprite != null)
+            {
+                CreateUnitStandee("Unit_Enemy_HolySaintess", "Saintess Envoy", UnitFaction.Enemy, saintessSprite, ringSprite, saintessTile,
+                    hp: 8, range: 3, archetype: UnitArchetype.Minion, affinity: ElementalAffinity.Water, baseAtk: 2, standeeScale: 0.80f);
             }
         }
 

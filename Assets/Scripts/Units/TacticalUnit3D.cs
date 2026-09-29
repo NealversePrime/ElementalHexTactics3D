@@ -751,6 +751,19 @@ namespace ElementalHexTactics3D.Units
             }
         }
 
+        public void Heal(int amount, string customLabel = null)
+        {
+            if (currentHealth <= 0) return;
+            int prev = currentHealth;
+            currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+            int healed = currentHealth - prev;
+            if (healed <= 0) return;
+
+            string label = !string.IsNullOrEmpty(customLabel) ? customLabel : $"+{healed} HP";
+            CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, label, new Color(0.3f, 0.95f, 0.4f));
+            CombatVFXManager.Instance?.PlayHitSparks(transform.position + Vector3.up * 0.75f, new Color(0.4f, 1f, 0.6f));
+        }
+
         private void Die()
         {
             Debug.Log($"<color=#D32F2F><b>[Defeated]</b></color> {unitName} has fallen in battle!");

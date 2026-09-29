@@ -354,28 +354,30 @@ namespace ElementalHexTactics3D.Turn
             if (targetPlayer.CurrentTile == null) targetPlayer.ReacquireCurrentTile();
 
             int currentDist = enemy.Coordinates.DistanceTo(targetPlayer.Coordinates);
-            bool isDracomancer = enemy.UnitName.Contains("Dracomancer") || enemy.Archetype == UnitArchetype.Commander;
+            string enemyName = enemy.UnitName.ToLowerInvariant();
+            bool isArcher = enemyName.Contains("archer") || enemyName.Contains("ranger");
+            bool isSaintess = enemyName.Contains("saintess") || enemyName.Contains("priestess") || enemyName.Contains("cleric");
+            bool isShielder = enemyName.Contains("shielder") || enemyName.Contains("templar");
+            bool isPaladin = enemyName.Contains("paladin") || enemyName.Contains("hero");
+            bool isDracomancer = enemyName.Contains("dracomancer");
+            bool isRangedOrCaster = isArcher || isSaintess || isDracomancer;
 
             // 1. POSITIONING / ADVANCEMENT
-            if (isDracomancer)
+            if (isRangedOrCaster)
             {
-                // Ranged Pyromancer: only advance if out of spell casting range (distance > 3)
+                // Ranged/Caster: only advance if out of range (distance > 3)
                 if (currentDist > 3)
                 {
                     var path = HexPathfinder3D.FindPath(HexGrid3D.Instance, enemy.CurrentTile, targetPlayer.CurrentTile);
                     if (path != null && path.Count > 1)
                     {
-                        // Step forward just enough to reach casting range (distance <= 3)
                         int desiredSteps = path.Count - 3;
                         int steps = Mathf.Clamp(desiredSteps, 1, enemy.EffectiveMoveRange);
                         if (steps > 0)
                         {
-                            CombatFeedbackManager.Instance.ShowBanner("ENEMY MOVEMENT", $"{enemy.UnitName} approaches to cast!", 0.8f, new Color(0.95f, 0.45f, 0.2f));
+                            CombatFeedbackManager.Instance.ShowBanner("ENEMY MOVEMENT", $"{enemy.UnitName} repositions to cast/aim!", 0.8f, new Color(0.95f, 0.45f, 0.2f));
                             List<HexTile3D> movePath = new List<HexTile3D>();
-                            for (int i = 0; i < steps; i++)
-                            {
-                                movePath.Add(path[i]);
-                            }
+                            for (int i = 0; i < steps; i++) movePath.Add(path[i]);
 
                             yield return enemy.MoveAlongPath(movePath, stepDuration: 0.22f);
                             yield return new WaitForSeconds(0.35f);
@@ -385,7 +387,7 @@ namespace ElementalHexTactics3D.Turn
             }
             else
             {
-                // Melee Minions (Demon Slime): advance towards melee contact if out of range (> 1)
+                // Melee (Paladin, Shielder, Minions): advance towards melee contact if out of range (> 1)
                 if (currentDist > 1)
                 {
                     var path = HexPathfinder3D.FindPath(HexGrid3D.Instance, enemy.CurrentTile, targetPlayer.CurrentTile);
@@ -396,10 +398,7 @@ namespace ElementalHexTactics3D.Turn
                         {
                             CombatFeedbackManager.Instance.ShowBanner("ENEMY MOVEMENT", $"{enemy.UnitName} is advancing!", 0.8f, new Color(0.95f, 0.45f, 0.2f));
                             List<HexTile3D> movePath = new List<HexTile3D>();
-                            for (int i = 0; i < steps; i++)
-                            {
-                                movePath.Add(path[i]);
-                            }
+                            for (int i = 0; i < steps; i++) movePath.Add(path[i]);
 
                             yield return enemy.MoveAlongPath(movePath, stepDuration: 0.22f);
                             yield return new WaitForSeconds(0.35f);
@@ -411,23 +410,115 @@ namespace ElementalHexTactics3D.Turn
             // 2. COMBAT ACTION
             int newDist = enemy.Coordinates.DistanceTo(targetPlayer.Coordinates);
 
-            if (isDracomancer)
+            if (isSaintess)
             {
-                // Dracomancer pyromancy: cast Fireball at target (range 1-3) - NO PUSHING!
+                // Check for wounded enemy allies within range 3
+                TacticalUnit3D woundedAlly = null;
+                var allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+                foreach (var u in allUnits)
+                {
+                    if (u != null && u.Faction == UnitFaction.Enemy && u.CurrentHealth < u.MaxHealth && enemy.Coordinates.DistanceTo(u.Coordinates) <= 3)
+                    {
+                        woundedAlly = u;
+                        break;
+                    }
+                }
+
+                if (woundedAlly != null)
+                {
+                    CombatFeedbackManager.Instance?.ShowBanner("✨ SACRED BLESSING!", $"{enemy.UnitName} heals {woundedAlly.UnitName}!", 1.1f, new Color(0.3f, 1.0f, 0.6f));
+                    yield return enemy.PlayAttackLunge(woundedAlly.transform.position, 0.22f);
+                    SoundManager3D.Instance?.PlayWaterSurge();
+
+                    Vector3 casterHand = enemy.transform.position + Vector3.up * 0.8f;
+                    Vector3 targetPos = woundedAlly.transform.position + Vector3.up * 0.8f;
+                    yield return CombatFeedbackManager.Instance?.SpawnSpellProjectile(casterHand, targetPos, new Color(0.3f, 1.0f, 0.6f), 0.28f);
+                    woundedAlly.Heal(3);
+                    yield return new WaitForSeconds(0.6f);
+                }
+                else if (newDist <= 3)
+                {
+                    CombatFeedbackManager.Instance?.ShowBanner("💧 SACRED CASCADE!", $"{enemy.UnitName} casts holy water at {targetPlayer.UnitName}!", 1.1f, new Color(0.2f, 0.7f, 1.0f));
+                    yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+                    SoundManager3D.Instance?.PlayWaterSurge();
+
+                    Vector3 casterHand = enemy.transform.position + Vector3.up * 0.8f;
+                    Vector3 targetChest = targetPlayer.transform.position + Vector3.up * 0.8f;
+                    yield return CombatFeedbackManager.Instance?.SpawnSpellProjectile(casterHand, targetChest, new Color(0.2f, 0.7f, 1.0f), 0.28f);
+                    TerrainReactionSystem.ApplySpell(targetPlayer.CurrentTile, ElementType.Water, damage: 2);
+                    yield return new WaitForSeconds(0.6f);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(0.3f);
+                }
+            }
+            else if (isArcher)
+            {
+                if (newDist <= 3)
+                {
+                    CombatFeedbackManager.Instance?.ShowBanner("🏹 SUNFIRE ARROW!", $"{enemy.UnitName} snipes {targetPlayer.UnitName}!", 1.1f, new Color(1.0f, 0.9f, 0.3f));
+                    yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+                    SoundManager3D.Instance?.PlayMonsterAttack();
+
+                    Vector3 casterHand = enemy.transform.position + Vector3.up * 0.8f;
+                    Vector3 targetChest = targetPlayer.transform.position + Vector3.up * 0.8f;
+                    yield return CombatFeedbackManager.Instance?.SpawnSpellProjectile(casterHand, targetChest, new Color(1.0f, 0.9f, 0.3f), 0.22f);
+                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
+                    yield return new WaitForSeconds(0.6f);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(0.3f);
+                }
+            }
+            else if (isShielder)
+            {
+                if (newDist == 1)
+                {
+                    CombatFeedbackManager.Instance?.ShowBanner("🛡️ SHIELD SLAM!", $"{enemy.UnitName} bashes {targetPlayer.UnitName}!", 1.0f, new Color(0.9f, 0.75f, 0.3f));
+                    yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+                    SoundManager3D.Instance?.PlayKineticPush();
+                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
+                    yield return PushMechanic3D.ExecutePushRoutine(enemy, targetPlayer, HexGrid3D.Instance);
+                    yield return new WaitForSeconds(0.5f);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(0.3f);
+                }
+            }
+            else if (isPaladin)
+            {
+                if (newDist == 1)
+                {
+                    CombatFeedbackManager.Instance?.ShowBanner("⚔️ RADIANT SMITE!", $"{enemy.UnitName} strikes down on {targetPlayer.UnitName}!", 1.1f, new Color(1.0f, 0.85f, 0.2f));
+                    yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+                    SoundManager3D.Instance?.PlayMonsterAttack();
+                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
+                    yield return new WaitForSeconds(0.6f);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(0.3f);
+                }
+            }
+            else if (isDracomancer)
+            {
                 if (newDist <= 3)
                 {
                     string bannerTitle = (newDist == 1) ? "🔥 POINT-BLANK FIRE!" : "ENEMY SPELL!";
-                    string bannerMsg = (newDist == 1) 
-                        ? $"{enemy.UnitName} scorches {targetPlayer.UnitName} with point-blank flames!" 
+                    string bannerMsg = (newDist == 1)
+                        ? $"{enemy.UnitName} scorches {targetPlayer.UnitName} with point-blank flames!"
                         : $"{enemy.UnitName} casts 🔥 Fireball at {targetPlayer.UnitName}!";
 
-                    CombatFeedbackManager.Instance.ShowBanner(bannerTitle, bannerMsg, 1.1f, new Color(1.0f, 0.45f, 0.1f));
+                    CombatFeedbackManager.Instance?.ShowBanner(bannerTitle, bannerMsg, 1.1f, new Color(1.0f, 0.45f, 0.1f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
                     SoundManager3D.Instance?.PlayFireball();
 
                     Vector3 casterHand = enemy.transform.position + Vector3.up * 0.8f;
                     Vector3 targetChest = targetPlayer.transform.position + Vector3.up * 0.8f;
-                    yield return CombatFeedbackManager.Instance.SpawnSpellProjectile(casterHand, targetChest, new Color(1.0f, 0.4f, 0.1f), 0.28f);
+                    yield return CombatFeedbackManager.Instance?.SpawnSpellProjectile(casterHand, targetChest, new Color(1.0f, 0.4f, 0.1f), 0.28f);
 
                     TerrainReactionSystem.ApplySpell(targetPlayer.CurrentTile, ElementType.Fire, damage: 3);
                     yield return new WaitForSeconds(0.7f);
@@ -439,10 +530,10 @@ namespace ElementalHexTactics3D.Turn
             }
             else
             {
-                // Melee Minion attack (Demon Slime)
+                // Melee Minion attack (Demon Slime / default)
                 if (newDist == 1)
                 {
-                    CombatFeedbackManager.Instance.ShowBanner("MINION ATTACK!", $"{enemy.UnitName} strikes {targetPlayer.UnitName}!", 1.0f, new Color(0.95f, 0.35f, 0.2f));
+                    CombatFeedbackManager.Instance?.ShowBanner("MINION ATTACK!", $"{enemy.UnitName} strikes {targetPlayer.UnitName}!", 1.0f, new Color(0.95f, 0.35f, 0.2f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
                     SoundManager3D.Instance?.PlayMonsterAttack();
                     targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
