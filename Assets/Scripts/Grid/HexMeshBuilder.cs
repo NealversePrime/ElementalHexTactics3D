@@ -10,7 +10,7 @@ namespace ElementalHexTactics3D.Grid
     /// </summary>
     public static class HexMeshBuilder
     {
-        public static Mesh CreateHexPillarMesh(float radius = 1f, float depth = 1.2f)
+        public static Mesh CreateHexPillarMesh(float radius = 1f, float depth = 3.5f)
         {
             Mesh mesh = new Mesh();
             mesh.name = $"HexPillar_R{radius}_D{depth}";

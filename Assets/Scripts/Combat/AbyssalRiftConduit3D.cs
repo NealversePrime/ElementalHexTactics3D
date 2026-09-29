@@ -158,9 +158,9 @@ namespace ElementalHexTactics3D.Combat
             disc.name = "RiftFloorDisc";
             disc.layer = LayerMask.NameToLayer("Ignore Raycast");
             disc.transform.SetParent(ambientVortexObj.transform, false);
-            disc.transform.localPosition = new Vector3(0f, 0.02f, 0f);
+            disc.transform.localPosition = new Vector3(0f, 0.01f, 0f);
             disc.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-            disc.transform.localScale = Vector3.one * 1.6f;
+            disc.transform.localScale = Vector3.one * 1.15f;
 
             // Remove collider from visual quad so clicks pass straight to the tile
             Collider c = disc.GetComponent<Collider>();

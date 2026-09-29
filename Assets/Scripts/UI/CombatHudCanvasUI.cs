@@ -18,6 +18,35 @@ namespace ElementalHexTactics3D.UI
     {
         public static CombatHudCanvasUI Instance { get; private set; }
 
+        public static CombatHudCanvasUI EnsureInstance()
+        {
+            if (Instance != null) return Instance;
+
+            CombatHudCanvasUI existing = Object.FindAnyObjectByType<CombatHudCanvasUI>(FindObjectsInactive.Include);
+            if (existing != null)
+            {
+                Instance = existing;
+                return Instance;
+            }
+
+            Canvas canvas = Object.FindAnyObjectByType<Canvas>(FindObjectsInactive.Include);
+            if (canvas != null)
+            {
+                Transform foundHud = canvas.transform.Find("Panel_InGameHUD");
+                if (foundHud != null)
+                {
+                    var comp = foundHud.GetComponent<CombatHudCanvasUI>() ?? foundHud.gameObject.AddComponent<CombatHudCanvasUI>();
+                    return comp;
+                }
+
+                GameObject hud = new GameObject("Panel_InGameHUD");
+                hud.transform.SetParent(canvas.transform, false);
+                return hud.AddComponent<CombatHudCanvasUI>();
+            }
+
+            return null;
+        }
+
         [Header("Unit Status Card (Top-Left)")]
         [SerializeField] private GameObject unitCardRoot;
         [SerializeField] private Image portraitImage;

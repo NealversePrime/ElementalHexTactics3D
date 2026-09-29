@@ -285,11 +285,11 @@ namespace ElementalHexTactics3D.Editor
                 headerBar.transform,
                 "✦ CITADEL OF THE OUTCASTS — EDGE OF THE WORLD ✦",
                 fontBold,
-                16,
+                14,
                 FontStyle.Bold,
                 new Color(1f, 0.9f, 0.45f),
-                new Vector2(-380f, 0f),
-                new Vector2(500f, 36f),
+                new Vector2(-360f, 0f),
+                new Vector2(560f, 36f),
                 TextAnchor.MiddleLeft
             );
 
@@ -302,8 +302,8 @@ namespace ElementalHexTactics3D.Editor
                 15,
                 FontStyle.Bold,
                 new Color(0.35f, 0.85f, 1.0f),
-                new Vector2(120f, 0f),
-                new Vector2(160f, 32f),
+                new Vector2(100f, 0f),
+                new Vector2(150f, 32f),
                 TextAnchor.MiddleCenter
             );
 
@@ -315,8 +315,8 @@ namespace ElementalHexTactics3D.Editor
                 15,
                 FontStyle.Bold,
                 new Color(1.0f, 0.55f, 0.25f),
-                new Vector2(280f, 0f),
-                new Vector2(160f, 32f),
+                new Vector2(250f, 0f),
+                new Vector2(150f, 32f),
                 TextAnchor.MiddleCenter
             );
 
@@ -328,13 +328,16 @@ namespace ElementalHexTactics3D.Editor
                 15,
                 FontStyle.Bold,
                 new Color(0.55f, 1.0f, 0.65f),
-                new Vector2(440f, 0f),
-                new Vector2(160f, 32f),
+                new Vector2(400f, 0f),
+                new Vector2(150f, 32f),
                 TextAnchor.MiddleCenter
             );
 
+            // Reset Campaign Run Button
+            Button btnResetRun = CreateSmallButton("Btn_ResetRun", headerBar.transform, "🔄 RESET", fontBold, 12, btnNormal, new Color(1f, 0.45f, 0.45f), new Vector2(705f, 0f), new Vector2(115f, 36f));
+
             // Return to Title Screen Button
-            Button btnReturnTitle = CreateSmallButton("Btn_ReturnTitle", headerBar.transform, "🏠 TITLE", fontBold, 13, btnNormal, Color.white, new Vector2(850f, 0f), new Vector2(130f, 36f));
+            Button btnReturnTitle = CreateSmallButton("Btn_ReturnTitle", headerBar.transform, "🏠 TITLE", fontBold, 13, btnNormal, Color.white, new Vector2(840f, 0f), new Vector2(120f, 36f));
 
             // 8. Layer 3: Dynamic Header Tooltip Banner (Glow banner showing hovered building info)
             GameObject tooltipBanner = CreateUIObject("Panel_TooltipBanner", hubRoot.transform);
@@ -440,6 +443,7 @@ namespace ElementalHexTactics3D.Editor
 
             // 10. Wire serialized fields to TownHubManager
             SerializedObject soHub = new SerializedObject(hubMgr);
+            soHub.FindProperty("txtDomainTitle").objectReferenceValue = txtDomainTitle;
             soHub.FindProperty("txtManaCrystals").objectReferenceValue = txtMana;
             soHub.FindProperty("txtSoulEmbers").objectReferenceValue = txtEmbers;
             soHub.FindProperty("txtFreedOutcasts").objectReferenceValue = txtOutcasts;
@@ -457,6 +461,7 @@ namespace ElementalHexTactics3D.Editor
             soHub.FindProperty("modalShrine").objectReferenceValue = modalShrine;
 
             soHub.FindProperty("btnReturnTitle").objectReferenceValue = btnReturnTitle;
+            soHub.FindProperty("btnResetCampaign").objectReferenceValue = btnResetRun;
             soHub.ApplyModifiedProperties();
 
             // 11. Wire townHubPanel to TitleMenuCanvasUI

@@ -22,6 +22,7 @@ namespace ElementalHexTactics3D.UI.Hub
         [SerializeField] private int freedOutcasts = 16;
 
         [Header("Resource UI Displays")]
+        [SerializeField] private Text txtDomainTitle;
         [SerializeField] private Text txtManaCrystals;
         [SerializeField] private Text txtSoulEmbers;
         [SerializeField] private Text txtFreedOutcasts;
@@ -42,6 +43,7 @@ namespace ElementalHexTactics3D.UI.Hub
 
         [Header("Interactive Buttons")]
         [SerializeField] private Button btnReturnTitle;
+        [SerializeField] private Button btnResetCampaign;
 
         [Header("Audio")]
         [SerializeField] private AudioClip sfxOpenModal;
@@ -76,6 +78,7 @@ namespace ElementalHexTactics3D.UI.Hub
 
             UpdateResourceDisplays();
             HideTooltipImmediate();
+            WireFacilityModals();
             CloseAllModals();
         }
 
@@ -84,6 +87,8 @@ namespace ElementalHexTactics3D.UI.Hub
             PurgeLegacyContainers();
             EnsureFullBackgroundSprite();
             SnapBuildingNodes();
+            WireFacilityModals();
+            UpdateResourceDisplays();
             Combat.SoundManager3D.Instance?.PlayHubBGM();
         }
 
@@ -161,12 +166,111 @@ namespace ElementalHexTactics3D.UI.Hub
         {
             if (btnReturnTitle != null)
             {
+                btnReturnTitle.onClick.RemoveAllListeners();
                 btnReturnTitle.onClick.AddListener(OnReturnTitleClicked);
+            }
+
+            if (btnResetCampaign == null)
+            {
+                Transform rBtn = transform.Find("Panel_TopDomainHeader/Btn_ResetRun");
+                if (rBtn != null) btnResetCampaign = rBtn.GetComponent<Button>();
+            }
+
+            if (btnResetCampaign != null)
+            {
+                btnResetCampaign.onClick.RemoveAllListeners();
+                btnResetCampaign.onClick.AddListener(() => showResetConfirmModal = true);
+            }
+
+            WireFacilityModals();
+        }
+
+        private void Update()
+        {
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame)
+            {
+                if (showResetConfirmModal)
+                {
+                    showResetConfirmModal = false;
+                }
+                else if (activeModal != null)
+                {
+                    CloseActiveModal();
+                }
+            }
+        }
+
+        private void WireFacilityModals()
+        {
+            WireSingleModal(modalCastle, ActionUnlockPerk);
+            WireSingleModal(modalForge, ActionShatterCollar);
+            WireSingleModal(modalBarracks, ActionRecruitMinion);
+            WireSingleModal(modalMine, ActionAssignMineWorker);
+            WireSingleModal(modalShrine, ActionPerformGachaSummon);
+        }
+
+        private void WireSingleModal(GameObject modal, UnityEngine.Events.UnityAction action)
+        {
+            if (modal == null) return;
+
+            // 1. Close Button
+            Transform btnCloseTrans = modal.transform.Find("CardFrame/Btn_Close");
+            if (btnCloseTrans != null)
+            {
+                Button btnClose = btnCloseTrans.GetComponent<Button>();
+                if (btnClose != null)
+                {
+                    btnClose.onClick.RemoveAllListeners();
+                    btnClose.onClick.AddListener(CloseActiveModal);
+                }
+            }
+
+            // 2. Action Button
+            if (action != null)
+            {
+                Transform btnActionTrans = modal.transform.Find("CardFrame/Btn_Action");
+                if (btnActionTrans != null)
+                {
+                    Button btnAction = btnActionTrans.GetComponent<Button>();
+                    if (btnAction != null)
+                    {
+                        btnAction.onClick.RemoveAllListeners();
+                        btnAction.onClick.AddListener(action);
+                    }
+                }
+            }
+
+            // 3. Backdrop Click to Dismiss
+            Transform backdropTrans = modal.transform.Find("Backdrop");
+            if (backdropTrans != null)
+            {
+                Button bdBtn = backdropTrans.GetComponent<Button>();
+                if (bdBtn == null) bdBtn = backdropTrans.gameObject.AddComponent<Button>();
+                bdBtn.onClick.RemoveAllListeners();
+                bdBtn.onClick.AddListener(CloseActiveModal);
             }
         }
 
         public void UpdateResourceDisplays()
         {
+            int day = CampaignManager.Instance != null ? CampaignManager.Instance.CurrentDay : 1;
+            int daysUntil = CampaignManager.Instance != null ? CampaignManager.Instance.DaysUntilCrusade : 24;
+            int foodStock = CampaignManager.Instance != null ? CampaignManager.Instance.Food : 50;
+            string actStr = CampaignManager.Instance != null ? CampaignManager.Instance.ActTitle : "Act I: Survival";
+
+            if (txtDomainTitle == null)
+            {
+                txtDomainTitle = transform.Find("Panel_TopDomainHeader/Text_DomainTitle")?.GetComponent<Text>();
+            }
+
+            if (txtDomainTitle != null)
+            {
+                string doomColor = (daysUntil <= 3) ? "#FF5252" : (daysUntil <= 7) ? "#FFB74D" : "#81C784";
+                string foodColor = (foodStock <= 15) ? "#FF5252" : "#FFA726";
+                txtDomainTitle.text = $"☀️ DAY {day} ({actStr})  |  ⏳ CRUSADE: <color={doomColor}>{daysUntil} DAYS</color>  |  🍖 FOOD: <color={foodColor}>{foodStock}</color>";
+            }
+
             if (txtManaCrystals != null) txtManaCrystals.text = $"💎 {manaCrystals} Mana";
             if (txtSoulEmbers != null) txtSoulEmbers.text = $"🔥 {soulEmbers} Embers";
             if (txtFreedOutcasts != null) txtFreedOutcasts.text = $"🛡️ {freedOutcasts} Outcasts";
@@ -472,6 +576,18 @@ namespace ElementalHexTactics3D.UI.Hub
             if (TitleMenuCanvasUI.Instance == null || !TitleMenuCanvasUI.Instance.IsInTownHub) return;
             if (ExpeditionPortalModalUI.Instance != null && ExpeditionPortalModalUI.Instance.IsOpen) return;
             if (PostBattleResultsUI.Instance != null && PostBattleResultsUI.Instance.IsOpen) return;
+
+            // If modern uGUI Panel_TopDomainHeader is active, suppress legacy IMGUI top bar!
+            Transform headerPanel = transform.Find("Panel_TopDomainHeader");
+            if (headerPanel != null && headerPanel.gameObject.activeInHierarchy)
+            {
+                if (showResetConfirmModal)
+                {
+                    EnsureHudBgTex();
+                    DrawResetConfirmModal();
+                }
+                return;
+            }
 
             EnsureHudBgTex();
 

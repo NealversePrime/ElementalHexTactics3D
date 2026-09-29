@@ -361,7 +361,7 @@ namespace ElementalHexTactics3D.Editor
             serialized.FindProperty("gridRadius").intValue = 4;
             serialized.FindProperty("hexRadius").floatValue = 1.0f;
             serialized.FindProperty("elevationHeight").floatValue = 0.5f;
-            serialized.FindProperty("pillarDepth").floatValue = 1.0f;
+            serialized.FindProperty("pillarDepth").floatValue = 3.5f;
             serialized.FindProperty("generateCenterPlateau").boolValue = true;
             serialized.FindProperty("generateSampleBiomes").boolValue = true;
             serialized.ApplyModifiedProperties();

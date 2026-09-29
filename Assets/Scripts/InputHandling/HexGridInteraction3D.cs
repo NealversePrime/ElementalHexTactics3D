@@ -64,6 +64,7 @@ namespace ElementalHexTactics3D.InputHandling
         {
             mainCamera = UnityEngine.Camera.main;
             EnsureSolidTexture();
+            UI.CombatHudCanvasUI.EnsureInstance();
 
             // Dynamic Inception Failsafe: Ensure player units wait in Citadel reserve if Rift is not yet opened
             if (AbyssalRiftConduit3D.Instance == null || AbyssalRiftConduit3D.Instance.RiftTile == null)
@@ -181,6 +182,7 @@ namespace ElementalHexTactics3D.InputHandling
 
         private bool IsPointerOverUI(Vector2 guiMousePos)
         {
+            if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return true;
             if (hudRect.Contains(guiMousePos)) return true;
             if (actionBarRect.Contains(guiMousePos)) return true;
             if (isGhostUIVisible && ghostUIRect.Contains(guiMousePos)) return true;
@@ -200,9 +202,10 @@ namespace ElementalHexTactics3D.InputHandling
                 {
                     hitTile = hitUnit.CurrentTile ?? (HexGrid3D.Instance != null ? HexGrid3D.Instance.GetTile(hitUnit.Coordinates) : null);
                 }
-                else
+                else if (hit.normal.y > 0.35f)
                 {
-                    // 2. Otherwise check if we hit a hex tile
+                    // 2. Otherwise check if we hit a hex tile TOP surface.
+                    // Rejecting vertical side cliff walls (hit.normal.y <= 0.35f) prevents raycasting through void/empty space onto distant cliff sides.
                     hitTile = hit.collider.GetComponent<HexTile3D>() ?? hit.collider.GetComponentInParent<HexTile3D>();
                 }
             }
@@ -239,7 +242,7 @@ namespace ElementalHexTactics3D.InputHandling
                     {
                         clickedTile = directHitUnit.CurrentTile ?? clickedTile;
                     }
-                    else
+                    else if (hit.normal.y > 0.35f)
                     {
                         HexTile3D hitTile = hit.collider.GetComponent<HexTile3D>() ?? hit.collider.GetComponentInParent<HexTile3D>();
                         if (hitTile != null) clickedTile = hitTile;
@@ -828,7 +831,8 @@ namespace ElementalHexTactics3D.InputHandling
                 }
 
                 TacticalUnit3D occupant = tile.GetOccupant();
-                if (occupant != null && occupant.Faction != currentSelectedUnit.Faction && !hitEnemies.Contains(occupant))
+                UnitFaction casterFaction = (currentSelectedUnit != null) ? currentSelectedUnit.Faction : UnitFaction.Player;
+                if (occupant != null && occupant.Faction != casterFaction && !hitEnemies.Contains(occupant))
                 {
                     hitEnemies.Add(occupant);
                 }

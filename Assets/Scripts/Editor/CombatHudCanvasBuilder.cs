@@ -27,16 +27,22 @@ namespace ElementalHexTactics3D.Editor
 
             AssetDatabase.Refresh();
 
-            // 1. Locate Panel_InGameHUD in scene
-            GameObject hudPanel = GameObject.Find("Panel_InGameHUD");
-            if (hudPanel == null)
+            // 1. Locate Panel_InGameHUD in scene (works even when inactive)
+            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
+            if (canvas == null)
             {
-                Canvas canvas = Object.FindFirstObjectByType<Canvas>();
-                if (canvas == null)
-                {
-                    Debug.LogError("[Combat HUD Builder] No Canvas found in scene! Run 'Regenerate Base Title Canvas' first.");
-                    return;
-                }
+                Debug.LogError("[Combat HUD Builder] No Canvas found in scene! Run 'Regenerate Base Title Canvas' first.");
+                return;
+            }
+
+            GameObject hudPanel = null;
+            Transform foundHud = canvas.transform.Find("Panel_InGameHUD");
+            if (foundHud != null)
+            {
+                hudPanel = foundHud.gameObject;
+            }
+            else
+            {
                 hudPanel = CreateUIObject("Panel_InGameHUD", canvas.transform);
                 SetStretchAll(hudPanel.GetComponent<RectTransform>());
             }
