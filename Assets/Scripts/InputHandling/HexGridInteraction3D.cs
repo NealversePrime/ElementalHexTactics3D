@@ -83,21 +83,7 @@ namespace ElementalHexTactics3D.InputHandling
             // Dynamic Inception Failsafe: Ensure player units wait in Citadel reserve if Rift is not yet opened
             if (AbyssalRiftConduit3D.Instance == null || AbyssalRiftConduit3D.Instance.RiftTile == null)
             {
-                TacticalUnit3D cmdr = FindCommanderUnit();
-                if (cmdr != null && cmdr.gameObject.activeInHierarchy)
-                {
-                    if (cmdr.CurrentTile != null && cmdr.CurrentTile.CurrentOccupant == cmdr) cmdr.CurrentTile.CurrentOccupant = null;
-                    cmdr.CurrentTile = null;
-                    cmdr.gameObject.SetActive(false);
-                }
-
-                TacticalUnit3D titan = FindTitanUnit();
-                if (titan != null && titan.gameObject.activeInHierarchy)
-                {
-                    if (titan.CurrentTile != null && titan.CurrentTile.CurrentOccupant == titan) titan.CurrentTile.CurrentOccupant = null;
-                    titan.CurrentTile = null;
-                    titan.gameObject.SetActive(false);
-                }
+                TacticalUnitSpawner.ResetPlayerReserveUnits();
             }
 
             StartCoroutine(ShowBattleStartBannerRoutine());

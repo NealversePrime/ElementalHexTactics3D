@@ -143,39 +143,87 @@ namespace ElementalHexTactics3D.Units
         }
 
         /// <summary>
-        /// Ensures Commander and Titan units exist in scene, and resets them to Citadel reserve.
+        /// Ensures only one Commander and one Titan exist in scene, resets them to Citadel reserve,
+        /// purges any duplicate instances, and restores their health and readiness.
         /// </summary>
         public static void ResetPlayerReserveUnits()
         {
             TacticalUnit3D[] units = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            TacticalUnit3D cmdr = null;
-            TacticalUnit3D titan = null;
+            TacticalUnit3D primaryCmdr = null;
+            TacticalUnit3D primaryTitan = null;
 
             foreach (var u in units)
             {
                 if (u == null || u.Faction != UnitFaction.Player) continue;
-                if (u.Archetype == UnitArchetype.Commander) cmdr = u;
-                else if (u.Archetype == UnitArchetype.Titan) titan = u;
+
+                if (u.Archetype == UnitArchetype.Commander)
+                {
+                    if (primaryCmdr == null)
+                    {
+                        primaryCmdr = u;
+                    }
+                    else
+                    {
+                        // Duplicate commander! Purge from scene
+                        if (u.CurrentTile != null && u.CurrentTile.CurrentOccupant == u)
+                        {
+                            u.CurrentTile.CurrentOccupant = null;
+                        }
+                        if (Application.isPlaying) Object.Destroy(u.gameObject);
+                        else Object.DestroyImmediate(u.gameObject);
+                    }
+                }
+                else if (u.Archetype == UnitArchetype.Titan)
+                {
+                    if (primaryTitan == null)
+                    {
+                        primaryTitan = u;
+                    }
+                    else
+                    {
+                        // Duplicate titan! Purge from scene
+                        if (u.CurrentTile != null && u.CurrentTile.CurrentOccupant == u)
+                        {
+                            u.CurrentTile.CurrentOccupant = null;
+                        }
+                        if (Application.isPlaying) Object.Destroy(u.gameObject);
+                        else Object.DestroyImmediate(u.gameObject);
+                    }
+                }
+                else
+                {
+                    // Any other player minion/summon outside Commander/Titan: clear and deactivate or destroy
+                    if (u.CurrentTile != null && u.CurrentTile.CurrentOccupant == u)
+                    {
+                        u.CurrentTile.CurrentOccupant = null;
+                    }
+                    u.CurrentTile = null;
+                    u.gameObject.SetActive(false);
+                }
             }
 
-            if (cmdr != null)
+            if (primaryCmdr != null)
             {
-                if (cmdr.CurrentTile != null && cmdr.CurrentTile.CurrentOccupant == cmdr)
+                if (primaryCmdr.CurrentTile != null && primaryCmdr.CurrentTile.CurrentOccupant == primaryCmdr)
                 {
-                    cmdr.CurrentTile.CurrentOccupant = null;
+                    primaryCmdr.CurrentTile.CurrentOccupant = null;
                 }
-                cmdr.CurrentTile = null;
-                cmdr.gameObject.SetActive(false);
+                primaryCmdr.CurrentTile = null;
+                primaryCmdr.Revive();
+                primaryCmdr.ResetTurnActions();
+                primaryCmdr.gameObject.SetActive(false);
             }
 
-            if (titan != null)
+            if (primaryTitan != null)
             {
-                if (titan.CurrentTile != null && titan.CurrentTile.CurrentOccupant == titan)
+                if (primaryTitan.CurrentTile != null && primaryTitan.CurrentTile.CurrentOccupant == primaryTitan)
                 {
-                    titan.CurrentTile.CurrentOccupant = null;
+                    primaryTitan.CurrentTile.CurrentOccupant = null;
                 }
-                titan.CurrentTile = null;
-                titan.gameObject.SetActive(false);
+                primaryTitan.CurrentTile = null;
+                primaryTitan.Revive();
+                primaryTitan.ResetTurnActions();
+                primaryTitan.gameObject.SetActive(false);
             }
         }
     }

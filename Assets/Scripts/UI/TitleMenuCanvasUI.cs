@@ -417,6 +417,10 @@ namespace ElementalHexTactics3D.UI
             if (townHubPanel != null) townHubPanel.SetActive(true);
             if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
             CloseAllModals();
+
+            // Ensure player units wait in reserve and are hidden while in Citadel Town Hub
+            ElementalHexTactics3D.Units.TacticalUnitSpawner.ResetPlayerReserveUnits();
+
             Combat.SoundManager3D.Instance?.PlayHubBGM();
         }
 

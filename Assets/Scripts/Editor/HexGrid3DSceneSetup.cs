@@ -372,11 +372,11 @@ namespace ElementalHexTactics3D.Editor
         {
             if (grid == null) return;
 
-            // Clean up any existing units to prevent duplicates
-            var existingUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            // Clean up any existing units to prevent duplicates (including inactive reserve units)
+            var existingUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             foreach (var u in existingUnits)
             {
-                Object.DestroyImmediate(u.gameObject);
+                if (u != null) Object.DestroyImmediate(u.gameObject);
             }
 
             // Ensure Unit Ring Sprite exists

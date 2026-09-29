@@ -197,6 +197,24 @@ namespace ElementalHexTactics3D.Campaign
                 PostBattleResultsUI.Instance.CloseModal();
             }
 
+            // Recall and hide all player units back to Citadel reserve across the Rift!
+            Units.TacticalUnitSpawner.ResetPlayerReserveUnits();
+
+            // Clear any lingering enemy units from the battlefield
+            Units.TacticalUnitSpawner.ClearAllEnemies();
+
+            // Clear the active Abyssal Rift Conduit if one exists
+            if (Combat.AbyssalRiftConduit3D.Instance != null)
+            {
+                Destroy(Combat.AbyssalRiftConduit3D.Instance.gameObject);
+            }
+
+            // Deselect all tiles and units in interaction system
+            if (InputHandling.HexGridInteraction3D.Instance != null)
+            {
+                InputHandling.HexGridInteraction3D.Instance.DeselectAll();
+            }
+
             // Switch UI views to Citadel Hub
             if (TitleMenuCanvasUI.Instance != null)
             {
