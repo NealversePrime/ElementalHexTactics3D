@@ -1120,6 +1120,7 @@ MonoBehaviour:
   billboard: {fileID: 318163682}
   baseRing: {fileID: 1498830567}
   baseRingRenderer: {fileID: 1498830568}
+  portraitSprite: {fileID: 0}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 0
@@ -6610,6 +6611,7 @@ MonoBehaviour:
   manaCrystals: 450
   soulEmbers: 180
   freedOutcasts: 16
+  txtDomainTitle: {fileID: 0}
   txtManaCrystals: {fileID: 1704226419}
   txtSoulEmbers: {fileID: 439364790}
   txtFreedOutcasts: {fileID: 1252618842}
@@ -6624,6 +6626,7 @@ MonoBehaviour:
   modalMine: {fileID: 829643814}
   modalShrine: {fileID: 1411335759}
   btnReturnTitle: {fileID: 1975882039}
+  btnResetCampaign: {fileID: 0}
   sfxOpenModal: {fileID: 0}
   sfxCloseModal: {fileID: 0}
   sfxActionSuccess: {fileID: 0}
@@ -8934,6 +8937,7 @@ MonoBehaviour:
   billboard: {fileID: 1995472169}
   baseRing: {fileID: 715799027}
   baseRingRenderer: {fileID: 715799028}
+  portraitSprite: {fileID: 0}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 0
@@ -19737,6 +19741,34 @@ MonoBehaviour:
   isMuted: 0
   sfxVolume: 0.75
   bgmVolume: 0.4
+  fireballClips:
+  - {fileID: 8300000, guid: 4b8c5c10451d0934bb7a085e3a75c3e6, type: 3}
+  - {fileID: 8300000, guid: 82ae91044ba625f459bfa78cdc2153cd, type: 3}
+  - {fileID: 8300000, guid: c6e4d30b888fe104385318113113bfc7, type: 3}
+  waterballClips:
+  - {fileID: 8300000, guid: 0aaffa258c6650b4aad482ddf6767a27, type: 3}
+  - {fileID: 8300000, guid: 1804204995c5ed543bf26dac78f4d20e, type: 3}
+  earthmagicClips:
+  - {fileID: 8300000, guid: 66071574bf3139a419738cd29e10b0c7, type: 3}
+  - {fileID: 8300000, guid: 38111f920ce058340abfe3861dd4aa22, type: 3}
+  airblastClip: {fileID: 8300000, guid: 14a282f7c85496948b297a05969a5c7a, type: 3}
+  coreAbsorbClip: {fileID: 8300000, guid: e86ee0fe64120594b89472a51c2ffd20, type: 3}
+  magmaBlastClip: {fileID: 8300000, guid: 383732f0b25357a4f9d7c24580853d4e, type: 3}
+  monsterAttackClips:
+  - {fileID: 8300000, guid: d9177cfe65977934294a0c2f38b76bb1, type: 3}
+  - {fileID: 8300000, guid: cec3ad6c9c20d954799921ed1c12594d, type: 3}
+  - {fileID: 8300000, guid: 1b11e61a29f049649b018c01bcfe1b2c, type: 3}
+  tailwhipClip: {fileID: 8300000, guid: 70e40b5d30b3f254caa989292663b2bb, type: 3}
+  riftOpenClip: {fileID: 8300000, guid: a64629508f118ba47bcc67cbfd4773f5, type: 3}
+  vanguardEmergenceClip: {fileID: 8300000, guid: 99d75031448cd614baa9a6cf8a87d5be, type: 3}
+  riftSacrificeClip: {fileID: 8300000, guid: 4e0a603ec4005844b91c36c1e22bb1f1, type: 3}
+  wallSlamClip: {fileID: 8300000, guid: 0c8ccd3bb1c2c83498145f669606db3e, type: 3}
+  mudTrapClip: {fileID: 8300000, guid: e465c8ba3ea47274fa20187a17a56b21, type: 3}
+  getHitClip: {fileID: 8300000, guid: 3d3e9e26504d68c43bddc656ffe6638e, type: 3}
+  victoryClip: {fileID: 8300000, guid: be38aac3d55ed6f458b3d58b6ed775f4, type: 3}
+  defeatClip: {fileID: 8300000, guid: fb62c47408f79a447bd7bd75eaaa5b81, type: 3}
+  hubBgmClip: {fileID: 8300000, guid: 64937e69f65d7aa4a94c33d307f28422, type: 3}
+  battleBgmClip: {fileID: 8300000, guid: d48ca68e519ea1a4aa70388f73cf61ed, type: 3}
 --- !u!4 &1641525059
 Transform:
   m_ObjectHideFlags: 0
