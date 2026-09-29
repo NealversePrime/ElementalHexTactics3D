@@ -92,6 +92,11 @@ namespace ElementalHexTactics3D.Units
         {
             if (string.IsNullOrEmpty(fileName)) return null;
 
+            if (!fileName.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase))
+            {
+                fileName += ".png";
+            }
+
             string cacheKey = "Portrait_" + fileName;
             if (spriteCache.TryGetValue(cacheKey, out Sprite cached) && cached != null)
             {
@@ -100,6 +105,7 @@ namespace ElementalHexTactics3D.Units
 
 #if UNITY_EDITOR
             string assetPath = "Assets/Sprites/Portraits/" + fileName;
+            EnsureSpriteImporter(assetPath);
             Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
             if (edSprite == null)
             {
@@ -134,8 +140,21 @@ namespace ElementalHexTactics3D.Units
                 }
             }
 
+            Debug.LogWarning($"[TacticalUnitSpawner] Could not load portrait sprite: {fileName}");
             return null;
         }
+
+#if UNITY_EDITOR
+        private static void EnsureSpriteImporter(string path)
+        {
+            UnityEditor.TextureImporter importer = UnityEditor.AssetImporter.GetAtPath(path) as UnityEditor.TextureImporter;
+            if (importer != null && importer.textureType != UnityEditor.TextureImporterType.Sprite)
+            {
+                importer.textureType = UnityEditor.TextureImporterType.Sprite;
+                importer.SaveAndReimport();
+            }
+        }
+#endif
 
         public static Sprite GetPortraitForUnit(string unitName)
         {
@@ -150,15 +169,15 @@ namespace ElementalHexTactics3D.Units
             if (lower.Contains("imp") || lower.Contains("saboteur"))
                 return LoadPortraitSprite("magmaimp.png");
 
-            // Titans & Wild Monsters Roster
-            if (lower.Contains("dragon") || lower.Contains("magmadragon") || lower.Contains("flame titan") || lower.Contains("magma dragon") || lower.Contains("titan"))
-                return LoadPortraitSprite("magmadragonportrait.png");
-            if (lower.Contains("sea") || lower.Contains("leviathan") || lower.Contains("sealeviathan"))
+            // Titans & Wild Monsters Roster (Specific Titans First)
+            if (lower.Contains("sea") || lower.Contains("leviathan") || lower.Contains("sealeviathan") || lower.Contains("water titan"))
                 return LoadPortraitSprite("sealeviathanportrait.png");
-            if (lower.Contains("earth") || lower.Contains("behemoth") || lower.Contains("earthbehemoth") || lower.Contains("terra"))
+            if (lower.Contains("earth") || lower.Contains("behemoth") || lower.Contains("earthbehemoth") || lower.Contains("earth titan") || lower.Contains("terra"))
                 return LoadPortraitSprite("earthbehemothportrait.png");
             if (lower.Contains("shadow") || lower.Contains("hound") || lower.Contains("shadowhound") || lower.Contains("wolf") || lower.Contains("alpha") || lower.Contains("stalker"))
                 return LoadPortraitSprite("shadowhoundportrait.png");
+            if (lower.Contains("dragon") || lower.Contains("magmadragon") || lower.Contains("flame") || lower.Contains("magma") || lower.Contains("titan"))
+                return LoadPortraitSprite("magmadragonportrait.png");
 
             // Holy Crusade Enemy Roster
             if (lower.Contains("paladin") || lower.Contains("hero") || lower.Contains("crusade commander"))
@@ -217,6 +236,8 @@ namespace ElementalHexTactics3D.Units
             // Unit Controller
             TacticalUnit3D unit = unitObj.AddComponent<TacticalUnit3D>();
             unit.Initialize(unitName, faction, standeeSprite, tile, hp, range, archetype, affinity, baseAtk);
+            Sprite portrait = GetPortraitForUnit(unitName);
+            if (portrait != null) unit.SetPortraitSprite(portrait);
 
             if (tile != null) tile.CurrentOccupant = unit;
             return unit;

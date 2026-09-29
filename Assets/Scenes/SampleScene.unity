@@ -3116,6 +3116,7 @@ MonoBehaviour:
   billboard: {fileID: 1195535440}
   baseRing: {fileID: 625283768}
   baseRingRenderer: {fileID: 625283769}
+  portraitSprite: {fileID: 21300000, guid: bab69b60d02d4b4b8fd11eb25d5ede03, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 1
@@ -4040,6 +4041,7 @@ MonoBehaviour:
   billboard: {fileID: 147140250}
   baseRing: {fileID: 166668854}
   baseRingRenderer: {fileID: 166668855}
+  portraitSprite: {fileID: 21300000, guid: 2c596711ebb14641aa6d93e0a1c128ab, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 0
@@ -4491,6 +4493,7 @@ MonoBehaviour:
   billboard: {fileID: 534735868}
   baseRing: {fileID: 1346050775}
   baseRingRenderer: {fileID: 1346050776}
+  portraitSprite: {fileID: 21300000, guid: 2c596711ebb14641aa6d93e0a1c128ab, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 0
@@ -9686,6 +9689,7 @@ MonoBehaviour:
   billboard: {fileID: 1694587074}
   baseRing: {fileID: 505384784}
   baseRingRenderer: {fileID: 505384785}
+  portraitSprite: {fileID: 21300000, guid: 2c596711ebb14641aa6d93e0a1c128ab, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 0
@@ -17390,6 +17394,7 @@ MonoBehaviour:
   billboard: {fileID: 1343751199}
   baseRing: {fileID: 1484603492}
   baseRingRenderer: {fileID: 1484603493}
+  portraitSprite: {fileID: 21300000, guid: bab69b60d02d4b4b8fd11eb25d5ede03, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 1
@@ -18487,6 +18492,7 @@ MonoBehaviour:
   billboard: {fileID: 1716168192}
   baseRing: {fileID: 1071587421}
   baseRingRenderer: {fileID: 1071587422}
+  portraitSprite: {fileID: 21300000, guid: 2c596711ebb14641aa6d93e0a1c128ab, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 0
@@ -26091,6 +26097,7 @@ MonoBehaviour:
   billboard: {fileID: 402301516}
   baseRing: {fileID: 1739889169}
   baseRingRenderer: {fileID: 1739889170}
+  portraitSprite: {fileID: 21300000, guid: bab69b60d02d4b4b8fd11eb25d5ede03, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 1
@@ -27584,6 +27591,7 @@ MonoBehaviour:
   billboard: {fileID: 674238335}
   baseRing: {fileID: 1892993661}
   baseRingRenderer: {fileID: 1892993662}
+  portraitSprite: {fileID: 21300000, guid: bab69b60d02d4b4b8fd11eb25d5ede03, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 1
@@ -27675,6 +27683,7 @@ MonoBehaviour:
   billboard: {fileID: 225690425}
   baseRing: {fileID: 1082333182}
   baseRingRenderer: {fileID: 1082333183}
+  portraitSprite: {fileID: 21300000, guid: 2c596711ebb14641aa6d93e0a1c128ab, type: 3}
   immobilizeTurns: 0
   crippleTurns: 0
   elementalCores: 0

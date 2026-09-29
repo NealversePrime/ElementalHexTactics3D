@@ -92,14 +92,24 @@ namespace ElementalHexTactics3D.Units
         {
             get
             {
-                if (portraitSprite != null) return portraitSprite;
+                // If we already have a dedicated face portrait, return it
+                if (portraitSprite != null && 
+                    !portraitSprite.name.Contains("FlameFrost") && 
+                    !portraitSprite.name.Contains("Actor3_3") &&
+                    portraitSprite != StandeeSprite)
+                {
+                    return portraitSprite;
+                }
+
+                // Actively fetch dedicated face portrait
                 Sprite p = TacticalUnitSpawner.GetPortraitForUnit(unitName);
                 if (p != null)
                 {
                     portraitSprite = p;
                     return portraitSprite;
                 }
-                return StandeeSprite;
+
+                return (portraitSprite != null) ? portraitSprite : StandeeSprite;
             }
             set => portraitSprite = value;
         }
@@ -305,10 +315,24 @@ namespace ElementalHexTactics3D.Units
         {
             if (archetype == UnitArchetype.Titan)
             {
-                // Flame Titan upgrade: Player Titan or any Titan using FlameFrost / Dragon
-                if (affinity == ElementalAffinity.Fire || unitName.Contains("Flame") || unitName.Contains("Dragon") || 
-                    StandeeSprite == null || (StandeeSprite != null && (StandeeSprite.name.Contains("Dragon") || StandeeSprite.name.Contains("FlameFrost"))))
+                string lower = unitName.ToLowerInvariant();
+                if (affinity == ElementalAffinity.Water || lower.Contains("sea") || lower.Contains("leviathan"))
                 {
+                    Sprite s = TacticalUnitSpawner.LoadBattlerSprite("sealeviathan.png");
+                    if (s != null) SetStandeeSprite(s);
+                    Sprite p = TacticalUnitSpawner.LoadPortraitSprite("sealeviathanportrait.png");
+                    if (p != null) SetPortraitSprite(p);
+                }
+                else if (affinity == ElementalAffinity.Earth || lower.Contains("earth") || lower.Contains("behemoth"))
+                {
+                    Sprite s = TacticalUnitSpawner.LoadBattlerSprite("earthbehemoth.png");
+                    if (s != null) SetStandeeSprite(s);
+                    Sprite p = TacticalUnitSpawner.LoadPortraitSprite("earthbehemothportrait.png");
+                    if (p != null) SetPortraitSprite(p);
+                }
+                else
+                {
+                    // Flame Titan (Fire or generic Titan)
                     Sprite s = TacticalUnitSpawner.LoadBattlerSprite("magmadragon.png");
                     if (s != null)
                     {
@@ -341,6 +365,13 @@ namespace ElementalHexTactics3D.Units
                     }
                 }
             }
+            else if (unitName.ToLowerInvariant().Contains("hound") || unitName.ToLowerInvariant().Contains("alpha") || unitName.ToLowerInvariant().Contains("stalker"))
+            {
+                Sprite s = TacticalUnitSpawner.LoadBattlerSprite("shadowhound.png");
+                if (s != null) SetStandeeSprite(s);
+                Sprite p = TacticalUnitSpawner.LoadPortraitSprite("shadowhoundportrait.png");
+                if (p != null) SetPortraitSprite(p);
+            }
         }
 
         public void Initialize(
@@ -368,6 +399,11 @@ namespace ElementalHexTactics3D.Units
             if (spriteRenderer != null && sprite != null)
             {
                 spriteRenderer.sprite = sprite;
+            }
+
+            if (portraitSprite == null || portraitSprite == StandeeSprite)
+            {
+                portraitSprite = TacticalUnitSpawner.GetPortraitForUnit(unitName);
             }
 
             if (startTile != null)
