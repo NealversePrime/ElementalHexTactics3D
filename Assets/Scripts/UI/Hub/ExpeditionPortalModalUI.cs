@@ -83,28 +83,29 @@ namespace ElementalHexTactics3D.UI.Hub
             // Card 1: Highlighted Tutorial Mission (Defend Abyssal Gate)
             ExpeditionMissionData tutorialMission = new ExpeditionMissionData
             {
+                MissionId = "TUTORIAL_STAGE2",
                 Archetype = MissionArchetype.VanguardSabotage,
                 Title = "[TUTORIAL] PERTAHANKAN ABYSSAL GATE",
                 Description = "Hadang pasukan pelopor Holy Empire di ambang gerbang santuari! Kuasai sihir Fireball untuk membakar rumput jadi Magma, dan dorong prajurit suci menabrak Pilar Batu bersama Basalt Vanguard.",
                 ThreatLevel = 1,
+                Biome = BiomeTheme.VerdantHighlands,
                 Modifier = StageModifier.StoneFortress,
-                TargetTerrainTheme = "Abyssal Frontier (Grass & Stone Pillars)",
                 RewardMana = 100,
                 RewardEmbers = 60,
                 RewardOutcasts = 0,
-                GuaranteedTitanCore = true,
                 Seed = 2002
             };
 
             // Card 2: Locked
             ExpeditionMissionData lockedMine = new ExpeditionMissionData
             {
+                MissionId = "TUTORIAL_LOCKED_MINE",
                 Archetype = MissionArchetype.ResourceScavenge,
                 Title = "🔒 TAMBANG KRISTAL MANA",
                 Description = "Rute dimensi belum stabil. Selesaikan misi pertahanan tutorial pada Kartu #1 untuk menstabilkan Abyssal Rift.",
                 ThreatLevel = 2,
+                Biome = BiomeTheme.AncientCrusadeRuins,
                 Modifier = StageModifier.None,
-                TargetTerrainTheme = "Crystalline Caverns",
                 RewardMana = 120,
                 RewardEmbers = 30,
                 RewardOutcasts = 2,
@@ -114,12 +115,13 @@ namespace ElementalHexTactics3D.UI.Hub
             // Card 3: Locked
             ExpeditionMissionData lockedRescue = new ExpeditionMissionData
             {
+                MissionId = "TUTORIAL_LOCKED_RESCUE",
                 Archetype = MissionArchetype.RescueRecruit,
                 Title = "🔒 PENYELAMATAN TAWANAN",
                 Description = "Rute dimensi belum stabil. Selesaikan misi pertahanan tutorial pada Kartu #1 untuk menstabilkan Abyssal Rift.",
                 ThreatLevel = 2,
+                Biome = BiomeTheme.FloodedBasin,
                 Modifier = StageModifier.None,
-                TargetTerrainTheme = "Outcast Slave Pens",
                 RewardMana = 50,
                 RewardEmbers = 50,
                 RewardOutcasts = 5,
