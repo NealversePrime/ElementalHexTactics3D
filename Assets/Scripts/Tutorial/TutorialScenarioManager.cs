@@ -7,6 +7,7 @@ using ElementalHexTactics3D.Units;
 using ElementalHexTactics3D.Turn;
 using ElementalHexTactics3D.Combat;
 using ElementalHexTactics3D.UI;
+using ElementalHexTactics3D.UI.Hub;
 using ElementalHexTactics3D.Campaign;
 using ElementalHexTactics3D.InputHandling;
 using ElementalHexTactics3D.CameraControl;
@@ -333,7 +334,7 @@ namespace ElementalHexTactics3D.Tutorial
                 );
                 if (DemonLordPlayer != null)
                 {
-                    DemonLordPlayer.AddElementalCores(1);
+                    DemonLordPlayer.AddElementalCore(1);
                 }
 
                 HexTile3D basaltTile = grid.GetTile(new HexCoordinates(1, -2));
