@@ -11,7 +11,7 @@ namespace ElementalHexTactics3D.Tutorial
     /// Pinned below the Turn Ribbon at top-center.
     /// Displays the gamer protagonist's diegetic inner monologue,
     /// tactical step progression badges, and high-visibility player hints.
-    /// Uses native RectTransform instantiation to prevent MissingComponentException.
+    /// Guarantees clean single-instance creation with zero stacked/overlapping text.
     /// </summary>
     public class TutorialGuidanceBannerUI : MonoBehaviour
     {
@@ -31,6 +31,7 @@ namespace ElementalHexTactics3D.Tutorial
 
         private Coroutine pulseCoroutine;
         private Canvas rootCanvas;
+        private bool isBuilt = false;
 
         private static GameObject CreateUI(string name, Transform parent)
         {
@@ -77,8 +78,8 @@ namespace ElementalHexTactics3D.Tutorial
 
             // Create with RectTransform from the start!
             GameObject bannerObj = CreateUI("Panel_TutorialGuidanceBanner", canvas.transform);
+            // Note: AddComponent invokes Awake(), which builds the hierarchy cleanly once!
             Instance = bannerObj.AddComponent<TutorialGuidanceBannerUI>();
-            Instance.BuildUIHierarchy(canvas);
             return Instance;
         }
 
@@ -87,7 +88,6 @@ namespace ElementalHexTactics3D.Tutorial
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
             }
             else if (Instance != this)
             {
@@ -95,7 +95,7 @@ namespace ElementalHexTactics3D.Tutorial
                 return;
             }
 
-            if (rootBanner == null)
+            if (!isBuilt)
             {
                 Canvas canvas = GetComponentInParent<Canvas>() ?? FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
                 if (canvas != null)
@@ -107,8 +107,21 @@ namespace ElementalHexTactics3D.Tutorial
 
         private void BuildUIHierarchy(Canvas canvas)
         {
+            if (isBuilt && txtStepBadge != null && txtMonologue != null && txtHint != null)
+            {
+                return;
+            }
+
             rootCanvas = canvas;
             transform.SetParent(canvas.transform, false);
+
+            // Clean up any stale or duplicate child objects before building
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Transform child = transform.GetChild(i);
+                if (Application.isPlaying) Destroy(child.gameObject);
+                else DestroyImmediate(child.gameObject);
+            }
 
             Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 #if UNITY_EDITOR
@@ -116,7 +129,7 @@ namespace ElementalHexTactics3D.Tutorial
             if (fontBold != null) font = fontBold;
 #endif
 
-            // Main Banner Rect (Top-Center, right below Turn Ribbon)
+            // Main Banner Rect: Top-Center, anchored below Turn Ribbon
             RectTransform rect = GetComponent<RectTransform>();
             if (rect == null)
             {
@@ -126,13 +139,13 @@ namespace ElementalHexTactics3D.Tutorial
             rect.anchorMax = new Vector2(0.5f, 1f);
             rect.pivot = new Vector2(0.5f, 1f);
             rect.anchoredPosition = new Vector2(0f, -76f);
-            rect.sizeDelta = new Vector2(660f, 80f);
+            rect.sizeDelta = new Vector2(720f, 96f);
 
             rootBanner = gameObject;
 
-            // Background
+            // Background Frame
             bannerBackground = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
-            bannerBackground.color = new Color(0.06f, 0.08f, 0.12f, 0.95f); // Deep solid slate
+            bannerBackground.color = new Color(0.06f, 0.08f, 0.12f, 0.96f); // Deep solid slate
             bannerBackground.raycastTarget = false;
 
             // Glowing border
@@ -147,14 +160,14 @@ namespace ElementalHexTactics3D.Tutorial
             avRect.anchorMax = new Vector2(0f, 1f);
             avRect.pivot = new Vector2(0f, 0.5f);
             avRect.anchoredPosition = new Vector2(10f, 0f);
-            avRect.sizeDelta = new Vector2(90f, 0f);
+            avRect.sizeDelta = new Vector2(85f, -12f);
 
             Image avBg = avatarBox.AddComponent<Image>();
-            avBg.color = new Color(0.12f, 0.16f, 0.24f, 0.95f);
+            avBg.color = new Color(0.10f, 0.14f, 0.22f, 0.95f);
             avBg.raycastTarget = false;
 
             Outline avOutline = avatarBox.AddComponent<Outline>();
-            avOutline.effectColor = new Color(0.35f, 0.85f, 1.0f, 0.6f);
+            avOutline.effectColor = new Color(0.35f, 0.85f, 1.0f, 0.7f);
             avOutline.effectDistance = new Vector2(1f, -1f);
 
             // Avatar Icon / Emoji
@@ -167,7 +180,7 @@ namespace ElementalHexTactics3D.Tutorial
 
             txtAvatarIcon = iconObj.AddComponent<Text>();
             txtAvatarIcon.font = font;
-            txtAvatarIcon.fontSize = 24;
+            txtAvatarIcon.fontSize = 26;
             txtAvatarIcon.alignment = TextAnchor.MiddleCenter;
             txtAvatarIcon.text = "💡";
             txtAvatarIcon.color = Color.white;
@@ -177,7 +190,7 @@ namespace ElementalHexTactics3D.Tutorial
             GameObject tagObj = CreateUI("Txt_SpeakerTag", avatarBox.transform);
             RectTransform tagRect = tagObj.GetComponent<RectTransform>();
             tagRect.anchorMin = new Vector2(0f, 0f);
-            tagRect.anchorMax = new Vector2(1f, 0.40f);
+            tagRect.anchorMax = new Vector2(1f, 0.38f);
             tagRect.anchoredPosition = Vector2.zero;
             tagRect.sizeDelta = Vector2.zero;
 
@@ -190,66 +203,75 @@ namespace ElementalHexTactics3D.Tutorial
             txtSpeakerTag.color = new Color(0.35f, 0.85f, 1.0f); // Cyan
             txtSpeakerTag.raycastTarget = false;
 
-            // Right Content Area (Step Badge + Monologue + Hint)
+            // Right Content Area (Step Badge + Monologue + Hint in distinct non-overlapping vertical slots)
             GameObject contentBox = CreateUI("Box_Content", transform);
             RectTransform contRect = contentBox.GetComponent<RectTransform>();
             contRect.anchorMin = new Vector2(0f, 0f);
             contRect.anchorMax = new Vector2(1f, 1f);
             contRect.pivot = new Vector2(0f, 0.5f);
-            contRect.anchoredPosition = new Vector2(110f, 0f);
-            contRect.sizeDelta = new Vector2(-120f, -8f);
+            contRect.anchoredPosition = new Vector2(105f, 0f);
+            contRect.sizeDelta = new Vector2(-115f, -10f);
 
-            // Step Badge (Header)
+            // Slot 1: Step Badge (Top: Height 22px)
             GameObject stepObj = CreateUI("Txt_StepBadge", contentBox.transform);
             RectTransform stepRect = stepObj.GetComponent<RectTransform>();
-            stepRect.anchorMin = new Vector2(0f, 0.68f);
+            stepRect.anchorMin = new Vector2(0f, 1f);
             stepRect.anchorMax = new Vector2(1f, 1f);
-            stepRect.anchoredPosition = Vector2.zero;
-            stepRect.sizeDelta = Vector2.zero;
+            stepRect.pivot = new Vector2(0f, 1f);
+            stepRect.anchoredPosition = new Vector2(0f, 0f);
+            stepRect.sizeDelta = new Vector2(0f, 22f);
 
             txtStepBadge = stepObj.AddComponent<Text>();
             txtStepBadge.font = font;
             txtStepBadge.fontSize = 13;
             txtStepBadge.fontStyle = FontStyle.Bold;
             txtStepBadge.alignment = TextAnchor.MiddleLeft;
-            txtStepBadge.text = "[LANGKAH 1/4] PILIH PALADIN";
+            txtStepBadge.text = "";
             txtStepBadge.color = new Color(1.0f, 0.88f, 0.35f); // Gold
             txtStepBadge.raycastTarget = false;
 
-            // Monologue (Body)
+            // Slot 2: Monologue Body (Middle: Y from -24px, Height 42px, wraps cleanly)
             GameObject monoObj = CreateUI("Txt_Monologue", contentBox.transform);
             RectTransform monoRect = monoObj.GetComponent<RectTransform>();
-            monoRect.anchorMin = new Vector2(0f, 0.28f);
-            monoRect.anchorMax = new Vector2(1f, 0.68f);
-            monoRect.anchoredPosition = Vector2.zero;
-            monoRect.sizeDelta = Vector2.zero;
+            monoRect.anchorMin = new Vector2(0f, 1f);
+            monoRect.anchorMax = new Vector2(1f, 1f);
+            monoRect.pivot = new Vector2(0f, 1f);
+            monoRect.anchoredPosition = new Vector2(0f, -23f);
+            monoRect.sizeDelta = new Vector2(0f, 42f);
 
             txtMonologue = monoObj.AddComponent<Text>();
             txtMonologue.font = font;
-            txtMonologue.fontSize = 13;
+            txtMonologue.fontSize = 12;
+            txtMonologue.lineSpacing = 1.15f;
             txtMonologue.fontStyle = FontStyle.Normal;
-            txtMonologue.alignment = TextAnchor.MiddleLeft;
-            txtMonologue.text = "\"Oke... pertama-tama aku hanya perlu tekan Paladinku untuk memilihnya...\"";
+            txtMonologue.alignment = TextAnchor.UpperLeft;
+            txtMonologue.horizontalOverflow = HorizontalWrapMode.Wrap;
+            txtMonologue.verticalOverflow = VerticalWrapMode.Truncate;
+            txtMonologue.text = "";
             txtMonologue.color = Color.white;
             txtMonologue.raycastTarget = false;
 
-            // Hint (Footer)
+            // Slot 3: Hint Footer (Bottom: Height 20px)
             GameObject hintObj = CreateUI("Txt_Hint", contentBox.transform);
             RectTransform hintRect = hintObj.GetComponent<RectTransform>();
             hintRect.anchorMin = new Vector2(0f, 0f);
-            hintRect.anchorMax = new Vector2(1f, 0.28f);
-            hintRect.anchoredPosition = Vector2.zero;
-            hintRect.sizeDelta = Vector2.zero;
+            hintRect.anchorMax = new Vector2(1f, 0f);
+            hintRect.pivot = new Vector2(0f, 0f);
+            hintRect.anchoredPosition = new Vector2(0f, 2f);
+            hintRect.sizeDelta = new Vector2(0f, 20f);
 
             txtHint = hintObj.AddComponent<Text>();
             txtHint.font = font;
             txtHint.fontSize = 11;
             txtHint.fontStyle = FontStyle.Italic;
             txtHint.alignment = TextAnchor.MiddleLeft;
-            txtHint.text = "💡 Petunjuk: Klik Paladin di medan tempur!";
+            txtHint.horizontalOverflow = HorizontalWrapMode.Wrap;
+            txtHint.verticalOverflow = VerticalWrapMode.Truncate;
+            txtHint.text = "";
             txtHint.color = new Color(0.45f, 0.95f, 0.65f); // Mint green
             txtHint.raycastTarget = false;
 
+            isBuilt = true;
             gameObject.SetActive(false);
         }
 
@@ -258,9 +280,9 @@ namespace ElementalHexTactics3D.Tutorial
         /// </summary>
         public void ShowGuidance(string stepBadge, string monologue, string hint, Color? badgeColor = null)
         {
-            if (rootBanner == null)
+            if (!isBuilt || rootBanner == null || txtStepBadge == null)
             {
-                Canvas canvas = FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+                Canvas canvas = GetComponentInParent<Canvas>() ?? FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
                 if (canvas != null) BuildUIHierarchy(canvas);
             }
 
@@ -302,14 +324,14 @@ namespace ElementalHexTactics3D.Tutorial
             RectTransform rt = GetComponent<RectTransform>();
             Vector3 originalScale = Vector3.one;
 
-            // Pop scale 1.05 -> 1.0
+            // Subtle scale pop 1.04 -> 1.0
             float popElapsed = 0f;
-            float popDuration = 0.18f;
+            float popDuration = 0.16f;
             while (popElapsed < popDuration)
             {
                 popElapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(popElapsed / popDuration);
-                float s = Mathf.Lerp(1.06f, 1.0f, Mathf.Sin(t * Mathf.PI * 0.5f));
+                float s = Mathf.Lerp(1.04f, 1.0f, Mathf.Sin(t * Mathf.PI * 0.5f));
                 if (rt != null) rt.localScale = Vector3.one * s;
                 yield return null;
             }
@@ -318,8 +340,8 @@ namespace ElementalHexTactics3D.Tutorial
             // Subtle continuous breathing glow
             while (gameObject.activeInHierarchy)
             {
-                float glow = (Mathf.Sin(Time.unscaledTime * 4.5f) + 1f) * 0.5f;
-                Color glowCol = Color.Lerp(targetColor * 0.7f, targetColor * 1.3f, glow);
+                float glow = (Mathf.Sin(Time.unscaledTime * 5f) + 1f) * 0.5f;
+                Color glowCol = Color.Lerp(targetColor * 0.75f, targetColor * 1.25f, glow);
                 if (bannerOutline != null)
                 {
                     bannerOutline.effectColor = new Color(glowCol.r, glowCol.g, glowCol.b, 0.85f);
