@@ -345,6 +345,9 @@ namespace ElementalHexTactics3D.Editor
             // 12. Build or refresh Citadel Town Hub within Canvas_TitleMenu
             TownHubCanvasBuilder.BuildTownHub();
 
+            // 13. Build or refresh Story Dialogue Canvas (Visual Novel Overlay)
+            StoryDialogueCanvasBuilder.BuildStoryDialogueCanvas();
+
             // Mark Scene Dirty
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Debug.Log("<color=#4CAF50><b>[2D UI Builder] SUCCESS!</b></color> 2D Canvas hierarchy, custom fantasy buttons, and modals created cleanly in scene!");
