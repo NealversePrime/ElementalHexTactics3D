@@ -916,15 +916,15 @@ namespace ElementalHexTactics3D.UI
                 if (txtSummonTitanRift != null)
                 {
                     if (!titanInReserve)
-                        txtSummonTitanRift.text = isTut ? "🌋 Basalt Vanguard\n<size=11>(On Field)</size>" : "🌋 Pick Titan\n<size=11>(On Field)</size>";
+                        txtSummonTitanRift.text = isTut ? "🌋 Earth Golem\n<size=11>(On Field)</size>" : "🌋 Pick Titan\n<size=11>(On Field)</size>";
                     else if (noActiveUnits)
-                        txtSummonTitanRift.text = (currentMode == UnitActionMode.SummonTitan) ? "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>" : (isTut ? "🌋 Panggil Basalt Vanguard\n<size=11>(Free Vanguard)</size>" : "🌋 Deploy Titan\n<size=11>(Free Vanguard)</size>");
+                        txtSummonTitanRift.text = (currentMode == UnitActionMode.SummonTitan) ? "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>" : (isTut ? "🌋 Panggil Earth Golem\n<size=11>(Free Titan)</size>" : "🌋 Deploy Titan\n<size=11>(Free Titan)</size>");
                     else if (cmdr != null && cmdr.ElementalCores < 1)
-                        txtSummonTitanRift.text = isTut ? "🌋 Panggil Basalt Vanguard\n<size=11>(Req 1 Core)</size>" : "🌋 Summon Titan\n<size=11>(Req 1 Core)</size>";
+                        txtSummonTitanRift.text = isTut ? "🌋 Panggil Earth Golem\n<size=11>(Req 1 Core)</size>" : "🌋 Summon Titan\n<size=11>(Req 1 Core)</size>";
                     else if (currentMode == UnitActionMode.SummonTitan)
                         txtSummonTitanRift.text = "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>";
                     else
-                        txtSummonTitanRift.text = isTut ? "🌋 Panggil Basalt Vanguard\n<size=11>(1 Core Vanguard)</size>" : "🌋 Summon Titan\n<size=11>(1 Core)</size>";
+                        txtSummonTitanRift.text = isTut ? "🌋 Panggil Earth Golem\n<size=11>(1 Core Titan)</size>" : "🌋 Summon Titan\n<size=11>(1 Core)</size>";
                 }
             }
         }
@@ -976,7 +976,7 @@ namespace ElementalHexTactics3D.UI
                 {
                     if (unit.UnitName.Contains("Paladin")) txtPush.text = "⚜️ Holy Repel\n<size=10>(Push 1)</size>";
                     else if (unit.UnitName.Contains("Shielder")) txtPush.text = "🛡️ Shield Shove\n<size=10>(Push 1)</size>";
-                    else if (unit.UnitName.Contains("Basalt")) txtPush.text = "💥 Horn Slam\n<size=10>(Push 1)</size>";
+                    else if (unit.UnitName.Contains("Basalt") || unit.UnitName.Contains("Golem")) txtPush.text = "💥 Golem Slam\n<size=10>(Push 1)</size>";
                     else if (isTitan) txtPush.text = "🐊 Tail Shove\n<size=10>(Push 1)</size>";
                     else txtPush.text = "💨 Push\n<size=10>(Push 1)</size>";
                 }
@@ -990,7 +990,7 @@ namespace ElementalHexTactics3D.UI
                 SetButtonActiveHighlight(btnHarvestCore, currentMode == UnitActionMode.ConsumeLand);
             }
 
-            // Universal Strike (Holy Strike, Shield Bash, Gore Attack, Titan Strike, Melee)
+            // Universal Strike (Holy Strike, Shield Bash, Boulder Smash, Titan Strike, Melee)
             if (btnTitanStrike != null)
             {
                 btnTitanStrike.gameObject.SetActive(true);
@@ -1000,7 +1000,7 @@ namespace ElementalHexTactics3D.UI
                 {
                     if (unit.UnitName.Contains("Paladin")) txtTitanStrike.text = "⚔️ Holy Strike\n<size=10>(3 Dmg)</size>";
                     else if (unit.UnitName.Contains("Shielder")) txtTitanStrike.text = "🛡️ Shield Bash\n<size=10>(2 Dmg)</size>";
-                    else if (unit.UnitName.Contains("Basalt")) txtTitanStrike.text = "🦬 Gore Attack\n<size=10>(3 Dmg)</size>";
+                    else if (unit.UnitName.Contains("Basalt") || unit.UnitName.Contains("Golem")) txtTitanStrike.text = "👊 Boulder Smash\n<size=10>(3 Dmg)</size>";
                     else if (isTitan) txtTitanStrike.text = "🐾 Titan Strike\n<size=10>(Crit)</size>";
                     else txtTitanStrike.text = "⚔️ Attack\n<size=10>(Melee)</size>";
                 }

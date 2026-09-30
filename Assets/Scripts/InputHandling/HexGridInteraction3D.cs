@@ -346,7 +346,16 @@ namespace ElementalHexTactics3D.InputHandling
             currentSelectedUnit.SetSelected(true);
 
             // If player unit and can move, default to Move mode
-            if (unit.Faction == UnitFaction.Player && !unit.HasMovedThisTurn && unit.EffectiveMoveRange > 0)
+            // BUT during tutorial steps that require casting a skill or push, don't auto-switch to Move mode
+            // so the player does not accidentally walk when trying to cast a skill!
+            bool isTutorialSkillStep = Tutorial.TutorialScenarioManager.Instance != null && 
+                Tutorial.TutorialScenarioManager.Instance.IsTutorialActive && 
+                (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballOnGrass ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_EarthGolemWallSlam ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_HolyStrikeDemonLord ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_FinishDemonLord);
+
+            if (!isTutorialSkillStep && unit.Faction == UnitFaction.Player && !unit.HasMovedThisTurn && unit.EffectiveMoveRange > 0)
             {
                 SetActionMode(UnitActionMode.Move);
             }

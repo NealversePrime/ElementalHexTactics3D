@@ -41,9 +41,11 @@ namespace ElementalHexTactics3D.Tutorial
         // Stage 2: The Abyssal Awakening (Elemental Hex Tactics)
         Stage2_TearOpenRift,
         Stage2_DeployDemonLord,
-        Stage2_DeployBasaltVanguard,
+        Stage2_DeployEarthGolem,
+        Stage2_DeployBasaltVanguard = Stage2_DeployEarthGolem,
         Stage2_CastFireballOnGrass,
-        Stage2_BasaltVanguardWallSlam,
+        Stage2_EarthGolemWallSlam,
+        Stage2_BasaltVanguardWallSlam = Stage2_EarthGolemWallSlam,
         Stage2_VanquishHolyInvaders,
 
         Completed
@@ -75,7 +77,8 @@ namespace ElementalHexTactics3D.Tutorial
         public TacticalUnit3D HolyShielderUnit { get; private set; }
         public TacticalUnit3D DemonLordBoss { get; private set; }
         public TacticalUnit3D DemonLordPlayer { get; private set; }
-        public TacticalUnit3D BasaltVanguardPlayer { get; private set; }
+        public TacticalUnit3D EarthGolemPlayer { get; private set; }
+        public TacticalUnit3D BasaltVanguardPlayer => EarthGolemPlayer;
 
         private HexTile3D currentHighlightedTile = null;
 
@@ -180,12 +183,12 @@ namespace ElementalHexTactics3D.Tutorial
                     case TutorialStep.Stage2_DeployDemonLord:
                         if (DemonLordPlayer != null && DemonLordPlayer.gameObject.activeInHierarchy && DemonLordPlayer.CurrentTile != null)
                         {
-                            SetStep(TutorialStep.Stage2_DeployBasaltVanguard);
+                            SetStep(TutorialStep.Stage2_DeployEarthGolem);
                         }
                         break;
 
-                    case TutorialStep.Stage2_DeployBasaltVanguard:
-                        if (BasaltVanguardPlayer != null && BasaltVanguardPlayer.gameObject.activeInHierarchy && BasaltVanguardPlayer.CurrentTile != null)
+                    case TutorialStep.Stage2_DeployEarthGolem:
+                        if (EarthGolemPlayer != null && EarthGolemPlayer.gameObject.activeInHierarchy && EarthGolemPlayer.CurrentTile != null)
                         {
                             SetStep(TutorialStep.Stage2_CastFireballOnGrass);
                         }
@@ -197,12 +200,12 @@ namespace ElementalHexTactics3D.Tutorial
                         // Transition when center tile becomes Magma or when Demon Lord has acted
                         if ((centerTile != null && centerTile.State == TileState.Magma) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
                         {
-                            SetStep(TutorialStep.Stage2_BasaltVanguardWallSlam);
+                            SetStep(TutorialStep.Stage2_EarthGolemWallSlam);
                         }
                         break;
 
-                    case TutorialStep.Stage2_BasaltVanguardWallSlam:
-                        if (BasaltVanguardPlayer != null && (BasaltVanguardPlayer.HasActedThisTurn || BasaltVanguardPlayer.HasMovedThisTurn))
+                    case TutorialStep.Stage2_EarthGolemWallSlam:
+                        if (EarthGolemPlayer != null && (EarthGolemPlayer.HasActedThisTurn || EarthGolemPlayer.HasMovedThisTurn))
                         {
                             SetStep(TutorialStep.Stage2_VanquishHolyInvaders);
                         }
@@ -296,10 +299,11 @@ namespace ElementalHexTactics3D.Tutorial
                     HexTile3D riftTarget = gRift != null ? gRift.GetTile(new HexCoordinates(0, -2)) : null;
                     SetTutorialHighlightedTile(riftTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("TearRift");
-                    InputHandling.HexGridInteraction3D.Instance?.SetActionMode(InputHandling.UnitActionMode.TearRift);
+                    InputHandling.HexGridInteraction3D.Instance?.DeselectAll();
+                    InputHandling.HexGridInteraction3D.Instance?.SetActionMode(InputHandling.UnitActionMode.None);
                     banner?.ShowGuidance(
                         "[LANGKAH 1/5] BUKA ABYSSAL RIFT",
-                        "Sebagai Demon Lord, aku memegang kendali atas celah dimensi santuari. Klik tombol [Tear Open Abyssal Rift] di bawah, lalu klik petak pendaratan berlingkar ungu untuk membuka gerbang!",
+                        "Sebagai Demon Lord, aku memegang kendali atas celah dimensi santuari. Tekan tombol [Tear Open Abyssal Rift] di bawah, lalu klik petak pendaratan ungu untuk membuka gerbang!",
                         "Klik tombol [Tear Open Abyssal Rift] di bar bawah, lalu klik petak berlingkar ungu di (0, -2)!",
                         new Color(0.75f, 0.35f, 1.0f)
                     );
@@ -310,25 +314,27 @@ namespace ElementalHexTactics3D.Tutorial
                     HexTile3D dlTarget = gDl != null ? gDl.GetTile(new HexCoordinates(0, -1)) : null;
                     SetTutorialHighlightedTile(dlTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("DeployCommander");
-                    InputHandling.HexGridInteraction3D.Instance?.SetActionMode(InputHandling.UnitActionMode.DeployCommander);
+                    InputHandling.HexGridInteraction3D.Instance?.DeselectAll();
+                    InputHandling.HexGridInteraction3D.Instance?.SetActionMode(InputHandling.UnitActionMode.None);
                     banner?.ShowGuidance(
                         "[LANGKAH 2/5] KERAHKAN DEMON LORD",
-                        "Gerbang Abyssal Rift beresonansi sempurna! Sekarang saatnya turun ke medan tempur. Klik [Deploy Demon Lord] lalu pilih petak pendaratan di depan Rift!",
-                        "Klik [Deploy Demon Lord] di bar bawah, lalu klik petak (0, -1) di depan Rift!",
+                        "Gerbang Abyssal Rift beresonansi sempurna! Sekarang tekan tombol [Deploy Demon Lord] di bawah, lalu klik petak pendaratan di depan Rift!",
+                        "Klik tombol [Deploy Demon Lord] di bar bawah, lalu klik petak (0, -1) di depan Rift!",
                         new Color(0.95f, 0.45f, 0.35f)
                     );
                     break;
 
-                case TutorialStep.Stage2_DeployBasaltVanguard:
+                case TutorialStep.Stage2_DeployEarthGolem:
                     HexGrid3D gBv = HexGrid3D.Instance;
                     HexTile3D bvTarget = gBv != null ? gBv.GetTile(new HexCoordinates(1, -2)) : null;
                     SetTutorialHighlightedTile(bvTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("DeployTitan");
-                    InputHandling.HexGridInteraction3D.Instance?.SetActionMode(InputHandling.UnitActionMode.SummonTitan);
+                    InputHandling.HexGridInteraction3D.Instance?.DeselectAll();
+                    InputHandling.HexGridInteraction3D.Instance?.SetActionMode(InputHandling.UnitActionMode.None);
                     banner?.ShowGuidance(
-                        "[LANGKAH 3/5] PANGGIL BASALT VANGUARD",
-                        "Satu Elemental Core beresonansi! Panggil sang jenderal tangguh Basalt Vanguard melalui Rift untuk mengamankan garis depan!",
-                        "Klik [Panggil Basalt Vanguard] di bar bawah, lalu tempatkan Basalt Vanguard di petak (1, -2)!",
+                        "[LANGKAH 3/5] PANGGIL EARTH GOLEM",
+                        "Satu Elemental Core beresonansi! Tekan tombol [Panggil Earth Golem] di bawah, lalu tempatkan sang Titan Bumi di petak pendaratan!",
+                        "Klik tombol [Panggil Earth Golem] di bar bawah, lalu tempatkan Earth Golem di petak (1, -2)!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
                     break;
@@ -338,35 +344,35 @@ namespace ElementalHexTactics3D.Tutorial
                     HexTile3D grassTile = g2 != null ? g2.GetTile(new HexCoordinates(0, 0)) : null;
                     SetTutorialHighlightedTile(grassTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
+                    InputHandling.HexGridInteraction3D.Instance?.DeselectAll();
+                    InputHandling.HexGridInteraction3D.Instance?.SetActionMode(InputHandling.UnitActionMode.None);
                     if (DemonLordPlayer != null)
                     {
                         DemonLordPlayer.ResetTurnActions();
-                        InputHandling.HexGridInteraction3D.Instance?.SelectTile(DemonLordPlayer.CurrentTile);
-                        InputHandling.HexGridInteraction3D.Instance?.SelectUnit(DemonLordPlayer);
                     }
                     banner?.ShowGuidance(
                         "[LANGKAH 4/5] REAKSI ELEMEN: FIREBALL",
-                        "Kedua unit kita telah berada di posisi tempur! Di depan ada petak Rumput (Grass). Tembakkan sihir [Fireball] milik Demon Lord ke sana untuk membakarnya jadi Magma!",
-                        "Pilih Demon Lord, klik [Fireball], lalu tembakkan ke petak Rumput (Grass) di depan (0, 0)!",
+                        "Kedua unit kita telah berada di posisi tempur! Klik Demon Lord di (0, -1), lalu tekan tombol sihir [Fireball] di bawah dan tembakkan ke petak Rumput (Grass) di depan untuk membakarnya jadi Magma!",
+                        "Pilih Demon Lord, klik tombol [Fireball] di bawah, lalu tembakkan ke petak Rumput (0, 0)!",
                         new Color(1f, 0.55f, 0.15f)
                     );
                     break;
 
-                case TutorialStep.Stage2_BasaltVanguardWallSlam:
+                case TutorialStep.Stage2_EarthGolemWallSlam:
                     HexGrid3D g3 = HexGrid3D.Instance;
                     HexTile3D pillarTile = g3 != null ? g3.GetTile(new HexCoordinates(1, 0)) : null;
                     SetTutorialHighlightedTile(pillarTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
-                    if (BasaltVanguardPlayer != null)
+                    InputHandling.HexGridInteraction3D.Instance?.DeselectAll();
+                    InputHandling.HexGridInteraction3D.Instance?.SetActionMode(InputHandling.UnitActionMode.None);
+                    if (EarthGolemPlayer != null)
                     {
-                        BasaltVanguardPlayer.ResetTurnActions();
-                        InputHandling.HexGridInteraction3D.Instance?.SelectTile(BasaltVanguardPlayer.CurrentTile);
-                        InputHandling.HexGridInteraction3D.Instance?.SelectUnit(BasaltVanguardPlayer);
+                        EarthGolemPlayer.ResetTurnActions();
                     }
                     banner?.ShowGuidance(
                         "[LANGKAH 5/5] KINETIC PUSH: WALL SLAM",
-                        "Rumputnya benar-benar meleleh jadi Magma pijar! Sekarang giliran Basalt Vanguard. Skill dorongannya [Push] bisa mendorong prajurit musuh menabrak Pilar Batu (Stone Pillar) untuk bonus Wall Slam damage!",
-                        "Pilih Basalt Vanguard, klik [Push], lalu dorong Holy Shielder menabrak Pilar Batu!",
+                        "Rumputnya benar-benar meleleh jadi Magma pijar! Sekarang giliran Titan Bumi. Klik Earth Golem di (1, -2), tekan tombol dorongan [Push] di bawah, lalu dorong Holy Shielder menabrak Pilar Batu untuk bonus Wall Slam damage!",
+                        "Pilih Earth Golem, klik [Push] di bawah, lalu dorong Holy Shielder menabrak Pilar Batu!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
                     break;
@@ -751,8 +757,8 @@ namespace ElementalHexTactics3D.Tutorial
             }
 
             Sprite basaltSprite = TacticalUnitSpawner.LoadBattlerSprite("BasaltVanguard.png");
-            BasaltVanguardPlayer = TacticalUnitSpawner.SpawnUnitStandee(
-                "Basalt Vanguard",
+            EarthGolemPlayer = TacticalUnitSpawner.SpawnUnitStandee(
+                "Earth Golem",
                 UnitFaction.Player,
                 basaltSprite,
                 null, // In reserve!
@@ -762,9 +768,9 @@ namespace ElementalHexTactics3D.Tutorial
                 3,
                 0.85f
             );
-            if (BasaltVanguardPlayer != null)
+            if (EarthGolemPlayer != null)
             {
-                BasaltVanguardPlayer.gameObject.SetActive(false);
+                EarthGolemPlayer.gameObject.SetActive(false);
             }
 
             // 6. Spawn Enemy Invaders (Holy Empire forces)

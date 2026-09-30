@@ -608,17 +608,17 @@ namespace ElementalHexTactics3D.UI
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Basalt Vanguard",
+                        "Earth Golem",
                         "Yang Mulia Demon Lord! Akhirnya Anda siuman! Syukurlah altar purba masih melindungi sukma Anda!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "(Tunggu sebentar... Suara berat ini, tanduk obsidian, rantai perbudakan yang hancur... Basalt Vanguard?! Jangan-jangan aku benar-benar ditarik masuk ke dalam game?! Tubuh ini milik Demon Lord yang barusan kubantai di raid?!)",
+                        "(Tunggu sebentar... Suara berat bergetar ini, tubuh batu raksasa berlumut kristal... Earth Golem?! Salah satu Titan pelindung sanctuary?! Jangan-jangan aku benar-benar ditarik masuk ke dalam game?! Tubuh ini milik Demon Lord yang barusan kubantai di raid?!)",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Basalt Vanguard",
+                        "Earth Golem",
                         "Gawat, Yang Mulia! Pasukan pelopor Kekaisaran Suci (Holy Empire) berhasil mendeteksi perbatasan santuari kita dan menyerbu lewat celah Abyssal Rift!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
@@ -628,7 +628,7 @@ namespace ElementalHexTactics3D.UI
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Basalt Vanguard",
+                        "Earth Golem",
                         "Gerbang Abyssal Rift di tengah alun-alun Citadel sudah beresonansi, Yang Mulia! Mohon pimpin kami ke gerbang perbatasan sebelum mereka merangsek masuk ke dalam Citadel!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
@@ -646,20 +646,20 @@ namespace ElementalHexTactics3D.UI
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Basalt Vanguard",
+                        "Earth Golem",
                         "Benar, Yang Mulia! Pasukan kita saat ini masih bersiaga di balik tabir dimensi Citadel. Bagaimana perintah penyerangan Anda?",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Tenang, Jenderal. Keunggulan mutlak kita adalah portal santuari. Pertama-tama, sobek celah [Abyssal Rift] di medan tempur untuk membuka gerbang masuk pasukan kita!",
+                        "Tenang, Titan Bumi. Keunggulan mutlak kita adalah portal santuari. Pertama-tama, buka celah [Abyssal Rift] di medan tempur untuk menghubungkan gerbang masuk pasukan kita!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
 
                 case StorySequenceId.Tutorial2Victory:
                     lines.Add(new DialogueLine(
-                        "Basalt Vanguard",
+                        "Earth Golem",
                         "Pasukan Suci terpukul mundur! Yang Mulia... Anda benar-benar menyelamatkan kami semua!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
@@ -679,7 +679,7 @@ namespace ElementalHexTactics3D.UI
                         null, true, bgDemonLordThrone, new Color(0.3f, 0.9f, 1f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Basalt Vanguard",
+                        "Earth Golem",
                         "Inti Titan Purba?! Dengan ini kita bisa membangkitkan salah satu dari 4 Dewa Titan Kuno di Citadel Sanctuary!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));

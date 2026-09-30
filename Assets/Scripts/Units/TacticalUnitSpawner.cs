@@ -402,7 +402,7 @@ namespace ElementalHexTactics3D.Units
             foreach (var u in allUnits)
             {
                 if (u == null || u.Faction != UnitFaction.Player) continue;
-                if (u.UnitName == "Basalt Vanguard") hasBasalt = true;
+                if (u.UnitName == "Earth Golem" || u.UnitName == "Basalt Vanguard") hasBasalt = true;
                 if (u.UnitName == "Siren Sorceress") hasSiren = true;
                 if (u.UnitName == "Magma Imp") hasMagma = true;
             }
@@ -412,7 +412,7 @@ namespace ElementalHexTactics3D.Units
                 Sprite sp = LoadBattlerSprite("BasaltVanguard.png");
                 if (sp != null)
                 {
-                    TacticalUnit3D u = SpawnUnitStandee("Basalt Vanguard", UnitFaction.Player, sp, null, 14, 2, UnitArchetype.Minion, ElementalAffinity.Earth, 3, 0.85f);
+                    TacticalUnit3D u = SpawnUnitStandee("Earth Golem", UnitFaction.Player, sp, null, 16, 2, UnitArchetype.Titan, ElementalAffinity.Earth, 3, 0.85f);
                     if (u != null) { u.gameObject.SetActive(false); }
                 }
             }

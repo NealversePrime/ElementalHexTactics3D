@@ -87,7 +87,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 MissionId = "TUTORIAL_STAGE2",
                 Archetype = MissionArchetype.VanguardSabotage,
                 Title = "[TUTORIAL] PERTAHANKAN ABYSSAL GATE",
-                Description = "Hadang pasukan pelopor Holy Empire di ambang gerbang santuari! Kuasai sihir Fireball untuk membakar rumput jadi Magma, dan dorong prajurit suci menabrak Pilar Batu bersama Basalt Vanguard.",
+                Description = "Hadang pasukan pelopor Holy Empire di ambang gerbang santuari! Kuasai sihir Fireball untuk membakar rumput jadi Magma, dan dorong prajurit suci menabrak Pilar Batu bersama Earth Golem.",
                 ThreatLevel = 1,
                 Biome = BiomeTheme.VerdantHighlands,
                 Modifier = StageModifier.StoneFortress,
