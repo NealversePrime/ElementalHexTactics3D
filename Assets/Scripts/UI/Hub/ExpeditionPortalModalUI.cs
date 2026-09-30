@@ -35,9 +35,9 @@ namespace ElementalHexTactics3D.UI.Hub
 
         public bool IsTutorialDispatchMode()
         {
-            if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
+            if (Tutorial.TutorialScenarioManager.Instance != null)
             {
-                return !CampaignSaveManager.IsTutorialStage2Complete;
+                return Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive;
             }
             return false;
         }

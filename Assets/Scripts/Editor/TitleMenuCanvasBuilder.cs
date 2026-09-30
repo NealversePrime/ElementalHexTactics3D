@@ -25,6 +25,19 @@ namespace ElementalHexTactics3D.Editor
         private const string FontBoldPath = "Assets/Fonts/Font_Bold.ttf";
         private const string FontRegularPath = "Assets/Fonts/Font_Regular.ttf";
 
+        [MenuItem("Elemental Hex 3D/Reset Campaign & Set Paladin Prologue Mode", false, 0)]
+        public static void ResetToPaladinPrologue()
+        {
+            Campaign.CampaignSaveManager.DeleteSaveFile();
+            Campaign.CampaignSaveManager.ResetMetaPrologue();
+            if (TitleMenuCanvasUI.Instance != null)
+            {
+                TitleMenuCanvasUI.Instance.ApplyTitleThemeMode(TitleMenuCanvasUI.TitleThemeMode.PaladinHolyland, true);
+                TitleMenuCanvasUI.Instance.ShowTitleScreen();
+            }
+            Debug.Log("<color=#81C784><b>[Save Reset]</b></color> Campaign reset! Set to Paladin Holyland Evolve prologue mode.");
+        }
+
         [MenuItem("Elemental Hex 3D/Advanced/Regenerate Base Title Canvas", false, 51)]
         public static void GenerateTitleCanvas()
         {
