@@ -803,13 +803,31 @@ namespace ElementalHexTactics3D.UI
             TacticalUnit3D selectedUnit = interaction.CurrentSelectedUnit;
             UnitActionMode currentMode = interaction.CurrentActionMode;
 
+            bool isTutorial1 = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage1Active;
+
             // Determine if Unanchored Rift, Base Panel (Rift), or Unit Abilities should show
             bool riftExists = (AbyssalRiftConduit3D.Instance != null && AbyssalRiftConduit3D.Instance.RiftTile != null);
             bool isRiftSelected = (interaction.CurrentSelectedTile != null && riftExists && AbyssalRiftConduit3D.Instance.RiftTile == interaction.CurrentSelectedTile);
             bool isDeployMode = (currentMode == UnitActionMode.DeployCommander || currentMode == UnitActionMode.SummonTitan);
             bool noActiveUnits = !HexGridInteraction3D.HasActivePlayerUnitsOnField();
 
-            if (!riftExists && selectedUnit == null)
+            if (isTutorial1)
+            {
+                // In Tutorial 1 (Holy Crusade), Abyssal Rift is completely hidden!
+                if (unanchoredSection != null) unanchoredSection.SetActive(false);
+                if (riftPanelSection != null) riftPanelSection.SetActive(false);
+
+                if (selectedUnit != null && selectedUnit.Faction == UnitFaction.Player)
+                {
+                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(true);
+                    UpdateUnitAbilityButtons(selectedUnit, interaction, isPlayerTurn, currentMode);
+                }
+                else
+                {
+                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
+                }
+            }
+            else if (!riftExists && selectedUnit == null)
             {
                 if (unanchoredSection != null) unanchoredSection.SetActive(true);
                 if (riftPanelSection != null) riftPanelSection.SetActive(false);
@@ -912,6 +930,7 @@ namespace ElementalHexTactics3D.UI
             bool canCombat = isPlayerTurn && !unit.HasActedThisTurn;
             bool isCommander = (unit.Archetype == UnitArchetype.Commander);
             bool isTitan = (unit.Archetype == UnitArchetype.Titan);
+            bool isTutorial1 = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage1Active;
 
             // Move
             if (btnMove != null)
@@ -920,58 +939,73 @@ namespace ElementalHexTactics3D.UI
                 SetButtonActiveHighlight(btnMove, currentMode == UnitActionMode.Move);
             }
 
-            // Commander Spells
+            // Elemental Spells (Only for Demon Lord / Demonic Commander, disabled in Holy Crusade)
+            bool showElementalSpells = isCommander && !isTutorial1;
             if (btnFireball != null)
             {
-                btnFireball.gameObject.SetActive(isCommander);
+                btnFireball.gameObject.SetActive(showElementalSpells);
                 btnFireball.interactable = canCombat;
                 SetButtonActiveHighlight(btnFireball, currentMode == UnitActionMode.Fireball);
             }
 
             if (btnWaterSurge != null)
             {
-                btnWaterSurge.gameObject.SetActive(isCommander);
+                btnWaterSurge.gameObject.SetActive(showElementalSpells);
                 btnWaterSurge.interactable = canCombat;
                 SetButtonActiveHighlight(btnWaterSurge, currentMode == UnitActionMode.WaterSurge);
             }
 
             if (btnEarthPillar != null)
             {
-                btnEarthPillar.gameObject.SetActive(isCommander);
+                btnEarthPillar.gameObject.SetActive(showElementalSpells);
                 btnEarthPillar.interactable = canCombat;
                 SetButtonActiveHighlight(btnEarthPillar, currentMode == UnitActionMode.EarthSpire);
             }
 
-            // Push / Tail Shove
+            // Push / Tail Shove / Holy Repel
             if (btnPush != null)
             {
+                btnPush.gameObject.SetActive(true);
                 btnPush.interactable = canCombat;
                 SetButtonActiveHighlight(btnPush, currentMode == UnitActionMode.KineticPush);
                 if (txtPush != null)
                 {
-                    txtPush.text = isTitan ? "🐊 Tail Shove\n<size=11>(Push 1)</size>" : "💨 Push\n<size=11>(Push 1)</size>";
+                    if (unit.UnitName.Contains("Paladin")) txtPush.text = "⚜️ Holy Repel\n<size=10>(Push 1)</size>";
+                    else if (unit.UnitName.Contains("Shielder")) txtPush.text = "🛡️ Shield Shove\n<size=10>(Push 1)</size>";
+                    else if (unit.UnitName.Contains("Basalt")) txtPush.text = "💥 Horn Slam\n<size=10>(Push 1)</size>";
+                    else if (isTitan) txtPush.text = "🐊 Tail Shove\n<size=10>(Push 1)</size>";
+                    else txtPush.text = "💨 Push\n<size=10>(Push 1)</size>";
                 }
             }
 
-            // Harvest Core (Consumes adjacent elements)
+            // Harvest Core (Siphon - disabled in Holy Crusade)
             if (btnHarvestCore != null)
             {
+                btnHarvestCore.gameObject.SetActive(!isTutorial1);
                 btnHarvestCore.interactable = canCombat;
                 SetButtonActiveHighlight(btnHarvestCore, currentMode == UnitActionMode.ConsumeLand);
             }
 
-            // Titan Strike
+            // Universal Strike (Holy Strike, Shield Bash, Gore Attack, Titan Strike, Melee)
             if (btnTitanStrike != null)
             {
-                btnTitanStrike.gameObject.SetActive(isTitan);
+                btnTitanStrike.gameObject.SetActive(true);
                 btnTitanStrike.interactable = canCombat;
                 SetButtonActiveHighlight(btnTitanStrike, currentMode == UnitActionMode.TitanStrike);
+                if (txtTitanStrike != null)
+                {
+                    if (unit.UnitName.Contains("Paladin")) txtTitanStrike.text = "⚔️ Holy Strike\n<size=10>(3 Dmg)</size>";
+                    else if (unit.UnitName.Contains("Shielder")) txtTitanStrike.text = "🛡️ Shield Bash\n<size=10>(2 Dmg)</size>";
+                    else if (unit.UnitName.Contains("Basalt")) txtTitanStrike.text = "🦬 Gore Attack\n<size=10>(3 Dmg)</size>";
+                    else if (isTitan) txtTitanStrike.text = "🐾 Titan Strike\n<size=10>(Crit)</size>";
+                    else txtTitanStrike.text = "⚔️ Attack\n<size=10>(Melee)</size>";
+                }
             }
 
-            // Magma Cataclysm (Titan Ulti)
+            // Magma Cataclysm (Titan Ulti - disabled in Holy Crusade)
             if (btnMagmaCataclysm != null)
             {
-                btnMagmaCataclysm.gameObject.SetActive(isTitan);
+                btnMagmaCataclysm.gameObject.SetActive(isTitan && !isTutorial1);
                 bool canCastCataclysm = canCombat && unit.ElementalCores >= 1;
                 btnMagmaCataclysm.interactable = canCastCataclysm;
                 SetButtonActiveHighlight(btnMagmaCataclysm, currentMode == UnitActionMode.MagmaCataclysm);

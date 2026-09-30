@@ -217,6 +217,18 @@ namespace ElementalHexTactics3D.Campaign
         }
 
         /// <summary>
+        /// Saves progress flags for Tutorial Stage 1 and Stage 2.
+        /// </summary>
+        public static void SaveTutorialProgress(bool stage1, bool stage2, bool starterTitan = false)
+        {
+            CampaignSaveData data = LoadSaveData() ?? new CampaignSaveData();
+            data.hasCompletedTutorialStage1 = stage1;
+            data.hasCompletedTutorialStage2 = stage2;
+            if (starterTitan) data.hasClaimedStarterTitan = true;
+            SaveRawData(data);
+        }
+
+        /// <summary>
         /// Directly persists a CampaignSaveData object to disk.
         /// </summary>
         private static bool SaveRawData(CampaignSaveData data)

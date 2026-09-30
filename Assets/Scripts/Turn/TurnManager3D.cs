@@ -219,7 +219,15 @@ namespace ElementalHexTactics3D.Turn
                 result = BattleResult.Defeat;
                 Debug.Log("<color=#EF5350><b>[Battle Ended] DEFEAT!</b></color> Commander and reserves have fallen.");
                 SoundManager3D.Instance?.PlayDefeat();
-                
+
+                // If tutorial scenario is active, let TutorialScenarioManager handle defeat
+                if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
+                {
+                    Tutorial.TutorialScenarioManager.Instance.OnTutorialDefeat();
+                    OnBattleEnded?.Invoke(result);
+                    return;
+                }
+
                 var activeMission = Campaign.ExpeditionTrilemmaGenerator.CurrentActiveMission;
                 Campaign.CampaignManager.Instance.OnBattleCompleted(result, activeMission);
                 OnBattleEnded?.Invoke(result);
@@ -229,6 +237,14 @@ namespace ElementalHexTactics3D.Turn
                 result = BattleResult.Victory;
                 Debug.Log("<color=#FFD700><b>[Battle Ended] VICTORY!</b></color> All enemy forces vanquished!");
                 SoundManager3D.Instance?.PlayVictory();
+
+                // If tutorial scenario is active, let TutorialScenarioManager handle victory!
+                if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
+                {
+                    Tutorial.TutorialScenarioManager.Instance.OnTutorialVictory();
+                    OnBattleEnded?.Invoke(result);
+                    return;
+                }
 
                 var activeMission = Campaign.ExpeditionTrilemmaGenerator.CurrentActiveMission;
                 Campaign.CampaignManager.Instance.OnBattleCompleted(result, activeMission);

@@ -83,7 +83,10 @@ namespace ElementalHexTactics3D.InputHandling
             // Dynamic Inception Failsafe: Ensure player units wait in Citadel reserve if Rift is not yet opened
             if (AbyssalRiftConduit3D.Instance == null || AbyssalRiftConduit3D.Instance.RiftTile == null)
             {
-                TacticalUnitSpawner.ResetPlayerReserveUnits();
+                if (Tutorial.TutorialScenarioManager.Instance == null || !Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
+                {
+                    TacticalUnitSpawner.ResetPlayerReserveUnits();
+                }
             }
 
             StartCoroutine(ShowBattleStartBannerRoutine());
@@ -92,6 +95,13 @@ namespace ElementalHexTactics3D.InputHandling
         private IEnumerator ShowBattleStartBannerRoutine()
         {
             yield return null; // Wait 1 frame for grid initialization
+
+            // Don't show generic Abyssal Rift banner during tutorial stages!
+            if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
+            {
+                yield break;
+            }
+
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(

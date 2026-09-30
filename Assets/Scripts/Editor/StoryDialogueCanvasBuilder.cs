@@ -33,6 +33,17 @@ namespace ElementalHexTactics3D.Editor
         {
             Debug.Log("<color=#FFD54F><b>[Story VN Builder]</b></color> Generating Visual Novel Dialogue Canvas...");
 
+            // Ensure all portraits and backgrounds are imported as Sprite 2D & UI
+            ConfigureSpriteImporter(McSilhouettePath);
+            ConfigureSpriteImporter(PaladinPortraitPath);
+            ConfigureSpriteImporter(HolyShielderPortraitPath);
+            ConfigureSpriteImporter(DemonLordPortraitPath);
+            ConfigureSpriteImporter(MinotaurPortraitPath);
+            ConfigureSpriteImporter(BgMcRoomPath);
+            ConfigureSpriteImporter(BgCathedralPath);
+            ConfigureSpriteImporter(BgDemonLordPath);
+            AssetDatabase.Refresh();
+
             Sprite panelFrame = AssetDatabase.LoadAssetAtPath<Sprite>(PanelFramePath);
             Sprite btnNormal = AssetDatabase.LoadAssetAtPath<Sprite>(BtnNormalPath);
 
@@ -279,6 +290,35 @@ namespace ElementalHexTactics3D.Editor
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             rect.anchoredPosition = Vector2.zero;
+        }
+
+        private static void ConfigureSpriteImporter(string assetPath)
+        {
+            TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            if (importer != null)
+            {
+                bool modified = false;
+                if (importer.textureType != TextureImporterType.Sprite)
+                {
+                    importer.textureType = TextureImporterType.Sprite;
+                    importer.spriteImportMode = SpriteImportMode.Single;
+                    modified = true;
+                }
+                if (importer.alphaIsTransparency != true)
+                {
+                    importer.alphaIsTransparency = true;
+                    modified = true;
+                }
+                if (importer.maxTextureSize < 2048)
+                {
+                    importer.maxTextureSize = 2048;
+                    modified = true;
+                }
+                if (modified)
+                {
+                    importer.SaveAndReimport();
+                }
+            }
         }
     }
 }

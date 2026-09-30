@@ -176,6 +176,17 @@ namespace ElementalHexTactics3D.UI
             if (bgDemonLordThrone == null)
                 bgDemonLordThrone = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_demonlord_throne.jpg");
 #endif
+            // Universal runtime fallbacks via TacticalUnitSpawner
+            if (mcSilhouetteSprite == null)
+                mcSilhouetteSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("mc_silhouette.png");
+            if (paladinPortrait == null)
+                paladinPortrait = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("paladinportrait.png");
+            if (holyShielderPortrait == null)
+                holyShielderPortrait = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("holyshielderportrait.png");
+            if (demonLordPortrait == null)
+                demonLordPortrait = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("demonlordportrait.png");
+            if (basaltVanguardPortrait == null)
+                basaltVanguardPortrait = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("minotaurportrait.png");
         }
 
         /// <summary>
@@ -255,6 +266,7 @@ namespace ElementalHexTactics3D.UI
         /// </summary>
         public void PlayPrebuiltSequence(StorySequenceId sequenceId, Action onComplete = null)
         {
+            LoadSpriteFallbacks();
             List<DialogueLine> lines = BuildSequence(sequenceId);
             OnStorySequenceStarted?.Invoke(sequenceId);
 
@@ -276,7 +288,14 @@ namespace ElementalHexTactics3D.UI
                 return;
             }
 
+            LoadSpriteFallbacks();
             EnsureUIHierarchy();
+
+            // Clear any lingering portrait states from previous sequence
+            if (portraitLeft != null) { portraitLeft.gameObject.SetActive(false); portraitLeft.sprite = null; }
+            if (portraitRight != null) { portraitRight.gameObject.SetActive(false); portraitRight.sprite = null; }
+            if (backgroundArtImage != null) { backgroundArtImage.gameObject.SetActive(false); backgroundArtImage.sprite = null; }
+
             currentLines = new List<DialogueLine>(lines);
             currentLineIndex = -1;
             onSequenceCompleteCallback = onComplete;
@@ -326,8 +345,10 @@ namespace ElementalHexTactics3D.UI
                     backgroundArtImage.color = Color.white;
                     backgroundArtImage.gameObject.SetActive(true);
                 }
-                else if (backgroundArtImage.sprite == null)
+                else
                 {
+                    // No 2D background assigned (e.g. in-battle banter):
+                    // Hide 2D background so 3D battlefield is clearly visible behind dialog!
                     backgroundArtImage.gameObject.SetActive(false);
                 }
             }
@@ -365,6 +386,7 @@ namespace ElementalHexTactics3D.UI
                     if (portraitLeft != null)
                     {
                         portraitLeft.sprite = line.speakerPortrait;
+                        portraitLeft.color = Color.white;
                         portraitLeft.gameObject.SetActive(true);
                         SetGroupAlpha(portraitLeftGroup, 1f);
                         portraitLeft.transform.localScale = Vector3.one * 1.05f;
@@ -380,6 +402,7 @@ namespace ElementalHexTactics3D.UI
                     if (portraitRight != null)
                     {
                         portraitRight.sprite = line.speakerPortrait;
+                        portraitRight.color = Color.white;
                         portraitRight.gameObject.SetActive(true);
                         SetGroupAlpha(portraitRightGroup, 1f);
                         portraitRight.transform.localScale = Vector3.one * 1.05f;
@@ -393,9 +416,9 @@ namespace ElementalHexTactics3D.UI
             }
             else
             {
-                // System or anonymous narration: dim both portraits
-                if (portraitLeftGroup != null) SetGroupAlpha(portraitLeftGroup, 0.35f);
-                if (portraitRightGroup != null) SetGroupAlpha(portraitRightGroup, 0.35f);
+                // System or anonymous narration: hide portraits
+                if (portraitLeft != null) portraitLeft.gameObject.SetActive(false);
+                if (portraitRight != null) portraitRight.gameObject.SetActive(false);
             }
         }
 
@@ -571,28 +594,28 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.DemonAwakeningIntro:
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Ugh... kepalaku... Dimana ini? Tanganku... cakar hitam berduri? Jubah kegelapan ini...?!",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        "Ugh... kepalaku... Di mana ini? Tanganku... cakar hitam berduri?! Jubah kegelapan ini...?!",
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "Yang Mulia! Syukurlah Anda sadar! Gerbang luar kita jebol oleh gempuran Ksatria Suci!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
                         "(Tunggu sebentar... Aku bereinkarnasi jadi Demon Lord yang barusan kubunuh?! Dan benteng ini... sedang diserbu oleh pasukan suciku yang dulu?!)",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "Kami tidak akan membiarkan mereka menyentuh Yang Mulia! Perintahkan kami!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Tenang. Aku tahu persis formasi dan kelemahan mereka. Saatnya kita ajari mereka apa itu taktik sejati!",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        "Tenang. Aku tahu persis formasi dan kelemahan mereka. Dan terrain ini... ada reaksi elemen yang bisa kita manfaatkan. Ayo kita serang!",
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
 

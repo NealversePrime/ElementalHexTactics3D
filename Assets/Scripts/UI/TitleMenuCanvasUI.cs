@@ -720,33 +720,12 @@ namespace ElementalHexTactics3D.UI
             {
                 StoryDialogueUI.Instance.PlayPrebuiltSequence(StorySequenceId.RealWorldPrologue, () =>
                 {
-                    EnterHexBattlefield();
-                    if (CombatFeedbackManager.Instance != null)
-                    {
-                        CombatFeedbackManager.Instance.ShowBanner(
-                            "⚜️ THE HOLY CRUSADE BEGINS ⚜️", 
-                            "Chosen Paladin: Cleanse the Abyssal Chamber and purge the foul Demon Lord!", 
-                            2.8f, 
-                            new Color(1f, 0.88f, 0.35f)
-                        );
-                    }
-
-                    // Trigger in-battle banter dialogue between Paladin & Demon Lord
-                    StartCoroutine(PlayHolyRaidIntroDelayed());
+                    Tutorial.TutorialScenarioManager.EnsureInstance().StartStage1HolyCrusade();
                 });
             }
             else
             {
-                EnterHexBattlefield();
-            }
-        }
-
-        private IEnumerator PlayHolyRaidIntroDelayed()
-        {
-            yield return new WaitForSeconds(0.8f);
-            if (StoryDialogueUI.Instance != null)
-            {
-                StoryDialogueUI.Instance.PlayPrebuiltSequence(StorySequenceId.HolyRaidIntro);
+                Tutorial.TutorialScenarioManager.EnsureInstance().StartStage1HolyCrusade();
             }
         }
 

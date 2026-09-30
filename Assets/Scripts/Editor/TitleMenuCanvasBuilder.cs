@@ -348,6 +348,13 @@ namespace ElementalHexTactics3D.Editor
             // 13. Build or refresh Story Dialogue Canvas (Visual Novel Overlay)
             StoryDialogueCanvasBuilder.BuildStoryDialogueCanvas();
 
+            // 14. Ensure TutorialScenarioManager exists in scene
+            if (Object.FindFirstObjectByType<ElementalHexTactics3D.Tutorial.TutorialScenarioManager>() == null)
+            {
+                GameObject tutObj = new GameObject("TutorialScenarioManager");
+                tutObj.AddComponent<ElementalHexTactics3D.Tutorial.TutorialScenarioManager>();
+            }
+
             // Mark Scene Dirty
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Debug.Log("<color=#4CAF50><b>[2D UI Builder] SUCCESS!</b></color> 2D Canvas hierarchy, custom fantasy buttons, and modals created cleanly in scene!");

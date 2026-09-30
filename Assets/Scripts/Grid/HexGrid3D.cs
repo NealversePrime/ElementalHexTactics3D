@@ -148,43 +148,8 @@ namespace ElementalHexTactics3D.Grid
 
             ExpeditionTrilemmaGenerator.CurrentActiveMission = mission;
 
-            ClearGrid();
-
-            // Clear active rift conduit if one existed
-            if (AbyssalRiftConduit3D.Instance != null)
-            {
-                Destroy(AbyssalRiftConduit3D.Instance);
-            }
-
-            // Generate or cache procedural 3D hex pillar mesh
-            if (sharedPillarMesh == null)
-            {
-                sharedPillarMesh = HexMeshBuilder.CreateHexPillarMesh(hexRadius, pillarDepth);
-            }
-
             GeneratedBattlefieldData data = HexBattlefieldGenerator.Generate(mission, gridRadius);
-
-            GameObject container = new GameObject("Tiles_Container");
-            container.transform.SetParent(transform, false);
-
-            foreach (var kvp in data.Tiles)
-            {
-                var coord = kvp.Key;
-                var spec = kvp.Value;
-
-                Vector3 worldPos = coord.ToWorldPosition(hexRadius, elevationHeight, spec.ElevationTier);
-
-                GameObject tileObj = new GameObject($"HexTile_{coord.Q}_{coord.R}");
-                tileObj.transform.SetParent(container.transform, false);
-                tileObj.transform.position = worldPos;
-
-                HexTile3D tile = tileObj.AddComponent<HexTile3D>();
-                Material topMat = GetTopMaterial(spec.State, spec.TierLevel);
-                tile.Initialize(coord, spec.ElevationTier, sharedPillarMesh, topMat, sidePillarMaterial);
-                tile.SetState(spec.State, spec.TierLevel);
-
-                tiles[coord] = tile;
-            }
+            BuildFromBattlefieldData(data);
 
             // Clear previous enemies and spawn new procedural squad
             TacticalUnitSpawner.ClearAllEnemies();
@@ -234,7 +199,50 @@ namespace ElementalHexTactics3D.Grid
                 );
             }
 
-            Debug.Log($"<color=#4CAF50><b>[HexGrid3D]</b></color> Procedural battlefield initialized: {mission.Title} (Seed: {mission.Seed}, Tiles: {tiles.Count}, Enemies: {data.Enemies.Count}).");
+        }
+
+        /// <summary>
+        /// Instantiates hex tiles from GeneratedBattlefieldData specs, setting up meshes and elemental materials.
+        /// </summary>
+        public void BuildFromBattlefieldData(GeneratedBattlefieldData data)
+        {
+            if (data == null) return;
+
+            ClearGrid();
+
+            // Clear active rift conduit if one existed
+            if (AbyssalRiftConduit3D.Instance != null)
+            {
+                Destroy(AbyssalRiftConduit3D.Instance.gameObject);
+            }
+
+            // Generate or cache procedural 3D hex pillar mesh
+            if (sharedPillarMesh == null)
+            {
+                sharedPillarMesh = HexMeshBuilder.CreateHexPillarMesh(hexRadius, pillarDepth);
+            }
+
+            GameObject container = new GameObject("Tiles_Container");
+            container.transform.SetParent(transform, false);
+
+            foreach (var kvp in data.Tiles)
+            {
+                var coord = kvp.Key;
+                var spec = kvp.Value;
+
+                Vector3 worldPos = coord.ToWorldPosition(hexRadius, elevationHeight, spec.ElevationTier);
+
+                GameObject tileObj = new GameObject($"HexTile_{coord.Q}_{coord.R}");
+                tileObj.transform.SetParent(container.transform, false);
+                tileObj.transform.position = worldPos;
+
+                HexTile3D tile = tileObj.AddComponent<HexTile3D>();
+                Material topMat = GetTopMaterial(spec.State, spec.TierLevel);
+                tile.Initialize(coord, spec.ElevationTier, sharedPillarMesh, topMat, sidePillarMaterial);
+                tile.SetState(spec.State, spec.TierLevel);
+
+                tiles[coord] = tile;
+            }
         }
 
         [ContextMenu("Regenerate Grid")]
