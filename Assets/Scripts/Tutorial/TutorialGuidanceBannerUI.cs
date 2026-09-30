@@ -287,6 +287,7 @@ namespace ElementalHexTactics3D.Tutorial
             }
 
             gameObject.SetActive(true);
+            transform.SetAsLastSibling();
 
             if (txtStepBadge != null)
             {
