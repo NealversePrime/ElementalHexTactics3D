@@ -11,6 +11,7 @@ namespace ElementalHexTactics3D.Tutorial
     /// Pinned below the Turn Ribbon at top-center.
     /// Displays the gamer protagonist's diegetic inner monologue,
     /// tactical step progression badges, and high-visibility player hints.
+    /// Uses native RectTransform instantiation to prevent MissingComponentException.
     /// </summary>
     public class TutorialGuidanceBannerUI : MonoBehaviour
     {
@@ -31,29 +32,51 @@ namespace ElementalHexTactics3D.Tutorial
         private Coroutine pulseCoroutine;
         private Canvas rootCanvas;
 
+        private static GameObject CreateUI(string name, Transform parent)
+        {
+            GameObject obj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer));
+            if (parent != null)
+            {
+                obj.transform.SetParent(parent, false);
+            }
+            return obj;
+        }
+
         public static TutorialGuidanceBannerUI EnsureInstance()
         {
-            if (Instance != null) return Instance;
+            if (Instance != null && Instance.GetComponent<RectTransform>() != null)
+            {
+                return Instance;
+            }
 
             TutorialGuidanceBannerUI found = FindFirstObjectByType<TutorialGuidanceBannerUI>(FindObjectsInactive.Include);
             if (found != null)
             {
-                Instance = found;
-                return found;
+                if (found.GetComponent<RectTransform>() != null)
+                {
+                    Instance = found;
+                    return found;
+                }
+                else
+                {
+                    // Destroy legacy/malformed instance lacking RectTransform
+                    if (Application.isPlaying) Destroy(found.gameObject);
+                    else DestroyImmediate(found.gameObject);
+                }
             }
 
             Canvas canvas = FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
             if (canvas == null)
             {
-                GameObject canvasObj = new GameObject("TutorialCanvas");
+                GameObject canvasObj = CreateUI("TutorialCanvas", null);
                 canvas = canvasObj.AddComponent<Canvas>();
                 canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 canvasObj.AddComponent<CanvasScaler>();
                 canvasObj.AddComponent<GraphicRaycaster>();
             }
 
-            GameObject bannerObj = new GameObject("Panel_TutorialGuidanceBanner");
-            bannerObj.transform.SetParent(canvas.transform, false);
+            // Create with RectTransform from the start!
+            GameObject bannerObj = CreateUI("Panel_TutorialGuidanceBanner", canvas.transform);
             Instance = bannerObj.AddComponent<TutorialGuidanceBannerUI>();
             Instance.BuildUIHierarchy(canvas);
             return Instance;
@@ -94,7 +117,11 @@ namespace ElementalHexTactics3D.Tutorial
 #endif
 
             // Main Banner Rect (Top-Center, right below Turn Ribbon)
-            RectTransform rect = GetComponent<RectTransform>() ?? gameObject.AddComponent<RectTransform>();
+            RectTransform rect = GetComponent<RectTransform>();
+            if (rect == null)
+            {
+                rect = gameObject.AddComponent<RectTransform>();
+            }
             rect.anchorMin = new Vector2(0.5f, 1f);
             rect.anchorMax = new Vector2(0.5f, 1f);
             rect.pivot = new Vector2(0.5f, 1f);
@@ -114,9 +141,8 @@ namespace ElementalHexTactics3D.Tutorial
             bannerOutline.effectDistance = new Vector2(2f, -2f);
 
             // Left Avatar Box (Icon + Speaker Tag)
-            GameObject avatarBox = new GameObject("Box_Avatar");
-            avatarBox.transform.SetParent(transform, false);
-            RectTransform avRect = avatarBox.AddComponent<RectTransform>();
+            GameObject avatarBox = CreateUI("Box_Avatar", transform);
+            RectTransform avRect = avatarBox.GetComponent<RectTransform>();
             avRect.anchorMin = new Vector2(0f, 0f);
             avRect.anchorMax = new Vector2(0f, 1f);
             avRect.pivot = new Vector2(0f, 0.5f);
@@ -132,9 +158,8 @@ namespace ElementalHexTactics3D.Tutorial
             avOutline.effectDistance = new Vector2(1f, -1f);
 
             // Avatar Icon / Emoji
-            GameObject iconObj = new GameObject("Txt_AvatarIcon");
-            iconObj.transform.SetParent(avatarBox.transform, false);
-            RectTransform iconRect = iconObj.AddComponent<RectTransform>();
+            GameObject iconObj = CreateUI("Txt_AvatarIcon", avatarBox.transform);
+            RectTransform iconRect = iconObj.GetComponent<RectTransform>();
             iconRect.anchorMin = new Vector2(0f, 0.35f);
             iconRect.anchorMax = new Vector2(1f, 1f);
             iconRect.anchoredPosition = Vector2.zero;
@@ -149,9 +174,8 @@ namespace ElementalHexTactics3D.Tutorial
             txtAvatarIcon.raycastTarget = false;
 
             // Speaker Tag
-            GameObject tagObj = new GameObject("Txt_SpeakerTag");
-            tagObj.transform.SetParent(avatarBox.transform, false);
-            RectTransform tagRect = tagObj.AddComponent<RectTransform>();
+            GameObject tagObj = CreateUI("Txt_SpeakerTag", avatarBox.transform);
+            RectTransform tagRect = tagObj.GetComponent<RectTransform>();
             tagRect.anchorMin = new Vector2(0f, 0f);
             tagRect.anchorMax = new Vector2(1f, 0.40f);
             tagRect.anchoredPosition = Vector2.zero;
@@ -167,9 +191,8 @@ namespace ElementalHexTactics3D.Tutorial
             txtSpeakerTag.raycastTarget = false;
 
             // Right Content Area (Step Badge + Monologue + Hint)
-            GameObject contentBox = new GameObject("Box_Content");
-            contentBox.transform.SetParent(transform, false);
-            RectTransform contRect = contentBox.AddComponent<RectTransform>();
+            GameObject contentBox = CreateUI("Box_Content", transform);
+            RectTransform contRect = contentBox.GetComponent<RectTransform>();
             contRect.anchorMin = new Vector2(0f, 0f);
             contRect.anchorMax = new Vector2(1f, 1f);
             contRect.pivot = new Vector2(0f, 0.5f);
@@ -177,9 +200,8 @@ namespace ElementalHexTactics3D.Tutorial
             contRect.sizeDelta = new Vector2(-120f, -8f);
 
             // Step Badge (Header)
-            GameObject stepObj = new GameObject("Txt_StepBadge");
-            stepObj.transform.SetParent(contentBox.transform, false);
-            RectTransform stepRect = stepObj.AddComponent<RectTransform>();
+            GameObject stepObj = CreateUI("Txt_StepBadge", contentBox.transform);
+            RectTransform stepRect = stepObj.GetComponent<RectTransform>();
             stepRect.anchorMin = new Vector2(0f, 0.68f);
             stepRect.anchorMax = new Vector2(1f, 1f);
             stepRect.anchoredPosition = Vector2.zero;
@@ -195,9 +217,8 @@ namespace ElementalHexTactics3D.Tutorial
             txtStepBadge.raycastTarget = false;
 
             // Monologue (Body)
-            GameObject monoObj = new GameObject("Txt_Monologue");
-            monoObj.transform.SetParent(contentBox.transform, false);
-            RectTransform monoRect = monoObj.AddComponent<RectTransform>();
+            GameObject monoObj = CreateUI("Txt_Monologue", contentBox.transform);
+            RectTransform monoRect = monoObj.GetComponent<RectTransform>();
             monoRect.anchorMin = new Vector2(0f, 0.28f);
             monoRect.anchorMax = new Vector2(1f, 0.68f);
             monoRect.anchoredPosition = Vector2.zero;
@@ -213,9 +234,8 @@ namespace ElementalHexTactics3D.Tutorial
             txtMonologue.raycastTarget = false;
 
             // Hint (Footer)
-            GameObject hintObj = new GameObject("Txt_Hint");
-            hintObj.transform.SetParent(contentBox.transform, false);
-            RectTransform hintRect = hintObj.AddComponent<RectTransform>();
+            GameObject hintObj = CreateUI("Txt_Hint", contentBox.transform);
+            RectTransform hintRect = hintObj.GetComponent<RectTransform>();
             hintRect.anchorMin = new Vector2(0f, 0f);
             hintRect.anchorMax = new Vector2(1f, 0.28f);
             hintRect.anchoredPosition = Vector2.zero;
