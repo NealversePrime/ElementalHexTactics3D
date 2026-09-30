@@ -29,5 +29,11 @@ namespace ElementalHexTactics3D.Campaign
         // Run Statistics & History
         public int totalVictories = 0;
         public int totalDefeats = 0;
+
+        // Narrative & Prologue Meta-State
+        public bool hasTransmigrated = false;
+        public bool hasCompletedTutorialStage1 = false;
+        public bool hasCompletedTutorialStage2 = false;
+        public bool hasClaimedStarterTitan = false;
     }
 }

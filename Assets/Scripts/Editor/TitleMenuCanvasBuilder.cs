@@ -20,6 +20,8 @@ namespace ElementalHexTactics3D.Editor
         private const string BtnNormalPath = "Assets/Sprites/UI/UI_Button_Normal.png";
         private const string BtnHighlightPath = "Assets/Sprites/UI/UI_Button_Highlight.png";
         private const string PanelFramePath = "Assets/Sprites/UI/UI_Panel_Frame.png";
+        private const string BgPaladinPath = "Assets/Sprites/Backgrounds/bg_holyland_cathedral.jpg";
+        private const string BgDemonLordPath = "Assets/Sprites/Backgrounds/bg_demonlord_throne.jpg";
         private const string FontBoldPath = "Assets/Fonts/Font_Bold.ttf";
         private const string FontRegularPath = "Assets/Fonts/Font_Regular.ttf";
 
@@ -33,10 +35,14 @@ namespace ElementalHexTactics3D.Editor
             ConfigureSpriteImporter(BtnNormalPath);
             ConfigureSpriteImporter(BtnHighlightPath);
             ConfigureSpriteImporter(PanelFramePath);
+            ConfigureSpriteImporter(BgPaladinPath);
+            ConfigureSpriteImporter(BgDemonLordPath);
 
             Sprite btnNormal = AssetDatabase.LoadAssetAtPath<Sprite>(BtnNormalPath);
             Sprite btnHighlight = AssetDatabase.LoadAssetAtPath<Sprite>(BtnHighlightPath);
             Sprite panelFrame = AssetDatabase.LoadAssetAtPath<Sprite>(PanelFramePath);
+            Sprite bgPaladin = AssetDatabase.LoadAssetAtPath<Sprite>(BgPaladinPath);
+            Sprite bgDemonLord = AssetDatabase.LoadAssetAtPath<Sprite>(BgDemonLordPath);
 
             // 2. Load custom fonts
             Font fontBold = AssetDatabase.LoadAssetAtPath<Font>(FontBoldPath);
@@ -76,15 +82,25 @@ namespace ElementalHexTactics3D.Editor
 
             TitleMenuCanvasUI menuUI = canvasObj.AddComponent<TitleMenuCanvasUI>();
 
-            // 6. Root Title Panel Container (Transparent - NO OPAQUE BLACK BOX, 3D DIORAMA IS VISIBLE!)
+            // 6. Root Title Panel Container
             GameObject titleRootObj = CreateUIObject("Panel_TitleScreenRoot", canvasObj.transform);
             SetStretchAll(titleRootObj.GetComponent<RectTransform>());
 
-            // Soft Diorama Dimmer / Vignette (Keeps 3D diorama visible while giving UI dramatic contrast)
+            // Title Background Artwork (16:9 full-screen 2D background)
+            GameObject bgArtObj = CreateUIObject("TitleBackgroundArt", titleRootObj.transform);
+            SetStretchAll(bgArtObj.GetComponent<RectTransform>());
+            Image bgArtImg = bgArtObj.AddComponent<Image>();
+            bgArtImg.sprite = bgPaladin;
+            bgArtImg.color = Color.white;
+            bgArtImg.type = Image.Type.Simple;
+            bgArtImg.preserveAspect = false;
+            bgArtImg.raycastTarget = false;
+
+            // Soft Diorama Dimmer / Vignette (Subtle shading over art for high text contrast)
             GameObject dimmerObj = CreateUIObject("DioramaDimmer", titleRootObj.transform);
             SetStretchAll(dimmerObj.GetComponent<RectTransform>());
             Image dimmerImg = dimmerObj.AddComponent<Image>();
-            dimmerImg.color = new Color(0.04f, 0.06f, 0.09f, 0.45f);
+            dimmerImg.color = new Color(0.04f, 0.06f, 0.09f, 0.35f);
             dimmerImg.raycastTarget = false;
 
             // Top Gold Decorative Stripe (Thin 6px bar at very top)
@@ -119,12 +135,12 @@ namespace ElementalHexTactics3D.Editor
                 headerImg.color = new Color(0.08f, 0.11f, 0.16f, 0.95f);
             }
 
-            // Header Texts inside Title Card
-            CreateUIText("Text_Badge", headerObj.transform, "✦ LIGHT NOVEL / MANHWA EDITION • PROLOGUE: RANK-F ✦", fontBold, 15, FontStyle.Bold, new Color(0.25f, 0.78f, 1.0f), new Vector2(0f, 75f), new Vector2(840f, 28f));
-            CreateUIText("Text_Title1", headerObj.transform, "I REINCARNATED AS A BEAST TALKER,", fontBold, 28, FontStyle.Bold, Color.white, new Vector2(0f, 32f), new Vector2(840f, 48f));
-            CreateUIText("Text_Title2", headerObj.transform, "NOW I'M COLLECTING BEASTS!", fontBold, 34, FontStyle.Bold, new Color(1f, 0.85f, 0.25f), new Vector2(0f, -14f), new Vector2(840f, 52f));
-            CreateUIText("Text_Subtitle", headerObj.transform, "〜 2.5D Tactical Hex Battle & Primordial Resonance 〜", fontRegular, 15, FontStyle.Italic, new Color(0.80f, 0.85f, 0.92f), new Vector2(0f, -58f), new Vector2(840f, 26f));
-            CreateUIText("Text_Version", headerObj.transform, "Elemental Hex Tactics 3D • TGFI Pre-Alpha v0.2.0 • Solo Dev by Neal Sage", fontRegular, 12, FontStyle.Normal, new Color(0.60f, 0.65f, 0.72f), new Vector2(0f, -86f), new Vector2(840f, 22f));
+            // Header Texts inside Title Card (Default: Paladin Holyland Mode)
+            Text txtBadge = CreateUIText("Text_Badge", headerObj.transform, "✦ HOLY CRUSADE EDITION • PROLOGUE: THE CHOSEN HERO ✦", fontBold, 15, FontStyle.Bold, new Color(0.35f, 0.85f, 1.0f), new Vector2(0f, 75f), new Vector2(840f, 28f));
+            Text txtTitle1 = CreateUIText("Text_Title1", headerObj.transform, "HOLYLAND", fontBold, 36, FontStyle.Bold, Color.white, new Vector2(0f, 32f), new Vector2(840f, 48f));
+            Text txtTitle2 = CreateUIText("Text_Title2", headerObj.transform, "EVOLVE", fontBold, 42, FontStyle.Bold, new Color(1f, 0.85f, 0.25f), new Vector2(0f, -14f), new Vector2(840f, 52f));
+            Text txtSubtitle = CreateUIText("Text_Subtitle", headerObj.transform, "〜 The Sacred Crusade of the Chosen Hero 〜", fontRegular, 15, FontStyle.Italic, new Color(0.85f, 0.90f, 0.98f), new Vector2(0f, -58f), new Vector2(840f, 26f));
+            Text txtVersion = CreateUIText("Text_Version", headerObj.transform, "Holyland Evolve • Pre-Alpha v1.0.0 • Sacred Empire Edition", fontRegular, 12, FontStyle.Normal, new Color(0.60f, 0.65f, 0.72f), new Vector2(0f, -86f), new Vector2(840f, 22f));
 
             // 8. Panel: Menu Buttons (Center)
             GameObject menuBoxObj = CreateUIObject("Panel_MenuButtons", titleRootObj.transform);
@@ -143,9 +159,9 @@ namespace ElementalHexTactics3D.Editor
             vlg.childForceExpandWidth = true;
             vlg.childForceExpandHeight = false;
 
-            Button btnPlay = CreateCustomButton("Btn_PlayAdventure", menuBoxObj.transform, "⚔️ PLAY ADVENTURE", fontBold, 20, btnHighlight != null ? btnHighlight : btnNormal, new Color(1f, 0.92f, 0.45f), height: 52f);
-            Button btnStory = CreateCustomButton("Btn_StoryLore", menuBoxObj.transform, "📖 STORY & LORE (Rank-F)", fontBold, 17, btnNormal, Color.white, height: 50f);
-            Button btnHowToPlay = CreateCustomButton("Btn_HowToPlay", menuBoxObj.transform, "🎮 HOW TO PLAY (Tactics)", fontBold, 17, btnNormal, Color.white, height: 50f);
+            Button btnPlay = CreateCustomButton("Btn_PlayAdventure", menuBoxObj.transform, "⚔️ START HOLY QUEST", fontBold, 20, btnHighlight != null ? btnHighlight : btnNormal, new Color(1f, 0.92f, 0.45f), height: 52f);
+            Button btnStory = CreateCustomButton("Btn_StoryLore", menuBoxObj.transform, "📖 SACRED SCRIPTURES (Lore)", fontBold, 17, btnNormal, Color.white, height: 50f);
+            Button btnHowToPlay = CreateCustomButton("Btn_HowToPlay", menuBoxObj.transform, "🎮 HOLY TACTICS (Guide)", fontBold, 17, btnNormal, Color.white, height: 50f);
             Button btnOptions = CreateCustomButton("Btn_Options", menuBoxObj.transform, "⚙️ OPTIONS (Settings)", fontBold, 17, btnNormal, Color.white, height: 50f);
             Button btnExit = CreateCustomButton("Btn_Exit", menuBoxObj.transform, "🚪 EXIT GAME", fontBold, 17, btnNormal, new Color(0.95f, 0.55f, 0.55f), height: 50f);
 
@@ -153,9 +169,9 @@ namespace ElementalHexTactics3D.Editor
             GameObject modalsContainer = CreateUIObject("Panel_ModalsContainer", canvasObj.transform);
             SetStretchAll(modalsContainer.GetComponent<RectTransform>());
 
-            // Modal: Story Prologue
+            // Modal: Story Prologue (Default: Paladin Sacred Scriptures)
             GameObject storyCardObj;
-            GameObject storyModalObj = CreateModalPanel("Modal_StoryPrologue", modalsContainer.transform, "📖 STORY PROLOGUE: THE WEAKEST TAMER'S AWAKENING", fontBold, panelFrame, 860f, 560f, 195f, out storyCardObj);
+            GameObject storyModalObj = CreateModalPanel("Modal_StoryPrologue", modalsContainer.transform, "📖 SACRED SCRIPTURES: THE HOLY CRUSADE", fontBold, panelFrame, 860f, 560f, 195f, out storyCardObj);
 
             // Subtle gold divider
             GameObject storyDivider = CreateUIObject("Divider", storyCardObj.transform);
@@ -164,21 +180,20 @@ namespace ElementalHexTactics3D.Editor
             sDivImg.color = new Color(0.85f, 0.72f, 0.38f, 0.5f);
 
             string storyContent = 
-                "<b><color=#38BDF8>[ The Reincarnation ]</color></b>\n" +
-                "You were summoned from modern Earth into <b>Terranox</b>, a brutal fantasy realm where nobility and authority belong exclusively to beast summoners.\n\n" +
-                "<b><color=#EF5350>[ The Tyrant's Cruelty: Cursed Collars ]</color></b>\n" +
-                "Imperial aristocrats treat beasts as disposable war tools, torturing them into obedience with painful <b>Cursed Collars</b>. Having zero physical strength or destructive battle mana, the Adventurer's Guild stamped you as a pathetic <b>Rank-F Trash Tamer</b>.\n\n" +
-                "<b><color=#FBBF24>[ The Divine Cheat: Beast Resonance ]</color></b>\n" +
-                "Unknown to anyone, you possess the God-Given Cheat: <b>[Beast Talker & Primordial Resonance]</b>. You understand the souls and cries of beasts! When treated with empathy, your beasts awaken dormant elemental powers, physically terraforming the 3D hex earth!\n\n" +
-                "<b><color=#34D399>[ Your Mission: Break Chains & Awaken Titans ]</color></b>\n" +
-                "Enter dangerous 3D dungeon plateaus, defeat corrupt summoners to shatter their cursed collars, gather ancient <b>Elemental Cores</b>, and hatch apocalyptic Titans!";
-            CreateUIText("Text_StoryBody", storyCardObj.transform, storyContent, fontRegular, 15, FontStyle.Normal, new Color(0.85f, 0.88f, 0.94f), new Vector2(0f, -5f), new Vector2(760f, 320f), TextAnchor.UpperLeft);
+                "<b><color=#FBBF24>[ The Divine Mandate ]</color></b>\n" +
+                "Under the sacred light of the Holy Empire, the Chosen Hero—the Paladin of Radiance—marches with the consecrated vanguard to eradicate the wicked Abyssal demons.\n\n" +
+                "<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\n" +
+                "Deep within the fractured underworld, the foul Demon Lord cowers on his blackened throne. Command your Holy Vanguard, smite the demonic minions, and cleanse the taint!\n\n" +
+                "<b><color=#34D399>[ The Holy Promise ]</color></b>\n" +
+                "Purge the dark taint and claim eternal glory in Holyland Evolve!";
+            Text txtStoryBody = CreateUIText("Text_StoryBody", storyCardObj.transform, storyContent, fontRegular, 15, FontStyle.Normal, new Color(0.85f, 0.88f, 0.94f), new Vector2(0f, -5f), new Vector2(760f, 320f), TextAnchor.UpperLeft);
+            Text txtStoryTitle = storyCardObj.transform.Find("Text_ModalTitle")?.GetComponent<Text>();
             Button btnBackStory = CreateCustomButton("Btn_BackStory", storyCardObj.transform, "🔙 BACK TO MENU", fontBold, 18, btnNormal, Color.white, width: 260f, height: 48f);
             SetAnchoredPos(btnBackStory.GetComponent<RectTransform>(), new Vector2(0f, -220f), new Vector2(260f, 48f));
 
-            // Modal: How to Play
+            // Modal: How to Play (Default: Holy Tactics)
             GameObject howToPlayCardObj;
-            GameObject howToPlayModalObj = CreateModalPanel("Modal_HowToPlay", modalsContainer.transform, "🎮 TACTICAL COMBAT & TERRAFORM GUIDE", fontBold, panelFrame, 860f, 580f, 205f, out howToPlayCardObj);
+            GameObject howToPlayModalObj = CreateModalPanel("Modal_HowToPlay", modalsContainer.transform, "🎮 HOLY TACTICS: BASIC COMBAT GUIDE", fontBold, panelFrame, 860f, 580f, 205f, out howToPlayCardObj);
 
             // Subtle gold divider
             GameObject htpDivider = CreateUIObject("Divider", howToPlayCardObj.transform);
@@ -187,47 +202,49 @@ namespace ElementalHexTactics3D.Editor
             hDivImg.color = new Color(0.85f, 0.72f, 0.38f, 0.5f);
 
             string howToPlayContent = 
-                "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60° | <b>WASD</b> Pan Diorama | <b>Scroll</b> Zoom in/out\n" +
-                "<b><color=#38BDF8>2. Tactical Orders:</color></b> <b>Left-Click</b> to Select Unit / Cast Spell | <b>Right-Click</b> to Cancel\n\n" +
-                "<b><color=#FBBF24>3. Dynamic Terraforming (Divinity Style):</color></b>\n" +
-                "• 🔥 <b>Fireball:</b> Scorches grass into molten <b>Magma</b> (damages enemies, gives Fire Titan +2 ATK!).\n" +
-                "• 💧 <b>Water Blast:</b> Extinguishes lava into <b>Steam Smokescreens</b>; forms water pools.\n" +
-                "• 🪨 <b>Earth Spire:</b> Raises high <b>Stone Pillars</b> (creates physical barriers & collision surfaces).\n\n" +
-                "<b><color=#EF5350>4. Kinetic Push & Wall Slams (Into the Breach):</color></b>\n" +
-                "• 💥 <b>Kinetic Shove:</b> Push enemies 1 hex away. Slamming an enemy into a Stone Pillar, cliff, or another unit triggers <b>💥 -2 HP WALL SLAM damage</b>!\n" +
-                "• Shove fragile enemy Tamers into lava or water to neutralize them instantly!\n\n" +
-                "<b><color=#34D399>5. Siphon Land & Cataclysm:</color></b>\n" +
-                "• ⚡ <b>Siphon:</b> Your Titan drains active lava into Barren Earth to harvest <b>Elemental Cores</b>.\n" +
-                "• 🌋 <b>Magma Cataclysm:</b> Spend 3 Cores to trigger a screen-shattering volcanic blast wiping the field!";
-            CreateUIText("Text_HowToPlayBody", howToPlayCardObj.transform, howToPlayContent, fontRegular, 15, FontStyle.Normal, new Color(0.85f, 0.88f, 0.94f), new Vector2(0f, -5f), new Vector2(760f, 340f), TextAnchor.UpperLeft);
+                "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60° | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n" +
+                "<b><color=#38BDF8>2. Holy Orders:</color></b> <b>Left-Click</b> to Select Unit / Strike | <b>Right-Click</b> to Cancel\n\n" +
+                "<b><color=#FBBF24>3. Tactical Movement:</color></b>\n" +
+                "• Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n" +
+                "• Click any highlighted hex to advance toward the demon lines.\n\n" +
+                "<b><color=#EF5350>4. Righteous Strike:</color></b>\n" +
+                "• When adjacent to an enemy (red highlights), click to unleash holy damage!\n\n" +
+                "<b><color=#34D399>5. Victory Objective:</color></b>\n" +
+                "• Slay the Demon Lord to purge the underworld and complete the sacred crusade!";
+            Text txtHowToPlayBody = CreateUIText("Text_HowToPlayBody", howToPlayCardObj.transform, howToPlayContent, fontRegular, 15, FontStyle.Normal, new Color(0.85f, 0.88f, 0.94f), new Vector2(0f, -5f), new Vector2(760f, 340f), TextAnchor.UpperLeft);
+            Text txtHowToPlayTitle = howToPlayCardObj.transform.Find("Text_ModalTitle")?.GetComponent<Text>();
             Button btnBackHowToPlay = CreateCustomButton("Btn_BackHowToPlay", howToPlayCardObj.transform, "🔙 BACK TO MENU", fontBold, 18, btnNormal, Color.white, width: 260f, height: 48f);
             SetAnchoredPos(btnBackHowToPlay.GetComponent<RectTransform>(), new Vector2(0f, -230f), new Vector2(260f, 48f));
 
             // Modal: Options
             GameObject optionsCardObj;
-            GameObject optionsModalObj = CreateModalPanel("Modal_Options", modalsContainer.transform, "⚙️ GAME OPTIONS & SETTINGS", fontBold, panelFrame, 600f, 470f, 160f, out optionsCardObj);
+            GameObject optionsModalObj = CreateModalPanel("Modal_Options", modalsContainer.transform, "⚙️ GAME OPTIONS & SETTINGS", fontBold, panelFrame, 600f, 520f, 185f, out optionsCardObj);
 
             // Subtle gold divider
             GameObject optDivider = CreateUIObject("Divider", optionsCardObj.transform);
-            SetAnchoredPos(optDivider.GetComponent<RectTransform>(), new Vector2(0f, 136f), new Vector2(500f, 2f));
+            SetAnchoredPos(optDivider.GetComponent<RectTransform>(), new Vector2(0f, 160f), new Vector2(500f, 2f));
             Image oDivImg = optDivider.AddComponent<Image>();
             oDivImg.color = new Color(0.85f, 0.72f, 0.38f, 0.5f);
 
             Button btnAudioToggle = CreateCustomButton("Btn_AudioToggle", optionsCardObj.transform, "Sound: ON", fontBold, 18, btnNormal, Color.white, width: 380f, height: 48f);
-            SetAnchoredPos(btnAudioToggle.GetComponent<RectTransform>(), new Vector2(0f, 80f), new Vector2(380f, 48f));
+            SetAnchoredPos(btnAudioToggle.GetComponent<RectTransform>(), new Vector2(0f, 105f), new Vector2(380f, 48f));
             Text txtAudioStatus = btnAudioToggle.GetComponentInChildren<Text>();
 
             Button btnAiToggle = CreateCustomButton("Btn_AiToggle", optionsCardObj.transform, "Enemy AI: ENABLED", fontBold, 18, btnNormal, Color.white, width: 380f, height: 48f);
-            SetAnchoredPos(btnAiToggle.GetComponent<RectTransform>(), new Vector2(0f, 22f), new Vector2(380f, 48f));
+            SetAnchoredPos(btnAiToggle.GetComponent<RectTransform>(), new Vector2(0f, 50f), new Vector2(380f, 48f));
             Text txtAiStatus = btnAiToggle.GetComponentInChildren<Text>();
 
             Button btnDisplayToggle = CreateCustomButton("Btn_DisplayToggle", optionsCardObj.transform, "Display: Windowed", fontBold, 18, btnNormal, Color.white, width: 380f, height: 48f);
-            SetAnchoredPos(btnDisplayToggle.GetComponent<RectTransform>(), new Vector2(0f, -36f), new Vector2(380f, 48f));
+            SetAnchoredPos(btnDisplayToggle.GetComponent<RectTransform>(), new Vector2(0f, -5f), new Vector2(380f, 48f));
             Text txtDisplayStatus = btnDisplayToggle.GetComponentInChildren<Text>();
 
-            CreateUIText("Text_AiTip", optionsCardObj.transform, "Tip: You can also toggle Enemy AI during battle with hotkey F1.", fontRegular, 14, FontStyle.Italic, new Color(0.6f, 0.65f, 0.72f), new Vector2(0f, -96f), new Vector2(500f, 25f));
+            Button btnThemeModeToggle = CreateCustomButton("Btn_ThemeModeToggle", optionsCardObj.transform, "Theme: HOLYLAND (Paladin)", fontBold, 18, btnNormal, new Color(1f, 0.92f, 0.45f), width: 380f, height: 48f);
+            SetAnchoredPos(btnThemeModeToggle.GetComponent<RectTransform>(), new Vector2(0f, -60f), new Vector2(380f, 48f));
+            Text txtThemeModeStatus = btnThemeModeToggle.GetComponentInChildren<Text>();
+
+            CreateUIText("Text_AiTip", optionsCardObj.transform, "Tip: You can switch between Holyland (Paladin) & Rebellion (Demon Lord) themes anytime.", fontRegular, 13, FontStyle.Italic, new Color(0.6f, 0.65f, 0.72f), new Vector2(0f, -118f), new Vector2(500f, 25f));
             Button btnBackOptions = CreateCustomButton("Btn_BackOptions", optionsCardObj.transform, "🔙 BACK", fontBold, 18, btnNormal, Color.white, width: 220f, height: 46f);
-            SetAnchoredPos(btnBackOptions.GetComponent<RectTransform>(), new Vector2(0f, -162f), new Vector2(220f, 46f));
+            SetAnchoredPos(btnBackOptions.GetComponent<RectTransform>(), new Vector2(0f, -185f), new Vector2(220f, 46f));
 
             // Modal: In-Game Pause
             GameObject pauseCardObj;
@@ -304,6 +321,24 @@ namespace ElementalHexTactics3D.Editor
             so.FindProperty("txtAiStatus").objectReferenceValue = txtAiStatus;
             so.FindProperty("btnDisplayToggle").objectReferenceValue = btnDisplayToggle;
             so.FindProperty("txtDisplayStatus").objectReferenceValue = txtDisplayStatus;
+            so.FindProperty("btnThemeModeToggle").objectReferenceValue = btnThemeModeToggle;
+            so.FindProperty("txtThemeModeStatus").objectReferenceValue = txtThemeModeStatus;
+
+            so.FindProperty("titleBackgroundImage").objectReferenceValue = bgArtImg;
+            so.FindProperty("paladinModeBgSprite").objectReferenceValue = bgPaladin;
+            so.FindProperty("demonLordModeBgSprite").objectReferenceValue = bgDemonLord;
+
+            so.FindProperty("txtBadge").objectReferenceValue = txtBadge;
+            so.FindProperty("txtTitle1").objectReferenceValue = txtTitle1;
+            so.FindProperty("txtTitle2").objectReferenceValue = txtTitle2;
+            so.FindProperty("txtSubtitle").objectReferenceValue = txtSubtitle;
+            so.FindProperty("txtVersion").objectReferenceValue = txtVersion;
+
+            so.FindProperty("txtStoryTitle").objectReferenceValue = txtStoryTitle;
+            so.FindProperty("txtStoryBody").objectReferenceValue = txtStoryBody;
+            so.FindProperty("txtHowToPlayTitle").objectReferenceValue = txtHowToPlayTitle;
+            so.FindProperty("txtHowToPlayBody").objectReferenceValue = txtHowToPlayBody;
+            so.FindProperty("currentThemeMode").enumValueIndex = 0; // PaladinHolyland
 
             so.ApplyModifiedProperties();
 

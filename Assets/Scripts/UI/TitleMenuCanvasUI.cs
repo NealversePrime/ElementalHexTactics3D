@@ -47,6 +47,31 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Button btnBackHowToPlay;
         [SerializeField] private Button btnBackOptions;
 
+        public enum TitleThemeMode
+        {
+            PaladinHolyland,
+            DemonLordRebellion
+        }
+
+        [Header("Title Theme & Mode")]
+        [SerializeField] private TitleThemeMode currentThemeMode = TitleThemeMode.PaladinHolyland;
+        [SerializeField] private Image titleBackgroundImage;
+        [SerializeField] private Sprite paladinModeBgSprite;
+        [SerializeField] private Sprite demonLordModeBgSprite;
+
+        [Header("Header Texts")]
+        [SerializeField] private Text txtBadge;
+        [SerializeField] private Text txtTitle1;
+        [SerializeField] private Text txtTitle2;
+        [SerializeField] private Text txtSubtitle;
+        [SerializeField] private Text txtVersion;
+
+        [Header("Modal Dynamic Texts")]
+        [SerializeField] private Text txtStoryTitle;
+        [SerializeField] private Text txtStoryBody;
+        [SerializeField] private Text txtHowToPlayTitle;
+        [SerializeField] private Text txtHowToPlayBody;
+
         [Header("Options Controls")]
         [SerializeField] private Button btnAudioToggle;
         [SerializeField] private Text txtAudioStatus;
@@ -54,6 +79,8 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Text txtAiStatus;
         [SerializeField] private Button btnDisplayToggle;
         [SerializeField] private Text txtDisplayStatus;
+        [SerializeField] private Button btnThemeModeToggle;
+        [SerializeField] private Text txtThemeModeStatus;
 
         // State Tracking
         private bool isInGame = false;
@@ -100,8 +127,13 @@ namespace ElementalHexTactics3D.UI
                 if (oldSpills != null) DestroyImmediate(oldSpills.gameObject);
             }
 
+            // Determine initial theme mode based on persistent meta-state
+            bool transmigrated = ElementalHexTactics3D.Campaign.CampaignSaveManager.HasTransmigrated();
+            currentThemeMode = transmigrated ? TitleThemeMode.DemonLordRebellion : TitleThemeMode.PaladinHolyland;
+
             AdjustModalLayouts();
             AdjustTitleScreenLayout();
+            ApplyTitleThemeMode(currentThemeMode, false);
         }
 
         /// <summary>
@@ -166,13 +198,13 @@ namespace ElementalHexTactics3D.UI
                 if (card != null)
                 {
                     RectTransform cRect = card.GetComponent<RectTransform>();
-                    if (cRect != null) cRect.sizeDelta = new Vector2(600f, 470f);
+                    if (cRect != null) cRect.sizeDelta = new Vector2(600f, 520f);
 
                     Transform tTrans = card.Find("Text_ModalTitle");
                     if (tTrans != null)
                     {
                         RectTransform tRect = tTrans.GetComponent<RectTransform>();
-                        if (tRect != null) tRect.anchoredPosition = new Vector2(0f, 160f);
+                        if (tRect != null) tRect.anchoredPosition = new Vector2(0f, 185f);
                     }
                 }
             }
@@ -216,7 +248,7 @@ namespace ElementalHexTactics3D.UI
 
         /// <summary>
         /// Restores missing title texts, applies overflow to prevent clipping,
-        /// sharpens button proportions, and adds soft diorama background dimming.
+        /// sharpens button proportions, and ensures background artwork is configured.
         /// </summary>
         private void AdjustTitleScreenLayout()
         {
@@ -237,8 +269,8 @@ namespace ElementalHexTactics3D.UI
                 {
                     var r = tBadge.GetComponent<RectTransform>();
                     if (r != null) { r.anchoredPosition = new Vector2(0f, 75f); r.sizeDelta = new Vector2(840f, 28f); }
-                    var txt = tBadge.GetComponent<Text>();
-                    if (txt != null) { txt.horizontalOverflow = HorizontalWrapMode.Overflow; txt.verticalOverflow = VerticalWrapMode.Overflow; }
+                    txtBadge = tBadge.GetComponent<Text>();
+                    if (txtBadge != null) { txtBadge.horizontalOverflow = HorizontalWrapMode.Overflow; txtBadge.verticalOverflow = VerticalWrapMode.Overflow; }
                 }
 
                 Transform t1 = header.Find("Text_Title1");
@@ -246,16 +278,8 @@ namespace ElementalHexTactics3D.UI
                 {
                     var r = t1.GetComponent<RectTransform>();
                     if (r != null) { r.anchoredPosition = new Vector2(0f, 32f); r.sizeDelta = new Vector2(840f, 48f); }
-                    var txt = t1.GetComponent<Text>();
-                    if (txt != null)
-                    {
-                        txt.text = "I REINCARNATED AS A BEAST TALKER,";
-                        txt.fontSize = 28;
-                        txt.color = Color.white;
-                        txt.fontStyle = FontStyle.Bold;
-                        txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-                        txt.verticalOverflow = VerticalWrapMode.Overflow;
-                    }
+                    txtTitle1 = t1.GetComponent<Text>();
+                    if (txtTitle1 != null) { txtTitle1.horizontalOverflow = HorizontalWrapMode.Overflow; txtTitle1.verticalOverflow = VerticalWrapMode.Overflow; }
                 }
 
                 Transform t2 = header.Find("Text_Title2");
@@ -263,16 +287,8 @@ namespace ElementalHexTactics3D.UI
                 {
                     var r = t2.GetComponent<RectTransform>();
                     if (r != null) { r.anchoredPosition = new Vector2(0f, -14f); r.sizeDelta = new Vector2(840f, 52f); }
-                    var txt = t2.GetComponent<Text>();
-                    if (txt != null)
-                    {
-                        txt.text = "NOW I'M COLLECTING BEASTS!";
-                        txt.fontSize = 34;
-                        txt.color = new Color(1f, 0.85f, 0.25f);
-                        txt.fontStyle = FontStyle.Bold;
-                        txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-                        txt.verticalOverflow = VerticalWrapMode.Overflow;
-                    }
+                    txtTitle2 = t2.GetComponent<Text>();
+                    if (txtTitle2 != null) { txtTitle2.horizontalOverflow = HorizontalWrapMode.Overflow; txtTitle2.verticalOverflow = VerticalWrapMode.Overflow; }
                 }
 
                 Transform sub = header.Find("Text_Subtitle");
@@ -280,8 +296,8 @@ namespace ElementalHexTactics3D.UI
                 {
                     var r = sub.GetComponent<RectTransform>();
                     if (r != null) { r.anchoredPosition = new Vector2(0f, -58f); r.sizeDelta = new Vector2(840f, 26f); }
-                    var txt = sub.GetComponent<Text>();
-                    if (txt != null) { txt.horizontalOverflow = HorizontalWrapMode.Overflow; txt.verticalOverflow = VerticalWrapMode.Overflow; }
+                    txtSubtitle = sub.GetComponent<Text>();
+                    if (txtSubtitle != null) { txtSubtitle.horizontalOverflow = HorizontalWrapMode.Overflow; txtSubtitle.verticalOverflow = VerticalWrapMode.Overflow; }
                 }
 
                 Transform ver = header.Find("Text_Version");
@@ -289,8 +305,8 @@ namespace ElementalHexTactics3D.UI
                 {
                     var r = ver.GetComponent<RectTransform>();
                     if (r != null) { r.anchoredPosition = new Vector2(0f, -86f); r.sizeDelta = new Vector2(840f, 22f); }
-                    var txt = ver.GetComponent<Text>();
-                    if (txt != null) { txt.horizontalOverflow = HorizontalWrapMode.Overflow; txt.verticalOverflow = VerticalWrapMode.Overflow; }
+                    txtVersion = ver.GetComponent<Text>();
+                    if (txtVersion != null) { txtVersion.horizontalOverflow = HorizontalWrapMode.Overflow; txtVersion.verticalOverflow = VerticalWrapMode.Overflow; }
                 }
             }
 
@@ -314,22 +330,272 @@ namespace ElementalHexTactics3D.UI
                 }
             }
 
-            // Ensure soft dimmer vignette behind title panel
+            // Ensure TitleBackgroundArt exists
+            if (titleBackgroundImage == null)
+            {
+                Transform bgTrans = titlePanel.transform.Find("TitleBackgroundArt");
+                if (bgTrans != null)
+                {
+                    titleBackgroundImage = bgTrans.GetComponent<Image>();
+                }
+                else
+                {
+                    GameObject bgObj = new GameObject("TitleBackgroundArt", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                    bgObj.transform.SetParent(titlePanel.transform, false);
+                    bgObj.transform.SetAsFirstSibling();
+                    RectTransform bRect = bgObj.GetComponent<RectTransform>();
+                    bRect.anchorMin = Vector2.zero;
+                    bRect.anchorMax = Vector2.one;
+                    bRect.sizeDelta = Vector2.zero;
+                    bRect.anchoredPosition = Vector2.zero;
+                    titleBackgroundImage = bgObj.GetComponent<Image>();
+                    titleBackgroundImage.color = Color.white;
+                    titleBackgroundImage.raycastTarget = false;
+                }
+            }
+
+            // Ensure soft dimmer vignette sits directly above background art
             Transform dimmer = titlePanel.transform.Find("DioramaDimmer");
             if (dimmer == null)
             {
                 GameObject dimmerObj = new GameObject("DioramaDimmer", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                 dimmerObj.transform.SetParent(titlePanel.transform, false);
-                dimmerObj.transform.SetAsFirstSibling();
+                if (titleBackgroundImage != null)
+                {
+                    dimmerObj.transform.SetSiblingIndex(titleBackgroundImage.transform.GetSiblingIndex() + 1);
+                }
+                else
+                {
+                    dimmerObj.transform.SetAsFirstSibling();
+                }
                 RectTransform dRect = dimmerObj.GetComponent<RectTransform>();
                 dRect.anchorMin = Vector2.zero;
                 dRect.anchorMax = Vector2.one;
                 dRect.sizeDelta = Vector2.zero;
                 dRect.anchoredPosition = Vector2.zero;
                 Image dImg = dimmerObj.GetComponent<Image>();
-                dImg.color = new Color(0.04f, 0.06f, 0.09f, 0.45f);
+                dImg.color = new Color(0.04f, 0.06f, 0.09f, 0.35f);
                 dImg.raycastTarget = false;
             }
+
+            // Find modal text references if not assigned
+            if (storyModal != null)
+            {
+                Transform card = storyModal.transform.Find("CardFrame");
+                if (card != null)
+                {
+                    if (txtStoryTitle == null) txtStoryTitle = card.Find("Text_ModalTitle")?.GetComponent<Text>();
+                    if (txtStoryBody == null) txtStoryBody = card.Find("Text_StoryBody")?.GetComponent<Text>();
+                }
+            }
+
+            if (howToPlayModal != null)
+            {
+                Transform card = howToPlayModal.transform.Find("CardFrame");
+                if (card != null)
+                {
+                    if (txtHowToPlayTitle == null) txtHowToPlayTitle = card.Find("Text_ModalTitle")?.GetComponent<Text>();
+                    if (txtHowToPlayBody == null) txtHowToPlayBody = card.Find("Text_HowToPlayBody")?.GetComponent<Text>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applies either the Holyland Evolve (Paladin Mode) or Elemental Hex (Demon Lord Mode) visual theme.
+        /// </summary>
+        public void ApplyTitleThemeMode(TitleThemeMode mode, bool persist = true)
+        {
+            currentThemeMode = mode;
+            if (persist)
+            {
+                ElementalHexTactics3D.Campaign.CampaignSaveManager.SetTransmigrated(mode == TitleThemeMode.DemonLordRebellion);
+            }
+
+            // 1. Background Art
+            if (titleBackgroundImage != null)
+            {
+                if (mode == TitleThemeMode.PaladinHolyland)
+                {
+                    if (paladinModeBgSprite == null)
+                    {
+#if UNITY_EDITOR
+                        paladinModeBgSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_holyland_cathedral.jpg");
+#endif
+                    }
+                    if (paladinModeBgSprite != null) titleBackgroundImage.sprite = paladinModeBgSprite;
+                }
+                else
+                {
+                    if (demonLordModeBgSprite == null)
+                    {
+#if UNITY_EDITOR
+                        demonLordModeBgSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_demonlord_throne.jpg");
+#endif
+                    }
+                    if (demonLordModeBgSprite != null) titleBackgroundImage.sprite = demonLordModeBgSprite;
+                }
+                titleBackgroundImage.color = Color.white;
+                titleBackgroundImage.gameObject.SetActive(true);
+            }
+
+            // 2. Texts & Styling
+            if (mode == TitleThemeMode.PaladinHolyland)
+            {
+                if (txtBadge != null)
+                {
+                    txtBadge.text = "✦ HOLY CRUSADE EDITION • PROLOGUE: THE CHOSEN HERO ✦";
+                    txtBadge.color = new Color(0.35f, 0.85f, 1f);
+                }
+                if (txtTitle1 != null)
+                {
+                    txtTitle1.text = "HOLYLAND";
+                    txtTitle1.fontSize = 36;
+                    txtTitle1.color = Color.white;
+                }
+                if (txtTitle2 != null)
+                {
+                    txtTitle2.text = "EVOLVE";
+                    txtTitle2.fontSize = 42;
+                    txtTitle2.color = new Color(1f, 0.85f, 0.25f);
+                }
+                if (txtSubtitle != null)
+                {
+                    txtSubtitle.text = "〜 The Sacred Crusade of the Chosen Hero 〜";
+                    txtSubtitle.color = new Color(0.85f, 0.90f, 0.98f);
+                }
+                if (txtVersion != null)
+                {
+                    txtVersion.text = "Holyland Evolve • Pre-Alpha v1.0.0 • Sacred Empire Edition";
+                }
+
+                if (btnPlay != null)
+                {
+                    Text pTxt = btnPlay.GetComponentInChildren<Text>();
+                    if (pTxt != null) pTxt.text = "⚔️ START HOLY QUEST";
+                }
+                if (btnStory != null)
+                {
+                    Text sTxt = btnStory.GetComponentInChildren<Text>();
+                    if (sTxt != null) sTxt.text = "📖 SACRED SCRIPTURES (Lore)";
+                }
+                if (btnHowToPlay != null)
+                {
+                    Text hTxt = btnHowToPlay.GetComponentInChildren<Text>();
+                    if (hTxt != null) hTxt.text = "🎮 HOLY TACTICS (Guide)";
+                }
+
+                if (txtStoryTitle != null) txtStoryTitle.text = "📖 SACRED SCRIPTURES: THE HOLY CRUSADE";
+                if (txtStoryBody != null)
+                {
+                    txtStoryBody.text =
+                        "<b><color=#FBBF24>[ The Divine Mandate ]</color></b>\n" +
+                        "Under the sacred light of the Holy Empire, the Chosen Hero—the Paladin of Radiance—marches with the consecrated vanguard to eradicate the wicked Abyssal demons.\n\n" +
+                        "<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\n" +
+                        "Deep within the fractured underworld, the foul Demon Lord cowers on his blackened throne. Command your Holy Vanguard, smite the demonic minions, and cleanse the taint!\n\n" +
+                        "<b><color=#34D399>[ The Holy Promise ]</color></b>\n" +
+                        "Purge the dark taint and claim eternal glory in Holyland Evolve!";
+                }
+
+                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 HOLY TACTICS: BASIC COMBAT GUIDE";
+                if (txtHowToPlayBody != null)
+                {
+                    txtHowToPlayBody.text =
+                        "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60° | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n" +
+                        "<b><color=#38BDF8>2. Holy Orders:</color></b> <b>Left-Click</b> to Select Unit / Strike | <b>Right-Click</b> to Cancel\n\n" +
+                        "<b><color=#FBBF24>3. Tactical Movement:</color></b>\n" +
+                        "• Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n" +
+                        "• Click any highlighted hex to advance toward the demon lines.\n\n" +
+                        "<b><color=#EF5350>4. Righteous Strike:</color></b>\n" +
+                        "• When adjacent to an enemy (red highlights), click to unleash holy damage!\n\n" +
+                        "<b><color=#34D399>5. Victory Objective:</color></b>\n" +
+                        "• Slay the Demon Lord to purge the underworld and complete the sacred crusade!";
+                }
+            }
+            else // DemonLordRebellion
+            {
+                if (txtBadge != null)
+                {
+                    txtBadge.text = "✦ 2.5D TACTICAL HEX BATTLE • DEMON LORD SANCTUARY ✦";
+                    txtBadge.color = new Color(1f, 0.45f, 0.25f);
+                }
+                if (txtTitle1 != null)
+                {
+                    txtTitle1.text = "ELEMENTAL HEX";
+                    txtTitle1.fontSize = 34;
+                    txtTitle1.color = Color.white;
+                }
+                if (txtTitle2 != null)
+                {
+                    txtTitle2.text = "TACTICS 3D";
+                    txtTitle2.fontSize = 40;
+                    txtTitle2.color = new Color(1f, 0.75f, 0.20f);
+                }
+                if (txtSubtitle != null)
+                {
+                    txtSubtitle.text = "〜 Reincarnated as the Demon Lord, Awakening Primordial Titans 〜";
+                    txtSubtitle.color = new Color(0.88f, 0.85f, 0.78f);
+                }
+                if (txtVersion != null)
+                {
+                    txtVersion.text = "Elemental Hex Tactics 3D • TGFI Edition • Solo Dev by Neal Sage";
+                }
+
+                UpdatePlayButtonLabel();
+
+                if (btnStory != null)
+                {
+                    Text sTxt = btnStory.GetComponentInChildren<Text>();
+                    if (sTxt != null) sTxt.text = "📖 STORY & LORE (Rebellion)";
+                }
+                if (btnHowToPlay != null)
+                {
+                    Text hTxt = btnHowToPlay.GetComponentInChildren<Text>();
+                    if (hTxt != null) hTxt.text = "🎮 HOW TO PLAY (Tactics)";
+                }
+
+                if (txtStoryTitle != null) txtStoryTitle.text = "📖 STORY PROLOGUE: THE WEAKEST TAMER'S AWAKENING";
+                if (txtStoryBody != null)
+                {
+                    txtStoryBody.text =
+                        "<b><color=#38BDF8>[ The Reincarnation ]</color></b>\n" +
+                        "You were summoned from modern Earth into <b>Terranox</b>, a brutal fantasy realm where nobility and authority belong exclusively to beast summoners.\n\n" +
+                        "<b><color=#EF5350>[ The Tyrant's Cruelty: Cursed Collars ]</color></b>\n" +
+                        "Imperial aristocrats treat beasts as disposable war tools, torturing them into obedience with painful <b>Cursed Collars</b>. Having zero physical strength or destructive battle mana, the Adventurer's Guild stamped you as a pathetic <b>Rank-F Trash Tamer</b>.\n\n" +
+                        "<b><color=#FBBF24>[ The Divine Cheat: Beast Resonance ]</color></b>\n" +
+                        "Unknown to anyone, you possess the God-Given Cheat: <b>[Beast Talker & Primordial Resonance]</b>. You understand the souls and cries of beasts! When treated with empathy, your beasts awaken dormant elemental powers, physically terraforming the 3D hex earth!\n\n" +
+                        "<b><color=#34D399>[ Your Mission: Break Chains & Awaken Titans ]</color></b>\n" +
+                        "Enter dangerous 3D dungeon plateaus, defeat corrupt summoners to shatter their cursed collars, gather ancient <b>Elemental Cores</b>, and hatch apocalyptic Titans!";
+                }
+
+                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 TACTICAL COMBAT & TERRAFORM GUIDE";
+                if (txtHowToPlayBody != null)
+                {
+                    txtHowToPlayBody.text =
+                        "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60° | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n" +
+                        "<b><color=#38BDF8>2. Tactical Orders:</color></b> <b>Left-Click</b> to Select Unit / Cast Spell | <b>Right-Click</b> to Cancel\n\n" +
+                        "<b><color=#FBBF24>3. Dynamic Terraforming (Divinity Style):</color></b>\n" +
+                        "• 🔥 <b>Fireball:</b> Scorches grass into molten <b>Magma</b> (damages enemies, gives Fire Titan +2 ATK!).\n" +
+                        "• 💧 <b>Water Blast:</b> Extinguishes lava into <b>Steam Smokescreens</b>; forms water pools.\n" +
+                        "• 🪨 <b>Earth Spire:</b> Raises high <b>Stone Pillars</b> (creates physical barriers & collision surfaces).\n\n" +
+                        "<b><color=#EF5350>4. Kinetic Push & Wall Slams (Into the Breach):</color></b>\n" +
+                        "• 💥 <b>Kinetic Shove:</b> Push enemies 1 hex away. Slamming an enemy into a Stone Pillar, cliff, or another unit triggers <b>💥 -2 HP WALL SLAM damage</b>!\n" +
+                        "• Shove fragile enemy Tamers into lava or water to neutralize them instantly!\n\n" +
+                        "<b><color=#34D399>5. Siphon Land & Cataclysm:</color></b>\n" +
+                        "• ⚡ <b>Siphon:</b> Your Titan drains active lava into Barren Earth to harvest <b>Elemental Cores</b>.\n" +
+                        "• 🌋 <b>Magma Cataclysm:</b> Spend 3 Cores to trigger a screen-shattering volcanic blast wiping the field!";
+                }
+            }
+
+            UpdateOptionsDisplay();
+        }
+
+        public void ToggleThemeMode()
+        {
+            TitleThemeMode newMode = currentThemeMode == TitleThemeMode.PaladinHolyland
+                ? TitleThemeMode.DemonLordRebellion
+                : TitleThemeMode.PaladinHolyland;
+            ApplyTitleThemeMode(newMode, true);
+            PlaySoundClick();
         }
 
         private void Start()
@@ -371,6 +637,7 @@ namespace ElementalHexTactics3D.UI
             if (btnAudioToggle != null) btnAudioToggle.onClick.AddListener(ToggleAudio);
             if (btnAiToggle != null) btnAiToggle.onClick.AddListener(ToggleAI);
             if (btnDisplayToggle != null) btnDisplayToggle.onClick.AddListener(ToggleDisplay);
+            if (btnThemeModeToggle != null) btnThemeModeToggle.onClick.AddListener(ToggleThemeMode);
         }
 
         public void ShowTitleScreen()
@@ -394,6 +661,12 @@ namespace ElementalHexTactics3D.UI
             Text playTxt = btnPlay.GetComponentInChildren<Text>();
             if (playTxt == null) return;
 
+            if (currentThemeMode == TitleThemeMode.PaladinHolyland)
+            {
+                playTxt.text = "⚔️ START HOLY QUEST";
+                return;
+            }
+
             if (ElementalHexTactics3D.Campaign.CampaignSaveManager.HasSaveFile())
             {
                 var save = ElementalHexTactics3D.Campaign.CampaignSaveManager.LoadSaveData();
@@ -404,7 +677,7 @@ namespace ElementalHexTactics3D.UI
                 }
             }
 
-            playTxt.text = "⚔️ START EXPEDITION";
+            playTxt.text = "👑 RESUME REBELLION";
         }
 
         public void ShowTownHub()
@@ -427,14 +700,31 @@ namespace ElementalHexTactics3D.UI
         public void OnPlayClicked()
         {
             PlaySoundClick();
-            // Enter the Citadel Town Hub first!
-            if (townHubPanel != null)
+            if (currentThemeMode == TitleThemeMode.PaladinHolyland)
+            {
+                StartHolyPrologueQuest();
+            }
+            else if (townHubPanel != null)
             {
                 ShowTownHub();
             }
             else
             {
                 EnterHexBattlefield();
+            }
+        }
+
+        public void StartHolyPrologueQuest()
+        {
+            EnterHexBattlefield();
+            if (CombatFeedbackManager.Instance != null)
+            {
+                CombatFeedbackManager.Instance.ShowBanner(
+                    "⚜️ THE HOLY CRUSADE BEGINS ⚜️", 
+                    "Chosen Paladin: Cleanse the Abyssal Chamber and purge the foul Demon Lord!", 
+                    2.8f, 
+                    new Color(1f, 0.88f, 0.35f)
+                );
             }
         }
 
@@ -626,6 +916,13 @@ namespace ElementalHexTactics3D.UI
             if (txtDisplayStatus != null)
             {
                 txtDisplayStatus.text = Screen.fullScreen ? "Display: Fullscreen" : "Display: Windowed";
+            }
+
+            if (txtThemeModeStatus != null)
+            {
+                txtThemeModeStatus.text = currentThemeMode == TitleThemeMode.PaladinHolyland
+                    ? "Theme: HOLYLAND EVOLVE (Paladin)"
+                    : "Theme: ELEMENTAL HEX (Demon Lord)";
             }
         }
 

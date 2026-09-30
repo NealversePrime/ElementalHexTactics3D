@@ -167,5 +167,71 @@ namespace ElementalHexTactics3D.Campaign
                 Debug.LogWarning($"[Save System] Error erasing save files: {ex.Message}");
             }
         }
+
+        private const string PREF_HAS_TRANSMIGRATED = "EHT3D_HasTransmigrated";
+
+        /// <summary>
+        /// Returns true if the player has triggered the transmigration incident (Demon Lord mode).
+        /// Returns false if fresh / currently in the Holyland Evolve (Paladin) prologue mode.
+        /// </summary>
+        public static bool HasTransmigrated()
+        {
+            if (PlayerPrefs.GetInt(PREF_HAS_TRANSMIGRATED, 0) == 1) return true;
+            CampaignSaveData data = LoadSaveData();
+            return data != null && data.hasTransmigrated;
+        }
+
+        /// <summary>
+        /// Sets the transmigration state and persists both to PlayerPrefs and active save data.
+        /// </summary>
+        public static void SetTransmigrated(bool transmigrated)
+        {
+            PlayerPrefs.SetInt(PREF_HAS_TRANSMIGRATED, transmigrated ? 1 : 0);
+            PlayerPrefs.Save();
+
+            CampaignSaveData data = LoadSaveData();
+            if (data != null)
+            {
+                data.hasTransmigrated = transmigrated;
+                SaveRawData(data);
+            }
+        }
+
+        /// <summary>
+        /// Resets prologue and meta title back to Holyland Evolve (Paladin Mode).
+        /// </summary>
+        public static void ResetMetaPrologue()
+        {
+            PlayerPrefs.DeleteKey(PREF_HAS_TRANSMIGRATED);
+            PlayerPrefs.Save();
+
+            CampaignSaveData data = LoadSaveData();
+            if (data != null)
+            {
+                data.hasTransmigrated = false;
+                data.hasCompletedTutorialStage1 = false;
+                data.hasCompletedTutorialStage2 = false;
+                SaveRawData(data);
+            }
+            Debug.Log("<color=#81C784><b>[Save System]</b></color> Meta-state reset to Holyland Evolve (Paladin Mode).");
+        }
+
+        /// <summary>
+        /// Directly persists a CampaignSaveData object to disk.
+        /// </summary>
+        private static bool SaveRawData(CampaignSaveData data)
+        {
+            try
+            {
+                string json = JsonUtility.ToJson(data, true);
+                File.WriteAllText(SaveFilePath, json);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Save System] Failed to write raw save data: {ex.Message}");
+                return false;
+            }
+        }
     }
 }
