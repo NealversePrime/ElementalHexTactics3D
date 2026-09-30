@@ -642,17 +642,17 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.DemonAwakeningIntro:
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Kita sudah tiba di ambang Abyssal Gate. Pasukan pelopor Holy Empire benar-benar sudah menerobos masuk!",
+                        "Kita sudah tiba di ambang perbatasan medan tempur. Pasukan pelopor Holy Empire benar-benar sudah mendirikan barikade di depan sana!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Tepat di hadapan kita, Yang Mulia! Mereka mendirikan formasi di depan petak rumput dan pilar batu!",
+                        "Benar, Yang Mulia! Pasukan kita saat ini masih bersiaga di balik tabir dimensi Citadel. Bagaimana perintah penyerangan Anda?",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Formasi klasik Holy Empire... Barisan depan mereka kaku dan rentan terhadap perubahan terrain. Biar kutunjukkan sihir api [Fireball] ke petak rumput di tengah itu!",
+                        "Tenang, Jenderal. Keunggulan mutlak kita adalah portal santuari. Pertama-tama, sobek celah [Abyssal Rift] di medan tempur untuk membuka gerbang masuk pasukan kita!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;

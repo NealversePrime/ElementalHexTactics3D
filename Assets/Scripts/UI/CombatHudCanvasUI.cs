@@ -846,7 +846,9 @@ namespace ElementalHexTactics3D.UI
                 }
                 if (btnRandomizeMap != null)
                 {
-                    btnRandomizeMap.interactable = isPlayerTurn;
+                    bool isTut = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive;
+                    btnRandomizeMap.gameObject.SetActive(!isTut);
+                    btnRandomizeMap.interactable = isPlayerTurn && !isTut;
                 }
             }
             else
@@ -892,17 +894,19 @@ namespace ElementalHexTactics3D.UI
             bool canDeployCmdr = isPlayerTurn && (cmdrInReserve || (cmdr != null && cmdr.gameObject.activeInHierarchy));
             bool canSummonTitan = isPlayerTurn && ((noActiveUnits && titanInReserve) || (cmdr != null && cmdr.ElementalCores >= 1) || (!titanInReserve && titan != null));
 
+            bool isTut = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive;
+
             if (btnDeployCommander != null)
             {
                 btnDeployCommander.interactable = canDeployCmdr;
                 if (txtDeployCommander != null)
                 {
                     if (!cmdrInReserve)
-                        txtDeployCommander.text = "👤 Pick Commander\n<size=11>(On Field)</size>";
+                        txtDeployCommander.text = isTut ? "👤 Demon Lord\n<size=11>(On Field)</size>" : "👤 Pick Commander\n<size=11>(On Field)</size>";
                     else if (currentMode == UnitActionMode.DeployCommander)
                         txtDeployCommander.text = "<b>[Deploying...]</b>\n<size=11>(Click Hex)</size>";
                     else
-                        txtDeployCommander.text = "👤 Deploy Commander\n<size=11>(Free Vanguard)</size>";
+                        txtDeployCommander.text = isTut ? "👤 Deploy Demon Lord\n<size=11>(Komandan / Free)</size>" : "👤 Deploy Commander\n<size=11>(Free Vanguard)</size>";
                 }
             }
 
@@ -912,15 +916,15 @@ namespace ElementalHexTactics3D.UI
                 if (txtSummonTitanRift != null)
                 {
                     if (!titanInReserve)
-                        txtSummonTitanRift.text = "🌋 Pick Titan\n<size=11>(On Field)</size>";
+                        txtSummonTitanRift.text = isTut ? "🌋 Basalt Vanguard\n<size=11>(On Field)</size>" : "🌋 Pick Titan\n<size=11>(On Field)</size>";
                     else if (noActiveUnits)
-                        txtSummonTitanRift.text = (currentMode == UnitActionMode.SummonTitan) ? "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>" : "🌋 Deploy Titan\n<size=11>(Free Vanguard)</size>";
+                        txtSummonTitanRift.text = (currentMode == UnitActionMode.SummonTitan) ? "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>" : (isTut ? "🌋 Panggil Basalt Vanguard\n<size=11>(Free Vanguard)</size>" : "🌋 Deploy Titan\n<size=11>(Free Vanguard)</size>");
                     else if (cmdr != null && cmdr.ElementalCores < 1)
-                        txtSummonTitanRift.text = "🌋 Summon Titan\n<size=11>(Req 1 Core)</size>";
+                        txtSummonTitanRift.text = isTut ? "🌋 Panggil Basalt Vanguard\n<size=11>(Req 1 Core)</size>" : "🌋 Summon Titan\n<size=11>(Req 1 Core)</size>";
                     else if (currentMode == UnitActionMode.SummonTitan)
                         txtSummonTitanRift.text = "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>";
                     else
-                        txtSummonTitanRift.text = "🌋 Summon Titan\n<size=11>(1 Core)</size>";
+                        txtSummonTitanRift.text = isTut ? "🌋 Panggil Basalt Vanguard\n<size=11>(1 Core Vanguard)</size>" : "🌋 Summon Titan\n<size=11>(1 Core)</size>";
                 }
             }
         }
@@ -1065,6 +1069,9 @@ namespace ElementalHexTactics3D.UI
             else if (activeTutorialButtonKey == "Fireball") targetBtn = btnFireball;
             else if (activeTutorialButtonKey == "Push") targetBtn = btnPush;
             else if (activeTutorialButtonKey == "EndTurn") targetBtn = btnEndTurn;
+            else if (activeTutorialButtonKey == "TearRift") targetBtn = btnTearRift;
+            else if (activeTutorialButtonKey == "DeployCommander") targetBtn = btnDeployCommander;
+            else if (activeTutorialButtonKey == "DeployTitan") targetBtn = (btnSummonTitanAbility != null && btnSummonTitanAbility.gameObject.activeInHierarchy) ? btnSummonTitanAbility : btnSummonTitanRift;
 
             if (targetBtn != null && targetBtn.gameObject.activeInHierarchy)
             {

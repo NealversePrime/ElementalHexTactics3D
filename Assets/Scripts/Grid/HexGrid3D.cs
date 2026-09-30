@@ -211,10 +211,7 @@ namespace ElementalHexTactics3D.Grid
             ClearGrid();
 
             // Clear active rift conduit if one existed
-            if (AbyssalRiftConduit3D.Instance != null)
-            {
-                Destroy(AbyssalRiftConduit3D.Instance.gameObject);
-            }
+            Combat.AbyssalRiftConduit3D.CloseActiveRift();
 
             // Generate or cache procedural 3D hex pillar mesh
             if (sharedPillarMesh == null)

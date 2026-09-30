@@ -48,6 +48,36 @@ namespace ElementalHexTactics3D.Combat
             }
         }
 
+        private void OnDestroy()
+        {
+            if (ambientVortexObj != null)
+            {
+                SafeDestroy(ambientVortexObj);
+                ambientVortexObj = null;
+            }
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
+        /// <summary>
+        /// Safely destroys the active conduit and its visual vortex without deleting the host hex tile.
+        /// </summary>
+        public static void CloseActiveRift()
+        {
+            if (Instance != null)
+            {
+                if (Instance.ambientVortexObj != null)
+                {
+                    SafeDestroy(Instance.ambientVortexObj);
+                    Instance.ambientVortexObj = null;
+                }
+                Destroy(Instance);
+                Instance = null;
+            }
+        }
+
         private void Start()
         {
             if (attachedTile == null)
