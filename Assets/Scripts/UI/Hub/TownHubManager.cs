@@ -363,11 +363,23 @@ namespace ElementalHexTactics3D.UI.Hub
 
         public void OnBuildingClicked(TownBuildingNode building)
         {
+            // Block facility clicks if story dialogue / cutscene is currently playing
+            if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue)
+            {
+                return;
+            }
+
             HideTooltipImmediate();
 
-            // Tutorial Gating: During Hub Awakening, only Abyssal Portal is permitted!
+            // Tutorial Gating: During Hub Awakening, cutscene must finish first and only Abyssal Portal is permitted!
             if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive)
             {
+                if (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue)
+                {
+                    // Cutscene is still playing or initializing, ignore clicks!
+                    return;
+                }
+
                 if (building.FacilityType == HubFacilityType.AbyssalPortal)
                 {
                     Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_SelectTutorialMissionCard);

@@ -71,6 +71,29 @@ namespace ElementalHexTactics3D.UI.Hub
             ResetVisualState();
         }
 
+        private void Update()
+        {
+            // Tutorial Highlight Pulse: When player is prompted to click Abyssal Rift, pulsate with warm golden aura!
+            if (facilityType == HubFacilityType.AbyssalPortal &&
+                Tutorial.TutorialScenarioManager.Instance != null &&
+                Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive &&
+                Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_ClickAbyssalRift)
+            {
+                if (!isHovered)
+                {
+                    float pulse = (Mathf.Sin(Time.unscaledTime * 4.5f) + 1f) * 0.5f;
+                    if (targetGraphic != null)
+                    {
+                        targetGraphic.color = Color.Lerp(normalColor, new Color(1.35f, 1.2f, 0.7f, 1f), pulse);
+                    }
+                    if (scaleRoot != null)
+                    {
+                        scaleRoot.localScale = originalScale * (1f + 0.045f * pulse);
+                    }
+                }
+            }
+        }
+
         public void Setup(HubFacilityType type, string title, string lore, string status, Graphic graphic, Transform shadow = null, Color? normal = null, Color? hover = null, float scale = 1.03f)
         {
             facilityType = type;
@@ -90,6 +113,12 @@ namespace ElementalHexTactics3D.UI.Hub
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            // Block hover interactions while story cutscene / dialogue is active
+            if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue) return;
+            if (Tutorial.TutorialScenarioManager.Instance != null &&
+                Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive &&
+                Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue) return;
+
             isHovered = true;
 
             // 1. Color highlight
@@ -124,6 +153,12 @@ namespace ElementalHexTactics3D.UI.Hub
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            // Block click interactions while story cutscene / dialogue is active
+            if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue) return;
+            if (Tutorial.TutorialScenarioManager.Instance != null &&
+                Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive &&
+                Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue) return;
+
             if (eventData.button != PointerEventData.InputButton.Left) return;
 
             PlayAudio(clickSfx, 1.0f, 1.0f);

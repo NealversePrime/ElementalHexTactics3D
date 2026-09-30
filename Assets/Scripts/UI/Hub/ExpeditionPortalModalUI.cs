@@ -52,6 +52,7 @@ namespace ElementalHexTactics3D.UI.Hub
 
         public void OpenModal()
         {
+            if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue) return;
             isOpen = true;
             selectedCardIndex = 0;
             hoveredCardIndex = -1;
@@ -241,6 +242,7 @@ namespace ElementalHexTactics3D.UI.Hub
         private void OnGUI()
         {
             if (!isOpen) return;
+            if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue) return;
 
             EnsureSolidTexture();
 

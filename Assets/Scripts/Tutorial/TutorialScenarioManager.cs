@@ -305,11 +305,31 @@ namespace ElementalHexTactics3D.Tutorial
                     break;
 
                 case TutorialStep.Hub_CitadelAwakeningDialogue:
-                case TutorialStep.Hub_ClickAbyssalRift:
-                case TutorialStep.Hub_SelectTutorialMissionCard:
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.HideGuidance();
+                    break;
+
+                case TutorialStep.Hub_ClickAbyssalRift:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.ShowGuidance(
+                        "[SANTUARI CITADEL] MASUKI ABYSSAL RIFT",
+                        "Pasukan Holy Empire mendesak di perbatasan santuari! Klik hotspot [Abyssal Rift Portal] di tengah Citadel untuk membuka gateway pertempuran.",
+                        "Klik bangunan Abyssal Rift yang berpendar emas di tengah santuari!",
+                        new Color(0.95f, 0.75f, 0.25f)
+                    );
+                    break;
+
+                case TutorialStep.Hub_SelectTutorialMissionCard:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.ShowGuidance(
+                        "[GATEWAY EKSPEDISI] PILIH MISI TUTORIAL",
+                        "Hanya Rute #1 [Pertahankan Abyssal Gate] yang stabil! Tekan tombol [MASUKI PORTAL] atau tekan Spasi/Enter untuk bertarung!",
+                        "Pilih Kartu #1 dan klik [MASUKI PORTAL] untuk terjun ke medan tempur!",
+                        new Color(1f, 0.85f, 0.35f)
+                    );
                     break;
 
                 case TutorialStep.Completed:

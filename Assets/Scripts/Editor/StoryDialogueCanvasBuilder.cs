@@ -83,9 +83,12 @@ namespace ElementalHexTactics3D.Editor
 
             StoryDialogueUI dialogueUI = canvasObj.AddComponent<StoryDialogueUI>();
 
-            // 3. Root Panel Container
+            // 3. Root Panel Container (with full-screen raycast blocker)
             GameObject rootPanel = CreateUIObject("Panel_StoryDialogueRoot", canvasObj.transform);
             SetStretchAll(rootPanel.GetComponent<RectTransform>());
+            Image rootBlocker = rootPanel.AddComponent<Image>();
+            rootBlocker.color = new Color(0f, 0f, 0f, 0f);
+            rootBlocker.raycastTarget = true;
 
             // 4. Background Art (Fullscreen 16:9)
             GameObject bgObj = CreateUIObject("BackgroundArt", rootPanel.transform);

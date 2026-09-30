@@ -203,6 +203,15 @@ namespace ElementalHexTactics3D.UI
 
             if (rootDialoguePanel != null)
             {
+                // Ensure full-screen raycast blocker on root panel so clicks during dialogue advance story without hitting background buttons
+                Image rootRaycastBlocker = rootDialoguePanel.GetComponent<Image>();
+                if (rootRaycastBlocker == null)
+                {
+                    rootRaycastBlocker = rootDialoguePanel.AddComponent<Image>();
+                }
+                rootRaycastBlocker.color = new Color(0f, 0f, 0f, 0f);
+                rootRaycastBlocker.raycastTarget = true;
+
                 if (backgroundArtImage == null)
                 {
                     Transform bg = rootDialoguePanel.transform.Find("BackgroundArt");
