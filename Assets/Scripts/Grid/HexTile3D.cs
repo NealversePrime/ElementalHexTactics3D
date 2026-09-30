@@ -200,6 +200,16 @@ namespace ElementalHexTactics3D.Grid
             UpdateVisuals();
         }
 
+        private bool isTutorialHighlighted = false;
+        public bool IsTutorialHighlighted => isTutorialHighlighted;
+
+        public void SetTutorialHighlighted(bool highlighted)
+        {
+            if (isTutorialHighlighted == highlighted) return;
+            isTutorialHighlighted = highlighted;
+            UpdateVisuals();
+        }
+
         public void SetReachable(bool reachable)
         {
             if (isReachable == reachable) return;
@@ -231,7 +241,12 @@ namespace ElementalHexTactics3D.Grid
                 emissionColor = new Color(0.12f, 0.12f, 0.14f, 1f);
             }
 
-            if (isSelected)
+            if (isTutorialHighlighted)
+            {
+                tintColor = new Color(2.1f, 1.7f, 0.4f, 1f); // Radiant gold highlight
+                emissionColor = new Color(0.65f, 0.48f, 0.08f, 1f);
+            }
+            else if (isSelected)
             {
                 tintColor = new Color(1.8f, 1.6f, 0.5f, 1f); // Golden tactical tint
                 emissionColor = new Color(0.45f, 0.35f, 0.05f, 1f); // Warm golden emission

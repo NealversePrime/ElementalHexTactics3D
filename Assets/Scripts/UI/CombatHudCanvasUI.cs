@@ -1044,6 +1044,36 @@ namespace ElementalHexTactics3D.UI
             {
                 btnRecall.interactable = isPlayerTurn;
             }
+
+            ApplyTutorialButtonPulse();
+        }
+
+        private string activeTutorialButtonKey = null;
+
+        public void HighlightTutorialButton(string buttonKey)
+        {
+            activeTutorialButtonKey = buttonKey;
+        }
+
+        private void ApplyTutorialButtonPulse()
+        {
+            if (string.IsNullOrEmpty(activeTutorialButtonKey)) return;
+
+            Button targetBtn = null;
+            if (activeTutorialButtonKey == "Move") targetBtn = btnMove;
+            else if (activeTutorialButtonKey == "Strike") targetBtn = btnTitanStrike;
+            else if (activeTutorialButtonKey == "Fireball") targetBtn = btnFireball;
+            else if (activeTutorialButtonKey == "Push") targetBtn = btnPush;
+            else if (activeTutorialButtonKey == "EndTurn") targetBtn = btnEndTurn;
+
+            if (targetBtn != null && targetBtn.gameObject.activeInHierarchy)
+            {
+                float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
+                Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
+                var colors = targetBtn.colors;
+                colors.normalColor = goldPulse;
+                targetBtn.colors = colors;
+            }
         }
 
         private void SetButtonActiveHighlight(Button btn, bool isActive)

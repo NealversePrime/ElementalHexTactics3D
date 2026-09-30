@@ -21,18 +21,39 @@ namespace ElementalHexTactics3D.Tutorial
         Stage2_AbyssalAwakening
     }
 
+    public enum TutorialStep
+    {
+        None,
+        // Stage 1: The Holy Crusade (Holyland Evolve)
+        Stage1_SelectPaladin,
+        Stage1_MovePaladin,
+        Stage1_HolyStrikeDemonLord,
+        Stage1_MoveShielderOrEndTurn,
+        Stage1_EnemyTurnReaction,
+        Stage1_FinishDemonLord,
+
+        // Stage 2: The Abyssal Awakening (Elemental Hex Tactics)
+        Stage2_CastFireballOnGrass,
+        Stage2_BasaltVanguardWallSlam,
+        Stage2_VanquishHolyInvaders,
+
+        Completed
+    }
+
     /// <summary>
-    /// Master controller for the narrative prologue and 2-stage tutorial inversion:
+    /// Master controller for the narrative prologue and 2-stage scripted tutorial inversion:
     /// Stage 1: The Holy Crusade (Holyland Evolve) - Paladin & Holy Shielder vs Demon Lord boss.
-    /// Transmigration Glitch cutscene upon victory.
-    /// Stage 2: The Abyssal Awakening (Elemental Hex Tactics) - Demon Lord MC & Basalt Vanguard vs Holy Empire invaders.
-    /// Awards 1st Primordial Titan Core and unlocks the Citadel Hub.
+    /// Features diegetic MC gamer inner monologue, dynamic tile highlights, and fail-safe plot armor.
+    /// Stage 2: The Abyssal Awakening (Elemental Hex Tactics) - Demon Lord MC & Basalt Vanguard vs Holy Empire.
+    /// Demonstrates Fireball grass ignition into Magma, Basalt Vanguard kinetic wall slams, and Citadel Hub unlock.
     /// </summary>
     public class TutorialScenarioManager : MonoBehaviour
     {
         public static TutorialScenarioManager Instance { get; private set; }
 
         public TutorialStage CurrentStage { get; private set; } = TutorialStage.None;
+        public TutorialStep CurrentStep { get; private set; } = TutorialStep.None;
+
         public bool IsTutorialActive => CurrentStage != TutorialStage.None;
         public bool IsStage1Active => CurrentStage == TutorialStage.Stage1_HolyCrusade;
         public bool IsStage2Active => CurrentStage == TutorialStage.Stage2_AbyssalAwakening;
@@ -43,6 +64,8 @@ namespace ElementalHexTactics3D.Tutorial
         public TacticalUnit3D DemonLordBoss { get; private set; }
         public TacticalUnit3D DemonLordPlayer { get; private set; }
         public TacticalUnit3D BasaltVanguardPlayer { get; private set; }
+
+        private HexTile3D currentHighlightedTile = null;
 
         public static TutorialScenarioManager EnsureInstance()
         {
@@ -71,6 +94,239 @@ namespace ElementalHexTactics3D.Tutorial
             }
         }
 
+        private void Update()
+        {
+            if (!IsTutorialActive) return;
+
+            // Don't advance steps while Story Dialogue cutscene is playing
+            if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue)
+            {
+                return;
+            }
+
+            HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
+            TurnManager3D turn = TurnManager3D.Instance;
+
+            // ================= STAGE 1 STEP EVALUATION ================= //
+            if (CurrentStage == TutorialStage.Stage1_HolyCrusade)
+            {
+                switch (CurrentStep)
+                {
+                    case TutorialStep.Stage1_SelectPaladin:
+                        if (interaction != null && interaction.SelectedUnit == PaladinUnit)
+                        {
+                            SetStep(TutorialStep.Stage1_MovePaladin);
+                        }
+                        break;
+
+                    case TutorialStep.Stage1_MovePaladin:
+                        // If player accidentally deselects Paladin before moving, gently guide them back
+                        if (interaction != null && interaction.SelectedUnit != PaladinUnit && PaladinUnit != null && !PaladinUnit.HasMovedThisTurn)
+                        {
+                            SetStep(TutorialStep.Stage1_SelectPaladin);
+                        }
+                        else if (PaladinUnit != null && PaladinUnit.HasMovedThisTurn)
+                        {
+                            SetStep(TutorialStep.Stage1_HolyStrikeDemonLord);
+                        }
+                        break;
+
+                    case TutorialStep.Stage1_HolyStrikeDemonLord:
+                        if (PaladinUnit != null && PaladinUnit.HasActedThisTurn)
+                        {
+                            SetStep(TutorialStep.Stage1_MoveShielderOrEndTurn);
+                        }
+                        break;
+
+                    case TutorialStep.Stage1_MoveShielderOrEndTurn:
+                        if (turn != null && !turn.IsPlayerTurn)
+                        {
+                            SetStep(TutorialStep.Stage1_EnemyTurnReaction);
+                        }
+                        break;
+
+                    case TutorialStep.Stage1_EnemyTurnReaction:
+                        if (turn != null && turn.IsPlayerTurn && turn.CurrentRound >= 2)
+                        {
+                            SetStep(TutorialStep.Stage1_FinishDemonLord);
+                        }
+                        break;
+                }
+            }
+            // ================= STAGE 2 STEP EVALUATION ================= //
+            else if (CurrentStage == TutorialStage.Stage2_AbyssalAwakening)
+            {
+                switch (CurrentStep)
+                {
+                    case TutorialStep.Stage2_CastFireballOnGrass:
+                        HexGrid3D grid = HexGrid3D.Instance;
+                        HexTile3D centerTile = grid != null ? grid.GetTile(new HexCoordinates(0, 0)) : null;
+                        // Transition when center tile becomes Magma or when Demon Lord has acted
+                        if ((centerTile != null && centerTile.State == TileState.Magma) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
+                        {
+                            SetStep(TutorialStep.Stage2_BasaltVanguardWallSlam);
+                        }
+                        break;
+
+                    case TutorialStep.Stage2_BasaltVanguardWallSlam:
+                        if (BasaltVanguardPlayer != null && (BasaltVanguardPlayer.HasActedThisTurn || BasaltVanguardPlayer.HasMovedThisTurn))
+                        {
+                            SetStep(TutorialStep.Stage2_VanquishHolyInvaders);
+                        }
+                        break;
+                }
+            }
+        }
+
+        #region Step Tracking & Visual Guidance
+
+        public void SetStep(TutorialStep newStep)
+        {
+            CurrentStep = newStep;
+            Debug.Log($"<color=#FFD54F><b>[Tutorial Step]</b></color> Advanced to: <b>{newStep}</b>");
+
+            TutorialGuidanceBannerUI banner = TutorialGuidanceBannerUI.EnsureInstance();
+
+            switch (newStep)
+            {
+                case TutorialStep.Stage1_SelectPaladin:
+                    if (PaladinUnit != null) SetTutorialHighlightedTile(PaladinUnit.CurrentTile);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.ShowGuidance(
+                        "[LANGKAH 1/4] PILIH PALADIN",
+                        "Oke... pertama-tama aku hanya perlu tekan Paladinku untuk memilihnya...",
+                        "Klik Paladin (Chosen Hero) di petak (0, -1)!",
+                        new Color(1f, 0.88f, 0.35f)
+                    );
+                    break;
+
+                case TutorialStep.Stage1_MovePaladin:
+                    // When Paladin is selected, reachable tiles turn cyan/blue!
+                    HexGrid3D grid1 = HexGrid3D.Instance;
+                    HexTile3D targetForwardTile = grid1 != null ? grid1.GetTile(new HexCoordinates(0, 0)) : null;
+                    SetTutorialHighlightedTile(targetForwardTile);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Move");
+                    banner?.ShowGuidance(
+                        "[LANGKAH 2/4] LANGKAH KE PETAK BIRU",
+                        "Nah! Otomatis petak biru (cyan) muncul. Sekarang aku hanya perlu klik salah satu petak biru untuk melangkah mendekati Demon Lord...",
+                        "Klik petak biru (cyan) di depan untuk melangkah maju!",
+                        new Color(0.35f, 0.85f, 1.0f)
+                    );
+                    break;
+
+                case TutorialStep.Stage1_HolyStrikeDemonLord:
+                    if (DemonLordBoss != null) SetTutorialHighlightedTile(DemonLordBoss.CurrentTile);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Strike");
+                    banner?.ShowGuidance(
+                        "[LANGKAH 3/4] SERANG DENGAN HOLY STRIKE",
+                        "Bagus! Demon Lord sudah dalam jangkauan pedangku. Sekarang tekan tombol [Holy Strike] di bawah atau klik langsung ke Demon Lord untuk melancarkan serangan suci!",
+                        "Klik tombol [Holy Strike] di action bar, lalu serang Demon Lord!",
+                        new Color(1f, 0.45f, 0.25f)
+                    );
+                    break;
+
+                case TutorialStep.Stage1_MoveShielderOrEndTurn:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("EndTurn");
+                    banner?.ShowGuidance(
+                        "[LANGKAH 4/4] AKHIRI GILIRAN",
+                        "Serangan suci mendarat telak! Paladinku sudah selesai bertindak. Sekarang aku bisa gerakkan Holy Shielder atau langsung klik [END TURN] untuk giliran musuh...",
+                        "Klik tombol [END TURN] di kanan bawah untuk mengakhiri giliran!",
+                        new Color(0.45f, 0.95f, 0.65f)
+                    );
+                    break;
+
+                case TutorialStep.Stage1_EnemyTurnReaction:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.ShowGuidance(
+                        "[FASE MUSUH] BERTAHAN DARI SERANGAN",
+                        "Awas! Pasukan iblis mulai membalas... Tapi dengan berkat Divine Blessing, pasukanku takkan bisa ditumbangkan!",
+                        "Memperhatikan giliran musuh...",
+                        new Color(0.95f, 0.35f, 0.25f)
+                    );
+                    break;
+
+                case TutorialStep.Stage1_FinishDemonLord:
+                    if (DemonLordBoss != null) SetTutorialHighlightedTile(DemonLordBoss.CurrentTile);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Strike");
+                    banner?.ShowGuidance(
+                        "[PUNCAK CRUSADE] HABISI DEMON LORD!",
+                        "Haha, serangan mereka geli-geli berkat Divine Blessing! Sekarang giliranku lagi... Habisi Demon Lord dan selesaikan raid ini!",
+                        "Serang Demon Lord sekali lagi untuk memenangkan pertempuran!",
+                        new Color(1f, 0.88f, 0.35f)
+                    );
+                    break;
+
+                case TutorialStep.Stage2_CastFireballOnGrass:
+                    HexGrid3D g2 = HexGrid3D.Instance;
+                    HexTile3D grassTile = g2 != null ? g2.GetTile(new HexCoordinates(0, 0)) : null;
+                    SetTutorialHighlightedTile(grassTile);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
+                    banner?.ShowGuidance(
+                        "[REAKSI ELEMEN] BAKAR RUMPUT JADI MAGMA",
+                        "Tunggu sebentar... tubuh dan interface-ku berubah jadi Demon Lord?! Baiklah, analisa battlefield dulu... Di depanku ada petak Rumput (Grass). Kalau kutembakkan [Fireball] ke sana, rumputnya akan terbakar jadi Magma!",
+                        "Pilih Demon Lord, klik [Fireball], lalu tembakkan ke petak Rumput (Grass) di depan!",
+                        new Color(1f, 0.55f, 0.15f)
+                    );
+                    break;
+
+                case TutorialStep.Stage2_BasaltVanguardWallSlam:
+                    HexGrid3D g3 = HexGrid3D.Instance;
+                    HexTile3D pillarTile = g3 != null ? g3.GetTile(new HexCoordinates(1, 0)) : null;
+                    SetTutorialHighlightedTile(pillarTile);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
+                    banner?.ShowGuidance(
+                        "[KINETIC PUSH] DORONG MUSUH MENABRAK PILAR",
+                        "Rumputnya benar-benar meleleh jadi Magma pijar! Sekarang giliran Basalt Vanguard. Skill dorongannya [Gore] bisa mendorong prajurit musuh menabrak Pilar Batu (Stone Pillar) untuk bonus Wall Slam damage!",
+                        "Pilih Basalt Vanguard, klik [Gore / Push], lalu dorong Holy Shielder menabrak Pilar Batu!",
+                        new Color(0.85f, 0.65f, 0.35f)
+                    );
+                    break;
+
+                case TutorialStep.Stage2_VanquishHolyInvaders:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.ShowGuidance(
+                        "[KEMENANGAN MUTLAK] HABISI PENYERBU",
+                        "Wall Slam sukses! Musuh terkena stun dan damage benturan. Sekarang habisi sisa prajurit Holy Empire ini untuk mengamankan sanctuary dan merebut Primordial Titan Core pertamamu!",
+                        "Habisi seluruh penyerbu Holy Empire untuk menyelesaikan tutorial!",
+                        new Color(0.35f, 0.95f, 0.45f)
+                    );
+                    break;
+
+                case TutorialStep.Completed:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.HideGuidance();
+                    break;
+            }
+        }
+
+        public void SetTutorialHighlightedTile(HexTile3D tile)
+        {
+            if (currentHighlightedTile != null && currentHighlightedTile != tile)
+            {
+                currentHighlightedTile.SetTutorialHighlighted(false);
+            }
+            currentHighlightedTile = tile;
+            if (currentHighlightedTile != null)
+            {
+                currentHighlightedTile.SetTutorialHighlighted(true);
+            }
+        }
+
+        public void ClearTutorialHighlightedTile()
+        {
+            if (currentHighlightedTile != null)
+            {
+                currentHighlightedTile.SetTutorialHighlighted(false);
+                currentHighlightedTile = null;
+            }
+        }
+
+        #endregion
+
         #region Stage 1: The Holy Crusade (Holyland Evolve)
 
         /// <summary>
@@ -79,6 +335,7 @@ namespace ElementalHexTactics3D.Tutorial
         public void StartStage1HolyCrusade()
         {
             CurrentStage = TutorialStage.Stage1_HolyCrusade;
+            CurrentStep = TutorialStep.Stage1_SelectPaladin;
             Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Starting Stage 1: The Holy Crusade...");
 
             // 1. Enter in-game combat HUD view
@@ -103,14 +360,15 @@ namespace ElementalHexTactics3D.Tutorial
             HexGrid3D grid = HexGrid3D.Instance;
             if (grid != null)
             {
-                HexTile3D paladinTile = grid.GetTile(new HexCoordinates(0, -2));
+                // Paladin starts at (0, -1), positioned 2 hexes from Demon Lord at (0, 1)
+                HexTile3D paladinTile = grid.GetTile(new HexCoordinates(0, -1));
                 Sprite paladinSprite = TacticalUnitSpawner.LoadBattlerSprite("paladin.png");
                 PaladinUnit = TacticalUnitSpawner.SpawnUnitStandee(
                     "Paladin (Chosen Hero)",
                     UnitFaction.Player,
                     paladinSprite,
                     paladinTile,
-                    12, 2,
+                    14, 2,
                     UnitArchetype.Commander,
                     ElementalAffinity.None,
                     3,
@@ -124,7 +382,7 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Player,
                     shielderSprite,
                     shielderTile,
-                    14, 2,
+                    16, 2,
                     UnitArchetype.Minion,
                     ElementalAffinity.None,
                     2,
@@ -132,17 +390,17 @@ namespace ElementalHexTactics3D.Tutorial
                 );
 
                 // 6. Spawn Enemy Units (Demon Lord Boss & Demon Slimes)
-                HexTile3D demonLordTile = grid.GetTile(new HexCoordinates(0, 2));
+                HexTile3D demonLordTile = grid.GetTile(new HexCoordinates(0, 1));
                 Sprite demonLordSprite = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
                 DemonLordBoss = TacticalUnitSpawner.SpawnUnitStandee(
                     "Demon Lord",
                     UnitFaction.Enemy,
                     demonLordSprite,
                     demonLordTile,
-                    10, 2,
+                    8, 2,
                     UnitArchetype.Commander,
                     ElementalAffinity.Fire,
-                    3,
+                    2,
                     0.90f
                 );
 
@@ -186,25 +444,22 @@ namespace ElementalHexTactics3D.Tutorial
                 TacticalCameraController.Instance.ResetToTacticalView();
             }
 
-            // 9. Auto-select Paladin so reachable tiles are immediately highlighted
-            if (PaladinUnit != null && HexGridInteraction3D.Instance != null)
-            {
-                HexGridInteraction3D.Instance.SelectUnit(PaladinUnit);
-            }
-
-            // 10. Display Mission Objective Banner
+            // 9. Display Mission Objective Banner
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "⚜️ THE HOLY CRUSADE: SLAY THE DEMON LORD ⚜️",
                     "Paladin of Radiance: Advance across the chamber and strike down the Demon Lord!",
-                    3.2f,
+                    3.0f,
                     new Color(1f, 0.88f, 0.35f)
                 );
             }
 
-            // 11. Trigger in-battle banter dialogue after a short delay
-            StartCoroutine(PlayDialogueDelayed(StorySequenceId.HolyRaidIntro, 0.8f));
+            // 10. Trigger in-battle banter dialogue, then initialize step 1 guidance
+            StartCoroutine(PlayDialogueDelayed(StorySequenceId.HolyRaidIntro, 0.8f, () =>
+            {
+                SetStep(TutorialStep.Stage1_SelectPaladin);
+            }));
         }
 
         private void SetupStage1Battlefield()
@@ -234,17 +489,17 @@ namespace ElementalHexTactics3D.Tutorial
                         TierLevel = 1
                     };
 
-                    // Demon Lord Throne at (0, 2)
-                    if (q == 0 && r == 2)
+                    // Demon Lord Throne at (0, 1)
+                    if (q == 0 && r == 1)
                     {
                         spec.ElevationTier = 1;
                         spec.State = TileState.Barren;
                     }
-                    else if ((q == -1 && r == 2) || (q == 1 && r == 1) || (q == 0 && r == 1))
+                    else if ((q == -1 && r == 2) || (q == 1 && r == 1) || (q == 0 && r == 2))
                     {
                         spec.State = TileState.Scorched;
                     }
-                    else if ((q == -2 && r == 1) || (q == 1 && r == 0))
+                    else if ((q == -2 && r == 1) || (q == 2 && r == 0))
                     {
                         spec.ElevationTier = 2;
                         spec.IsPillarObstacle = true;
@@ -262,6 +517,8 @@ namespace ElementalHexTactics3D.Tutorial
         {
             Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Stage 1 Holy Crusade WON! Triggering Transmigration Glitch...");
             SoundManager3D.Instance?.PlayVictory();
+            ClearTutorialHighlightedTile();
+            CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
 
             if (StoryDialogueUI.Instance != null)
             {
@@ -295,6 +552,7 @@ namespace ElementalHexTactics3D.Tutorial
         public void StartStage2AbyssalAwakening()
         {
             CurrentStage = TutorialStage.Stage2_AbyssalAwakening;
+            CurrentStep = TutorialStep.Stage2_CastFireballOnGrass;
             Debug.Log("<color=#FF7043><b>[Tutorial Scenario]</b></color> Starting Stage 2: The Abyssal Awakening...");
 
             // 1. Enter in-game combat HUD view
@@ -326,7 +584,7 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Player,
                     dlSprite,
                     dlTile,
-                    16, 2,
+                    18, 2,
                     UnitArchetype.Commander,
                     ElementalAffinity.Fire,
                     3,
@@ -344,7 +602,7 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Player,
                     basaltSprite,
                     basaltTile,
-                    14, 2,
+                    16, 2,
                     UnitArchetype.Minion,
                     ElementalAffinity.Earth,
                     3,
@@ -407,13 +665,7 @@ namespace ElementalHexTactics3D.Tutorial
                 TacticalCameraController.Instance.ResetToTacticalView();
             }
 
-            // 9. Auto-select Demon Lord
-            if (DemonLordPlayer != null && HexGridInteraction3D.Instance != null)
-            {
-                HexGridInteraction3D.Instance.SelectUnit(DemonLordPlayer);
-            }
-
-            // 10. Display Mission Objective Banner
+            // 9. Display Mission Objective Banner
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
@@ -424,8 +676,11 @@ namespace ElementalHexTactics3D.Tutorial
                 );
             }
 
-            // 11. Trigger in-battle dialogue sequence
-            StartCoroutine(PlayDialogueDelayed(StorySequenceId.DemonAwakeningIntro, 0.8f));
+            // 10. Trigger in-battle dialogue sequence, then initialize step guidance
+            StartCoroutine(PlayDialogueDelayed(StorySequenceId.DemonAwakeningIntro, 0.8f, () =>
+            {
+                SetStep(TutorialStep.Stage2_CastFireballOnGrass);
+            }));
         }
 
         private void SetupStage2Battlefield()
@@ -489,6 +744,8 @@ namespace ElementalHexTactics3D.Tutorial
         {
             Debug.Log("<color=#4CAF50><b>[Tutorial Scenario]</b></color> Stage 2 Abyssal Awakening WON! Claiming 1st Primordial Titan Core...");
             SoundManager3D.Instance?.PlayVictory();
+            ClearTutorialHighlightedTile();
+            CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
 
             if (StoryDialogueUI.Instance != null)
             {
@@ -506,6 +763,7 @@ namespace ElementalHexTactics3D.Tutorial
         private void CompleteTutorialAndEnterCitadel()
         {
             CurrentStage = TutorialStage.None;
+            SetStep(TutorialStep.Completed);
 
             // 1. Save tutorial completion flags
             CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: true, starterTitan: true);
@@ -561,10 +819,10 @@ namespace ElementalHexTactics3D.Tutorial
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "⚠️ DEFEATED ⚠️",
-                    "Your vanguard fell! Re-deploying holy forces...",
+                    "⚠️ RETRYING TUTORIAL ⚠️",
+                    "Regrouping vanguard forces...",
                     2.0f,
-                    new Color(0.95f, 0.3f, 0.25f)
+                    new Color(0.95f, 0.5f, 0.25f)
                 );
             }
 
@@ -588,12 +846,16 @@ namespace ElementalHexTactics3D.Tutorial
 
         #region Helpers
 
-        private IEnumerator PlayDialogueDelayed(StorySequenceId sequenceId, float delay)
+        private IEnumerator PlayDialogueDelayed(StorySequenceId sequenceId, float delay, Action onFinish = null)
         {
             yield return new WaitForSeconds(delay);
             if (StoryDialogueUI.Instance != null)
             {
-                StoryDialogueUI.Instance.PlayPrebuiltSequence(sequenceId);
+                StoryDialogueUI.Instance.PlayPrebuiltSequence(sequenceId, onFinish);
+            }
+            else
+            {
+                onFinish?.Invoke();
             }
         }
 

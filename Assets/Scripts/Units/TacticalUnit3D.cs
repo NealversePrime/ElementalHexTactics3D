@@ -806,6 +806,22 @@ namespace ElementalHexTactics3D.Units
                 Debug.Log($"<color=#B0BEC5><b>[Vapor Shroud]</b></color> {unitName} mitigated 1 dmg in Steam mist!");
             }
 
+            // 3. Tutorial Fail-Safe: Player units literally CANNOT fall below 1 HP during tutorial!
+            if (faction == UnitFaction.Player && ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance != null && ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
+            {
+                if (currentHealth - amount < 1)
+                {
+                    amount = Mathf.Max(0, currentHealth - 1);
+                    if (CombatFeedbackManager.Instance != null)
+                    {
+                        string protMsg = ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance.IsStage1Active
+                            ? "🛡️ DIVINE BLESSING! (Protected)"
+                            : "🛡️ ABYSSAL WILL! (Protected)";
+                        CombatFeedbackManager.Instance.SpawnDamageText(transform.position, protMsg, new Color(1.0f, 0.9f, 0.25f), 1.6f);
+                    }
+                }
+            }
+
             currentHealth = Mathf.Max(0, currentHealth - amount);
             Debug.Log($"<color=#EF5350><b>[Damage]</b></color> {unitName} took {amount} dmg! HP: {currentHealth}/{maxHealth}");
             SoundManager3D.Instance?.PlayGetHit();
