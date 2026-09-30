@@ -460,7 +460,7 @@ namespace ElementalHexTactics3D.UI
             GUILayout.Space(6);
 
             GUILayout.Label("<color=#FFA726><b>3. Dynamic Terraforming (Divinity Style):</b></color>");
-            GUILayout.Label("• 🔥 <b>Fireball:</b> Burns grass into molten <b>Magma</b> (damages enemies, gives Fire Titan +2 ATK!).");
+            GUILayout.Label("• 🔥 <b>Fireball:</b> Chars grass into <b>Scorched Earth (Tier 1)</b>; a second Fireball melts it into molten <b>Magma (Tier 2)</b> (damages enemies, gives Fire Titan +2 ATK!).");
             GUILayout.Label("• 💧 <b>Water Blast:</b> Extinguishes flames into <b>Steam Smokescreens</b>; creates <b>Puddles/Lakes</b>.");
             GUILayout.Label("• 🪨 <b>Earth Spire:</b> Erupts massive <b>Stone Pillars</b> (creates physical barriers and collision walls).");
             GUILayout.Space(6);

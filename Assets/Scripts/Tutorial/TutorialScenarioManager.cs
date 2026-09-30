@@ -45,7 +45,8 @@ namespace ElementalHexTactics3D.Tutorial
 
         // ================= STAGE 2: FRONTIER HAZARDS (NO TITANS YET) ================= //
         Stage2_SelectDemonLord,
-        Stage2_CastFireballOnGrass,
+        Stage2_CastFireballScorched,
+        Stage2_CastFireballMagma,
         Stage2_SelectBasaltVanguard,
         Stage2_PushEnemyIntoHazard,
         Stage2_VanquishScouts,
@@ -66,6 +67,7 @@ namespace ElementalHexTactics3D.Tutorial
         Completed,
 
         // Compatibility Aliases
+        Stage2_CastFireballOnGrass = Stage2_CastFireballScorched,
         Hub_SelectTutorialMissionCard = Hub_SelectStage2MissionCard,
         Stage2_TearOpenRift = Stage3_TearOpenRift,
         Stage2_DeployDemonLord = Stage3_DeployDemonLord,
@@ -219,14 +221,28 @@ namespace ElementalHexTactics3D.Tutorial
                     case TutorialStep.Stage2_SelectDemonLord:
                         if (interaction != null && interaction.SelectedUnit == DemonLordPlayer)
                         {
-                            SetStep(TutorialStep.Stage2_CastFireballOnGrass);
+                            SetStep(TutorialStep.Stage2_CastFireballScorched);
                         }
                         break;
 
-                    case TutorialStep.Stage2_CastFireballOnGrass:
-                        HexGrid3D grid = HexGrid3D.Instance;
-                        HexTile3D centerTile = grid != null ? grid.GetTile(new HexCoordinates(0, 0)) : null;
-                        if ((centerTile != null && centerTile.State == TileState.Magma) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
+                    case TutorialStep.Stage2_CastFireballScorched:
+                        HexGrid3D gridS = HexGrid3D.Instance;
+                        HexTile3D centerTileS = gridS != null ? gridS.GetTile(new HexCoordinates(0, 0)) : null;
+                        if ((centerTileS != null && centerTileS.State == TileState.Scorched) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
+                        {
+                            // Reset actions so player can immediately demonstrate the 2nd Fireball tier upgrade to Magma
+                            if (DemonLordPlayer != null)
+                            {
+                                DemonLordPlayer.ResetTurnActions();
+                            }
+                            SetStep(TutorialStep.Stage2_CastFireballMagma);
+                        }
+                        break;
+
+                    case TutorialStep.Stage2_CastFireballMagma:
+                        HexGrid3D gridM = HexGrid3D.Instance;
+                        HexTile3D centerTileM = gridM != null ? gridM.GetTile(new HexCoordinates(0, 0)) : null;
+                        if ((centerTileM != null && centerTileM.State == TileState.Magma) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
                         {
                             SetStep(TutorialStep.Stage2_SelectBasaltVanguard);
                         }
@@ -404,23 +420,36 @@ namespace ElementalHexTactics3D.Tutorial
                     if (DemonLordPlayer != null) SetTutorialHighlightedTile(DemonLordPlayer.CurrentTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 1/4] SELECT DEMON LORD",
-                        "First, let's select my Demon Lord at (0, -1) to prepare an elemental spell...",
-                        "Click the Demon Lord at (0, -1)!",
+                        "[STAGE 2 - STEP 1/5] SELECT DEMON LORD",
+                        "First, let's select my Demon Lord to prepare an elemental spell...",
+                        "Click the Demon Lord at (1, -2)!",
                         new Color(0.95f, 0.45f, 0.35f)
                     );
                     break;
 
-                case TutorialStep.Stage2_CastFireballOnGrass:
+                case TutorialStep.Stage2_CastFireballScorched:
                     HexGrid3D gGrass = HexGrid3D.Instance;
                     HexTile3D grassTile = gGrass != null ? gGrass.GetTile(new HexCoordinates(0, 0)) : null;
                     SetTutorialHighlightedTile(grassTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 2/4] ELEMENTAL ALCHEMY: FIREBALL",
-                        "Look at that lush Grass tile at (0, 0). If I blast it with Fireball, the flora will ignite into scorching Magma!",
+                        "[STAGE 2 - STEP 2/5] TIER 1: CHAR GRASS TO SCORCHED",
+                        "Notice that lush Grass tile at (0, 0). Elemental transformations are tier-based! A first Fireball chars vegetation into Scorched Earth (Tier 1)...",
                         "Click [Fireball] on the action bar, then target the Grass tile at (0, 0)!",
                         new Color(1f, 0.55f, 0.15f)
+                    );
+                    break;
+
+                case TutorialStep.Stage2_CastFireballMagma:
+                    HexGrid3D gScorched = HexGrid3D.Instance;
+                    HexTile3D scorchedTile = gScorched != null ? gScorched.GetTile(new HexCoordinates(0, 0)) : null;
+                    SetTutorialHighlightedTile(scorchedTile);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
+                    banner?.ShowGuidance(
+                        "[STAGE 2 - STEP 3/5] TIER 2: INTENSIFY INTO MAGMA",
+                        "Scorched Earth forged! Now for the Tier 2 reaction: blasting scorched ground with a second Fireball superheats it into molten Magma (Tier 2)!",
+                        "Click [Fireball] again, then target the Scorched tile at (0, 0) to forge Magma!",
+                        new Color(1f, 0.35f, 0.10f)
                     );
                     break;
 
@@ -428,22 +457,22 @@ namespace ElementalHexTactics3D.Tutorial
                     if (BasaltVanguardPlayer != null) SetTutorialHighlightedTile(BasaltVanguardPlayer.CurrentTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 3/4] SELECT BASALT VANGUARD",
-                        "The grass ignited into Magma! Any unit standing on Magma takes Burn damage every turn. Now select Basalt Vanguard...",
-                        "Click Basalt Vanguard at (1, -1)!",
+                        "[STAGE 2 - STEP 4/5] SELECT BASALT VANGUARD",
+                        "Molten Magma (Tier 2) is active! Any unit pushed into Magma suffers 3 Burn damage. Time for Basalt Vanguard to strike!",
+                        "Click Basalt Vanguard at (0, -2)!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
                     break;
 
                 case TutorialStep.Stage2_PushEnemyIntoHazard:
                     HexGrid3D gShove = HexGrid3D.Instance;
-                    HexTile3D shielderTile = gShove != null ? gShove.GetTile(new HexCoordinates(0, 1)) : null;
+                    HexTile3D shielderTile = gShove != null ? gShove.GetTile(new HexCoordinates(0, -1)) : null;
                     SetTutorialHighlightedTile(shielderTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 4/4] KINETIC SHOVE: HAZARD SLAM",
-                        "Basalt Vanguard's Golem Slam pushes targets 1 hex. Shove that holy shielder into the burning Magma or Stone Pillar!",
-                        "Click [Push / Golem Slam], then shove the Holy Shielder into the Magma or Pillar!",
+                        "[STAGE 2 - STEP 5/5] KINETIC SHOVE: HAZARD SLAM",
+                        "Basalt Vanguard's Golem Slam displaces targets 1 hex. Shove that Scout Defender straight forward into the molten Magma!",
+                        "Click [Push / Golem Slam], then shove the Scout Defender at (0, -1)!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
                     break;
@@ -453,7 +482,7 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
                         "[COMBAT EXECUTION] CLEAR THE FRONTIER",
-                        "The enemy is scorched and stunned by the collision! Now finish off these scouts with basic attacks!",
+                        "The scout was shoved into the lava and took heavy burn damage! Now finish off the remaining scouts with basic attacks!",
                         "Attack and eliminate the remaining Holy Synod scouts!",
                         new Color(0.35f, 0.95f, 0.45f)
                     );
@@ -852,8 +881,8 @@ namespace ElementalHexTactics3D.Tutorial
             HexGrid3D grid = HexGrid3D.Instance;
             if (grid != null)
             {
-                // Spawn Demon Lord (Commander caster) at (0, -1)
-                HexTile3D dlTile = grid.GetTile(new HexCoordinates(0, -1));
+                // Spawn Demon Lord (Commander caster) at (1, -2)
+                HexTile3D dlTile = grid.GetTile(new HexCoordinates(1, -2));
                 Sprite dlSprite = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
                 DemonLordPlayer = TacticalUnitSpawner.SpawnUnitStandee(
                     "Demon Lord",
@@ -867,8 +896,8 @@ namespace ElementalHexTactics3D.Tutorial
                     0.85f
                 );
 
-                // Spawn Basalt Vanguard (Infantry Tank general) at (1, -1)
-                HexTile3D bvTile = grid.GetTile(new HexCoordinates(1, -1));
+                // Spawn Basalt Vanguard (Infantry Tank general) at (0, -2)
+                HexTile3D bvTile = grid.GetTile(new HexCoordinates(0, -2));
                 Sprite basaltSprite = TacticalUnitSpawner.LoadBattlerSprite("BasaltVanguard.png");
                 BasaltVanguardPlayer = TacticalUnitSpawner.SpawnUnitStandee(
                     "Basalt Vanguard",
@@ -882,8 +911,8 @@ namespace ElementalHexTactics3D.Tutorial
                     0.80f
                 );
 
-                // Spawn Radiant Synod Scouts
-                HexTile3D shielderTile = grid.GetTile(new HexCoordinates(0, 1));
+                // Spawn Radiant Synod Scouts: Defender at (0, -1) right in front of Basalt Vanguard and Magma pit!
+                HexTile3D shielderTile = grid.GetTile(new HexCoordinates(0, -1));
                 Sprite shielderSprite = TacticalUnitSpawner.LoadBattlerSprite("holyshielder.png");
                 TacticalUnitSpawner.SpawnUnitStandee(
                     "Scout Defender",
@@ -926,7 +955,7 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "🌲 STAGE 2: FRONTIER SKIRMISH 🌲",
-                    "Ignite Grass with Fireball & Shove enemies into hazards with Basalt Vanguard!",
+                    "Forge Magma (Tier 2) with 2 Fireballs & Shove enemies into hazards with Basalt Vanguard!",
                     3.5f,
                     new Color(0.95f, 0.55f, 0.15f)
                 );
@@ -968,8 +997,8 @@ namespace ElementalHexTactics3D.Tutorial
                         TierLevel = 1
                     };
 
-                    // Grass tiles in center: ignite with Fireball -> Magma!
-                    if ((q == 0 && r == 0) || (q == 1 && r == -1) || (q == -1 && r == 1))
+                    // Grass tile at (0, 0): ignite with Fireball 1 -> Scorched (Tier 1), Fireball 2 -> Magma (Tier 2)!
+                    if (q == 0 && r == 0)
                     {
                         spec.State = TileState.Grass;
                     }
@@ -978,15 +1007,15 @@ namespace ElementalHexTactics3D.Tutorial
                     {
                         spec.State = TileState.Water;
                     }
-                    // Stone pillars for wall slam collisions!
-                    else if ((q == 1 && r == 0) || (q == 0 && r == 2))
+                    // Stone pillars framing the hazard zone!
+                    else if ((q == 1 && r == 0) || (q == -1 && r == 1) || (q == 0 && r == 2))
                     {
                         spec.ElevationTier = 0;
                         spec.IsPillarObstacle = true;
                         spec.State = TileState.StonePillar;
                     }
                     // Scorched tiles
-                    else if (q == -1 && r == 2)
+                    else if ((q == 0 && r == 1) || (q == -1 && r == 2))
                     {
                         spec.State = TileState.Scorched;
                     }

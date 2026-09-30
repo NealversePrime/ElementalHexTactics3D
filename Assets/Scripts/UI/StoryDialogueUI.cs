@@ -659,12 +659,12 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "By weaponizing the battlefield itself. Notice the lush grass beneath their feet? A single Fireball will ignite the flora into scorching Magma. Any unit standing on Magma suffers Burn damage every round!",
+                        "By weaponizing the battlefield's elemental tiers! Notice that lush Grass tile? A first Fireball will char it into Scorched Earth (Tier 1). Then, a second Fireball on that scorched ground will superheat and melt it into molten Magma (Tier 2)!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "And once the terrain is ablaze, my kinetic shove can knock their warriors straight into the inferno or against those stone pillars for bonus collision damage!",
+                        "Tier 2 Magma! Any unit standing on molten Magma takes 3 Burn damage every turn! And once it's blazing, my Golem Slam can shove their warriors straight into the inferno!",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(

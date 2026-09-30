@@ -366,7 +366,9 @@ namespace ElementalHexTactics3D.InputHandling
             // so the player does not accidentally walk when trying to cast a skill!
             bool isTutorialSkillStep = Tutorial.TutorialScenarioManager.Instance != null && 
                 Tutorial.TutorialScenarioManager.Instance.IsTutorialActive && 
-                (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballOnGrass ||
+                (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballScorched ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballMagma ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballOnGrass ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_PushEnemyIntoHazard ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SiphonElementalCore ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_EarthGolemCataclysm ||
