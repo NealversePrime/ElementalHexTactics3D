@@ -110,8 +110,8 @@ namespace ElementalHexTactics3D.UI.Hub
                 {
                     MissionId = "TUTORIAL_STAGE2",
                     Archetype = MissionArchetype.VanguardSabotage,
-                    Title = "[STAGE 2] FRONTIER SKIRMISH: TIER HAZARDS",
-                    Description = "Confront the Radiant Synod scouts! Learn the 2-step elemental reaction: 1st Fireball chars Grass into Scorched Earth (Tier 1), 2nd Fireball melts it into Molten Magma (Tier 2)! Then shove enemies into the hazard!",
+                    Title = "[STAGE 2] FRONTIER SKIRMISH: HAZARD SLAM",
+                    Description = "Confront the Radiant Synod scouts! Exploit the pre-smoldering Scorched Earth with a Level 1 Fireball to trigger a thermal breach into Molten Magma (Tier 2)! Then use Basalt Vanguard's kinetic shove to knock enemies into the hazard!",
                     ThreatLevel = 1,
                     Biome = BiomeTheme.VerdantHighlands,
                     Modifier = StageModifier.None,

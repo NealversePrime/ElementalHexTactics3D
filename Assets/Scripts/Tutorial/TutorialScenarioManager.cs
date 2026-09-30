@@ -228,24 +228,14 @@ namespace ElementalHexTactics3D.Tutorial
                     case TutorialStep.Stage2_CastFireballScorched:
                         HexGrid3D gridS = HexGrid3D.Instance;
                         HexTile3D centerTileS = gridS != null ? gridS.GetTile(new HexCoordinates(0, 0)) : null;
-                        if ((centerTileS != null && centerTileS.State == TileState.Scorched) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
+                        if ((centerTileS != null && centerTileS.State == TileState.Magma) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
                         {
-                            // Reset actions so player can immediately demonstrate the 2nd Fireball tier upgrade to Magma
-                            if (DemonLordPlayer != null)
-                            {
-                                DemonLordPlayer.ResetTurnActions();
-                            }
-                            SetStep(TutorialStep.Stage2_CastFireballMagma);
+                            SetStep(TutorialStep.Stage2_SelectBasaltVanguard);
                         }
                         break;
 
                     case TutorialStep.Stage2_CastFireballMagma:
-                        HexGrid3D gridM = HexGrid3D.Instance;
-                        HexTile3D centerTileM = gridM != null ? gridM.GetTile(new HexCoordinates(0, 0)) : null;
-                        if ((centerTileM != null && centerTileM.State == TileState.Magma) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
-                        {
-                            SetStep(TutorialStep.Stage2_SelectBasaltVanguard);
-                        }
+                        SetStep(TutorialStep.Stage2_SelectBasaltVanguard);
                         break;
 
                     case TutorialStep.Stage2_SelectBasaltVanguard:
@@ -420,44 +410,35 @@ namespace ElementalHexTactics3D.Tutorial
                     if (DemonLordPlayer != null) SetTutorialHighlightedTile(DemonLordPlayer.CurrentTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 1/5] SELECT DEMON LORD",
-                        "First, let's select my Demon Lord to prepare an elemental spell...",
+                        "[STAGE 2 - STEP 1/4] SELECT DEMON LORD",
+                        "Even with Level 1 mana, my game knowledge is intact. Let's select my Demon Lord to cast Fireball...",
                         "Click the Demon Lord at (1, -2)!",
                         new Color(0.95f, 0.45f, 0.35f)
                     );
                     break;
 
                 case TutorialStep.Stage2_CastFireballScorched:
-                    HexGrid3D gGrass = HexGrid3D.Instance;
-                    HexTile3D grassTile = gGrass != null ? gGrass.GetTile(new HexCoordinates(0, 0)) : null;
-                    SetTutorialHighlightedTile(grassTile);
-                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
-                    banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 2/5] TIER 1: CHAR GRASS TO SCORCHED",
-                        "Notice that lush Grass tile at (0, 0). Elemental transformations are tier-based! A first Fireball chars vegetation into Scorched Earth (Tier 1)...",
-                        "Click [Fireball] on the action bar, then target the Grass tile at (0, 0)!",
-                        new Color(1f, 0.55f, 0.15f)
-                    );
-                    break;
-
-                case TutorialStep.Stage2_CastFireballMagma:
                     HexGrid3D gScorched = HexGrid3D.Instance;
                     HexTile3D scorchedTile = gScorched != null ? gScorched.GetTile(new HexCoordinates(0, 0)) : null;
                     SetTutorialHighlightedTile(scorchedTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 3/5] TIER 2: INTENSIFY INTO MAGMA",
-                        "Scorched Earth forged! Now for the Tier 2 reaction: blasting scorched ground with a second Fireball superheats it into molten Magma (Tier 2)!",
-                        "Click [Fireball] again, then target the Scorched tile at (0, 0) to forge Magma!",
-                        new Color(1f, 0.35f, 0.10f)
+                        "[STAGE 2 - STEP 2/4] IGNITE MAGMA FROM SCORCHED EARTH",
+                        "The center tile at (0, 0) is already smoldering Scorched Earth (Tier 1). Hitting it with Fireball triggers a thermal breach directly into Molten Magma (Tier 2)!",
+                        "Click [Fireball] on the action bar, then target the Scorched tile at (0, 0) to ignite Magma!",
+                        new Color(1f, 0.45f, 0.15f)
                     );
+                    break;
+
+                case TutorialStep.Stage2_CastFireballMagma:
+                    SetStep(TutorialStep.Stage2_SelectBasaltVanguard);
                     break;
 
                 case TutorialStep.Stage2_SelectBasaltVanguard:
                     if (BasaltVanguardPlayer != null) SetTutorialHighlightedTile(BasaltVanguardPlayer.CurrentTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 4/5] SELECT BASALT VANGUARD",
+                        "[STAGE 2 - STEP 3/4] SELECT BASALT VANGUARD",
                         "Molten Magma (Tier 2) is active! Any unit pushed into Magma suffers 3 Burn damage. Time for Basalt Vanguard to strike!",
                         "Click Basalt Vanguard at (0, -2)!",
                         new Color(0.85f, 0.65f, 0.35f)
@@ -470,9 +451,9 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(shielderTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 5/5] KINETIC SHOVE: HAZARD SLAM",
+                        "[STAGE 2 - STEP 4/4] KINETIC SHOVE: HAZARD SLAM",
                         "Basalt Vanguard's Golem Slam displaces targets 1 hex. Shove that Scout Defender straight forward into the molten Magma!",
-                        "Click [Push / Golem Slam], then shove the Scout Defender at (0, -1)!",
+                        "Click [Push / Golem Slam], then shove the Scout Defender at (0, -1) into the Magma pit!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
                     break;
@@ -955,7 +936,7 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "🌲 STAGE 2: FRONTIER SKIRMISH 🌲",
-                    "Forge Magma (Tier 2) with 2 Fireballs & Shove enemies into hazards with Basalt Vanguard!",
+                    "Ignite Magma (Tier 2) from pre-heated Scorched Earth & Shove enemies with Basalt Vanguard!",
                     3.5f,
                     new Color(0.95f, 0.55f, 0.15f)
                 );
@@ -997,10 +978,11 @@ namespace ElementalHexTactics3D.Tutorial
                         TierLevel = 1
                     };
 
-                    // Grass tile at (0, 0): ignite with Fireball 1 -> Scorched (Tier 1), Fireball 2 -> Magma (Tier 2)!
+                    // Smoldering Scorched Earth at (0, 0): hitting with Fireball triggers thermal breach directly into Molten Magma (Tier 2)!
                     if (q == 0 && r == 0)
                     {
-                        spec.State = TileState.Grass;
+                        spec.State = TileState.Scorched;
+                        spec.TierLevel = 1;
                     }
                     // Water tiles on left flank (slow or quench)
                     else if ((q == -1 && r == 0) || (q == -2 && r == 0))

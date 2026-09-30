@@ -625,6 +625,21 @@ namespace ElementalHexTactics3D.UI
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "Wait... Status Window! Open!\n[ SYSTEM STATUS: MALAKOR — LEVEL 1 ]\n[ HP: 18 / 18  |  MANA: 10 / 10  |  CORES: 0 ]\nWhat is this?! All my maxed endgame gear, god-tier attributes, and 9999 mana pool... stripped clean by The Architect?!",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.35f, 0.35f), true
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "Sire, during the cataclysm your abyssal core fractured! Your mana flow is reduced to fledgling sparks... Even manifesting a single basic Fireball will tax your current reserves.",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "(Level 1... A fractured core and pathetic F-rank mana. But wait. I was the server's #1 solo ranker. I memorized every damage formula, reaction rule, and terrain threshold in Omniterra. Even at Level 1, game knowledge beats raw brute force!)",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.4f, 0.85f, 1f)
+                    ));
+                    lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "Sire, an emergency! A scout company of the Radiant Synod of Aethelgard has breached our outer perimeter in the Ashen Verge! They are pillaging the frontier outpost!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
@@ -654,22 +669,22 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Their scouts carry blessed shields and longbows, Sire. How should we engage them without taking heavy casualties?",
+                        "Their scouts carry blessed shields and longbows, Sire. With your core fractured at Level 1, a basic Fireball on normal grass would only scorch it—it won't melt through their defenses!",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "By weaponizing the battlefield's elemental tiers! Notice that lush Grass tile? A first Fireball will char it into Scorched Earth (Tier 1). Then, a second Fireball on that scorched ground will superheat and melt it into molten Magma (Tier 2)!",
+                        "Look closer at the center hex at (0, 0), Vanguard. It's already smoldering Scorched Earth (Tier 1) from previous skirmishes! In Omniterra's elemental engine, when an already Scorched tile is hit with matching Fire magic, it triggers a thermal threshold breach—igniting directly into molten Magma (Tier 2) in a single cast!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Tier 2 Magma! Any unit standing on molten Magma takes 3 Burn damage every turn! And once it's blazing, my Golem Slam can shove their warriors straight into the inferno!",
+                        "A thermal chain reaction! Even with Level 1 mana, striking pre-heated ground forges Tier 2 Magma! Any unit standing on molten Magma suffers 3 Burn damage!",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Precisely. Let us show these crusaders what happens when the elements turn against them!",
+                        "And once that Magma pit is blazing, your Golem Slam can shove their Scout Defender straight into the inferno. Let's move!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
@@ -677,7 +692,7 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.Stage2Victory:
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "The scout unit has fallen! Your elemental command was magnificent, Lord Malakor!",
+                        "The scout unit has fallen! Your elemental command was magnificent, Lord Malakor! Even with a Level 1 core, you weaponized the terrain flawlessly!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
@@ -688,7 +703,7 @@ namespace ElementalHexTactics3D.UI
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "[Deep brass war horns echo in the distance] ...Sire! That horn! The main crusader vanguard of the Radiant Synod is approaching our Abyssal Gateway!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
