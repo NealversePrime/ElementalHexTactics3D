@@ -18,6 +18,7 @@ namespace ElementalHexTactics3D.Tutorial
     {
         None,
         Stage1_HolyCrusade,
+        Hub_CitadelAwakening,
         Stage2_AbyssalAwakening
     }
 
@@ -32,6 +33,11 @@ namespace ElementalHexTactics3D.Tutorial
         Stage1_EnemyTurnReaction,
         Stage1_FinishDemonLord,
 
+        // Hub Transition: Waking up in Citadel & Guided Rift Dispatch
+        Hub_CitadelAwakeningDialogue,
+        Hub_ClickAbyssalRift,
+        Hub_SelectTutorialMissionCard,
+
         // Stage 2: The Abyssal Awakening (Elemental Hex Tactics)
         Stage2_CastFireballOnGrass,
         Stage2_BasaltVanguardWallSlam,
@@ -44,6 +50,8 @@ namespace ElementalHexTactics3D.Tutorial
     /// Master controller for the narrative prologue and 2-stage scripted tutorial inversion:
     /// Stage 1: The Holy Crusade (Holyland Evolve) - Paladin & Holy Shielder vs Demon Lord boss.
     /// Features diegetic MC gamer inner monologue, dynamic tile highlights, and fail-safe plot armor.
+    /// Hub Transition: Demon Lord wakes up on Citadel throne, greeted by Basalt Vanguard reporting Holy Empire incursion,
+    /// guided to click the Abyssal Rift and select the highlighted tutorial expedition card.
     /// Stage 2: The Abyssal Awakening (Elemental Hex Tactics) - Demon Lord MC & Basalt Vanguard vs Holy Empire.
     /// Demonstrates Fireball grass ignition into Magma, Basalt Vanguard kinetic wall slams, and Citadel Hub unlock.
     /// </summary>
@@ -56,6 +64,7 @@ namespace ElementalHexTactics3D.Tutorial
 
         public bool IsTutorialActive => CurrentStage != TutorialStage.None;
         public bool IsStage1Active => CurrentStage == TutorialStage.Stage1_HolyCrusade;
+        public bool IsHubAwakeningActive => CurrentStage == TutorialStage.Hub_CitadelAwakening;
         public bool IsStage2Active => CurrentStage == TutorialStage.Stage2_AbyssalAwakening;
 
         // References to active tutorial units
@@ -295,6 +304,14 @@ namespace ElementalHexTactics3D.Tutorial
                     );
                     break;
 
+                case TutorialStep.Hub_CitadelAwakeningDialogue:
+                case TutorialStep.Hub_ClickAbyssalRift:
+                case TutorialStep.Hub_SelectTutorialMissionCard:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.HideGuidance();
+                    break;
+
                 case TutorialStep.Completed:
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
@@ -519,6 +536,7 @@ namespace ElementalHexTactics3D.Tutorial
             SoundManager3D.Instance?.PlayVictory();
             ClearTutorialHighlightedTile();
             CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+            TutorialGuidanceBannerUI.Instance?.HideGuidance();
 
             if (StoryDialogueUI.Instance != null)
             {
@@ -527,16 +545,67 @@ namespace ElementalHexTactics3D.Tutorial
                     // Transmigration Incident Complete!
                     CampaignSaveManager.SetTransmigrated(true);
                     CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: false);
+                    TitleMenuCanvasUI.Instance?.ApplyTitleThemeMode(TitleMenuCanvasUI.TitleThemeMode.DemonLordRebellion);
 
-                    // Transition to Stage 2: The Abyssal Awakening!
-                    StartStage2AbyssalAwakening();
+                    // Transition to Citadel Town Hub Awakening!
+                    StartHubCitadelAwakening();
                 });
             }
             else
             {
                 CampaignSaveManager.SetTransmigrated(true);
                 CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: false);
-                StartStage2AbyssalAwakening();
+                TitleMenuCanvasUI.Instance?.ApplyTitleThemeMode(TitleMenuCanvasUI.TitleThemeMode.DemonLordRebellion);
+                StartHubCitadelAwakening();
+            }
+        }
+
+        #endregion
+
+        #region Hub Transition: Citadel Awakening & Guided Rift Dispatch
+
+        /// <summary>
+        /// Transitions player into the Citadel Town Hub after the transmigration incident.
+        /// Demonstrates waking up as Demon Lord, meeting Basalt Vanguard, and guiding the player to the Abyssal Rift.
+        /// </summary>
+        public void StartHubCitadelAwakening()
+        {
+            CurrentStage = TutorialStage.Hub_CitadelAwakening;
+            CurrentStep = TutorialStep.Hub_CitadelAwakeningDialogue;
+            Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Waking up in Citadel Town Hub as Demon Lord...");
+
+            // 1. Purge Stage 1 combat units from 3D scene
+            PurgeAllBattlefieldUnits();
+
+            // 2. Hide combat guidance banner
+            TutorialGuidanceBannerUI.Instance?.HideGuidance();
+
+            // 3. Switch view to Town Hub
+            if (TitleMenuCanvasUI.Instance != null)
+            {
+                TitleMenuCanvasUI.Instance.ShowTownHub();
+            }
+
+            // 4. Play Hub Awakening Cutscene with Basalt Vanguard
+            StartCoroutine(PlayDialogueDelayed(StorySequenceId.HubAwakeningDemonLord, 0.6f, () =>
+            {
+                OnHubAwakeningDialogueFinished();
+            }));
+        }
+
+        private void OnHubAwakeningDialogueFinished()
+        {
+            SetStep(TutorialStep.Hub_ClickAbyssalRift);
+            Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Basalt Vanguard awakened Demon Lord! Guided to click Abyssal Rift...");
+
+            if (CombatFeedbackManager.Instance != null)
+            {
+                CombatFeedbackManager.Instance.ShowBanner(
+                    "🌀 PERTAHANKAN ABYSSAL GATE 🌀",
+                    "Pasukan Holy Empire mendesak di perbatasan! Klik [Abyssal Rift Portal] di tengah Citadel untuk memilih misi pertahanan!",
+                    4.5f,
+                    new Color(1f, 0.85f, 0.35f)
+                );
             }
         }
 

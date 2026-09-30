@@ -13,7 +13,8 @@ namespace ElementalHexTactics3D.UI
         RealWorldPrologue,      // MC at midnight desk playing Holyland Evolve
         HolyRaidIntro,          // Battle 1 Paladin taunting Demon Lord
         HolyRaidVictoryGlitch,  // Post-battle glitch & Developer/God transmigration
-        DemonAwakeningIntro,    // Battle 2 Demon Lord wakes up with Basalt Vanguard
+        HubAwakeningDemonLord,  // Waking up in Citadel Town Hub with Basalt Vanguard general
+        DemonAwakeningIntro,    // Battle 2 Demon Lord arriving at Abyssal Gate battlefield
         Tutorial2Victory        // Victory awarding 1st Primordial Titan Core
     }
 
@@ -591,30 +592,58 @@ namespace ElementalHexTactics3D.UI
                     ));
                     break;
 
+                case StorySequenceId.HubAwakeningDemonLord:
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "Ugh... kepalaku berat sekali... Di mana ini? Tanganku... cakar hitam berduri?! Dan jubah baja kegelapan ini...?!",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "Yang Mulia Demon Lord! Akhirnya Anda siuman! Syukurlah altar purba masih melindungi sukma Anda!",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "(Tunggu sebentar... Suara berat ini, tanduk obsidian, rantai perbudakan yang hancur... Basalt Vanguard?! Jangan-jangan aku benar-benar ditarik masuk ke dalam game?! Tubuh ini milik Demon Lord yang barusan kubantai di raid?!)",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "Gawat, Yang Mulia! Pasukan pelopor Kekaisaran Suci (Holy Empire) berhasil mendeteksi perbatasan santuari kita dan menyerbu lewat celah Abyssal Rift!",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "(Pasukan Holy Empire yang tadi kumainkan... sekarang menyerbu markas baruku?! Kalau benteng ini runtuh, aku akan mati sungguhan di dunia ini!)",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "Gerbang Abyssal Rift di tengah alun-alun Citadel sudah beresonansi, Yang Mulia! Mohon pimpin kami ke gerbang perbatasan sebelum mereka merangsek masuk ke dalam Citadel!",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "Tenang, Jenderal. Sebagai komandan yang hafal luar-dalam taktik pasukan suci itu... aku tahu persis kelemahan mereka. Ayo aktifkan Abyssal Rift! Kita sambut mereka di garis depan!",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    break;
+
                 case StorySequenceId.DemonAwakeningIntro:
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Ugh... kepalaku... Di mana ini? Tanganku... cakar hitam berduri?! Jubah kegelapan ini...?!",
+                        "Kita sudah tiba di ambang Abyssal Gate. Pasukan pelopor Holy Empire benar-benar sudah menerobos masuk!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Yang Mulia! Syukurlah Anda sadar! Gerbang luar kita jebol oleh gempuran Ksatria Suci!",
+                        "Tepat di hadapan kita, Yang Mulia! Mereka mendirikan formasi di depan petak rumput dan pilar batu!",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "(Tunggu sebentar... Aku bereinkarnasi jadi Demon Lord yang barusan kubunuh?! Dan benteng ini... sedang diserbu oleh pasukan suciku yang dulu?!)",
-                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
-                    ));
-                    lines.Add(new DialogueLine(
-                        "Basalt Vanguard",
-                        "Kami tidak akan membiarkan mereka menyentuh Yang Mulia! Perintahkan kami!",
-                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
-                    ));
-                    lines.Add(new DialogueLine(
-                        "MC / Demon Lord",
-                        "Tenang. Aku tahu persis formasi dan kelemahan mereka. Dan terrain ini... ada reaksi elemen yang bisa kita manfaatkan. Ayo kita serang!",
+                        "Formasi klasik Holy Empire... Barisan depan mereka kaku dan rentan terhadap perubahan terrain. Biar kutunjukkan sihir api [Fireball] ke petak rumput di tengah itu!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;

@@ -228,6 +228,24 @@ namespace ElementalHexTactics3D.Campaign
             SaveRawData(data);
         }
 
+        public static bool IsTutorialStage1Complete
+        {
+            get
+            {
+                var data = LoadSaveData();
+                return data != null && data.hasCompletedTutorialStage1;
+            }
+        }
+
+        public static bool IsTutorialStage2Complete
+        {
+            get
+            {
+                var data = LoadSaveData();
+                return data != null && data.hasCompletedTutorialStage2;
+            }
+        }
+
         /// <summary>
         /// Directly persists a CampaignSaveData object to disk.
         /// </summary>

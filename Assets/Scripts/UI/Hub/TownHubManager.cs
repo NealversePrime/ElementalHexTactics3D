@@ -365,6 +365,23 @@ namespace ElementalHexTactics3D.UI.Hub
         {
             HideTooltipImmediate();
 
+            // Tutorial Gating: During Hub Awakening, only Abyssal Portal is permitted!
+            if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive)
+            {
+                if (building.FacilityType == HubFacilityType.AbyssalPortal)
+                {
+                    Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_SelectTutorialMissionCard);
+                    EmbarkToExpedition();
+                    return;
+                }
+                else
+                {
+                    PlaySound(sfxCloseModal, 0.8f);
+                    ShowNoticeBanner("⚠️ PRIORITAS PERTAHANAN", "Pasukan Holy Empire mendesak di gerbang Abyssal Rift! Masuki portal terlebih dahulu!");
+                    return;
+                }
+            }
+
             switch (building.FacilityType)
             {
                 case HubFacilityType.DemonCastle:
@@ -586,7 +603,21 @@ namespace ElementalHexTactics3D.UI.Hub
                     EnsureHudBgTex();
                     DrawResetConfirmModal();
                 }
+
+                // Render Tutorial Objective Banner if in Hub Awakening tutorial
+                if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive)
+                {
+                    EnsureHudBgTex();
+                    DrawHubTutorialBanner();
+                }
                 return;
+            }
+
+            // Render Tutorial Objective Banner if in Hub Awakening tutorial
+            if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive)
+            {
+                EnsureHudBgTex();
+                DrawHubTutorialBanner();
             }
 
             EnsureHudBgTex();
@@ -731,6 +762,37 @@ namespace ElementalHexTactics3D.UI.Hub
             }
 
             GUI.backgroundColor = oldBg;
+        }
+
+        private void DrawHubTutorialBanner()
+        {
+            float bannerW = Mathf.Min(880f, Screen.width - 40f);
+            float bannerH = 50f;
+            float bannerX = (Screen.width - bannerW) * 0.5f;
+            float bannerY = 72f;
+
+            Rect bannerRect = new Rect(bannerX, bannerY, bannerW, bannerH);
+
+            float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 4f);
+            Color borderColor = Color.Lerp(new Color(1f, 0.8f, 0.2f, 1f), new Color(1f, 0.45f, 0.1f, 1f), pulse);
+
+            // Border & Background
+            GUI.color = borderColor;
+            GUI.DrawTexture(bannerRect, solidTex);
+            GUI.color = new Color(0.08f, 0.10f, 0.15f, 0.96f);
+            GUI.DrawTexture(new Rect(bannerRect.x + 2, bannerRect.y + 2, bannerRect.width - 4, bannerRect.height - 4), solidTex);
+            GUI.color = Color.white;
+
+            GUIStyle style = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize = 14,
+                fontStyle = FontStyle.Bold,
+                richText = true
+            };
+            style.normal.textColor = Color.white;
+
+            GUI.Label(bannerRect, "👉 <color=#FFD54F><b>[MISI PERTAHANAN]</b></color> Pasukan musuh mendesak! Klik portal <b><color=#4FC3F7>[Abyssal Rift]</color></b> di tengah Citadel!", style);
         }
 
         #endregion

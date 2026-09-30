@@ -33,6 +33,15 @@ namespace ElementalHexTactics3D.UI.Hub
             EnsureSolidTexture();
         }
 
+        public bool IsTutorialDispatchMode()
+        {
+            if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
+            {
+                return !CampaignSaveManager.IsTutorialStage2Complete;
+            }
+            return false;
+        }
+
         private void Start()
         {
             if (currentCards == null || currentCards.Count == 0)
@@ -46,10 +55,7 @@ namespace ElementalHexTactics3D.UI.Hub
             isOpen = true;
             selectedCardIndex = 0;
             hoveredCardIndex = -1;
-            if (currentCards == null || currentCards.Count == 0)
-            {
-                GenerateNewTrilemma();
-            }
+            GenerateNewTrilemma();
         }
 
         public void CloseModal()
@@ -59,8 +65,70 @@ namespace ElementalHexTactics3D.UI.Hub
 
         public void GenerateNewTrilemma()
         {
+            if (IsTutorialDispatchMode())
+            {
+                GenerateTutorialTrilemma();
+                return;
+            }
+
             int cycle = (CampaignManager.Instance != null) ? CampaignManager.Instance.CurrentDay : 1;
             currentCards = ExpeditionTrilemmaGenerator.GenerateTrilemma(cycle);
+            selectedCardIndex = 0;
+        }
+
+        private void GenerateTutorialTrilemma()
+        {
+            currentCards = new List<ExpeditionMissionData>();
+
+            // Card 1: Highlighted Tutorial Mission (Defend Abyssal Gate)
+            ExpeditionMissionData tutorialMission = new ExpeditionMissionData
+            {
+                Archetype = MissionArchetype.VanguardSabotage,
+                Title = "[TUTORIAL] PERTAHANKAN ABYSSAL GATE",
+                Description = "Hadang pasukan pelopor Holy Empire di ambang gerbang santuari! Kuasai sihir Fireball untuk membakar rumput jadi Magma, dan dorong prajurit suci menabrak Pilar Batu bersama Basalt Vanguard.",
+                ThreatLevel = 1,
+                Modifier = StageModifier.StoneFortress,
+                TargetTerrainTheme = "Abyssal Frontier (Grass & Stone Pillars)",
+                RewardMana = 100,
+                RewardEmbers = 60,
+                RewardOutcasts = 0,
+                GuaranteedTitanCore = true,
+                Seed = 2002
+            };
+
+            // Card 2: Locked
+            ExpeditionMissionData lockedMine = new ExpeditionMissionData
+            {
+                Archetype = MissionArchetype.ResourceScavenge,
+                Title = "🔒 TAMBANG KRISTAL MANA",
+                Description = "Rute dimensi belum stabil. Selesaikan misi pertahanan tutorial pada Kartu #1 untuk menstabilkan Abyssal Rift.",
+                ThreatLevel = 2,
+                Modifier = StageModifier.None,
+                TargetTerrainTheme = "Crystalline Caverns",
+                RewardMana = 120,
+                RewardEmbers = 30,
+                RewardOutcasts = 2,
+                Seed = 3001
+            };
+
+            // Card 3: Locked
+            ExpeditionMissionData lockedRescue = new ExpeditionMissionData
+            {
+                Archetype = MissionArchetype.RescueRecruit,
+                Title = "🔒 PENYELAMATAN TAWANAN",
+                Description = "Rute dimensi belum stabil. Selesaikan misi pertahanan tutorial pada Kartu #1 untuk menstabilkan Abyssal Rift.",
+                ThreatLevel = 2,
+                Modifier = StageModifier.None,
+                TargetTerrainTheme = "Outcast Slave Pens",
+                RewardMana = 50,
+                RewardEmbers = 50,
+                RewardOutcasts = 5,
+                Seed = 3002
+            };
+
+            currentCards.Add(tutorialMission);
+            currentCards.Add(lockedMine);
+            currentCards.Add(lockedRescue);
             selectedCardIndex = 0;
         }
 
@@ -81,15 +149,36 @@ namespace ElementalHexTactics3D.UI.Hub
             }
             else if (kb.digit2Key.wasPressedThisFrame || kb.numpad2Key.wasPressedThisFrame)
             {
-                selectedCardIndex = 1;
+                if (IsTutorialDispatchMode())
+                {
+                    ShowLockedFeedback();
+                }
+                else
+                {
+                    selectedCardIndex = 1;
+                }
             }
             else if (kb.digit3Key.wasPressedThisFrame || kb.numpad3Key.wasPressedThisFrame)
             {
-                selectedCardIndex = 2;
+                if (IsTutorialDispatchMode())
+                {
+                    ShowLockedFeedback();
+                }
+                else
+                {
+                    selectedCardIndex = 2;
+                }
             }
             else if (kb.rKey.wasPressedThisFrame)
             {
-                GenerateNewTrilemma();
+                if (!IsTutorialDispatchMode())
+                {
+                    GenerateNewTrilemma();
+                }
+                else
+                {
+                    ShowLockedFeedback("🔒 Reroll terkunci selama misi tutorial!");
+                }
             }
             else if (kb.spaceKey.wasPressedThisFrame || kb.enterKey.wasPressedThisFrame)
             {
@@ -100,9 +189,34 @@ namespace ElementalHexTactics3D.UI.Hub
             }
         }
 
+        private void ShowLockedFeedback(string msg = null)
+        {
+            Combat.SoundManager3D.Instance?.PlayButtonClick();
+            if (Combat.CombatFeedbackManager.Instance != null)
+            {
+                Combat.CombatFeedbackManager.Instance.ShowBanner(
+                    "🔒 RUTE TERKUNCI",
+                    msg ?? "Selesaikan misi pertahanan tutorial pada Kartu #1 terlebih dahulu!",
+                    1.8f,
+                    new Color(0.95f, 0.45f, 0.35f)
+                );
+            }
+        }
+
         private void EmbarkSelectedCard(ExpeditionMissionData card)
         {
             if (card == null) return;
+
+            // Tutorial check: if in tutorial, always embark Card 0 which starts Stage 2!
+            if (IsTutorialDispatchMode())
+            {
+                CloseModal();
+                if (Tutorial.TutorialScenarioManager.Instance != null)
+                {
+                    Tutorial.TutorialScenarioManager.Instance.StartStage2AbyssalAwakening();
+                }
+                return;
+            }
 
             CloseModal();
 
@@ -223,15 +337,32 @@ namespace ElementalHexTactics3D.UI.Hub
             // 5. Footer Bar (Reroll Button & Hotkey hints)
             float footerY = winY + winH - 65f;
             Rect rerollRect = new Rect(winX + 40f, footerY, 260f, 45f);
-            if (DrawButton(rerollRect, "🎲 <b>Reroll Incursions [R]</b>", new Color(0.18f, 0.22f, 0.32f, 1f), new Color(0.35f, 0.45f, 0.65f, 1f), false))
+            if (IsTutorialDispatchMode())
             {
-                GenerateNewTrilemma();
+                if (DrawButton(rerollRect, "🔒 <b>Reroll Terkunci</b>", new Color(0.12f, 0.14f, 0.18f, 0.8f), new Color(0.25f, 0.30f, 0.38f, 0.5f), false))
+                {
+                    ShowLockedFeedback("🔒 Fitur reroll terkunci selama misi tutorial!");
+                }
+            }
+            else
+            {
+                if (DrawButton(rerollRect, "🎲 <b>Reroll Incursions [R]</b>", new Color(0.18f, 0.22f, 0.32f, 1f), new Color(0.35f, 0.45f, 0.65f, 1f), false))
+                {
+                    GenerateNewTrilemma();
+                }
             }
 
             Rect legendRect = new Rect(winX + 320f, footerY + 12f, winW - 360f, 40f);
             GUIStyle legStyle = new GUIStyle(GUI.skin.label) { fontSize = 12, richText = true };
             legStyle.normal.textColor = new Color(0.6f, 0.65f, 0.72f);
-            GUI.Label(legendRect, "<b>[1, 2, 3]</b> Select Incursion  |  <b>[Space / Enter]</b> Embark  |  <b>[R]</b> Reroll Cards  |  <b>[Esc]</b> Close", legStyle);
+            if (IsTutorialDispatchMode())
+            {
+                GUI.Label(legendRect, "👉 <b>[1 / Klik Kartu 1]</b> Misi Pertahanan Tutorial  |  <b>[Space / Enter]</b> Berangkat Mempertahankan Gerbang", legStyle);
+            }
+            else
+            {
+                GUI.Label(legendRect, "<b>[1, 2, 3]</b> Select Incursion  |  <b>[Space / Enter]</b> Embark  |  <b>[R]</b> Reroll Cards  |  <b>[Esc]</b> Close", legStyle);
+            }
 
             // Consume mouse event so it doesn't click through to town buildings
             if (e.isMouse && modalWindowRect.Contains(mousePos))
@@ -242,16 +373,42 @@ namespace ElementalHexTactics3D.UI.Hub
 
         private void DrawExpeditionCard(Rect rect, ExpeditionMissionData card, int index, bool isSelected, bool isHovered)
         {
+            bool isTutorial = IsTutorialDispatchMode();
+            bool isLocked = isTutorial && (index != 0);
+
             // Hover / Selection Visual Styling
-            Color cardBg = isSelected
-                ? new Color(0.13f, 0.16f, 0.24f, 0.98f)
-                : (isHovered ? new Color(0.11f, 0.13f, 0.19f, 0.98f) : new Color(0.09f, 0.10f, 0.15f, 0.95f));
+            Color cardBg;
+            Color cardBorder;
+            int borderThickness;
 
-            Color cardBorder = isSelected
-                ? new Color(1.0f, 0.82f, 0.25f, 1f) // Golden halo for selected card
-                : (isHovered ? new Color(0.35f, 0.75f, 1.0f, 0.9f) : new Color(0.22f, 0.28f, 0.38f, 0.75f));
+            if (isLocked)
+            {
+                cardBg = new Color(0.06f, 0.08f, 0.11f, 0.85f);
+                cardBorder = new Color(0.25f, 0.28f, 0.35f, 0.6f);
+                borderThickness = 1;
+            }
+            else if (isTutorial && index == 0)
+            {
+                // Pulsing golden spotlight for tutorial card
+                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 4.5f);
+                cardBg = new Color(0.14f, 0.16f, 0.25f, 0.98f);
+                cardBorder = Color.Lerp(new Color(1f, 0.72f, 0.15f, 1f), new Color(1f, 0.95f, 0.50f, 1f), pulse);
+                borderThickness = 3;
+                isSelected = true;
+            }
+            else
+            {
+                cardBg = isSelected
+                    ? new Color(0.13f, 0.16f, 0.24f, 0.98f)
+                    : (isHovered ? new Color(0.11f, 0.13f, 0.19f, 0.98f) : new Color(0.09f, 0.10f, 0.15f, 0.95f));
 
-            int borderThickness = isSelected ? 3 : (isHovered ? 2 : 1);
+                cardBorder = isSelected
+                    ? new Color(1.0f, 0.82f, 0.25f, 1f) // Golden halo for selected card
+                    : (isHovered ? new Color(0.35f, 0.75f, 1.0f, 0.9f) : new Color(0.22f, 0.28f, 0.38f, 0.75f));
+
+                borderThickness = isSelected ? 3 : (isHovered ? 2 : 1);
+            }
+
             DrawSolidPanel(rect, cardBg, cardBorder, borderThickness);
 
             float pad = 18f;
@@ -260,7 +417,7 @@ namespace ElementalHexTactics3D.UI.Hub
 
             // 1. Archetype Banner
             Rect archRect = new Rect(rect.x + pad, curY, contentW, 26f);
-            Color archColor = GetArchetypeColor(card.Archetype);
+            Color archColor = isLocked ? new Color(0.5f, 0.55f, 0.65f) : (isTutorial && index == 0 ? new Color(1f, 0.85f, 0.25f) : GetArchetypeColor(card.Archetype));
             DrawSolidPanel(archRect, archColor * 0.25f, archColor, 1);
 
             GUIStyle archStyle = new GUIStyle(GUI.skin.label)
@@ -271,7 +428,8 @@ namespace ElementalHexTactics3D.UI.Hub
                 richText = true
             };
             archStyle.normal.textColor = archColor;
-            GUI.Label(archRect, card.GetArchetypeName().ToUpper(), archStyle);
+            string bannerText = isLocked ? "🔒 RUTE TERKUNCI" : (isTutorial && index == 0 ? "★ REKOMENDASI TUTORIAL ★" : card.GetArchetypeName().ToUpper());
+            GUI.Label(archRect, bannerText, archStyle);
             curY += 34f;
 
             // 2. Title
@@ -283,7 +441,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 wordWrap = true,
                 richText = true
             };
-            titleStyle.normal.textColor = Color.white;
+            titleStyle.normal.textColor = isLocked ? new Color(0.6f, 0.65f, 0.7f) : Color.white;
             float titleH = 46f;
             GUI.Label(new Rect(rect.x + pad, curY, contentW, titleH), card.Title, titleStyle);
             curY += titleH + 6f;
@@ -291,16 +449,19 @@ namespace ElementalHexTactics3D.UI.Hub
             // 3. Threat Stars & Danger Level
             GUIStyle starStyle = new GUIStyle(GUI.skin.label) { fontSize = 15, richText = true };
             string threatColor = (card.ThreatLevel >= 4) ? "#FF5252" : (card.ThreatLevel >= 3 ? "#FFA726" : "#81C784");
-            string threatStr = $"<b>Danger:</b> <color={threatColor}>{card.GetThreatStars()}</color> <size=11>(Lvl {card.ThreatLevel})</size>";
+            string threatStr = isLocked
+                ? "<color=#888888><b>Status:</b> Terkunci</color>"
+                : $"<b>Danger:</b> <color={threatColor}>{card.GetThreatStars()}</color> <size=11>(Lvl {card.ThreatLevel})</size>";
             GUI.Label(new Rect(rect.x + pad, curY, contentW, 24f), threatStr, starStyle);
             curY += 28f;
 
             // 4. Environmental Affix Tag
             Rect affixRect = new Rect(rect.x + pad, curY, contentW, 46f);
-            Color affixBorder = (card.Modifier == StageModifier.VolcanicSurge) ? new Color(1f, 0.35f, 0.1f) :
-                                (card.Modifier == StageModifier.HeavyDeluge) ? new Color(0.2f, 0.7f, 1f) :
-                                (card.Modifier == StageModifier.StoneFortress) ? new Color(0.7f, 0.6f, 0.5f) :
-                                new Color(0.3f, 0.4f, 0.5f);
+            Color affixBorder = isLocked ? new Color(0.25f, 0.3f, 0.35f) :
+                                (card.Modifier == StageModifier.VolcanicSurge ? new Color(1f, 0.35f, 0.1f) :
+                                (card.Modifier == StageModifier.HeavyDeluge ? new Color(0.2f, 0.7f, 1f) :
+                                (card.Modifier == StageModifier.StoneFortress ? new Color(0.7f, 0.6f, 0.5f) :
+                                new Color(0.3f, 0.4f, 0.5f))));
             DrawSolidPanel(affixRect, new Color(0.06f, 0.08f, 0.11f, 0.9f), affixBorder, 1);
 
             GUIStyle affixStyle = new GUIStyle(GUI.skin.label)
@@ -310,8 +471,8 @@ namespace ElementalHexTactics3D.UI.Hub
                 wordWrap = true,
                 richText = true
             };
-            affixStyle.normal.textColor = Color.white;
-            GUI.Label(new Rect(affixRect.x + 8f, affixRect.y + 4f, affixRect.width - 16f, affixRect.height - 8f), card.GetModifierTag(), affixStyle);
+            affixStyle.normal.textColor = isLocked ? new Color(0.6f, 0.65f, 0.7f) : Color.white;
+            GUI.Label(new Rect(affixRect.x + 8f, affixRect.y + 4f, affixRect.width - 16f, affixRect.height - 8f), isLocked ? "🔒 Celah dimensi belum distabilkan" : card.GetModifierTag(), affixStyle);
             curY += 54f;
 
             // 5. Mission Narrative Brief
@@ -321,7 +482,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 wordWrap = true,
                 richText = true
             };
-            descStyle.normal.textColor = new Color(0.78f, 0.84f, 0.92f);
+            descStyle.normal.textColor = isLocked ? new Color(0.55f, 0.6f, 0.65f) : new Color(0.78f, 0.84f, 0.92f);
             float descH = 68f;
             GUI.Label(new Rect(rect.x + pad, curY, contentW, descH), card.Description, descStyle);
             curY += descH + 8f;
@@ -331,33 +492,72 @@ namespace ElementalHexTactics3D.UI.Hub
             DrawSolidPanel(rewBox, new Color(0.05f, 0.07f, 0.10f, 0.95f), new Color(0.25f, 0.35f, 0.45f, 0.6f), 1);
 
             GUIStyle rewHeader = new GUIStyle(GUI.skin.label) { fontSize = 11, fontStyle = FontStyle.Bold, richText = true };
-            rewHeader.normal.textColor = new Color(1f, 0.85f, 0.35f);
+            rewHeader.normal.textColor = isLocked ? new Color(0.6f, 0.65f, 0.7f) : new Color(1f, 0.85f, 0.35f);
             GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 6f, rewBox.width - 20f, 18f), "✦ EXPECTED SPOILS ✦", rewHeader);
 
             GUIStyle rewBody = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true, richText = true };
-            GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 26f, rewBox.width - 20f, 40f), card.GetRewardsSummary(), rewBody);
+            rewBody.normal.textColor = isLocked ? new Color(0.55f, 0.6f, 0.65f) : Color.white;
+            GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 26f, rewBox.width - 20f, 40f), isLocked ? "🔒 Selesaikan misi tutorial untuk membuka ekspedisi ini." : card.GetRewardsSummary(), rewBody);
             curY += 82f;
+
+            // Lock Overlay for Card 2 & 3
+            if (isLocked)
+            {
+                float overlayY = rect.y + 36f;
+                float overlayH = (rect.height - 110f);
+                Rect lockOverlayRect = new Rect(rect.x + 6f, overlayY, rect.width - 12f, overlayH);
+                GUI.color = new Color(0.03f, 0.04f, 0.06f, 0.65f);
+                GUI.DrawTexture(lockOverlayRect, solidTex);
+                GUI.color = Color.white;
+
+                GUIStyle lockPromptStyle = new GUIStyle(GUI.skin.label)
+                {
+                    alignment = TextAnchor.MiddleCenter,
+                    fontSize = 13,
+                    fontStyle = FontStyle.Bold,
+                    richText = true
+                };
+                lockPromptStyle.normal.textColor = new Color(1f, 0.85f, 0.4f);
+                GUI.Label(lockOverlayRect, "🔒\n<b>RUTE TERKUNCI</b>\n<size=11><color=#cccccc>Pilih Kartu #1 untuk tutorial</color></size>", lockPromptStyle);
+            }
 
             // 7. Embark Action Button
             float btnH = 54f;
             float btnY = rect.y + rect.height - btnH - pad;
             Rect embarkBtnRect = new Rect(rect.x + pad, btnY, contentW, btnH);
 
-            Color btnCol = isSelected ? new Color(0.95f, 0.65f, 0.15f, 1f) : new Color(0.22f, 0.28f, 0.38f, 1f);
-            Color btnBord = isSelected ? new Color(1f, 0.90f, 0.40f, 1f) : new Color(0.40f, 0.50f, 0.65f, 1f);
-            string btnLabel = isSelected
-                ? $"<b>🔥 EMBARK INCURSION [{index + 1}]</b>"
-                : $"<b>Select Incursion [{index + 1}]</b>";
-
-            if (DrawButton(embarkBtnRect, btnLabel, btnCol, btnBord, isSelected))
+            if (isLocked)
             {
-                if (isSelected)
+                Color btnCol = new Color(0.14f, 0.16f, 0.20f, 0.85f);
+                Color btnBord = new Color(0.28f, 0.32f, 0.40f, 0.6f);
+                string btnLabel = "<b>🔒 TERKUNCI</b>";
+                if (DrawButton(embarkBtnRect, btnLabel, btnCol, btnBord, false))
                 {
-                    EmbarkSelectedCard(card);
+                    ShowLockedFeedback();
                 }
-                else
+            }
+            else
+            {
+                Color btnCol = (isTutorial && index == 0)
+                    ? new Color(0.95f, 0.60f, 0.15f, 1f)
+                    : (isSelected ? new Color(0.95f, 0.65f, 0.15f, 1f) : new Color(0.22f, 0.28f, 0.38f, 1f));
+                Color btnBord = (isTutorial && index == 0)
+                    ? new Color(1f, 0.90f, 0.40f, 1f)
+                    : (isSelected ? new Color(1f, 0.90f, 0.40f, 1f) : new Color(0.40f, 0.50f, 0.65f, 1f));
+                string btnLabel = (isTutorial && index == 0)
+                    ? "<b>🔥 BERANGKAT MEMPERTAHANKAN GERBANG [1]</b>"
+                    : (isSelected ? $"<b>🔥 EMBARK INCURSION [{index + 1}]</b>" : $"<b>Select Incursion [{index + 1}]</b>");
+
+                if (DrawButton(embarkBtnRect, btnLabel, btnCol, btnBord, isSelected))
                 {
-                    selectedCardIndex = index;
+                    if (isSelected)
+                    {
+                        EmbarkSelectedCard(card);
+                    }
+                    else
+                    {
+                        selectedCardIndex = index;
+                    }
                 }
             }
         }
