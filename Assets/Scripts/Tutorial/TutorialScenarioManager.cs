@@ -614,12 +614,6 @@ namespace ElementalHexTactics3D.Tutorial
                     {
                         spec.State = TileState.Scorched;
                     }
-                    else if ((q == -2 && r == 1) || (q == 2 && r == 0))
-                    {
-                        spec.ElevationTier = 2;
-                        spec.IsPillarObstacle = true;
-                        spec.State = TileState.StonePillar;
-                    }
 
                     data.Tiles[coord] = spec;
                 }
@@ -890,7 +884,7 @@ namespace ElementalHexTactics3D.Tutorial
                     // Stone pillars for wall slam collisions!
                     else if ((q == 1 && r == 0) || (q == -1 && r == 1))
                     {
-                        spec.ElevationTier = 2;
+                        spec.ElevationTier = 0;
                         spec.IsPillarObstacle = true;
                         spec.State = TileState.StonePillar;
                     }

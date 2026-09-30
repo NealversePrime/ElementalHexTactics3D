@@ -218,12 +218,14 @@ namespace ElementalHexTactics3D.Grid
                     if (elev == 2 && rng.NextDouble() < 0.25)
                     {
                         tile.State = TileState.StonePillar;
+                        tile.ElevationTier = 0;
                         tile.TierLevel = 1;
                         tile.IsPillarObstacle = true;
                     }
                     else if (elev == 1 && rng.NextDouble() < 0.12 && coord.R >= 0)
                     {
                         tile.State = TileState.StonePillar;
+                        tile.ElevationTier = 0;
                         tile.TierLevel = 1;
                         tile.IsPillarObstacle = true;
                     }
@@ -255,6 +257,7 @@ namespace ElementalHexTactics3D.Grid
                     if (elev == 2 && rng.NextDouble() < 0.15)
                     {
                         tile.State = TileState.StonePillar;
+                        tile.ElevationTier = 0;
                         tile.TierLevel = 1;
                         tile.IsPillarObstacle = true;
                     }

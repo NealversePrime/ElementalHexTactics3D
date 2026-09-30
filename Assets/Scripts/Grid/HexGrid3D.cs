@@ -53,6 +53,12 @@ namespace ElementalHexTactics3D.Grid
                 return;
             }
 
+            // Ensure pillar depth is sufficiently deep so elevated tiles never show hollow floating gaps
+            if (pillarDepth < 2.0f)
+            {
+                pillarDepth = 2.4f;
+            }
+
             RegisterExistingTiles();
         }
 
