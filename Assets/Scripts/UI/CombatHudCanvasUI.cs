@@ -906,7 +906,7 @@ namespace ElementalHexTactics3D.UI
                     else if (currentMode == UnitActionMode.DeployCommander)
                         txtDeployCommander.text = "<b>[Deploying...]</b>\n<size=11>(Click Hex)</size>";
                     else
-                        txtDeployCommander.text = isTut ? "👤 Deploy Demon Lord\n<size=11>(Komandan / Free)</size>" : "👤 Deploy Commander\n<size=11>(Free Vanguard)</size>";
+                        txtDeployCommander.text = isTut ? "👤 Deploy Demon Lord\n<size=11>(Commander / Free)</size>" : "👤 Deploy Commander\n<size=11>(Free Vanguard)</size>";
                 }
             }
 
@@ -918,13 +918,13 @@ namespace ElementalHexTactics3D.UI
                     if (!titanInReserve)
                         txtSummonTitanRift.text = isTut ? "🌋 Earth Golem\n<size=11>(On Field)</size>" : "🌋 Pick Titan\n<size=11>(On Field)</size>";
                     else if (noActiveUnits)
-                        txtSummonTitanRift.text = (currentMode == UnitActionMode.SummonTitan) ? "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>" : (isTut ? "🌋 Panggil Earth Golem\n<size=11>(Free Titan)</size>" : "🌋 Deploy Titan\n<size=11>(Free Titan)</size>");
+                        txtSummonTitanRift.text = (currentMode == UnitActionMode.SummonTitan) ? "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>" : (isTut ? "🌋 Summon Earth Golem\n<size=11>(Free Titan)</size>" : "🌋 Deploy Titan\n<size=11>(Free Titan)</size>");
                     else if (cmdr != null && cmdr.ElementalCores < 1)
-                        txtSummonTitanRift.text = isTut ? "🌋 Panggil Earth Golem\n<size=11>(Req 1 Core)</size>" : "🌋 Summon Titan\n<size=11>(Req 1 Core)</size>";
+                        txtSummonTitanRift.text = isTut ? "🌋 Summon Earth Golem\n<size=11>(Req 1 Core)</size>" : "🌋 Summon Titan\n<size=11>(Req 1 Core)</size>";
                     else if (currentMode == UnitActionMode.SummonTitan)
                         txtSummonTitanRift.text = "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>";
                     else
-                        txtSummonTitanRift.text = isTut ? "🌋 Panggil Earth Golem\n<size=11>(1 Core Titan)</size>" : "🌋 Summon Titan\n<size=11>(1 Core)</size>";
+                        txtSummonTitanRift.text = isTut ? "🌋 Summon Earth Golem\n<size=11>(1 Core Titan)</size>" : "🌋 Summon Titan\n<size=11>(1 Core)</size>";
                 }
             }
         }
@@ -1068,18 +1068,39 @@ namespace ElementalHexTactics3D.UI
             else if (activeTutorialButtonKey == "Strike") targetBtn = btnTitanStrike;
             else if (activeTutorialButtonKey == "Fireball") targetBtn = btnFireball;
             else if (activeTutorialButtonKey == "Push") targetBtn = btnPush;
+            else if (activeTutorialButtonKey == "HarvestCore" || activeTutorialButtonKey == "Siphon") targetBtn = btnHarvestCore;
+            else if (activeTutorialButtonKey == "Cataclysm") targetBtn = btnMagmaCataclysm;
             else if (activeTutorialButtonKey == "EndTurn") targetBtn = btnEndTurn;
             else if (activeTutorialButtonKey == "TearRift") targetBtn = btnTearRift;
             else if (activeTutorialButtonKey == "DeployCommander") targetBtn = btnDeployCommander;
-            else if (activeTutorialButtonKey == "DeployTitan") targetBtn = (btnSummonTitanAbility != null && btnSummonTitanAbility.gameObject.activeInHierarchy) ? btnSummonTitanAbility : btnSummonTitanRift;
+            else if (activeTutorialButtonKey == "DeployTitan" || activeTutorialButtonKey == "SummonTitan") targetBtn = (btnSummonTitanAbility != null && btnSummonTitanAbility.gameObject.activeInHierarchy) ? btnSummonTitanAbility : btnSummonTitanRift;
 
-            if (targetBtn != null && targetBtn.gameObject.activeInHierarchy)
+            // Strict TRPG Training Wheels:
+            // Lock and dim all action buttons other than the target button!
+            Button[] allActionButtons = new Button[]
             {
-                float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
-                Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
-                var colors = targetBtn.colors;
-                colors.normalColor = goldPulse;
-                targetBtn.colors = colors;
+                btnMove, btnTitanStrike, btnFireball, btnWaterSurge, btnEarthPillar,
+                btnPush, btnHarvestCore, btnMagmaCataclysm, btnSummonTitanAbility,
+                btnRecall, btnEndTurn, btnTearRift, btnRandomizeMap,
+                btnDeployCommander, btnSummonTitanRift
+            };
+
+            foreach (var btn in allActionButtons)
+            {
+                if (btn == null) continue;
+                if (btn == targetBtn)
+                {
+                    btn.interactable = true;
+                    float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
+                    Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
+                    var colors = btn.colors;
+                    colors.normalColor = goldPulse;
+                    btn.colors = colors;
+                }
+                else
+                {
+                    btn.interactable = false;
+                }
             }
         }
 

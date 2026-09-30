@@ -10,12 +10,19 @@ namespace ElementalHexTactics3D.UI
 {
     public enum StorySequenceId
     {
-        RealWorldPrologue,      // MC at midnight desk playing Holyland Evolve
+        RealWorldPrologue,      // MC at midnight desk playing Omniterra
         HolyRaidIntro,          // Battle 1 Paladin taunting Demon Lord
         HolyRaidVictoryGlitch,  // Post-battle glitch & Developer/God transmigration
         HubAwakeningDemonLord,  // Waking up in Citadel Town Hub with Basalt Vanguard general
-        DemonAwakeningIntro,    // Battle 2 Demon Lord arriving at Abyssal Gate battlefield
-        Tutorial2Victory        // Victory awarding 1st Primordial Titan Core
+        Stage2FrontierIntro,    // Battle 2 Demon Lord & Basalt Vanguard teaching terrain alchemy & hazards
+        Stage2Victory,          // Victory against scouts, war horn echoes
+        HubTitanCrisisDialogue, // Hub dialogue explaining the Heavy Crusade and Titan summoning
+        Stage3TitanIntro,       // Battle 3 opening the Abyssal Rift and summoning Earth Golem
+        Stage3Victory,          // Stage 3 victory claiming 1st Primordial Titan Core
+
+        // Compatibility aliases
+        DemonAwakeningIntro = Stage2FrontierIntro,
+        Tutorial2Victory = Stage3Victory
     }
 
     [Serializable]
@@ -525,22 +532,22 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.RealWorldPrologue:
                     lines.Add(new DialogueLine(
                         "MC (Gamer / Salaryman)",
-                        "Jam 23:45... Akhirnya kelar juga lembur kantor yang gila-gilaan hari ini.",
+                        "23:45... Finally punched out after another brutal day of unpaid overtime.",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC (Gamer / Salaryman)",
-                        "Tinggal raid boss terakhir di game 'Holyland Evolve' ini sebelum tidur. Sebagai solo ranker, malam ini Demon Lord terakhir harus rata!",
+                        "Just one last raid boss in Omniterra before I crash. As the server's #1 solo ranker, that Demon Lord falls tonight.",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
                     lines.Add(new DialogueLine(
-                        "System (Holyland Evolve)",
-                        "[ PERINGATAN: ANDA MEMASUKI SINGGASANA KEGELAPAN JURANG - PASUKAN SUCI DIKERAHKAN ]",
+                        "System (Omniterra)",
+                        "[ SYSTEM ALERT: ENTERING THE ABYSSAL THRONE — RADIANT CRUSADE DISPATCHED ]",
                         null, true, bgCathedral, new Color(1f, 0.88f, 0.25f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC (Gamer / Salaryman)",
-                        "Bagus. Paladin andalanku sudah siap. Saatnya basmi iblis itu dan tamatkan game ini!",
+                        "My Paladin is fully geared. Time to purge the darkness and clear this game once and for all.",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
                     break;
@@ -548,17 +555,17 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.HolyRaidIntro:
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "Iblis terkutuk! Singgasana kegelapanmu berakhir malam ini demi kemuliaan Holyland!",
+                        "Foul fiend! Your reign of shadow ends tonight in the holy name of the Radiant Synod of Aethelgard!",
                         paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
                     ));
                     lines.Add(new DialogueLine(
                         "Demon Lord",
-                        "...Kalian menyebut invasi dan pembantaian ini sebagai 'kemuliaan'? Dunia suci kalian dibangun di atas kepalsuan...",
+                        "Insolent insects! You dare desecrate my abyssal domain with your pitiful spark? Your brittle bones shall feed the dark void!",
                         demonLordPortrait, false, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "Cukup bicaramu! Pasukan Suci, gerak maju dan bersihkan lantai ini!",
+                        "Spare me your villainous bluster! Holy Vanguard, advance and purge this profane throne room!",
                         paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
                     ));
                     break;
@@ -566,37 +573,37 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.HolyRaidVictoryGlitch:
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "Kemenangan mutlak bagi Holyland! Kegelapan telah dimusnahkan!",
+                        "Victory for the Radiant Synod! The lord of shadows has been cleansed from Omniterra!",
                         paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
                     ));
                     lines.Add(new DialogueLine(
-                        "MC (Dunia Nyata)",
-                        "Huft... akhirnya beres juga! Raid solo berhasil dibabat habis... Tapi kok kepalaku pusing banget ya...?",
+                        "MC (Real World)",
+                        "Phew... solo raid clear complete! That cements my spot as the server's #1 solo ranker... But man, my head is throbbing...",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
                     lines.Add(new DialogueLine(
-                        "MC (Dunia Nyata)",
-                        "Eh...? Dadaku sesak... pandanganku buram... Tunggu sebentar... aku cuma butuh tidur...",
+                        "MC (Real World)",
+                        "Wait... my chest feels tight... my monitor's screen is distorting... I just need to lie down...",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f), true
                     ));
                     lines.Add(new DialogueLine(
-                        "The Architect (Developer God)",
-                        "[ PENCAPAIAN TERKONFIRMASI: 100% SOLO CLEAR - 'HOLYLAND EVOLVE' ]",
+                        "The Architect (System Creator)",
+                        "[ ACHIEVEMENT CONFIRMED: 100% SOLO CLEAR — 'OMNITERRA' ]",
                         null, true, null, new Color(0.2f, 0.95f, 0.6f), true
                     ));
                     lines.Add(new DialogueLine(
-                        "The Architect (Developer God)",
-                        "Kamu menepuk dada atas 'keadilan suci' yang kamu banggakan... Tapi pernahkah kamu mendengar rintihan mereka yang kamu sebut 'monster'?",
+                        "The Architect (System Creator)",
+                        "You boast of 'divine righteousness' while trampling the forgotten... Yet have you ever heard the cries of those you branded 'monsters'?",
                         null, true, null, new Color(0.2f, 0.95f, 0.6f)
                     ));
                     lines.Add(new DialogueLine(
-                        "The Architect (Developer God)",
-                        "Selamat, Pemain #1. Kamu memenuhi kualifikasi. Sekarang... mari kita lihat jika papan catur ini dibalik.",
+                        "The Architect (System Creator)",
+                        "Congratulations, Ranker #1. You have qualified. Now... let us see how you fare when the chessboard is inverted.",
                         null, true, null, new Color(0.2f, 0.95f, 0.6f), true
                     ));
                     lines.Add(new DialogueLine(
-                        "MC (Dunia Nyata)",
-                        "T-tunggu! Apa ini?! Monitornya menyerap tanganku... Tubuhku ditarik masuk... WOOOOAAAHHH!!",
+                        "MC (Real World)",
+                        "W-what is this?! The monitor is pulling my arms in... My body is being dragged into the screen—WAIT, STOP—AAAAAAAGH!!",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.95f, 0.3f, 0.3f), true
                     ));
                     break;
@@ -604,88 +611,162 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.HubAwakeningDemonLord:
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Ugh... kepalaku berat sekali... Di mana ini? Tanganku... cakar hitam berduri?! Dan jubah baja kegelapan ini...?!",
+                        "Ugh... my skull is splitting... Where am I? These hands... obsidian talons?! And this mantle of abyssal steel...?!",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Earth Golem",
-                        "Yang Mulia Demon Lord! Akhirnya Anda siuman! Syukurlah altar purba masih melindungi sukma Anda!",
+                        "Basalt Vanguard",
+                        "Lord Malakor! Praise the Primordials, your consciousness has returned! The Citadel's core altar held through the dimensional cataclysm!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "(Tunggu sebentar... Suara berat bergetar ini, tubuh batu raksasa berlumut kristal... Earth Golem?! Salah satu Titan pelindung sanctuary?! Jangan-jangan aku benar-benar ditarik masuk ke dalam game?! Tubuh ini milik Demon Lord yang barusan kubantai di raid?!)",
+                        "(Wait... this booming voice, this hulking beastkin warrior in jagged basalt plate... Basalt Vanguard?! The frontline general of the outcast sanctuary?! Did I actually transmigrate into Omniterra?! Into the body of the Demon Lord I just killed in the raid?!)",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Earth Golem",
-                        "Gawat, Yang Mulia! Pasukan pelopor Kekaisaran Suci (Holy Empire) berhasil mendeteksi perbatasan santuari kita dan menyerbu lewat celah Abyssal Rift!",
+                        "Basalt Vanguard",
+                        "Sire, an emergency! A scout company of the Radiant Synod of Aethelgard has breached our outer perimeter in the Ashen Verge! They are pillaging the frontier outpost!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "(Pasukan Holy Empire yang tadi kumainkan... sekarang menyerbu markas baruku?! Kalau benteng ini runtuh, aku akan mati sungguhan di dunia ini!)",
+                        "(The Holy Empire troops I used to command... are invading my sanctuary?! If this citadel falls, I die for real in this world!)",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Earth Golem",
-                        "Gerbang Abyssal Rift di tengah alun-alun Citadel sudah beresonansi, Yang Mulia! Mohon pimpin kami ke gerbang perbatasan sebelum mereka merangsek masuk ke dalam Citadel!",
+                        "Basalt Vanguard",
+                        "Our frontier guards are falling back! Sire, we must ride to the frontier outpost immediately before their inquisitors locate the Citadel's hidden passage!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Tenang, Jenderal. Sebagai komandan yang hafal luar-dalam taktik pasukan suci itu... aku tahu persis kelemahan mereka. Ayo aktifkan Abyssal Rift! Kita sambut mereka di garis depan!",
+                        "Steady, General. As someone who knows every tactic of the Radiant Synod inside and out... I know their exact blindspots. Lead the way to the frontier clearing!",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
 
-                case StorySequenceId.DemonAwakeningIntro:
+                case StorySequenceId.Stage2FrontierIntro:
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Kita sudah tiba di ambang perbatasan medan tempur. Pasukan pelopor Holy Empire benar-benar sudah mendirikan barikade di depan sana!",
+                        "We've reached the frontier clearing. The Radiant Synod's scout unit has barricaded the passage ahead.",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Earth Golem",
-                        "Benar, Yang Mulia! Pasukan kita saat ini masih bersiaga di balik tabir dimensi Citadel. Bagaimana perintah penyerangan Anda?",
+                        "Basalt Vanguard",
+                        "Their scouts carry blessed shields and longbows, Sire. How should we engage them without taking heavy casualties?",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Tenang, Titan Bumi. Keunggulan mutlak kita adalah portal santuari. Pertama-tama, buka celah [Abyssal Rift] di medan tempur untuk menghubungkan gerbang masuk pasukan kita!",
+                        "By weaponizing the battlefield itself. Notice the lush grass beneath their feet? A single Fireball will ignite the flora into scorching Magma. Any unit standing on Magma suffers Burn damage every round!",
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "And once the terrain is ablaze, my kinetic shove can knock their warriors straight into the inferno or against those stone pillars for bonus collision damage!",
+                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "Precisely. Let us show these crusaders what happens when the elements turn against them!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
 
-                case StorySequenceId.Tutorial2Victory:
+                case StorySequenceId.Stage2Victory:
                     lines.Add(new DialogueLine(
-                        "Earth Golem",
-                        "Pasukan Suci terpukul mundur! Yang Mulia... Anda benar-benar menyelamatkan kami semua!",
+                        "Basalt Vanguard",
+                        "The scout unit has fallen! Your elemental command was magnificent, Lord Malakor!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Ini baru gelombang pengintai. Pasukan utama Kekaisaran Suci akan datang lebih besar dalam beberapa pekan.",
+                        "Hold your celebration, General. Look at their armor insignia... this was merely a forward reconnaissance detachment.",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "[Deep brass war horns echo in the distance] ...Sire! That horn! The main crusader vanguard of the Radiant Synod is approaching our Abyssal Gateway!",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "They have deployed Heavy Divine Wardens shielded by consecrated Aegis barriers! Our normal blades cannot pierce their holy enchantments!",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "Then we shall answer divine barriers with primordial might. Fall back to the Citadel Hub! It is time to awaken the Abyssal Rift and summon a Titan!",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    break;
+
+                case StorySequenceId.HubTitanCrisisDialogue:
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "Lord Malakor, the heavy crusade vanguard is massing outside the Abyssal Gateway! How can our garrison breach their divine aegis barriers?",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "The Radiant Synod relies on rigid holy barriers, but this land still hums with Primordial Leyline energy. If we tear open the Abyssal Rift and siphon elemental cores from the earth, we can summon an ancient Titan: The Earth Golem!",
+                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "The Earth Golem! Ancient titan of stone and bedrock... its seismic blows will pulverize their holy barriers into dust! Open the Abyssal Rift, Sire!",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    break;
+
+                case StorySequenceId.Stage3TitanIntro:
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "The Radiant Synod's heavy crusade line is assembled. First, let us tear open the [Abyssal Rift] to anchor our sanctuary conduit!",
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "The dimensional gateway is ready, Sire! Deploy your command presence onto the battlefield!",
+                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "Once deployed, siphon the primordial energy from the scorched earth to forge an Elemental Core, then summon the Earth Golem Titan to crush their vanguard!",
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    break;
+
+                case StorySequenceId.Stage3Victory:
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "The holy crusade vanguard has been obliterated! The Earth Golem shattered their divine barriers like brittle glass!",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "And with their defeat, our sanctuary gateway is secured.",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "System (Primordial Altar)",
-                        "[ ALTAIR PURBA MERESPON KEMENANGAN TAKTIS ANDA ]",
+                        "[ PRIMORDIAL RESONANCE DETECTED: CITADEL DEFENSE TRIUMPHANT ]",
                         null, true, bgDemonLordThrone, new Color(1f, 0.85f, 0.25f)
                     ));
                     lines.Add(new DialogueLine(
                         "System (Primordial Altar)",
-                        "[ HADIAH DIPEROLEH: PRIMORDIAL TITAN CORE x1 ]",
+                        "[ REWARD ACQUIRED: PRIMORDIAL TITAN CORE x1 ]",
                         null, true, bgDemonLordThrone, new Color(0.3f, 0.9f, 1f)
                     ));
                     lines.Add(new DialogueLine(
-                        "Earth Golem",
-                        "Inti Titan Purba?! Dengan ini kita bisa membangkitkan salah satu dari 4 Dewa Titan Kuno di Citadel Sanctuary!",
+                        "Basalt Vanguard",
+                        "A Primordial Titan Core! With this ancient relic, our Citadel Sanctuary can now sustain permanent daily expedition gateways across the Ashen Verge!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Bagus. Bawa aku ke Citadel Hub. Saatnya kita bangun kembali santuari ini dan bangkitkan Titan pertama kita!",
+                        "Our survival begins today. Let us return to the Citadel Hub and forge our campaign to liberate this world!",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;

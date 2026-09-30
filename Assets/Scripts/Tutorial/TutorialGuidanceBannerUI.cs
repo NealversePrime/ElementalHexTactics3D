@@ -199,7 +199,7 @@ namespace ElementalHexTactics3D.Tutorial
             txtSpeakerTag.fontSize = 11;
             txtSpeakerTag.fontStyle = FontStyle.Bold;
             txtSpeakerTag.alignment = TextAnchor.MiddleCenter;
-            txtSpeakerTag.text = "MC (BATIN)";
+            txtSpeakerTag.text = "MC (TACTICAL THOUGHT)";
             txtSpeakerTag.color = new Color(0.35f, 0.85f, 1.0f); // Cyan
             txtSpeakerTag.raycastTarget = false;
 

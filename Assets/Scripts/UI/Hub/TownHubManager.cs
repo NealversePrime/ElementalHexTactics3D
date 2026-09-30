@@ -382,14 +382,21 @@ namespace ElementalHexTactics3D.UI.Hub
 
                 if (building.FacilityType == HubFacilityType.AbyssalPortal)
                 {
-                    Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_SelectTutorialMissionCard);
+                    if (Tutorial.TutorialScenarioManager.Instance.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis)
+                    {
+                        Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_SelectStage3MissionCard);
+                    }
+                    else
+                    {
+                        Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_SelectStage2MissionCard);
+                    }
                     EmbarkToExpedition();
                     return;
                 }
                 else
                 {
                     PlaySound(sfxCloseModal, 0.8f);
-                    ShowNoticeBanner("⚠️ PRIORITAS PERTAHANAN", "Pasukan Holy Empire mendesak di gerbang Abyssal Rift! Masuki portal terlebih dahulu!");
+                    ShowNoticeBanner("⚠️ DEFENSE PRIORITY", "Radiant Synod forces are encroaching on the gateway! Enter the Abyssal Portal immediately!");
                     return;
                 }
             }

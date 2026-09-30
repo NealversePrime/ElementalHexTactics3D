@@ -264,6 +264,22 @@ namespace ElementalHexTactics3D.InputHandling
                 // Don't accept actions during Enemy Turn
                 if (TurnManager3D.Instance != null && !TurnManager3D.Instance.IsPlayerTurn) return;
 
+                // TRPG Tutorial Training Wheels: Gating clicks to tutorial target tile
+                if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
+                {
+                    HexTile3D tutTile = Tutorial.TutorialScenarioManager.Instance.CurrentHighlightedTile;
+                    if (tutTile != null && clickedTile != tutTile)
+                    {
+                        // Allow selecting friendly units if needed, otherwise ignore misclicks to protect tutorial flow
+                        TacticalUnit3D allyUnit = directHitUnit ?? (clickedTile != null ? clickedTile.GetOccupant() : null);
+                        if (allyUnit == null || allyUnit.Faction != UnitFaction.Player)
+                        {
+                            Combat.SoundManager3D.Instance?.PlayButtonClick();
+                            return;
+                        }
+                    }
+                }
+
                 // 1. ACTION RESOLUTION (Move, Spells, Push, Deploy Commander, Summon Titan, Tear Rift)
                 bool isDeploying = (currentMode == UnitActionMode.DeployCommander || currentMode == UnitActionMode.SummonTitan || currentMode == UnitActionMode.TearRift);
                 if ((currentSelectedUnit != null || isDeploying) && activeTargetTiles.Contains(clickedTile))
@@ -351,7 +367,9 @@ namespace ElementalHexTactics3D.InputHandling
             bool isTutorialSkillStep = Tutorial.TutorialScenarioManager.Instance != null && 
                 Tutorial.TutorialScenarioManager.Instance.IsTutorialActive && 
                 (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballOnGrass ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_EarthGolemWallSlam ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_PushEnemyIntoHazard ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SiphonElementalCore ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_EarthGolemCataclysm ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_HolyStrikeDemonLord ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_FinishDemonLord);
 

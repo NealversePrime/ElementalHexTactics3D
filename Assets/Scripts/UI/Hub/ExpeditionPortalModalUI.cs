@@ -81,29 +81,55 @@ namespace ElementalHexTactics3D.UI.Hub
         {
             currentCards = new List<ExpeditionMissionData>();
 
-            // Card 1: Highlighted Tutorial Mission (Defend Abyssal Gate)
-            ExpeditionMissionData tutorialMission = new ExpeditionMissionData
+            bool isStage3 = Tutorial.TutorialScenarioManager.Instance != null && 
+                            Tutorial.TutorialScenarioManager.Instance.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis;
+
+            if (isStage3)
             {
-                MissionId = "TUTORIAL_STAGE2",
-                Archetype = MissionArchetype.VanguardSabotage,
-                Title = "[TUTORIAL] PERTAHANKAN ABYSSAL GATE",
-                Description = "Hadang pasukan pelopor Holy Empire di ambang gerbang santuari! Kuasai sihir Fireball untuk membakar rumput jadi Magma, dan dorong prajurit suci menabrak Pilar Batu bersama Earth Golem.",
-                ThreatLevel = 1,
-                Biome = BiomeTheme.VerdantHighlands,
-                Modifier = StageModifier.StoneFortress,
-                RewardMana = 100,
-                RewardEmbers = 60,
-                RewardOutcasts = 0,
-                Seed = 2002
-            };
+                // Card 1: Stage 3 Titan Awakening (Defend Citadel Gate)
+                ExpeditionMissionData stage3Mission = new ExpeditionMissionData
+                {
+                    MissionId = "TUTORIAL_STAGE3",
+                    Archetype = MissionArchetype.VanguardSabotage,
+                    Title = "[STAGE 3] TITAN AWAKENING: CRUSH CRUSADE",
+                    Description = "The Holy Synod's heavy crusade vanguard has arrived! Normal blades cannot pierce their divine aegis shields. Tear open the Abyssal Rift, siphon elemental cores, and summon the ancient Earth Golem Titan!",
+                    ThreatLevel = 1,
+                    Biome = BiomeTheme.AncientCrusadeRuins,
+                    Modifier = StageModifier.StoneFortress,
+                    RewardMana = 150,
+                    RewardEmbers = 100,
+                    RewardOutcasts = 0,
+                    Seed = 3003
+                };
+                currentCards.Add(stage3Mission);
+            }
+            else
+            {
+                // Card 1: Stage 2 Frontier Skirmish (Elemental Alchemy & Hazards - No Titans)
+                ExpeditionMissionData stage2Mission = new ExpeditionMissionData
+                {
+                    MissionId = "TUTORIAL_STAGE2",
+                    Archetype = MissionArchetype.VanguardSabotage,
+                    Title = "[STAGE 2] FRONTIER SKIRMISH: HAZARDS",
+                    Description = "Confront the Radiant Synod scouts at the frontier! Learn how to transform terrain by igniting Grass into Magma with Fireball, and use Basalt Vanguard to shove enemies into hazards!",
+                    ThreatLevel = 1,
+                    Biome = BiomeTheme.VerdantHighlands,
+                    Modifier = StageModifier.None,
+                    RewardMana = 100,
+                    RewardEmbers = 60,
+                    RewardOutcasts = 0,
+                    Seed = 2002
+                };
+                currentCards.Add(stage2Mission);
+            }
 
             // Card 2: Locked
             ExpeditionMissionData lockedMine = new ExpeditionMissionData
             {
                 MissionId = "TUTORIAL_LOCKED_MINE",
                 Archetype = MissionArchetype.ResourceScavenge,
-                Title = "🔒 TAMBANG KRISTAL MANA",
-                Description = "Rute dimensi belum stabil. Selesaikan misi pertahanan tutorial pada Kartu #1 untuk menstabilkan Abyssal Rift.",
+                Title = "🔒 ANCIENT MANA QUARRY",
+                Description = "Dimensional pathway unstable. Complete the tutorial expedition on Card #1 to stabilize the Abyssal Gateway.",
                 ThreatLevel = 2,
                 Biome = BiomeTheme.AncientCrusadeRuins,
                 Modifier = StageModifier.None,
@@ -118,8 +144,8 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 MissionId = "TUTORIAL_LOCKED_RESCUE",
                 Archetype = MissionArchetype.RescueRecruit,
-                Title = "🔒 PENYELAMATAN TAWANAN",
-                Description = "Rute dimensi belum stabil. Selesaikan misi pertahanan tutorial pada Kartu #1 untuk menstabilkan Abyssal Rift.",
+                Title = "🔒 CAPTIVE RESCUE OUTPOST",
+                Description = "Dimensional pathway unstable. Complete the tutorial expedition on Card #1 to stabilize the Abyssal Gateway.",
                 ThreatLevel = 2,
                 Biome = BiomeTheme.FloodedBasin,
                 Modifier = StageModifier.None,
@@ -129,7 +155,6 @@ namespace ElementalHexTactics3D.UI.Hub
                 Seed = 3002
             };
 
-            currentCards.Add(tutorialMission);
             currentCards.Add(lockedMine);
             currentCards.Add(lockedRescue);
             selectedCardIndex = 0;
@@ -180,7 +205,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 }
                 else
                 {
-                    ShowLockedFeedback("🔒 Reroll terkunci selama misi tutorial!");
+                    ShowLockedFeedback("🔒 Reroll locked during tutorial!");
                 }
             }
             else if (kb.spaceKey.wasPressedThisFrame || kb.enterKey.wasPressedThisFrame)
@@ -198,8 +223,8 @@ namespace ElementalHexTactics3D.UI.Hub
             if (Combat.CombatFeedbackManager.Instance != null)
             {
                 Combat.CombatFeedbackManager.Instance.ShowBanner(
-                    "🔒 RUTE TERKUNCI",
-                    msg ?? "Selesaikan misi pertahanan tutorial pada Kartu #1 terlebih dahulu!",
+                    "🔒 ROUTE LOCKED",
+                    msg ?? "Complete the tutorial objective on Card #1 first!",
                     1.8f,
                     new Color(0.95f, 0.45f, 0.35f)
                 );
@@ -210,13 +235,20 @@ namespace ElementalHexTactics3D.UI.Hub
         {
             if (card == null) return;
 
-            // Tutorial check: if in tutorial, always embark Card 0 which starts Stage 2!
+            // Tutorial check: route to Stage 2 or Stage 3!
             if (IsTutorialDispatchMode())
             {
                 CloseModal();
                 if (Tutorial.TutorialScenarioManager.Instance != null)
                 {
-                    Tutorial.TutorialScenarioManager.Instance.StartStage2AbyssalAwakening();
+                    if (Tutorial.TutorialScenarioManager.Instance.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis)
+                    {
+                        Tutorial.TutorialScenarioManager.Instance.StartStage3AbyssalTitans();
+                    }
+                    else
+                    {
+                        Tutorial.TutorialScenarioManager.Instance.StartStage2FrontierHazards();
+                    }
                 }
                 return;
             }
@@ -343,9 +375,9 @@ namespace ElementalHexTactics3D.UI.Hub
             Rect rerollRect = new Rect(winX + 40f, footerY, 260f, 45f);
             if (IsTutorialDispatchMode())
             {
-                if (DrawButton(rerollRect, "🔒 <b>Reroll Terkunci</b>", new Color(0.12f, 0.14f, 0.18f, 0.8f), new Color(0.25f, 0.30f, 0.38f, 0.5f), false))
+                if (DrawButton(rerollRect, "🔒 <b>Reroll Locked</b>", new Color(0.12f, 0.14f, 0.18f, 0.8f), new Color(0.25f, 0.30f, 0.38f, 0.5f), false))
                 {
-                    ShowLockedFeedback("🔒 Fitur reroll terkunci selama misi tutorial!");
+                    ShowLockedFeedback("🔒 Reroll locked during tutorial!");
                 }
             }
             else
@@ -361,7 +393,7 @@ namespace ElementalHexTactics3D.UI.Hub
             legStyle.normal.textColor = new Color(0.6f, 0.65f, 0.72f);
             if (IsTutorialDispatchMode())
             {
-                GUI.Label(legendRect, "👉 <b>[1 / Klik Kartu 1]</b> Misi Pertahanan Tutorial  |  <b>[Space / Enter]</b> Berangkat Mempertahankan Gerbang", legStyle);
+                GUI.Label(legendRect, "👉 <b>[1 / Click Card 1]</b> Tutorial Objective  |  <b>[Space / Enter]</b> Embark Expedition", legStyle);
             }
             else
             {
@@ -432,7 +464,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 richText = true
             };
             archStyle.normal.textColor = archColor;
-            string bannerText = isLocked ? "🔒 RUTE TERKUNCI" : (isTutorial && index == 0 ? "★ REKOMENDASI TUTORIAL ★" : card.GetArchetypeName().ToUpper());
+            string bannerText = isLocked ? "🔒 ROUTE LOCKED" : (isTutorial && index == 0 ? "★ TUTORIAL OBJECTIVE ★" : card.GetArchetypeName().ToUpper());
             GUI.Label(archRect, bannerText, archStyle);
             curY += 34f;
 
@@ -454,7 +486,7 @@ namespace ElementalHexTactics3D.UI.Hub
             GUIStyle starStyle = new GUIStyle(GUI.skin.label) { fontSize = 15, richText = true };
             string threatColor = (card.ThreatLevel >= 4) ? "#FF5252" : (card.ThreatLevel >= 3 ? "#FFA726" : "#81C784");
             string threatStr = isLocked
-                ? "<color=#888888><b>Status:</b> Terkunci</color>"
+                ? "<color=#888888><b>Status:</b> Locked</color>"
                 : $"<b>Danger:</b> <color={threatColor}>{card.GetThreatStars()}</color> <size=11>(Lvl {card.ThreatLevel})</size>";
             GUI.Label(new Rect(rect.x + pad, curY, contentW, 24f), threatStr, starStyle);
             curY += 28f;
@@ -476,7 +508,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 richText = true
             };
             affixStyle.normal.textColor = isLocked ? new Color(0.6f, 0.65f, 0.7f) : Color.white;
-            GUI.Label(new Rect(affixRect.x + 8f, affixRect.y + 4f, affixRect.width - 16f, affixRect.height - 8f), isLocked ? "🔒 Celah dimensi belum distabilkan" : card.GetModifierTag(), affixStyle);
+            GUI.Label(new Rect(affixRect.x + 8f, affixRect.y + 4f, affixRect.width - 16f, affixRect.height - 8f), isLocked ? "🔒 Dimensional pathway unstable" : card.GetModifierTag(), affixStyle);
             curY += 54f;
 
             // 5. Mission Narrative Brief
@@ -501,7 +533,7 @@ namespace ElementalHexTactics3D.UI.Hub
 
             GUIStyle rewBody = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true, richText = true };
             rewBody.normal.textColor = isLocked ? new Color(0.55f, 0.6f, 0.65f) : Color.white;
-            GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 26f, rewBox.width - 20f, 40f), isLocked ? "🔒 Selesaikan misi tutorial untuk membuka ekspedisi ini." : card.GetRewardsSummary(), rewBody);
+            GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 26f, rewBox.width - 20f, 40f), isLocked ? "🔒 Complete tutorial objective on Card #1 to unlock." : card.GetRewardsSummary(), rewBody);
             curY += 82f;
 
             // Lock Overlay for Card 2 & 3
@@ -522,7 +554,7 @@ namespace ElementalHexTactics3D.UI.Hub
                     richText = true
                 };
                 lockPromptStyle.normal.textColor = new Color(1f, 0.85f, 0.4f);
-                GUI.Label(lockOverlayRect, "🔒\n<b>RUTE TERKUNCI</b>\n<size=11><color=#cccccc>Pilih Kartu #1 untuk tutorial</color></size>", lockPromptStyle);
+                GUI.Label(lockOverlayRect, "🔒\n<b>ROUTE LOCKED</b>\n<size=11><color=#cccccc>Select Card #1 for tutorial</color></size>", lockPromptStyle);
             }
 
             // 7. Embark Action Button
@@ -534,7 +566,7 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 Color btnCol = new Color(0.14f, 0.16f, 0.20f, 0.85f);
                 Color btnBord = new Color(0.28f, 0.32f, 0.40f, 0.6f);
-                string btnLabel = "<b>🔒 TERKUNCI</b>";
+                string btnLabel = "<b>🔒 LOCKED</b>";
                 if (DrawButton(embarkBtnRect, btnLabel, btnCol, btnBord, false))
                 {
                     ShowLockedFeedback();
@@ -549,7 +581,7 @@ namespace ElementalHexTactics3D.UI.Hub
                     ? new Color(1f, 0.90f, 0.40f, 1f)
                     : (isSelected ? new Color(1f, 0.90f, 0.40f, 1f) : new Color(0.40f, 0.50f, 0.65f, 1f));
                 string btnLabel = (isTutorial && index == 0)
-                    ? "<b>🔥 BERANGKAT MEMPERTAHANKAN GERBANG [1]</b>"
+                    ? "<b>🔥 EMBARK EXPEDITION [1]</b>"
                     : (isSelected ? $"<b>🔥 EMBARK INCURSION [{index + 1}]</b>" : $"<b>Select Incursion [{index + 1}]</b>");
 
                 if (DrawButton(embarkBtnRect, btnLabel, btnCol, btnBord, isSelected))
