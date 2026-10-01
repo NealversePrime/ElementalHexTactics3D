@@ -22,6 +22,7 @@ namespace ElementalHexTactics3D.Tutorial
         Stage2_FrontierHazards,
         Hub_TitanCrisis,
         Stage3_AbyssalTitans,
+        Completed,
 
         // Backwards compatibility alias
         Stage2_AbyssalAwakening = Stage2_FrontierHazards
@@ -1271,7 +1272,7 @@ namespace ElementalHexTactics3D.Tutorial
 
         private void CompleteTutorialAndEnterCitadel()
         {
-            CurrentStage = TutorialStage.None;
+            CurrentStage = TutorialStage.Completed;
             SetStep(TutorialStep.Completed);
 
             CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: true, starterTitan: true);
