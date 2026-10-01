@@ -658,7 +658,7 @@ namespace ElementalHexTactics3D.UI
                 else if (Keyboard.current.f5Key.wasPressedThisFrame)
                 {
                     Debug.Log("<color=#81C784><b>[Dev Shortcut]</b></color> Quick Jump directly into Citadel Hub...");
-                    ShowTownHub();
+                    ShowTownHub(true);
                 }
             }
         }
@@ -728,7 +728,7 @@ namespace ElementalHexTactics3D.UI
             playTxt.text = "👑 ENTER CITADEL HUB";
         }
 
-        public void ShowTownHub()
+        public void ShowTownHub(bool skipTutorial = false)
         {
             isInGame = false;
             isInTownHub = true;
@@ -739,8 +739,8 @@ namespace ElementalHexTactics3D.UI
             if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
             CloseAllModals();
 
-            // Ensure tutorial scenario is marked completed so Citadel Hub and Expedition Gateway are fully unlocked
-            if (Tutorial.TutorialScenarioManager.Instance != null)
+            // ONLY mark tutorial completed if explicitly requested (e.g. from developer F5 shortcut or skip option)!
+            if (skipTutorial && Tutorial.TutorialScenarioManager.Instance != null)
             {
                 Tutorial.TutorialScenarioManager.Instance.SkipTutorialDirectToCitadel();
             }
@@ -757,7 +757,7 @@ namespace ElementalHexTactics3D.UI
             bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 0) == 1;
             if (isSkipActive || currentThemeMode == TitleThemeMode.DemonLordRebellion)
             {
-                ShowTownHub();
+                ShowTownHub(true);
             }
             else
             {

@@ -37,8 +37,22 @@ namespace ElementalHexTactics3D.UI.Hub
         {
             if (Tutorial.TutorialScenarioManager.Instance != null)
             {
-                return Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive;
+                var tut = Tutorial.TutorialScenarioManager.Instance;
+                if (tut.IsHubAwakeningActive) return true;
+                if (tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickAbyssalRift ||
+                    tut.CurrentStep == Tutorial.TutorialStep.Hub_SelectStage2MissionCard ||
+                    tut.CurrentStep == Tutorial.TutorialStep.Hub_SelectStage3MissionCard)
+                {
+                    return true;
+                }
             }
+
+            var save = CampaignSaveManager.LoadSaveData();
+            if (save != null && !save.hasCompletedTutorialStage2)
+            {
+                return true;
+            }
+
             return false;
         }
 
@@ -56,6 +70,21 @@ namespace ElementalHexTactics3D.UI.Hub
             isOpen = true;
             selectedCardIndex = 0;
             hoveredCardIndex = -1;
+
+            if (Tutorial.TutorialScenarioManager.Instance != null)
+            {
+                var tut = Tutorial.TutorialScenarioManager.Instance;
+                if (tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickAbyssalRift)
+                {
+                    tut.SetStep(Tutorial.TutorialStep.Hub_SelectStage2MissionCard);
+                }
+                else if (tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickPrimordialStatue ||
+                         tut.CurrentStep == Tutorial.TutorialStep.Hub_AwakenMagmaDragon)
+                {
+                    tut.SetStep(Tutorial.TutorialStep.Hub_SelectStage3MissionCard);
+                }
+            }
+
             GenerateNewTrilemma();
         }
 
@@ -241,7 +270,9 @@ namespace ElementalHexTactics3D.UI.Hub
                 CloseModal();
                 if (Tutorial.TutorialScenarioManager.Instance != null)
                 {
-                    if (Tutorial.TutorialScenarioManager.Instance.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis)
+                    bool isStage3 = Tutorial.TutorialScenarioManager.Instance.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis ||
+                                    (card != null && card.MissionId == "TUTORIAL_STAGE3");
+                    if (isStage3)
                     {
                         Tutorial.TutorialScenarioManager.Instance.StartStage3AbyssalTitans();
                     }
