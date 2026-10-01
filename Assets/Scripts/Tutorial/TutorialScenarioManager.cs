@@ -58,25 +58,29 @@ namespace ElementalHexTactics3D.Tutorial
 
         // ================= HUB 2: TITAN CRISIS & EXPEDITION GATEWAY ================= //
         Hub_TitanCrisisDialogue,
+        Hub_ClickPrimordialStatue,
+        Hub_AwakenMagmaDragon,
         Hub_SelectStage3MissionCard,
 
         // ================= STAGE 3: ABYSSAL RIFT & TITAN AWAKENING ================= //
         Stage3_TearOpenRift,
         Stage3_DeployDemonLord,
         Stage3_SiphonElementalCore,
-        Stage3_SummonEarthGolemTitan,
-        Stage3_EarthGolemCataclysm,
+        Stage3_SummonMagmaDragonTitan,
+        Stage3_MagmaDragonTitanStrike,
         Stage3_ObliterateCrusaders,
 
         // ================= COMPLETION ================= //
         Completed,
 
         // Compatibility Aliases
+        Stage3_SummonEarthGolemTitan = Stage3_SummonMagmaDragonTitan,
+        Stage3_EarthGolemCataclysm = Stage3_MagmaDragonTitanStrike,
         Stage2_CastFireballOnGrass = Stage2_CastFireballScorched,
         Hub_SelectTutorialMissionCard = Hub_SelectStage2MissionCard,
-        Stage2_DeployEarthGolem = Stage3_SummonEarthGolemTitan,
+        Stage2_DeployEarthGolem = Stage3_SummonMagmaDragonTitan,
         Stage2_DeployBasaltVanguard = Stage2_SelectBasaltVanguard,
-        Stage2_EarthGolemWallSlam = Stage3_EarthGolemCataclysm,
+        Stage2_EarthGolemWallSlam = Stage3_MagmaDragonTitanStrike,
         Stage2_BasaltVanguardWallSlam = Stage2_PushEnemyIntoHazard,
         Stage2_VanquishHolyInvaders = Stage3_ObliterateCrusaders
     }
@@ -127,7 +131,8 @@ namespace ElementalHexTactics3D.Tutorial
         public TacticalUnit3D DemonLordBoss { get; private set; }
         public TacticalUnit3D DemonLordPlayer { get; private set; }
         public TacticalUnit3D BasaltVanguardPlayer { get; private set; }
-        public TacticalUnit3D EarthGolemPlayer { get; private set; }
+        public TacticalUnit3D MagmaDragonPlayer { get; private set; }
+        public TacticalUnit3D EarthGolemPlayer => MagmaDragonPlayer;
 
         private bool isStage1Ending = false;
 
@@ -317,19 +322,19 @@ namespace ElementalHexTactics3D.Tutorial
                     case TutorialStep.Stage3_SiphonElementalCore:
                         if (DemonLordPlayer != null && (DemonLordPlayer.ElementalCores >= 1 || DemonLordPlayer.HasActedThisTurn))
                         {
-                            SetStep(TutorialStep.Stage3_SummonEarthGolemTitan);
+                            SetStep(TutorialStep.Stage3_SummonMagmaDragonTitan);
                         }
                         break;
 
-                    case TutorialStep.Stage3_SummonEarthGolemTitan:
-                        if (EarthGolemPlayer != null && EarthGolemPlayer.gameObject.activeInHierarchy && EarthGolemPlayer.CurrentTile != null)
+                    case TutorialStep.Stage3_SummonMagmaDragonTitan:
+                        if (MagmaDragonPlayer != null && MagmaDragonPlayer.gameObject.activeInHierarchy && MagmaDragonPlayer.CurrentTile != null)
                         {
-                            SetStep(TutorialStep.Stage3_EarthGolemCataclysm);
+                            SetStep(TutorialStep.Stage3_MagmaDragonTitanStrike);
                         }
                         break;
 
-                    case TutorialStep.Stage3_EarthGolemCataclysm:
-                        if (EarthGolemPlayer != null && (EarthGolemPlayer.HasActedThisTurn || EarthGolemPlayer.HasMovedThisTurn))
+                    case TutorialStep.Stage3_MagmaDragonTitanStrike:
+                        if (MagmaDragonPlayer != null && (MagmaDragonPlayer.HasActedThisTurn || MagmaDragonPlayer.HasMovedThisTurn))
                         {
                             SetStep(TutorialStep.Stage3_ObliterateCrusaders);
                         }
@@ -454,12 +459,24 @@ namespace ElementalHexTactics3D.Tutorial
                 case TutorialStep.Hub_ClickAbyssalRift:
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
-                    banner?.ShowGuidance(
-                        "[CITADEL SANCTUARY] ENTER EXPEDITION GATEWAY",
-                        "A scout detachment of the Radiant Synod is raiding our frontier outpost! I need to access the expedition gateway.",
-                        "Click the glowing Abyssal Rift Gateway in the center of the Citadel!",
-                        new Color(0.95f, 0.75f, 0.25f)
-                    );
+                    if (CurrentStage == TutorialStage.Hub_TitanCrisis)
+                    {
+                        banner?.ShowGuidance(
+                            "[EXPEDITION GATEWAY] ENTER STAGE 3 DEFENSE",
+                            "The Magma Dragon is awakened and waiting in Citadel Reserve! Now enter the Abyssal Gateway to deploy our forces into battle!",
+                            "Click the glowing [Abyssal Rift Gateway] in the Citadel center!",
+                            new Color(1f, 0.85f, 0.35f)
+                        );
+                    }
+                    else
+                    {
+                        banner?.ShowGuidance(
+                            "[CITADEL SANCTUARY] ENTER EXPEDITION GATEWAY",
+                            "A scout detachment of the Radiant Synod is raiding our frontier outpost! I need to access the expedition gateway.",
+                            "Click the glowing Abyssal Rift Gateway in the center of the Citadel!",
+                            new Color(0.95f, 0.75f, 0.25f)
+                        );
+                    }
                     break;
 
                 case TutorialStep.Hub_SelectStage2MissionCard:
@@ -570,12 +587,34 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.HideGuidance();
                     break;
 
+                case TutorialStep.Hub_ClickPrimordialStatue:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.ShowGuidance(
+                        "[PRIMORDIAL SHRINE] COMMUNE WITH ANCIENT TITAN",
+                        "The Holy Crusade's divine aegis barriers cannot be pierced by normal weapons! The Primordial Statue on the eastern cliff is glowing with draconic flame!",
+                        "Click the glowing Primordial Statue on the eastern cliff!",
+                        new Color(1f, 0.55f, 0.15f)
+                    );
+                    break;
+
+                case TutorialStep.Hub_AwakenMagmaDragon:
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                    banner?.ShowGuidance(
+                        "[PRIMORDIAL ALTAR] AWAKEN MAGMA DRAGON",
+                        "The spirit of the ancient Flame Titan answers our summons! Awaken the Magma Dragon into our Citadel Reserve!",
+                        "Click [AWAKEN MAGMA DRAGON] in the altar window!",
+                        new Color(1f, 0.55f, 0.15f)
+                    );
+                    break;
+
                 case TutorialStep.Hub_SelectStage3MissionCard:
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
                         "[EXPEDITION GATEWAY] SELECT STAGE 3 DEFENSE",
-                        "The Holy Synod's heavy crusade is marching on our primary gate! Select Card #1 to mobilize the defense!",
+                        "The Holy Synod's heavy crusade is marching on our primary gate! Select Card #1 to deploy your Demon Lord and Magma Dragon!",
                         "Select Card #1 and click [EMBARK EXPEDITION] to confront the heavy crusade!",
                         new Color(1f, 0.85f, 0.35f)
                     );
@@ -621,29 +660,29 @@ namespace ElementalHexTactics3D.Tutorial
                     );
                     break;
 
-                case TutorialStep.Stage3_SummonEarthGolemTitan:
+                case TutorialStep.Stage3_SummonMagmaDragonTitan:
                     HexGrid3D gBv = HexGrid3D.Instance;
                     HexTile3D titanTarget = gBv != null ? gBv.GetTile(new HexCoordinates(0, 0)) : null;
                     SetTutorialHighlightedTile(titanTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("DeployTitan");
                     banner?.ShowGuidance(
-                        "[STAGE 3 - STEP 4/5] SUMMON EARTH GOLEM TITAN",
-                        "An Elemental Core is forged! Now channel the Abyssal Rift to summon our ancient Titan: The Earth Golem!",
-                        "Click [Summon Earth Golem], then deploy the colossal Titan at (0, 0)!",
-                        new Color(0.85f, 0.65f, 0.35f)
+                        "[STAGE 3 - STEP 4/5] SUMMON MAGMA DRAGON TITAN",
+                        "An Elemental Core is forged! Now channel the Abyssal Rift to summon our awakened Titan: The Magma Dragon!",
+                        "Click [Summon Magma Dragon], then deploy the colossal Titan at (0, 0)!",
+                        new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;
 
-                case TutorialStep.Stage3_EarthGolemCataclysm:
+                case TutorialStep.Stage3_MagmaDragonTitanStrike:
                     HexGrid3D g3 = HexGrid3D.Instance;
                     HexTile3D wardenTile = g3 != null ? g3.GetTile(new HexCoordinates(0, 1)) : null;
                     SetTutorialHighlightedTile(wardenTile);
-                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Strike");
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("TitanStrike");
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 5/5] UNLEASH TITAN MIGHT",
-                        "The Earth Golem has materialized! Its massive boulder fists will shatter their divine barriers into dust!",
-                        "Select Earth Golem, click [Boulder Smash / Attack], and crush the Divine Warden at (0, 1)!",
-                        new Color(0.85f, 0.65f, 0.35f)
+                        "The Magma Dragon has materialized! Its fiery claws and infernal breath will shatter their divine barriers into dust!",
+                        "Select Magma Dragon, click [Titan Strike / Attack], and crush the Divine Warden at (0, 1)!",
+                        new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;
 
@@ -1165,23 +1204,23 @@ namespace ElementalHexTactics3D.Tutorial
 
         private void OnHubTitanCrisisDialogueFinished()
         {
-            SetStep(TutorialStep.Hub_SelectStage3MissionCard);
-            Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Ready to summon Titans! Guided to expedition gateway...");
+            SetStep(TutorialStep.Hub_ClickPrimordialStatue);
+            Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Ready to summon Titans! Guided to Primordial Statue...");
 
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "🌋 AWAKEN THE ANCIENT TITAN 🌋",
-                    "The Holy Crusade's heavy shields cannot be pierced by blades! Enter the Abyssal Gateway to summon the Earth Golem!",
+                    "The Holy Crusade's heavy shields cannot be pierced by blades! Click the glowing [Primordial Statue] on the cliff to awaken the Magma Dragon!",
                     4.5f,
-                    new Color(0.85f, 0.65f, 0.35f)
+                    new Color(1f, 0.55f, 0.15f)
                 );
             }
         }
 
         #endregion
 
-        #region Stage 3: Abyssal Rift & Titan Awakening (Rift, Core Siphon, Earth Golem)
+        #region Stage 3: Abyssal Rift & Titan Awakening (Rift, Core Siphon, Magma Dragon)
 
         public void StartStage3AbyssalTitans()
         {
@@ -1217,22 +1256,24 @@ namespace ElementalHexTactics3D.Tutorial
                 DemonLordPlayer.gameObject.SetActive(false);
             }
 
-            // Spawn Earth Golem Titan in Reserve
-            Sprite basaltSprite = TacticalUnitSpawner.LoadBattlerSprite("BasaltVanguard.png");
-            EarthGolemPlayer = TacticalUnitSpawner.SpawnUnitStandee(
-                "Earth Golem",
+            // Spawn Magma Dragon Titan in Reserve
+            Sprite magmaDragonSprite = TacticalUnitSpawner.LoadBattlerSprite("magmadragon.png");
+            Sprite magmaDragonPortrait = TacticalUnitSpawner.LoadPortraitSprite("magmadragonportrait.png");
+            MagmaDragonPlayer = TacticalUnitSpawner.SpawnUnitStandee(
+                "Magma Dragon",
                 UnitFaction.Player,
-                basaltSprite,
+                magmaDragonSprite,
                 null, // In reserve!
-                24, 2,
+                24, 3,
                 UnitArchetype.Titan,
-                ElementalAffinity.Earth,
+                ElementalAffinity.Fire,
                 3,
-                0.90f
+                1.15f
             );
-            if (EarthGolemPlayer != null)
+            if (MagmaDragonPlayer != null)
             {
-                EarthGolemPlayer.gameObject.SetActive(false);
+                MagmaDragonPlayer.SetPortraitSprite(magmaDragonPortrait);
+                MagmaDragonPlayer.gameObject.SetActive(false);
             }
 
             // Spawn Radiant Synod Heavy Crusade Vanguard
@@ -1296,9 +1337,9 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "👑 STAGE 3: THE TITAN AWAKENING 👑",
-                    "Tear open the Abyssal Rift, siphon an Elemental Core, and summon the Earth Golem!",
+                    "Tear open the Abyssal Rift, siphon an Elemental Core, and summon the Magma Dragon!",
                     3.5f,
-                    new Color(0.75f, 0.35f, 1.0f)
+                    new Color(1f, 0.45f, 0.15f)
                 );
             }
 

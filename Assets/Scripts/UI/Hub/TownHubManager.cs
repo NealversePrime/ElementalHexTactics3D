@@ -371,33 +371,60 @@ namespace ElementalHexTactics3D.UI.Hub
 
             HideTooltipImmediate();
 
-            // Tutorial Gating: During Hub Awakening, cutscene must finish first and only Abyssal Portal is permitted!
+            // Tutorial Gating: During Hub Awakening, dialogue must finish first and steps are strictly guided!
             if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive)
             {
-                if (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue)
+                var tut = Tutorial.TutorialScenarioManager.Instance;
+                if (tut.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue ||
+                    tut.CurrentStep == Tutorial.TutorialStep.Hub_TitanCrisisDialogue)
                 {
                     // Cutscene is still playing or initializing, ignore clicks!
                     return;
                 }
 
-                if (building.FacilityType == HubFacilityType.AbyssalPortal)
+                // In Hub 2, player must first commune with the Primordial Statue on the cliff!
+                if (tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickPrimordialStatue ||
+                    tut.CurrentStep == Tutorial.TutorialStep.Hub_AwakenMagmaDragon)
                 {
-                    if (Tutorial.TutorialScenarioManager.Instance.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis)
+                    if (building.FacilityType == HubFacilityType.AncientDeityShrine)
                     {
-                        Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_SelectStage3MissionCard);
+                        OpenPrimordialAltarTutorial();
+                        return;
                     }
                     else
                     {
-                        Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_SelectStage2MissionCard);
+                        PlaySound(sfxCloseModal, 0.8f);
+                        ShowNoticeBanner("⚠️ COMMUNE WITH THE SHRINE", "The Primordial Statue on the eastern cliff is glowing! Commune with the statue first to awaken a Titan!");
+                        return;
                     }
-                    EmbarkToExpedition();
-                    return;
                 }
-                else
+                // Once awakened (or in Hub 1), guided into the Abyssal Portal!
+                else if (tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickAbyssalRift ||
+                         tut.CurrentStep == Tutorial.TutorialStep.Hub_SelectStage2MissionCard ||
+                         tut.CurrentStep == Tutorial.TutorialStep.Hub_SelectStage3MissionCard)
                 {
-                    PlaySound(sfxCloseModal, 0.8f);
-                    ShowNoticeBanner("⚠️ DEFENSE PRIORITY", "Radiant Synod forces are encroaching on the gateway! Enter the Abyssal Portal immediately!");
-                    return;
+                    if (building.FacilityType == HubFacilityType.AbyssalPortal)
+                    {
+                        if (tut.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis)
+                        {
+                            tut.SetStep(Tutorial.TutorialStep.Hub_SelectStage3MissionCard);
+                        }
+                        else
+                        {
+                            tut.SetStep(Tutorial.TutorialStep.Hub_SelectStage2MissionCard);
+                        }
+                        EmbarkToExpedition();
+                        return;
+                    }
+                    else
+                    {
+                        PlaySound(sfxCloseModal, 0.8f);
+                        string portalMsg = (tut.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis)
+                            ? "The heavy crusade approaches! Enter the Abyssal Portal to deploy the Magma Dragon!"
+                            : "Radiant Synod forces are encroaching on the gateway! Enter the Abyssal Portal immediately!";
+                        ShowNoticeBanner("⚠️ DEFENSE PRIORITY", portalMsg);
+                        return;
+                    }
                 }
             }
 
@@ -434,10 +461,127 @@ namespace ElementalHexTactics3D.UI.Hub
             PlaySound(sfxOpenModal, 0.9f);
         }
 
+        public void OpenPrimordialAltarTutorial()
+        {
+            if (modalShrine == null) return;
+
+            CloseAllModals();
+            activeModal = modalShrine;
+            activeModal.SetActive(true);
+            PlaySound(sfxOpenModal, 0.9f);
+
+            // Configure modal for Magma Dragon Awakening
+            Transform titleTrans = modalShrine.transform.Find("CardFrame/Text_Title");
+            if (titleTrans != null)
+            {
+                Text t = titleTrans.GetComponent<Text>();
+                if (t != null) t.text = "🌋 PRIMORDIAL ALTAR: TITAN AWAKENING";
+            }
+
+            Transform loreTrans = modalShrine.transform.Find("CardFrame/Text_Lore");
+            if (loreTrans != null)
+            {
+                Text l = loreTrans.GetComponent<Text>();
+                if (l != null) l.text = "The ancient cliffside altar resonates with the primordial ley-lines of Omniterra! The slumbering spirit of the blazing <b>Magma Dragon</b> answers your call. Awaken this colossal Flame Titan to crush the Holy Crusade's divine aegis barriers!";
+            }
+
+            Transform statsTrans = modalShrine.transform.Find("CardFrame/StatsBox/Text_Stats");
+            if (statsTrans != null)
+            {
+                Text s = statsTrans.GetComponent<Text>();
+                if (s != null) s.text = "✦ STARTER TITAN: MAGMA DRAGON (FLAME) ✦\n• HP: 24 | ATK: 3 | Range: 1-2 | Movement: 3\n• Skill: Magma Breath & Titan Strike\n• Cost: FREE (First Titan Awakening)";
+            }
+
+            Transform btnActionTrans = modalShrine.transform.Find("CardFrame/Btn_Action");
+            if (btnActionTrans != null)
+            {
+                Button btn = btnActionTrans.GetComponent<Button>();
+                if (btn != null)
+                {
+                    btn.onClick.RemoveAllListeners();
+                    btn.onClick.AddListener(PerformTutorialTitanAwaken);
+                }
+                Text bTxt = btnActionTrans.GetComponentInChildren<Text>();
+                if (bTxt != null) bTxt.text = "🔥 AWAKEN MAGMA DRAGON";
+            }
+
+            if (Tutorial.TutorialScenarioManager.Instance != null)
+            {
+                Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_AwakenMagmaDragon);
+            }
+        }
+
+        public void PerformTutorialTitanAwaken()
+        {
+            SoundManager3D.Instance?.PlayVanguardEmergence();
+            SoundManager3D.Instance?.PlayTitanStrike();
+            PlaySound(sfxActionSuccess, 1.0f);
+
+            // Save starter titan claim in persistent progress
+            CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: true, starterTitan: true);
+
+            ShowNoticeBanner("🌋 TITAN AWAKENED!", "✦ S-RANK TITAN: MAGMA DRAGON ✦ has awakened and joined your Citadel Reserve!");
+
+            CloseActiveModal();
+
+            if (Tutorial.TutorialScenarioManager.Instance != null)
+            {
+                Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_ClickAbyssalRift);
+            }
+        }
+
+        private void RestoreNormalShrineModal()
+        {
+            if (modalShrine == null) return;
+            Transform titleTrans = modalShrine.transform.Find("CardFrame/Text_Title");
+            if (titleTrans != null)
+            {
+                Text t = titleTrans.GetComponent<Text>();
+                if (t != null) t.text = "🔮 ANCIENT HORNED DEITY SHRINE";
+            }
+
+            Transform loreTrans = modalShrine.transform.Find("CardFrame/Text_Lore");
+            if (loreTrans != null)
+            {
+                Text l = loreTrans.GetComponent<Text>();
+                if (l != null) l.text = "Colossal horned idol on the cliff's edge. Offer soul embers in the sacrificial brazier for ancient beast summoning (Gacha)!";
+            }
+
+            Transform statsTrans = modalShrine.transform.Find("CardFrame/StatsBox/Text_Stats");
+            if (statsTrans != null)
+            {
+                Text s = statsTrans.GetComponent<Text>();
+                if (s != null) s.text = "✦ RITUAL SACRIFICE ✦\nCost: 80 Soul Embers\nPool: Legendary Beasts & Titans";
+            }
+
+            Transform btnActionTrans = modalShrine.transform.Find("CardFrame/Btn_Action");
+            if (btnActionTrans != null)
+            {
+                Button btn = btnActionTrans.GetComponent<Button>();
+                if (btn != null)
+                {
+                    btn.onClick.RemoveAllListeners();
+                    btn.onClick.AddListener(ActionPerformGachaSummon);
+                }
+                Text bTxt = btnActionTrans.GetComponentInChildren<Text>();
+                if (bTxt != null) bTxt.text = "🔮 SUMMON (80 Embers)";
+            }
+        }
+
         public void CloseActiveModal()
         {
             if (activeModal != null)
             {
+                if (activeModal == modalShrine)
+                {
+                    if (Tutorial.TutorialScenarioManager.Instance != null &&
+                        Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_AwakenMagmaDragon)
+                    {
+                        Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_ClickPrimordialStatue);
+                    }
+                    RestoreNormalShrineModal();
+                }
+
                 activeModal.SetActive(false);
                 activeModal = null;
                 PlaySound(sfxCloseModal, 0.8f);
@@ -450,7 +594,11 @@ namespace ElementalHexTactics3D.UI.Hub
             if (modalForge != null) modalForge.SetActive(false);
             if (modalBarracks != null) modalBarracks.SetActive(false);
             if (modalMine != null) modalMine.SetActive(false);
-            if (modalShrine != null) modalShrine.SetActive(false);
+            if (modalShrine != null)
+            {
+                modalShrine.SetActive(false);
+                RestoreNormalShrineModal();
+            }
             if (ExpeditionPortalModalUI.Instance != null && ExpeditionPortalModalUI.Instance.IsOpen)
             {
                 ExpeditionPortalModalUI.Instance.CloseModal();

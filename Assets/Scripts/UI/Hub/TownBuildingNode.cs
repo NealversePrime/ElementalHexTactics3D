@@ -73,11 +73,11 @@ namespace ElementalHexTactics3D.UI.Hub
 
         private void Update()
         {
+            var tut = Tutorial.TutorialScenarioManager.Instance;
+
             // Tutorial Highlight Pulse: When player is prompted to click Abyssal Rift, pulsate with warm golden aura!
             if (facilityType == HubFacilityType.AbyssalPortal &&
-                Tutorial.TutorialScenarioManager.Instance != null &&
-                Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive &&
-                Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_ClickAbyssalRift)
+                tut != null && tut.IsHubAwakeningActive && tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickAbyssalRift)
             {
                 if (!isHovered)
                 {
@@ -89,6 +89,23 @@ namespace ElementalHexTactics3D.UI.Hub
                     if (scaleRoot != null)
                     {
                         scaleRoot.localScale = originalScale * (1f + 0.045f * pulse);
+                    }
+                }
+            }
+            // Tutorial Highlight Pulse: When player is prompted to awaken a Titan, pulsate Primordial Statue with blazing flame aura!
+            else if (facilityType == HubFacilityType.AncientDeityShrine &&
+                     tut != null && tut.IsHubAwakeningActive && tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickPrimordialStatue)
+            {
+                if (!isHovered)
+                {
+                    float pulse = (Mathf.Sin(Time.unscaledTime * 4.5f) + 1f) * 0.5f;
+                    if (targetGraphic != null)
+                    {
+                        targetGraphic.color = Color.Lerp(normalColor, new Color(1.5f, 0.8f, 0.35f, 1f), pulse);
+                    }
+                    if (scaleRoot != null)
+                    {
+                        scaleRoot.localScale = originalScale * (1f + 0.055f * pulse);
                     }
                 }
             }
@@ -117,7 +134,8 @@ namespace ElementalHexTactics3D.UI.Hub
             if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue) return;
             if (Tutorial.TutorialScenarioManager.Instance != null &&
                 Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive &&
-                Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue) return;
+                (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_TitanCrisisDialogue)) return;
 
             isHovered = true;
 
@@ -157,7 +175,8 @@ namespace ElementalHexTactics3D.UI.Hub
             if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue) return;
             if (Tutorial.TutorialScenarioManager.Instance != null &&
                 Tutorial.TutorialScenarioManager.Instance.IsHubAwakeningActive &&
-                Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue) return;
+                (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_CitadelAwakeningDialogue ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Hub_TitanCrisisDialogue)) return;
 
             if (eventData.button != PointerEventData.InputButton.Left) return;
 

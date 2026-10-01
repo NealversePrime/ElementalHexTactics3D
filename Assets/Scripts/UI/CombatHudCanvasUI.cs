@@ -917,16 +917,17 @@ namespace ElementalHexTactics3D.UI
                 btnSummonTitanRift.interactable = canSummonTitan && !isStage2;
                 if (txtSummonTitanRift != null)
                 {
+                    string titanName = isTut ? "Magma Dragon" : (titan != null ? titan.UnitName : "Titan");
                     if (!titanInReserve)
-                        txtSummonTitanRift.text = isTut ? "🌋 Earth Golem\n<size=11>(On Field)</size>" : "🌋 Pick Titan\n<size=11>(On Field)</size>";
+                        txtSummonTitanRift.text = $"🌋 {titanName}\n<size=11>(On Field)</size>";
                     else if (noActiveUnits)
-                        txtSummonTitanRift.text = (currentMode == UnitActionMode.SummonTitan) ? "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>" : (isTut ? "🌋 Summon Earth Golem\n<size=11>(Free Titan)</size>" : "🌋 Deploy Titan\n<size=11>(Free Titan)</size>");
+                        txtSummonTitanRift.text = (currentMode == UnitActionMode.SummonTitan) ? "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>" : $"🌋 Summon {titanName}\n<size=11>(Free Titan)</size>";
                     else if (cmdr != null && cmdr.ElementalCores < 1)
-                        txtSummonTitanRift.text = isTut ? "🌋 Summon Earth Golem\n<size=11>(Req 1 Core)</size>" : "🌋 Summon Titan\n<size=11>(Req 1 Core)</size>";
+                        txtSummonTitanRift.text = $"🌋 Summon {titanName}\n<size=11>(Req 1 Core)</size>";
                     else if (currentMode == UnitActionMode.SummonTitan)
                         txtSummonTitanRift.text = "<b>[Summoning...]</b>\n<size=11>(Click Hex)</size>";
                     else
-                        txtSummonTitanRift.text = isTut ? "🌋 Summon Earth Golem\n<size=11>(1 Core Titan)</size>" : "🌋 Summon Titan\n<size=11>(1 Core)</size>";
+                        txtSummonTitanRift.text = $"🌋 Summon {titanName}\n<size=11>(1 Core Titan)</size>";
                 }
             }
         }
@@ -1003,6 +1004,7 @@ namespace ElementalHexTactics3D.UI
                     if (unit.UnitName.Contains("Paladin")) txtTitanStrike.text = "⚔️ Holy Strike\n<size=10>(3 Dmg)</size>";
                     else if (unit.UnitName.Contains("Shielder")) txtTitanStrike.text = "🛡️ Shield Bash\n<size=10>(2 Dmg)</size>";
                     else if (unit.UnitName.Contains("Basalt") || unit.UnitName.Contains("Golem")) txtTitanStrike.text = "👊 Boulder Smash\n<size=10>(3 Dmg)</size>";
+                    else if (unit.UnitName.Contains("Dragon")) txtTitanStrike.text = "🔥 Magma Breath\n<size=10>(Crit Strike)</size>";
                     else if (isTitan) txtTitanStrike.text = "🐾 Titan Strike\n<size=10>(Crit)</size>";
                     else txtTitanStrike.text = "⚔️ Attack\n<size=10>(Melee)</size>";
                 }

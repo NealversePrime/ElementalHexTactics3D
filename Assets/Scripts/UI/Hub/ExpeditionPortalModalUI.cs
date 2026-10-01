@@ -92,7 +92,7 @@ namespace ElementalHexTactics3D.UI.Hub
                     MissionId = "TUTORIAL_STAGE3",
                     Archetype = MissionArchetype.VanguardSabotage,
                     Title = "[STAGE 3] TITAN AWAKENING: CRUSH CRUSADE",
-                    Description = "The Holy Synod's heavy crusade vanguard has arrived! Normal blades cannot pierce their divine aegis shields. Tear open the Abyssal Rift, siphon elemental cores, and summon the ancient Earth Golem Titan!",
+                    Description = "The Holy Synod's heavy crusade vanguard has arrived! Normal blades cannot pierce their divine aegis shields. Tear open the Abyssal Rift, siphon elemental cores, and summon the awakened Magma Dragon Titan to incinerate their ranks!",
                     ThreatLevel = 1,
                     Biome = BiomeTheme.AncientCrusadeRuins,
                     Modifier = StageModifier.StoneFortress,

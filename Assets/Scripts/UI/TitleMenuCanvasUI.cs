@@ -633,6 +633,11 @@ namespace ElementalHexTactics3D.UI
                     Debug.Log("<color=#BA68C8><b>[Dev Shortcut]</b></color> Starting Tutorial Stage 3 (Titan Awakening)...");
                     Tutorial.TutorialScenarioManager.EnsureInstance().StartStage3AbyssalTitans();
                 }
+                else if (Keyboard.current.f4Key.wasPressedThisFrame)
+                {
+                    Debug.Log("<color=#FF7043><b>[Dev Shortcut]</b></color> Starting Hub 2 (Titan Crisis)...");
+                    Tutorial.TutorialScenarioManager.EnsureInstance().StartHubTitanCrisis();
+                }
             }
         }
 

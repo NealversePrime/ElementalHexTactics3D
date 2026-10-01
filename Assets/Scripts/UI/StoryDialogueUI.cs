@@ -725,12 +725,12 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "The Radiant Synod relies on rigid holy barriers, but this land still hums with Primordial Leyline energy. If we tear open the Abyssal Rift and siphon elemental cores from the earth, we can summon an ancient Titan: The Earth Golem!",
+                        "The Radiant Synod relies on rigid holy barriers, but this land still hums with Primordial Leyline energy. Look towards the eastern cliff—the Primordial Statue is blazing with draconic flame!",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "The Earth Golem! Ancient titan of stone and bedrock... its seismic blows will pulverize their holy barriers into dust! Open the Abyssal Rift, Sire!",
+                        "By the Ancients... the Primordial Statue! It is awakening the dormant slumber of the Magma Dragon! Sire, commune with the statue and awaken our first Titan!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     break;
@@ -748,7 +748,7 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Once deployed, siphon the primordial energy from the scorched earth to forge an Elemental Core, then summon the Earth Golem Titan to crush their vanguard!",
+                        "Once deployed, siphon the primordial energy from the scorched earth to forge an Elemental Core, then summon the Magma Dragon Titan to incinerate their vanguard!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
@@ -756,7 +756,7 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.Stage3Victory:
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "The holy crusade vanguard has been obliterated! The Earth Golem shattered their divine barriers like brittle glass!",
+                        "The holy crusade vanguard has been obliterated! The Magma Dragon's infernal breath incinerated their divine barriers into ash!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
