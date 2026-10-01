@@ -614,6 +614,26 @@ namespace ElementalHexTactics3D.UI
             {
                 HandleEscapeKey();
             }
+
+            // Developer Quick-Test Shortcuts: F1 = Stage 1, F2 = Stage 2, F3 = Stage 3
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.f1Key.wasPressedThisFrame)
+                {
+                    Debug.Log("<color=#FFD54F><b>[Dev Shortcut]</b></color> Starting Tutorial Stage 1 (Holy Crusade)...");
+                    Tutorial.TutorialScenarioManager.EnsureInstance().StartStage1HolyCrusade();
+                }
+                else if (Keyboard.current.f2Key.wasPressedThisFrame)
+                {
+                    Debug.Log("<color=#FF7043><b>[Dev Shortcut]</b></color> Starting Tutorial Stage 2 (Frontier Hazards)...");
+                    Tutorial.TutorialScenarioManager.EnsureInstance().StartStage2FrontierHazards();
+                }
+                else if (Keyboard.current.f3Key.wasPressedThisFrame)
+                {
+                    Debug.Log("<color=#BA68C8><b>[Dev Shortcut]</b></color> Starting Tutorial Stage 3 (Titan Awakening)...");
+                    Tutorial.TutorialScenarioManager.EnsureInstance().StartStage3AbyssalTitans();
+                }
+            }
         }
 
         private void BindButtonEvents()

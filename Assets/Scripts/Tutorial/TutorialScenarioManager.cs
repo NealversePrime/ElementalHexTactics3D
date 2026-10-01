@@ -623,13 +623,13 @@ namespace ElementalHexTactics3D.Tutorial
 
                 case TutorialStep.Stage3_SummonEarthGolemTitan:
                     HexGrid3D gBv = HexGrid3D.Instance;
-                    HexTile3D titanTarget = gBv != null ? gBv.GetTile(new HexCoordinates(1, -2)) : null;
+                    HexTile3D titanTarget = gBv != null ? gBv.GetTile(new HexCoordinates(0, 0)) : null;
                     SetTutorialHighlightedTile(titanTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("DeployTitan");
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 4/5] SUMMON EARTH GOLEM TITAN",
                         "An Elemental Core is forged! Now channel the Abyssal Rift to summon our ancient Titan: The Earth Golem!",
-                        "Click [Summon Earth Golem], then deploy the colossal Titan at (1, -2)!",
+                        "Click [Summon Earth Golem], then deploy the colossal Titan at (0, 0)!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
                     break;
@@ -642,7 +642,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 5/5] UNLEASH TITAN MIGHT",
                         "The Earth Golem has materialized! Its massive boulder fists will shatter their divine barriers into dust!",
-                        "Select Earth Golem, click [Boulder Smash / Attack], and crush the Divine Warden!",
+                        "Select Earth Golem, click [Boulder Smash / Attack], and crush the Divine Warden at (0, 1)!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
                     break;

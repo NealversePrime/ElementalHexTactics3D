@@ -1033,7 +1033,7 @@ namespace ElementalHexTactics3D.UI
                 btnSummonTitanAbility.gameObject.SetActive(shouldShowSummon);
                 if (shouldShowSummon)
                 {
-                    bool canSummon = canCombat && unit.ElementalCores >= 1;
+                    bool canSummon = isPlayerTurn && unit.ElementalCores >= 1;
                     btnSummonTitanAbility.interactable = canSummon;
                     SetButtonActiveHighlight(btnSummonTitanAbility, currentMode == UnitActionMode.SummonTitan);
                     if (txtSummonTitanAbility != null)

@@ -372,6 +372,7 @@ namespace ElementalHexTactics3D.InputHandling
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_SelectBasaltVanguard ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_PushEnemyIntoHazard ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SiphonElementalCore ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SummonEarthGolemTitan ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_EarthGolemCataclysm ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_HolyStrikeDemonLord ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_ShieldShoveSlime);
@@ -1715,8 +1716,8 @@ namespace ElementalHexTactics3D.InputHandling
                 // COMMANDER ABILITY: Summon / Warp Titan through Abyssal Rift
                 TacticalUnit3D titanUnit = FindTitanUnit();
                 bool titanAvailable = titanUnit != null;
-                bool titanOnField = titanUnit != null && titanUnit.gameObject.activeInHierarchy;
-                bool canSummonTitan = canCombat &&
+                bool titanInReserve = titanUnit != null && !titanUnit.gameObject.activeInHierarchy;
+                bool canSummonTitan = isPlayerTurn &&
                                       AbyssalRiftConduit3D.Instance != null &&
                                       currentSelectedUnit != null &&
                                       currentSelectedUnit.ElementalCores >= 1 &&
@@ -1729,7 +1730,7 @@ namespace ElementalHexTactics3D.InputHandling
                 {
                     summonLabel = "<color=#90A4AE>🌀 Rift Titan\n<size=10>(Req 1 Core)</size></color>";
                 }
-                else if (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn)
+                else if (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn && !titanInReserve)
                 {
                     summonLabel = "<color=#90A4AE>🌀 Rift Titan\n<size=10>(Acted)</size></color>";
                 }
