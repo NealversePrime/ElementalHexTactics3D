@@ -67,13 +67,15 @@ namespace ElementalHexTactics3D.Tutorial
         Stage3_DeployDemonLord,
         Stage3_SiphonElementalCore,
         Stage3_SummonMagmaDragonTitan,
-        Stage3_MagmaDragonTitanStrike,
+        Stage3_TitanAbsorbLand,
+        Stage3_MagmaDragonCataclysm,
         Stage3_ObliterateCrusaders,
 
         // ================= COMPLETION ================= //
         Completed,
 
-        // Compatibility Aliases
+// Compatibility Aliases
+        Stage3_MagmaDragonTitanStrike = Stage3_MagmaDragonCataclysm,
         Stage3_SummonEarthGolemTitan = Stage3_SummonMagmaDragonTitan,
         Stage3_EarthGolemCataclysm = Stage3_MagmaDragonTitanStrike,
         Stage2_CastFireballOnGrass = Stage2_CastFireballScorched,
@@ -329,11 +331,18 @@ namespace ElementalHexTactics3D.Tutorial
                     case TutorialStep.Stage3_SummonMagmaDragonTitan:
                         if (MagmaDragonPlayer != null && MagmaDragonPlayer.gameObject.activeInHierarchy && MagmaDragonPlayer.CurrentTile != null)
                         {
-                            SetStep(TutorialStep.Stage3_MagmaDragonTitanStrike);
+                            SetStep(TutorialStep.Stage3_TitanAbsorbLand);
                         }
                         break;
 
-                    case TutorialStep.Stage3_MagmaDragonTitanStrike:
+                    case TutorialStep.Stage3_TitanAbsorbLand:
+                        if (MagmaDragonPlayer != null && (MagmaDragonPlayer.ElementalCores >= 1 || MagmaDragonPlayer.HasSiphonedThisTurn))
+                        {
+                            SetStep(TutorialStep.Stage3_MagmaDragonCataclysm);
+                        }
+                        break;
+
+                    case TutorialStep.Stage3_MagmaDragonCataclysm:
                         // Dynamically ensure the tutorial highlighted tile tracks living enemy if pushed
                         if (currentHighlightedTile == null || !currentHighlightedTile.IsOccupied || currentHighlightedTile.GetOccupant()?.Faction != UnitFaction.Enemy)
                         {
@@ -352,7 +361,7 @@ namespace ElementalHexTactics3D.Tutorial
                             }
                         }
 
-                        if (MagmaDragonPlayer != null && (MagmaDragonPlayer.HasActedThisTurn || MagmaDragonPlayer.HasMovedThisTurn))
+                        if (MagmaDragonPlayer != null && MagmaDragonPlayer.HasActedThisTurn)
                         {
                             SetStep(TutorialStep.Stage3_ObliterateCrusaders);
                         }
@@ -360,7 +369,6 @@ namespace ElementalHexTactics3D.Tutorial
                 }
             }
         }
-
         #region Step Tracking & Visual Guidance
 
         public void SetStep(TutorialStep newStep)
@@ -645,7 +653,7 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(riftTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("TearRift");
                     banner?.ShowGuidance(
-                        "[STAGE 3 - STEP 1/5] TEAR OPEN ABYSSAL RIFT",
+                        "[STAGE 3 - STEP 1/7] TEAR OPEN ABYSSAL RIFT",
                         "To deploy our forces and channel primordial energy, I must first anchor the Abyssal Rift on this battlefield.",
                         "Click [Tear Open Abyssal Rift], then choose the purple landing hex at (0, -2)!",
                         new Color(0.75f, 0.35f, 1.0f)
@@ -658,7 +666,7 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(dlTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("DeployCommander");
                     banner?.ShowGuidance(
-                        "[STAGE 3 - STEP 2/5] DEPLOY DEMON LORD",
+                        "[STAGE 3 - STEP 2/7] DEPLOY DEMON LORD",
                         "The rift is open! Now deploy my Demon Lord through the gateway onto the frontline.",
                         "Click [Deploy Demon Lord], then place him at (0, -1) in front of the Rift!",
                         new Color(0.95f, 0.45f, 0.35f)
@@ -671,7 +679,7 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(siphTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("HarvestCore");
                     banner?.ShowGuidance(
-                        "[STAGE 3 - STEP 3/5] SIPHON ELEMENTAL CORE",
+                        "[STAGE 3 - STEP 3/7] SIPHON ELEMENTAL CORE",
                         "Summoning a Titan requires an Elemental Core. As Demon Lord, I can siphon elemental energy from the land!",
                         "Select Demon Lord, click [Harvest Core / Siphon], and siphon from the adjacent tile!",
                         new Color(0.35f, 0.85f, 1.0f)
@@ -684,14 +692,27 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(titanTarget);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("DeployTitan");
                     banner?.ShowGuidance(
-                        "[STAGE 3 - STEP 4/5] SUMMON MAGMA DRAGON TITAN",
+                        "[STAGE 3 - STEP 4/7] SUMMON MAGMA DRAGON TITAN",
                         "An Elemental Core is forged! Now channel the Abyssal Rift to summon our awakened Titan: The Magma Dragon!",
                         "Click [Summon Magma Dragon], then deploy the colossal Titan at (0, 0)!",
                         new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;
 
-                case TutorialStep.Stage3_MagmaDragonTitanStrike:
+                case TutorialStep.Stage3_TitanAbsorbLand:
+                    HexGrid3D gAbsorb = HexGrid3D.Instance;
+                    HexTile3D absorbTarget = gAbsorb != null ? (gAbsorb.GetTile(new HexCoordinates(1, -1)) ?? gAbsorb.GetTile(new HexCoordinates(-1, 0))) : null;
+                    SetTutorialHighlightedTile(absorbTarget);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("HarvestCore");
+                    banner?.ShowGuidance(
+                        "[STAGE 3 - STEP 5/7] TITAN FEAST: ABSORB THE LAND",
+                        "Titans feast upon elemental land to charge their world-shattering abilities! Siphon the adjacent Scorched Earth to forge an Elemental Core!",
+                        "Select Magma Dragon, click [⚡ Siphon / Harvest Core], and absorb the adjacent Scorched Earth at (1, -1)!",
+                        new Color(1f, 0.85f, 0.2f)
+                    );
+                    break;
+
+                case TutorialStep.Stage3_MagmaDragonCataclysm:
                     HexGrid3D g3 = HexGrid3D.Instance;
                     TacticalUnit3D targetWarden = null;
                     foreach (var u in UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
@@ -706,20 +727,19 @@ namespace ElementalHexTactics3D.Tutorial
                         ? targetWarden.CurrentTile 
                         : (g3 != null ? (g3.GetTile(new HexCoordinates(0, 2)) ?? g3.GetTile(new HexCoordinates(0, 1))) : null);
                     SetTutorialHighlightedTile(wardenTile);
-                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("TitanStrike");
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("Cataclysm");
                     banner?.ShowGuidance(
-                        "[STAGE 3 - STEP 5/5] UNLEASH TITAN MIGHT",
-                        "The Magma Dragon's emergence shockwave blasted the crusaders back! With Range 1-2 Dragon Strike, crush the Divine Warden!",
-                        "Select Magma Dragon, click [🔥 Dragon Strike], and strike the Divine Warden (or Move closer)!",
+                        "[STAGE 3 - STEP 6/7] UNLEASH TITAN CATACLYSM",
+                        "An Elemental Core is primed! The Magma Dragon can now rupture the crust with subterranean magma and obliterate their vanguard!",
+                        "Click [🌋 Cataclysm], then target the crusader cluster at (0, 2) to unleash molten fury!",
                         new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;
-
                 case TutorialStep.Stage3_ObliterateCrusaders:
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[TOTAL VICTORY] OBLITERATE THE CRUSADE",
+                        "[STAGE 3 - STEP 7/7] OBLITERATE THE CRUSADE",
                         "Their divine barrier is shattered! Wipe out the remaining crusade invaders to claim our first Primordial Core!",
                         "Eliminate all remaining holy invaders to claim victory!",
                         new Color(0.35f, 0.95f, 0.45f)
@@ -1404,7 +1424,7 @@ namespace ElementalHexTactics3D.Tutorial
                     };
 
                     // Scorched / Magma tiles ready to be siphoned for cores!
-                    if ((q == 0 && r == 0) || (q == 1 && r == -1))
+                    if ((q == 0 && r == 0) || (q == 1 && r == -1) || (q == -1 && r == 0))
                     {
                         spec.State = TileState.Scorched;
                     }

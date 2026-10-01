@@ -746,12 +746,17 @@ namespace ElementalHexTactics3D.UI
                         "Once deployed, siphon the primordial energy from the scorched earth to forge an Elemental Core, then summon the Magma Dragon Titan to incinerate their vanguard!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "Remember, Sire! Titans devour active elemental lands to fuel their apocalyptic power. Once summoned, have the Magma Dragon siphon the burning earth to unleash its Magma Cataclysm!",
+                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
+                    ));
                     break;
 
                 case StorySequenceId.Stage3Victory:
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "The holy crusade vanguard has been obliterated! The Magma Dragon's dragon strike shattered their divine barriers into ash!",
+                        "The holy crusade vanguard has been obliterated! The Magma Dragon's cataclysm shattered their divine barriers into ash!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(

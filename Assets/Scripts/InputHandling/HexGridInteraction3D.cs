@@ -281,8 +281,19 @@ namespace ElementalHexTactics3D.InputHandling
                         {
                             // Valid move destination allowed!
                         }
-                        // In Stage 3 Magma Dragon strike, allow targeting any living enemy within attack range
-                        else if (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_MagmaDragonTitanStrike &&
+                        // Allow harvesting any valid consumable tile when in ConsumeLand mode
+                        else if (currentMode == UnitActionMode.ConsumeLand && activeTargetTiles.Contains(clickedTile))
+                        {
+                            // Valid land harvest destination allowed!
+                        }
+                        // Allow targeting any valid tile when in MagmaCataclysm mode
+                        else if (currentMode == UnitActionMode.MagmaCataclysm && activeTargetTiles.Contains(clickedTile))
+                        {
+                            // Valid cataclysm blast target allowed!
+                        }
+                        // In Stage 3 Magma Dragon strike / cataclysm, allow targeting any living enemy within attack range
+                        else if ((Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_MagmaDragonTitanStrike ||
+                                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_MagmaDragonCataclysm) &&
                                  (currentMode == UnitActionMode.TitanStrike || currentMode == UnitActionMode.None) &&
                                  clickedTile != null && clickedTile.IsOccupied && clickedTile.GetOccupant()?.Faction == UnitFaction.Enemy)
                         {
@@ -390,6 +401,8 @@ namespace ElementalHexTactics3D.InputHandling
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SiphonElementalCore ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SummonEarthGolemTitan ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_EarthGolemCataclysm ||
+                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_TitanAbsorbLand ||
+                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_MagmaDragonCataclysm ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_HolyStrikeDemonLord ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_ShieldShoveSlime);
 
@@ -695,7 +708,7 @@ namespace ElementalHexTactics3D.InputHandling
                 case UnitActionMode.ConsumeLand:
                     if (IsTileConsumable(targetTile))
                     {
-                        currentSelectedUnit.HasActedThisTurn = true;
+                        currentSelectedUnit.HasSiphonedThisTurn = true;
                         ClearTargetHighlights();
                         StartCoroutine(ExecuteConsumeLand(targetTile));
                         SetActionMode(UnitActionMode.None);
@@ -874,6 +887,7 @@ namespace ElementalHexTactics3D.InputHandling
             targetTile.SetState(newState, newTier);
 
             // Grant +1 Elemental Core to the unit
+            currentSelectedUnit.HasSiphonedThisTurn = true;
             currentSelectedUnit.AddElementalCore(1);
 
             // Refresh attunements
@@ -1639,10 +1653,10 @@ namespace ElementalHexTactics3D.InputHandling
                 }
 
                 // TITAN ABILITY: Siphon Land
-                bool canSiphon = canCombat && HasConsumableTilesNearby(currentSelectedUnit);
+                bool canSiphon = canCombat && !currentSelectedUnit.HasSiphonedThisTurn && HasConsumableTilesNearby(currentSelectedUnit);
                 Rect siphonRect = new Rect(curX, btnY, 120f, btnH);
                 curX += 120f + spacing;
-                string siphonLabel = (currentSelectedUnit.HasActedThisTurn)
+                string siphonLabel = (currentSelectedUnit.HasSiphonedThisTurn || currentSelectedUnit.HasActedThisTurn)
                     ? "<color=#90A4AE>⚡ Siphon Land\n<size=10>(Acted)</size></color>"
                     : "⚡ Siphon Land\n<size=10>(+1 Core)</size>";
                 if (DrawOpaqueButton(siphonRect, siphonLabel,
@@ -1733,7 +1747,7 @@ namespace ElementalHexTactics3D.InputHandling
                 }
 
                 // COMMANDER ABILITY: Siphon Land
-                bool canSiphon = canCombat && HasConsumableTilesNearby(currentSelectedUnit);
+                bool canSiphon = canCombat && !currentSelectedUnit.HasSiphonedThisTurn && HasConsumableTilesNearby(currentSelectedUnit);
                 Rect siphonRect = new Rect(curX, btnY, 110f, btnH);
                 curX += 110f + spacing;
                 string siphonLabel = (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn)

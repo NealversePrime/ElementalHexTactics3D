@@ -53,6 +53,7 @@ namespace ElementalHexTactics3D.Units
         [Header("Turn Action Economy")]
         [SerializeField] private bool hasMovedThisTurn = false;
         [SerializeField] private bool hasActedThisTurn = false;
+        [SerializeField] private bool hasSiphonedThisTurn = false;
 
         [Header("Grid Positioning")]
         [SerializeField] private HexCoordinates coordinates;
@@ -215,12 +216,19 @@ namespace ElementalHexTactics3D.Units
             }
         }
 
+        public bool HasSiphonedThisTurn
+        {
+            get => hasSiphonedThisTurn;
+            set => hasSiphonedThisTurn = value;
+        }
+
         public bool IsExhausted => hasMovedThisTurn && hasActedThisTurn;
 
         public void ResetTurnActions()
         {
             hasMovedThisTurn = false;
             hasActedThisTurn = false;
+            hasSiphonedThisTurn = false;
             UpdateAttunement();
             UpdateBaseRingVisuals();
         }

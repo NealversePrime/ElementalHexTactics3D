@@ -993,7 +993,7 @@ namespace ElementalHexTactics3D.UI
             if (btnHarvestCore != null)
             {
                 btnHarvestCore.gameObject.SetActive(!isTutorial1);
-                btnHarvestCore.interactable = canCombat;
+                btnHarvestCore.interactable = canCombat && !unit.HasSiphonedThisTurn;
                 SetButtonActiveHighlight(btnHarvestCore, currentMode == UnitActionMode.ConsumeLand);
             }
 
