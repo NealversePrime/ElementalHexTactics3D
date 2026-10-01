@@ -960,7 +960,7 @@ namespace ElementalHexTactics3D.InputHandling
                 SoundManager3D.Instance?.PlayTitanStrike();
                 if (currentSelectedUnit.Affinity == ElementalAffinity.Fire || currentSelectedUnit.UnitName.Contains("Dragon"))
                 {
-                    CombatVFXManager.Instance?.PlaySpellImpact(targetEnemy.transform.position + Vector3.up * 0.5f, ElementType.Fire);
+                    CombatVFXManager.Instance?.PlayFireBurst(targetEnemy.transform.position + Vector3.up * 0.5f);
                 }
                 int totalDmg = currentSelectedUnit.EffectiveAttackDamage;
                 string label = (currentSelectedUnit.BonusAttackDamage > 0)

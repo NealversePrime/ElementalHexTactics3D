@@ -338,7 +338,7 @@ namespace ElementalHexTactics3D.Tutorial
                         if (currentHighlightedTile == null || !currentHighlightedTile.IsOccupied || currentHighlightedTile.GetOccupant()?.Faction != UnitFaction.Enemy)
                         {
                             TacticalUnit3D livingEnemy = null;
-                            foreach (var u in Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
+                            foreach (var u in UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
                             {
                                 if (u.Faction == UnitFaction.Enemy && u.CurrentHealth > 0 && u.CurrentTile != null)
                                 {
@@ -694,7 +694,7 @@ namespace ElementalHexTactics3D.Tutorial
                 case TutorialStep.Stage3_MagmaDragonTitanStrike:
                     HexGrid3D g3 = HexGrid3D.Instance;
                     TacticalUnit3D targetWarden = null;
-                    foreach (var u in Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
+                    foreach (var u in UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
                     {
                         if (u.Faction == UnitFaction.Enemy && u.CurrentHealth > 0)
                         {
