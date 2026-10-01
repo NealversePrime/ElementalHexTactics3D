@@ -1068,9 +1068,10 @@ namespace ElementalHexTactics3D.UI
             if (string.IsNullOrEmpty(activeTutorialButtonKey)) return;
 
             bool isPushOrStrike = (activeTutorialButtonKey == "PushOrStrike");
+            bool isStrikeOrMove = (activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "StrikeOrMove");
             Button targetBtn = null;
             if (activeTutorialButtonKey == "Move") targetBtn = btnMove;
-            else if (activeTutorialButtonKey == "Strike") targetBtn = btnTitanStrike;
+            else if (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike") targetBtn = btnTitanStrike;
             else if (activeTutorialButtonKey == "Fireball") targetBtn = btnFireball;
             else if (activeTutorialButtonKey == "Push") targetBtn = btnPush;
             else if (activeTutorialButtonKey == "HarvestCore" || activeTutorialButtonKey == "Siphon") targetBtn = btnHarvestCore;
@@ -1093,15 +1094,26 @@ namespace ElementalHexTactics3D.UI
             foreach (var btn in allActionButtons)
             {
                 if (btn == null) continue;
-                bool isAllowed = (btn == targetBtn) || (isPushOrStrike && (btn == btnPush || btn == btnTitanStrike));
+                bool isAllowed = (btn == targetBtn) || 
+                                 (isPushOrStrike && (btn == btnPush || btn == btnTitanStrike)) ||
+                                 (isStrikeOrMove && (btn == btnTitanStrike || btn == btnMove));
                 if (isAllowed)
                 {
                     btn.interactable = true;
-                    float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
-                    Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
-                    var colors = btn.colors;
-                    colors.normalColor = goldPulse;
-                    btn.colors = colors;
+                    if (btn == targetBtn)
+                    {
+                        float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
+                        Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
+                        var colors = btn.colors;
+                        colors.normalColor = goldPulse;
+                        btn.colors = colors;
+                    }
+                    else
+                    {
+                        var colors = btn.colors;
+                        colors.normalColor = Color.white;
+                        btn.colors = colors;
+                    }
                 }
                 else
                 {

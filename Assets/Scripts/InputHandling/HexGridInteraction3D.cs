@@ -272,7 +272,23 @@ namespace ElementalHexTactics3D.InputHandling
                     {
                         // Allow selecting friendly units if needed, otherwise ignore misclicks to protect tutorial flow
                         TacticalUnit3D allyUnit = directHitUnit ?? (clickedTile != null ? clickedTile.GetOccupant() : null);
-                        if (allyUnit == null || allyUnit.Faction != UnitFaction.Player)
+                        if (allyUnit != null && allyUnit.Faction == UnitFaction.Player)
+                        {
+                            // Friendly unit selection allowed!
+                        }
+                        // Allow moving to any valid reachable tile when in Move mode
+                        else if (currentMode == UnitActionMode.Move && activeTargetTiles.Contains(clickedTile))
+                        {
+                            // Valid move destination allowed!
+                        }
+                        // In Stage 3 Magma Dragon strike, allow targeting any living enemy within attack range
+                        else if (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_MagmaDragonTitanStrike &&
+                                 (currentMode == UnitActionMode.TitanStrike || currentMode == UnitActionMode.None) &&
+                                 clickedTile != null && clickedTile.IsOccupied && clickedTile.GetOccupant()?.Faction == UnitFaction.Enemy)
+                        {
+                            // Enemy target allowed!
+                        }
+                        else
                         {
                             Combat.SoundManager3D.Instance?.PlayButtonClick();
                             return;
@@ -446,12 +462,25 @@ namespace ElementalHexTactics3D.InputHandling
                     break;
 
                 case UnitActionMode.KineticPush:
-                case UnitActionMode.TitanStrike:
                     var adjTiles = HexGrid3D.Instance.GetNeighbors(currentSelectedUnit.Coordinates);
                     foreach (var tile in adjTiles)
                     {
                         activeTargetTiles.Add(tile);
                         tile.SetReachable(true);
+                    }
+                    break;
+
+                case UnitActionMode.TitanStrike:
+                    int strikeRange = (currentSelectedUnit != null && 
+                        (currentSelectedUnit.Archetype == UnitArchetype.Titan || currentSelectedUnit.UnitName.Contains("Dragon"))) ? 2 : 1;
+                    var strikeTiles = HexGrid3D.Instance.GetTilesInRange(currentSelectedUnit.Coordinates, strikeRange);
+                    foreach (var tile in strikeTiles)
+                    {
+                        if (tile != currentSelectedUnit.CurrentTile)
+                        {
+                            activeTargetTiles.Add(tile);
+                            tile.SetReachable(true);
+                        }
                     }
                     break;
 
@@ -929,6 +958,10 @@ namespace ElementalHexTactics3D.InputHandling
                 yield return currentSelectedUnit.PlayAttackLunge(targetEnemy.transform.position, 0.22f);
                 TacticalCameraController.Instance?.Shake(0.25f, 0.25f);
                 SoundManager3D.Instance?.PlayTitanStrike();
+                if (currentSelectedUnit.Affinity == ElementalAffinity.Fire || currentSelectedUnit.UnitName.Contains("Dragon"))
+                {
+                    CombatVFXManager.Instance?.PlaySpellImpact(targetEnemy.transform.position + Vector3.up * 0.5f, ElementType.Fire);
+                }
                 int totalDmg = currentSelectedUnit.EffectiveAttackDamage;
                 string label = (currentSelectedUnit.BonusAttackDamage > 0)
                     ? $"-{totalDmg} CRIT!"

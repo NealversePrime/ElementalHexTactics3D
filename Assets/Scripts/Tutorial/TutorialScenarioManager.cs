@@ -334,6 +334,24 @@ namespace ElementalHexTactics3D.Tutorial
                         break;
 
                     case TutorialStep.Stage3_MagmaDragonTitanStrike:
+                        // Dynamically ensure the tutorial highlighted tile tracks living enemy if pushed
+                        if (currentHighlightedTile == null || !currentHighlightedTile.IsOccupied || currentHighlightedTile.GetOccupant()?.Faction != UnitFaction.Enemy)
+                        {
+                            TacticalUnit3D livingEnemy = null;
+                            foreach (var u in Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
+                            {
+                                if (u.Faction == UnitFaction.Enemy && u.CurrentHealth > 0 && u.CurrentTile != null)
+                                {
+                                    livingEnemy = u;
+                                    break;
+                                }
+                            }
+                            if (livingEnemy != null && livingEnemy.CurrentTile != null && currentHighlightedTile != livingEnemy.CurrentTile)
+                            {
+                                SetTutorialHighlightedTile(livingEnemy.CurrentTile);
+                            }
+                        }
+
                         if (MagmaDragonPlayer != null && (MagmaDragonPlayer.HasActedThisTurn || MagmaDragonPlayer.HasMovedThisTurn))
                         {
                             SetStep(TutorialStep.Stage3_ObliterateCrusaders);
@@ -675,13 +693,24 @@ namespace ElementalHexTactics3D.Tutorial
 
                 case TutorialStep.Stage3_MagmaDragonTitanStrike:
                     HexGrid3D g3 = HexGrid3D.Instance;
-                    HexTile3D wardenTile = g3 != null ? g3.GetTile(new HexCoordinates(0, 1)) : null;
+                    TacticalUnit3D targetWarden = null;
+                    foreach (var u in Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
+                    {
+                        if (u.Faction == UnitFaction.Enemy && u.CurrentHealth > 0)
+                        {
+                            targetWarden = u;
+                            break;
+                        }
+                    }
+                    HexTile3D wardenTile = (targetWarden != null && targetWarden.CurrentTile != null) 
+                        ? targetWarden.CurrentTile 
+                        : (g3 != null ? (g3.GetTile(new HexCoordinates(0, 2)) ?? g3.GetTile(new HexCoordinates(0, 1))) : null);
                     SetTutorialHighlightedTile(wardenTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("TitanStrike");
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 5/5] UNLEASH TITAN MIGHT",
-                        "The Magma Dragon has materialized! Its fiery claws and infernal breath will shatter their divine barriers into dust!",
-                        "Select Magma Dragon, click [Titan Strike / Attack], and crush the Divine Warden at (0, 1)!",
+                        "The Magma Dragon's emergence shockwave blasted the crusaders back! With Range 1-2 Magma Breath, scorch the Divine Warden!",
+                        "Select Magma Dragon, click [🔥 Magma Breath], and scorch the Divine Warden (or Move closer)!",
                         new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;
