@@ -369,6 +369,7 @@ namespace ElementalHexTactics3D.InputHandling
                 (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballScorched ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballMagma ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballOnGrass ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_SelectBasaltVanguard ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_PushEnemyIntoHazard ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SiphonElementalCore ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_EarthGolemCataclysm ||
@@ -751,6 +752,36 @@ namespace ElementalHexTactics3D.InputHandling
             yield return AbyssalRiftConduit3D.Instance.ExecuteDeployUnitRoutine(cmdr, targetTile, HexGrid3D.Instance);
 
             cmdr.ResetTurnActions();
+
+            // In Stage 2 tutorial, also deploy Basalt Vanguard through the rift onto the rift landing tile!
+            if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage2Active)
+            {
+                var basalt = Tutorial.TutorialScenarioManager.Instance.BasaltVanguardPlayer;
+                var riftTile = AbyssalRiftConduit3D.Instance.RiftTile;
+                if (basalt != null && !basalt.gameObject.activeInHierarchy)
+                {
+                    HexTile3D basaltTile = null;
+                    if (riftTile != null && (riftTile.CurrentOccupant == null || riftTile.CurrentOccupant == basalt))
+                    {
+                        basaltTile = riftTile;
+                    }
+                    else if (HexGrid3D.Instance != null)
+                    {
+                        basaltTile = HexGrid3D.Instance.GetTile(new HexCoordinates(0, -2));
+                        if (basaltTile == null || (basaltTile.IsOccupied && basaltTile.CurrentOccupant != basalt))
+                        {
+                            basaltTile = HexGrid3D.Instance.GetTile(new HexCoordinates(1, -2));
+                        }
+                    }
+
+                    if (basaltTile != null)
+                    {
+                        yield return AbyssalRiftConduit3D.Instance.ExecuteDeployUnitRoutine(basalt, basaltTile, HexGrid3D.Instance);
+                        basalt.ResetTurnActions();
+                    }
+                }
+            }
+
             SelectTile(targetTile);
             SelectUnit(cmdr);
         }

@@ -912,7 +912,9 @@ namespace ElementalHexTactics3D.UI
 
             if (btnSummonTitanRift != null)
             {
-                btnSummonTitanRift.interactable = canSummonTitan;
+                bool isStage2 = isTut && Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage2Active;
+                btnSummonTitanRift.gameObject.SetActive(!isStage2);
+                btnSummonTitanRift.interactable = canSummonTitan && !isStage2;
                 if (txtSummonTitanRift != null)
                 {
                     if (!titanInReserve)

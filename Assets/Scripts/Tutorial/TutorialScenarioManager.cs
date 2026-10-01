@@ -46,7 +46,9 @@ namespace ElementalHexTactics3D.Tutorial
         Hub_ClickAbyssalRift,
         Hub_SelectStage2MissionCard,
 
-        // ================= STAGE 2: FRONTIER HAZARDS (NO TITANS YET) ================= //
+        // ================= STAGE 2: FRONTIER HAZARDS (RIFT, TERRAIN & HAZARDS - NO TITANS!) ================= //
+        Stage2_TearOpenRift,
+        Stage2_DeployDemonLord,
         Stage2_SelectDemonLord,
         Stage2_CastFireballScorched,
         Stage2_CastFireballMagma,
@@ -72,8 +74,6 @@ namespace ElementalHexTactics3D.Tutorial
         // Compatibility Aliases
         Stage2_CastFireballOnGrass = Stage2_CastFireballScorched,
         Hub_SelectTutorialMissionCard = Hub_SelectStage2MissionCard,
-        Stage2_TearOpenRift = Stage3_TearOpenRift,
-        Stage2_DeployDemonLord = Stage3_DeployDemonLord,
         Stage2_DeployEarthGolem = Stage3_SummonEarthGolemTitan,
         Stage2_DeployBasaltVanguard = Stage2_SelectBasaltVanguard,
         Stage2_EarthGolemWallSlam = Stage3_EarthGolemCataclysm,
@@ -246,6 +246,20 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 switch (CurrentStep)
                 {
+                    case TutorialStep.Stage2_TearOpenRift:
+                        if (AbyssalRiftConduit3D.Instance != null && AbyssalRiftConduit3D.Instance.RiftTile != null)
+                        {
+                            SetStep(TutorialStep.Stage2_DeployDemonLord);
+                        }
+                        break;
+
+                    case TutorialStep.Stage2_DeployDemonLord:
+                        if (DemonLordPlayer != null && DemonLordPlayer.gameObject.activeInHierarchy && DemonLordPlayer.CurrentTile != null)
+                        {
+                            SetStep(TutorialStep.Stage2_CastFireballScorched);
+                        }
+                        break;
+
                     case TutorialStep.Stage2_SelectDemonLord:
                         if (interaction != null && interaction.SelectedUnit == DemonLordPlayer)
                         {
@@ -460,11 +474,37 @@ namespace ElementalHexTactics3D.Tutorial
                     break;
 
                 // ================= STAGE 2 GUIDANCE (HAZARDS & ALCHEMY - NO TITANS) ================= //
+                case TutorialStep.Stage2_TearOpenRift:
+                    HexGrid3D gRift2 = HexGrid3D.Instance;
+                    HexTile3D riftTarget2 = gRift2 != null ? gRift2.GetTile(new HexCoordinates(0, -2)) : null;
+                    SetTutorialHighlightedTile(riftTarget2);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("TearRift");
+                    banner?.ShowGuidance(
+                        "[STAGE 2 - STEP 1/5] TEAR OPEN ABYSSAL RIFT",
+                        "Our forces are still in Citadel reserve. Let's anchor an Abyssal Rift gateway at the southern clearing!",
+                        "Click [Tear Open Abyssal Rift], then target the clearing at (0, -2)!",
+                        new Color(0.75f, 0.45f, 0.95f)
+                    );
+                    break;
+
+                case TutorialStep.Stage2_DeployDemonLord:
+                    HexGrid3D gDeploy2 = HexGrid3D.Instance;
+                    HexTile3D deployTarget2 = gDeploy2 != null ? gDeploy2.GetTile(new HexCoordinates(1, -2)) : null;
+                    SetTutorialHighlightedTile(deployTarget2);
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("DeployCommander");
+                    banner?.ShowGuidance(
+                        "[STAGE 2 - STEP 2/5] DEPLOY FROM CITADEL RESERVE",
+                        "The rift conduit is humming! Now deploy my Demon Lord into battle—Basalt Vanguard will follow through the portal!",
+                        "Click [Deploy Commander], then target the hex at (1, -2)!",
+                        new Color(0.65f, 0.35f, 0.95f)
+                    );
+                    break;
+
                 case TutorialStep.Stage2_SelectDemonLord:
                     if (DemonLordPlayer != null) SetTutorialHighlightedTile(DemonLordPlayer.CurrentTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 1/4] SELECT DEMON LORD",
+                        "[STAGE 2 - STEP 3/5] SELECT DEMON LORD",
                         "Even with Level 1 mana, my game knowledge is intact. Let's select my Demon Lord to cast Fireball...",
                         "Click the Demon Lord at (1, -2)!",
                         new Color(0.95f, 0.45f, 0.35f)
@@ -477,7 +517,7 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(scorchedTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 2/4] IGNITE MAGMA FROM SCORCHED EARTH",
+                        "[STAGE 2 - STEP 3/5] IGNITE MAGMA FROM SCORCHED EARTH",
                         "The center tile at (0, 0) is already smoldering Scorched Earth (Tier 1). Hitting it with Fireball triggers a thermal breach directly into Molten Magma (Tier 2)!",
                         "Click [Fireball] on the action bar, then target the Scorched tile at (0, 0) to ignite Magma!",
                         new Color(1f, 0.45f, 0.15f)
@@ -492,7 +532,7 @@ namespace ElementalHexTactics3D.Tutorial
                     if (BasaltVanguardPlayer != null) SetTutorialHighlightedTile(BasaltVanguardPlayer.CurrentTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 3/4] SELECT BASALT VANGUARD",
+                        "[STAGE 2 - STEP 4/5] SELECT BASALT VANGUARD",
                         "Molten Magma (Tier 2) is active! Any unit pushed into Magma suffers 3 Burn damage. Time for Basalt Vanguard to strike!",
                         "Click Basalt Vanguard at (0, -2)!",
                         new Color(0.85f, 0.65f, 0.35f)
@@ -505,7 +545,7 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(shielderTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 4/4] KINETIC SHOVE: HAZARD SLAM",
+                        "[STAGE 2 - STEP 5/5] KINETIC SHOVE: HAZARD SLAM",
                         "Basalt Vanguard's Golem Slam displaces targets 1 hex. Shove that Scout Defender straight forward into the molten Magma!",
                         "Click [Push / Golem Slam], then shove the Scout Defender at (0, -1) into the Magma pit!",
                         new Color(0.85f, 0.65f, 0.35f)
@@ -910,7 +950,7 @@ namespace ElementalHexTactics3D.Tutorial
         public void StartStage2FrontierHazards()
         {
             CurrentStage = TutorialStage.Stage2_FrontierHazards;
-            CurrentStep = TutorialStep.Stage2_SelectDemonLord;
+            CurrentStep = TutorialStep.Stage2_TearOpenRift;
             Debug.Log("<color=#FF7043><b>[Tutorial Scenario]</b></color> Starting Stage 2: Frontier Hazards (No Titans)...");
 
             if (TitleMenuCanvasUI.Instance != null)
@@ -923,39 +963,45 @@ namespace ElementalHexTactics3D.Tutorial
 
             SetupStage2Battlefield();
 
+            // Spawn Demon Lord (Commander caster) in Reserve!
+            Sprite dlSprite = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
+            DemonLordPlayer = TacticalUnitSpawner.SpawnUnitStandee(
+                "Demon Lord",
+                UnitFaction.Player,
+                dlSprite,
+                null, // In reserve behind the rift!
+                18, 2,
+                UnitArchetype.Commander,
+                ElementalAffinity.Fire,
+                3,
+                0.85f
+            );
+            if (DemonLordPlayer != null)
+            {
+                DemonLordPlayer.gameObject.SetActive(false);
+            }
+
+            // Spawn Basalt Vanguard (Infantry Tank general) in Reserve!
+            Sprite basaltSprite = TacticalUnitSpawner.LoadBattlerSprite("BasaltVanguard.png");
+            BasaltVanguardPlayer = TacticalUnitSpawner.SpawnUnitStandee(
+                "Basalt Vanguard",
+                UnitFaction.Player,
+                basaltSprite,
+                null, // In reserve behind the rift!
+                16, 2,
+                UnitArchetype.Minion, // Infantry tank! Not a Titan in Stage 2!
+                ElementalAffinity.Earth,
+                2,
+                0.80f
+            );
+            if (BasaltVanguardPlayer != null)
+            {
+                BasaltVanguardPlayer.gameObject.SetActive(false);
+            }
+
             HexGrid3D grid = HexGrid3D.Instance;
             if (grid != null)
             {
-                // Spawn Demon Lord (Commander caster) at (1, -2)
-                HexTile3D dlTile = grid.GetTile(new HexCoordinates(1, -2));
-                Sprite dlSprite = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
-                DemonLordPlayer = TacticalUnitSpawner.SpawnUnitStandee(
-                    "Demon Lord",
-                    UnitFaction.Player,
-                    dlSprite,
-                    dlTile,
-                    18, 2,
-                    UnitArchetype.Commander,
-                    ElementalAffinity.Fire,
-                    3,
-                    0.85f
-                );
-
-                // Spawn Basalt Vanguard (Infantry Tank general) at (0, -2)
-                HexTile3D bvTile = grid.GetTile(new HexCoordinates(0, -2));
-                Sprite basaltSprite = TacticalUnitSpawner.LoadBattlerSprite("BasaltVanguard.png");
-                BasaltVanguardPlayer = TacticalUnitSpawner.SpawnUnitStandee(
-                    "Basalt Vanguard",
-                    UnitFaction.Player,
-                    basaltSprite,
-                    bvTile,
-                    16, 2,
-                    UnitArchetype.Minion, // Infantry tank! Not a Titan in Stage 2!
-                    ElementalAffinity.Earth,
-                    2,
-                    0.80f
-                );
-
                 // Spawn Radiant Synod Scouts: Defender at (0, -1) right in front of Basalt Vanguard and Magma pit!
                 HexTile3D shielderTile = grid.GetTile(new HexCoordinates(0, -1));
                 Sprite shielderSprite = TacticalUnitSpawner.LoadBattlerSprite("holyshielder.png");
@@ -1000,7 +1046,7 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "🌲 STAGE 2: FRONTIER SKIRMISH 🌲",
-                    "Ignite Magma (Tier 2) from pre-heated Scorched Earth & Shove enemies with Basalt Vanguard!",
+                    "Tear open the Abyssal Rift, deploy forces, ignite Magma, and shove scouts into hazards!",
                     3.5f,
                     new Color(0.95f, 0.55f, 0.15f)
                 );
@@ -1008,7 +1054,7 @@ namespace ElementalHexTactics3D.Tutorial
 
             StartCoroutine(PlayDialogueDelayed(StorySequenceId.Stage2FrontierIntro, 0.8f, () =>
             {
-                SetStep(TutorialStep.Stage2_SelectDemonLord);
+                SetStep(TutorialStep.Stage2_TearOpenRift);
             }));
         }
 

@@ -669,22 +669,22 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Their scouts carry blessed shields and longbows, Sire. With your core fractured at Level 1, a basic Fireball on normal grass would only scorch it—it won't melt through their defenses!",
+                        "Our forces are still in Citadel reserve, Sire. First, we must tear open an Abyssal Rift conduit at the southern clearing (0, -2) to bridge our deployment!",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Look closer at the center hex at (0, 0), Vanguard. It's already smoldering Scorched Earth (Tier 1) from previous skirmishes! In Omniterra's elemental engine, when an already Scorched tile is hit with matching Fire magic, it triggers a thermal threshold breach—igniting directly into molten Magma (Tier 2) in a single cast!",
+                        "Right. Once our portal is anchored, I'll step through at (1, -2) and you advance alongside me. And notice the terrain ahead: the center hex at (0, 0) is already smoldering Scorched Earth (Tier 1)!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "A thermal chain reaction! Even with Level 1 mana, striking pre-heated ground forges Tier 2 Magma! Any unit standing on molten Magma suffers 3 Burn damage!",
+                        "A thermal chain reaction! Striking pre-heated Scorched ground with your Fireball triggers an instant breach into molten Magma (Tier 2)! Any unit standing on Magma suffers 3 Burn damage!",
                         basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "And once that Magma pit is blazing, your Golem Slam can shove their Scout Defender straight into the inferno. Let's move!",
+                        "And once that Magma pit is blazing, your Golem Slam can shove their Scout Defender straight into the inferno. Let's tear open the Rift!",
                         demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
