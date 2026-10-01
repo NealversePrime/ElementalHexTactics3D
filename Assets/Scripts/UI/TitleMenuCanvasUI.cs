@@ -84,7 +84,7 @@ namespace ElementalHexTactics3D.UI
 
         [Header("Developer Options")]
         [Tooltip("When enabled, pressing Play directly opens Citadel Town Hub with starter reserve units ready.")]
-        [SerializeField] private bool skipTutorialToHub = true;
+        [SerializeField] private bool skipTutorialToHub = false;
 
         public const string PREF_SKIP_TUTORIAL = "EHT3D_SkipTutorialToHub";
 
@@ -135,7 +135,7 @@ namespace ElementalHexTactics3D.UI
 
             // Determine initial theme mode based on persistent meta-state or developer skip toggle
             bool transmigrated = ElementalHexTactics3D.Campaign.CampaignSaveManager.HasTransmigrated();
-            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 1) == 1;
+            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 0) == 1;
             currentThemeMode = (transmigrated || isSkipActive) ? TitleThemeMode.DemonLordRebellion : TitleThemeMode.PaladinHolyland;
 
             AdjustModalLayouts();
@@ -704,7 +704,7 @@ namespace ElementalHexTactics3D.UI
             Text playTxt = btnPlay.GetComponentInChildren<Text>();
             if (playTxt == null) return;
 
-            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 1) == 1;
+            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 0) == 1;
             if (currentThemeMode == TitleThemeMode.PaladinHolyland && !isSkipActive)
             {
                 playTxt.text = "⚔️ START HOLY QUEST";
@@ -750,12 +750,8 @@ namespace ElementalHexTactics3D.UI
         public void OnPlayClicked()
         {
             PlaySoundClick();
-            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 1) == 1;
+            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 0) == 1;
             if (isSkipActive || currentThemeMode == TitleThemeMode.DemonLordRebellion)
-            {
-                ShowTownHub();
-            }
-            else if (townHubPanel != null)
             {
                 ShowTownHub();
             }
