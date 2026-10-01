@@ -110,18 +110,28 @@ namespace ElementalHexTactics3D.UI.Hub
                 {
                     if (bgImg.sprite == null || bgImg.sprite.name != "full")
                     {
-                        string path = System.IO.Path.Combine(Application.dataPath, "Sprites/Hub/full.png");
-                        if (System.IO.File.Exists(path))
+                        Sprite resSp = Resources.Load<Sprite>("Hub/full");
+                        if (resSp != null)
                         {
-                            byte[] data = System.IO.File.ReadAllBytes(path);
-                            Texture2D tex = new Texture2D(1920, 1080, TextureFormat.RGBA32, false);
-                            if (tex.LoadImage(data))
+                            bgImg.sprite = resSp;
+                            bgImg.color = Color.white;
+                        }
+                        else
+                        {
+                            string streamingPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Sprites/Hub/full.png");
+                            string path = System.IO.File.Exists(streamingPath) ? streamingPath : System.IO.Path.Combine(Application.dataPath, "Sprites/Hub/full.png");
+                            if (System.IO.File.Exists(path))
                             {
-                                tex.name = "full";
-                                Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-                                sp.name = "full";
-                                bgImg.sprite = sp;
-                                bgImg.color = Color.white;
+                                byte[] data = System.IO.File.ReadAllBytes(path);
+                                Texture2D tex = new Texture2D(1920, 1080, TextureFormat.RGBA32, false);
+                                if (tex.LoadImage(data))
+                                {
+                                    tex.name = "full";
+                                    Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                                    sp.name = "full";
+                                    bgImg.sprite = sp;
+                                    bgImg.color = Color.white;
+                                }
                             }
                         }
                     }

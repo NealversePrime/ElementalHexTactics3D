@@ -428,6 +428,8 @@ namespace ElementalHexTactics3D.UI
 #if UNITY_EDITOR
                         paladinModeBgSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_holyland_cathedral.jpg");
 #endif
+                        if (paladinModeBgSprite == null)
+                            paladinModeBgSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_holyland_cathedral.jpg");
                     }
                     if (paladinModeBgSprite != null) titleBackgroundImage.sprite = paladinModeBgSprite;
                 }
@@ -438,6 +440,8 @@ namespace ElementalHexTactics3D.UI
 #if UNITY_EDITOR
                         demonLordModeBgSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_demonlord_throne.jpg");
 #endif
+                        if (demonLordModeBgSprite == null)
+                            demonLordModeBgSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_demonlord_throne.jpg");
                     }
                     if (demonLordModeBgSprite != null) titleBackgroundImage.sprite = demonLordModeBgSprite;
                 }

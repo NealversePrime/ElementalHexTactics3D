@@ -28,6 +28,7 @@ namespace ElementalHexTactics3D.Tutorial
         [SerializeField] private Text txtHint;
         [SerializeField] private Text txtSpeakerTag;
         [SerializeField] private Text txtAvatarIcon;
+        [SerializeField] private Image imgAvatarPortrait;
 
         private Coroutine pulseCoroutine;
         private Canvas rootCanvas;
@@ -170,7 +171,29 @@ namespace ElementalHexTactics3D.Tutorial
             avOutline.effectColor = new Color(0.35f, 0.85f, 1.0f, 0.7f);
             avOutline.effectDistance = new Vector2(1f, -1f);
 
-            // Avatar Icon / Emoji
+            // Avatar Portrait Image
+            GameObject imgObj = CreateUI("Img_AvatarPortrait", avatarBox.transform);
+            RectTransform imgRect = imgObj.GetComponent<RectTransform>();
+            imgRect.anchorMin = new Vector2(0.06f, 0.35f);
+            imgRect.anchorMax = new Vector2(0.94f, 0.98f);
+            imgRect.anchoredPosition = Vector2.zero;
+            imgRect.sizeDelta = Vector2.zero;
+
+            imgAvatarPortrait = imgObj.AddComponent<Image>();
+            imgAvatarPortrait.preserveAspect = true;
+            imgAvatarPortrait.raycastTarget = false;
+            Sprite mcPort = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("mc_silhouette.png");
+            if (mcPort != null)
+            {
+                imgAvatarPortrait.sprite = mcPort;
+                imgAvatarPortrait.color = Color.white;
+            }
+            else
+            {
+                imgAvatarPortrait.color = Color.clear;
+            }
+
+            // Avatar Icon / Emoji (fallback)
             GameObject iconObj = CreateUI("Txt_AvatarIcon", avatarBox.transform);
             RectTransform iconRect = iconObj.GetComponent<RectTransform>();
             iconRect.anchorMin = new Vector2(0f, 0.35f);
@@ -180,9 +203,9 @@ namespace ElementalHexTactics3D.Tutorial
 
             txtAvatarIcon = iconObj.AddComponent<Text>();
             txtAvatarIcon.font = font;
-            txtAvatarIcon.fontSize = 26;
+            txtAvatarIcon.fontSize = 24;
             txtAvatarIcon.alignment = TextAnchor.MiddleCenter;
-            txtAvatarIcon.text = "💡";
+            txtAvatarIcon.text = mcPort != null ? "" : "✦";
             txtAvatarIcon.color = Color.white;
             txtAvatarIcon.raycastTarget = false;
 

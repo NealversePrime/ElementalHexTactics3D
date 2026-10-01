@@ -244,12 +244,8 @@ namespace ElementalHexTactics3D.UI
 #if UNITY_EDITOR
             Font fontBold = UnityEditor.AssetDatabase.LoadAssetAtPath<Font>("Assets/Fonts/Font_Bold.ttf");
             if (fontBold != null) font = fontBold;
-            Sprite panelFrame = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/UI_Panel_Frame.png");
-            Sprite btnNormal = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/UI_Button_Normal.png");
-#else
-            Sprite panelFrame = null;
-            Sprite btnNormal = null;
-#endif
+            Sprite panelFrame = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_Panel_Frame.png");
+            Sprite btnNormal = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
 
             // ================= 1. UNIT STATUS CARD (Top-Left) ================= //
             unitCardRoot = CreateUI("Card_UnitStatus", container.transform);

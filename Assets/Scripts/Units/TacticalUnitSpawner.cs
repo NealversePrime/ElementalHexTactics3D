@@ -18,11 +18,31 @@ namespace ElementalHexTactics3D.Units
         {
             if (cachedRingSprite != null) return cachedRingSprite;
 
+            // 1. Resources.Load (Standalone build & Editor)
+            cachedRingSprite = Resources.Load<Sprite>("UnitRing_Circle");
+            if (cachedRingSprite == null) cachedRingSprite = Resources.Load<Sprite>("Sprites/UnitRing_Circle");
+            if (cachedRingSprite != null) return cachedRingSprite;
+
 #if UNITY_EDITOR
             cachedRingSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UnitRing_Circle.png");
             if (cachedRingSprite != null) return cachedRingSprite;
 #endif
 
+            // 2. StreamingAssets fallback
+            string streamingPath = Path.Combine(Application.streamingAssetsPath, "Sprites/UnitRing_Circle.png");
+            if (File.Exists(streamingPath))
+            {
+                byte[] bytes = File.ReadAllBytes(streamingPath);
+                Texture2D tex = new Texture2D(128, 128, TextureFormat.RGBA32, false);
+                if (tex.LoadImage(bytes))
+                {
+                    tex.name = "UnitRing_Circle";
+                    cachedRingSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                    return cachedRingSprite;
+                }
+            }
+
+            // 3. Application.dataPath fallback
             string ringPath = Path.Combine(Application.dataPath, "Sprites/UnitRing_Circle.png");
             if (File.Exists(ringPath))
             {
@@ -48,7 +68,19 @@ namespace ElementalHexTactics3D.Units
                 return cached;
             }
 
+            string baseName = Path.GetFileNameWithoutExtension(fileName);
+
+            // 1. Resources.Load (Bundled inside standalone build & Editor)
+            Sprite resSprite = Resources.Load<Sprite>("Battlers/" + baseName);
+            if (resSprite == null) resSprite = Resources.Load<Sprite>("Sprites/Battlers/" + baseName);
+            if (resSprite != null)
+            {
+                spriteCache[fileName] = resSprite;
+                return resSprite;
+            }
+
 #if UNITY_EDITOR
+            // 2. AssetDatabase (Editor fast path)
             string assetPath = "Assets/Sprites/Battlers/" + fileName;
             Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
             if (edSprite == null)
@@ -70,6 +102,22 @@ namespace ElementalHexTactics3D.Units
             }
 #endif
 
+            // 3. StreamingAssets (Always copied into build folder)
+            string streamingPath = Path.Combine(Application.streamingAssetsPath, "Sprites/Battlers", fileName);
+            if (File.Exists(streamingPath))
+            {
+                byte[] bytes = File.ReadAllBytes(streamingPath);
+                Texture2D tex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
+                if (tex.LoadImage(bytes))
+                {
+                    tex.name = baseName;
+                    Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                    spriteCache[fileName] = sp;
+                    return sp;
+                }
+            }
+
+            // 4. Application.dataPath fallback
             string filePath = Path.Combine(Application.dataPath, "Sprites/Battlers", fileName);
             if (File.Exists(filePath))
             {
@@ -77,7 +125,7 @@ namespace ElementalHexTactics3D.Units
                 Texture2D tex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
                 if (tex.LoadImage(bytes))
                 {
-                    tex.name = Path.GetFileNameWithoutExtension(fileName);
+                    tex.name = baseName;
                     Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
                     spriteCache[fileName] = sp;
                     return sp;
@@ -103,7 +151,19 @@ namespace ElementalHexTactics3D.Units
                 return cached;
             }
 
+            string baseName = Path.GetFileNameWithoutExtension(fileName);
+
+            // 1. Resources.Load (Bundled inside standalone build & Editor)
+            Sprite resSprite = Resources.Load<Sprite>("Portraits/" + baseName);
+            if (resSprite == null) resSprite = Resources.Load<Sprite>("Sprites/Portraits/" + baseName);
+            if (resSprite != null)
+            {
+                spriteCache[cacheKey] = resSprite;
+                return resSprite;
+            }
+
 #if UNITY_EDITOR
+            // 2. AssetDatabase
             string assetPath = "Assets/Sprites/Portraits/" + fileName;
             EnsureSpriteImporter(assetPath);
             Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
@@ -126,6 +186,22 @@ namespace ElementalHexTactics3D.Units
             }
 #endif
 
+            // 3. StreamingAssets
+            string streamingPath = Path.Combine(Application.streamingAssetsPath, "Sprites/Portraits", fileName);
+            if (File.Exists(streamingPath))
+            {
+                byte[] bytes = File.ReadAllBytes(streamingPath);
+                Texture2D tex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
+                if (tex.LoadImage(bytes))
+                {
+                    tex.name = baseName;
+                    Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                    spriteCache[cacheKey] = sp;
+                    return sp;
+                }
+            }
+
+            // 4. Application.dataPath fallback
             string filePath = Path.Combine(Application.dataPath, "Sprites/Portraits", fileName);
             if (File.Exists(filePath))
             {
@@ -133,7 +209,7 @@ namespace ElementalHexTactics3D.Units
                 Texture2D tex = new Texture2D(256, 256, TextureFormat.RGBA32, false);
                 if (tex.LoadImage(bytes))
                 {
-                    tex.name = Path.GetFileNameWithoutExtension(fileName);
+                    tex.name = baseName;
                     Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
                     spriteCache[cacheKey] = sp;
                     return sp;
@@ -141,6 +217,104 @@ namespace ElementalHexTactics3D.Units
             }
 
             Debug.LogWarning($"[TacticalUnitSpawner] Could not load portrait sprite: {fileName}");
+            return null;
+        }
+
+        public static Sprite LoadBackgroundSprite(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return null;
+
+            string cacheKey = "BG_" + fileName;
+            if (spriteCache.TryGetValue(cacheKey, out Sprite cached) && cached != null)
+            {
+                return cached;
+            }
+
+            string baseName = Path.GetFileNameWithoutExtension(fileName);
+
+            // 1. Resources.Load
+            Sprite resSprite = Resources.Load<Sprite>("Backgrounds/" + baseName);
+            if (resSprite == null) resSprite = Resources.Load<Sprite>("Sprites/Backgrounds/" + baseName);
+            if (resSprite != null)
+            {
+                spriteCache[cacheKey] = resSprite;
+                return resSprite;
+            }
+
+#if UNITY_EDITOR
+            string assetPath = "Assets/Sprites/Backgrounds/" + fileName;
+            Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            if (edSprite != null)
+            {
+                spriteCache[cacheKey] = edSprite;
+                return edSprite;
+            }
+#endif
+
+            // 3. StreamingAssets
+            string streamingPath = Path.Combine(Application.streamingAssetsPath, "Sprites/Backgrounds", fileName);
+            if (File.Exists(streamingPath))
+            {
+                byte[] bytes = File.ReadAllBytes(streamingPath);
+                Texture2D tex = new Texture2D(512, 512, TextureFormat.RGB24, false);
+                if (tex.LoadImage(bytes))
+                {
+                    tex.name = baseName;
+                    Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                    spriteCache[cacheKey] = sp;
+                    return sp;
+                }
+            }
+
+            return null;
+        }
+
+        public static Sprite LoadUISprite(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return null;
+
+            string cacheKey = "UI_" + fileName;
+            if (spriteCache.TryGetValue(cacheKey, out Sprite cached) && cached != null)
+            {
+                return cached;
+            }
+
+            string baseName = Path.GetFileNameWithoutExtension(fileName);
+
+            // 1. Resources.Load
+            Sprite resSprite = Resources.Load<Sprite>("UI/" + baseName);
+            if (resSprite == null) resSprite = Resources.Load<Sprite>("Sprites/UI/" + baseName);
+            if (resSprite != null)
+            {
+                spriteCache[cacheKey] = resSprite;
+                return resSprite;
+            }
+
+#if UNITY_EDITOR
+            string assetPath = "Assets/Sprites/UI/" + fileName;
+            Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            if (edSprite != null)
+            {
+                spriteCache[cacheKey] = edSprite;
+                return edSprite;
+            }
+#endif
+
+            // 3. StreamingAssets
+            string streamingPath = Path.Combine(Application.streamingAssetsPath, "Sprites/UI", fileName);
+            if (File.Exists(streamingPath))
+            {
+                byte[] bytes = File.ReadAllBytes(streamingPath);
+                Texture2D tex = new Texture2D(128, 128, TextureFormat.RGBA32, false);
+                if (tex.LoadImage(bytes))
+                {
+                    tex.name = baseName;
+                    Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                    spriteCache[cacheKey] = sp;
+                    return sp;
+                }
+            }
+
             return null;
         }
 

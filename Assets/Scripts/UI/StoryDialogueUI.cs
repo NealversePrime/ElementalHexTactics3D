@@ -195,6 +195,13 @@ namespace ElementalHexTactics3D.UI
                 demonLordPortrait = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("demonlordportrait.png");
             if (basaltVanguardPortrait == null)
                 basaltVanguardPortrait = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("minotaurportrait.png");
+
+            if (bgMcRoom == null)
+                bgMcRoom = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_mc_room.jpg");
+            if (bgCathedral == null)
+                bgCathedral = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_holyland_cathedral.jpg");
+            if (bgDemonLordThrone == null)
+                bgDemonLordThrone = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_demonlord_throne.jpg");
         }
 
         /// <summary>
