@@ -373,8 +373,7 @@ namespace ElementalHexTactics3D.InputHandling
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SiphonElementalCore ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_EarthGolemCataclysm ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_HolyStrikeDemonLord ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_ShieldShoveSlime ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_FinishDemonLord);
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_ShieldShoveSlime);
 
             if (!isTutorialSkillStep && unit.Faction == UnitFaction.Player && !unit.HasMovedThisTurn && unit.EffectiveMoveRange > 0)
             {
@@ -653,7 +652,7 @@ namespace ElementalHexTactics3D.InputHandling
 
                 case UnitActionMode.TitanStrike:
                     TacticalUnit3D strikeTarget = targetTile.CurrentOccupant as TacticalUnit3D;
-                    if (strikeTarget != null)
+                    if (strikeTarget != null && strikeTarget.Faction != currentSelectedUnit.Faction)
                     {
                         currentSelectedUnit.HasActedThisTurn = true;
                         ClearTargetHighlights();

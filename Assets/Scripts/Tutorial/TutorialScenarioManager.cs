@@ -123,10 +123,13 @@ namespace ElementalHexTactics3D.Tutorial
         // References to active tutorial units
         public TacticalUnit3D PaladinUnit { get; private set; }
         public TacticalUnit3D HolyShielderUnit { get; private set; }
+        public TacticalUnit3D DemonSlimeMinion { get; private set; }
         public TacticalUnit3D DemonLordBoss { get; private set; }
         public TacticalUnit3D DemonLordPlayer { get; private set; }
         public TacticalUnit3D BasaltVanguardPlayer { get; private set; }
         public TacticalUnit3D EarthGolemPlayer { get; private set; }
+
+        private bool isStage1Ending = false;
 
         private HexTile3D currentHighlightedTile = null;
         public HexTile3D CurrentHighlightedTile => currentHighlightedTile;
@@ -209,7 +212,7 @@ namespace ElementalHexTactics3D.Tutorial
                         break;
 
                     case TutorialStep.Stage1_ShieldShoveSlime:
-                        if (HolyShielderUnit != null && (HolyShielderUnit.HasActedThisTurn || HolyShielderUnit.HasMovedThisTurn))
+                        if (HolyShielderUnit != null && HolyShielderUnit.HasActedThisTurn)
                         {
                             SetStep(TutorialStep.Stage1_MoveShielderOrEndTurn);
                         }
@@ -338,32 +341,34 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
                         "[STEP 1/6] SELECT THE PALADIN",
-                        "All right... first, I just need to click my Paladin to issue orders...",
-                        "Click the Paladin (Chosen Hero) at (0, -1)!",
+                        "All right... first, I need to select my Paladin to issue movement and combat orders...",
+                        "Click the Paladin (Chosen Hero) at (0, -2)!",
                         new Color(1f, 0.88f, 0.35f)
                     );
                     break;
 
                 case TutorialStep.Stage1_MovePaladin:
                     HexGrid3D grid1 = HexGrid3D.Instance;
-                    HexTile3D targetForwardTile = grid1 != null ? grid1.GetTile(new HexCoordinates(0, 0)) : null;
+                    HexTile3D targetForwardTile = grid1 != null ? grid1.GetTile(new HexCoordinates(0, -1)) : null;
                     SetTutorialHighlightedTile(targetForwardTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Move");
                     banner?.ShowGuidance(
                         "[STEP 2/6] ADVANCE TO BLUE HEX",
-                        "The movement range lights up in cyan. Now click the forward hex to close distance on the demon...",
-                        "Click the highlighted blue hex at (0, 0) to step forward!",
+                        "The movement range lights up in cyan. Let's advance forward to close distance on the abyssal spawn...",
+                        "Click the highlighted blue hex at (0, -1) to step forward!",
                         new Color(0.35f, 0.85f, 1.0f)
                     );
                     break;
 
                 case TutorialStep.Stage1_HolyStrikeDemonLord:
-                    if (DemonLordBoss != null) SetTutorialHighlightedTile(DemonLordBoss.CurrentTile);
+                    HexGrid3D gridStrike = HexGrid3D.Instance;
+                    HexTile3D slimeStrikeTile = gridStrike != null ? gridStrike.GetTile(new HexCoordinates(0, 0)) : null;
+                    SetTutorialHighlightedTile(slimeStrikeTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Strike");
                     banner?.ShowGuidance(
                         "[STEP 3/6] UNLEASH HOLY STRIKE",
-                        "The demon is within sword reach! Time to unleash Holy Strike and slash through his guard!",
-                        "Click [Holy Strike] on the action bar, then strike the Demon Lord!",
+                        "The vanguard demon slime is right in front of us! Let's soften it up with a basic Holy Strike!",
+                        "Click [Holy Strike] on the action bar, then strike the Demon Slime at (0, 0)!",
                         new Color(1f, 0.45f, 0.25f)
                     );
                     break;
@@ -373,7 +378,7 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
                         "[STEP 4/6] SELECT HOLY SHIELDER",
-                        "Great strike! But that demon slime is encroaching on my left flank. Let's command my frontline tank!",
+                        "The slime took a direct hit and is staggered! Now let's command my frontline tank on the flank to finish it off!",
                         "Click the Holy Shielder at (-1, 0)!",
                         new Color(0.45f, 0.85f, 1.0f)
                     );
@@ -381,13 +386,13 @@ namespace ElementalHexTactics3D.Tutorial
 
                 case TutorialStep.Stage1_ShieldShoveSlime:
                     HexGrid3D gGrid = HexGrid3D.Instance;
-                    HexTile3D slimeTile = gGrid != null ? gGrid.GetTile(new HexCoordinates(-1, 1)) : null;
-                    SetTutorialHighlightedTile(slimeTile);
+                    HexTile3D slimeShoveTile = gGrid != null ? gGrid.GetTile(new HexCoordinates(0, 0)) : null;
+                    SetTutorialHighlightedTile(slimeShoveTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
                     banner?.ShowGuidance(
                         "[STEP 5/6] KINETIC SHOVE: WALL SLAM",
-                        "Notice the solid Stone Pillar behind that slime at (-1, 2)! Shoving an enemy into obstacles inflicts heavy bonus Wall Slam collision damage!",
-                        "Click [Shield Shove / Push] on the action bar, then target the slime at (-1, 1) to slam it into the pillar!",
+                        "Notice that solid Stone Pillar behind the slime at (1, 0)! Shoving an enemy into obstacles inflicts heavy bonus Wall Slam collision damage!",
+                        "Click [Shield Shove / Push] on the action bar, then target the slime at (0, 0) to slam it into the pillar!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
                     break;
@@ -397,7 +402,7 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("EndTurn");
                     banner?.ShowGuidance(
                         "[STEP 6/6] END YOUR TURN",
-                        "Boom! 3 collision damage pulverized the minion! Both our crusade units have acted. Let's pass the turn...",
+                        "Boom! 3 collision damage pulverized the minion into dust! Both our crusade units have acted. Let's pass the turn...",
                         "Click [END TURN] in the bottom right corner!",
                         new Color(0.45f, 0.95f, 0.65f)
                     );
@@ -408,23 +413,19 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
                         "[ENEMY PHASE] WITHSTAND RETALIATION",
-                        "The demon lord counterattacks! But thanks to my paladin's Divine Blessing armor, his dark claws can't break through!",
+                        "The Demon Lord marches forward with furious dark claws! But our Paladin's blessed armor easily withstands the blow!",
                         "Observing enemy turn...",
                         new Color(0.95f, 0.35f, 0.25f)
                     );
                     break;
 
                 case TutorialStep.Stage1_FinishDemonLord:
-                    if (PaladinUnit != null)
-                    {
-                        HexGridInteraction3D.Instance?.SelectUnit(PaladinUnit);
-                    }
-                    if (DemonLordBoss != null) SetTutorialHighlightedTile(DemonLordBoss.CurrentTile);
-                    CombatHudCanvasUI.Instance?.HighlightTutorialButton("PushOrStrike");
+                    ClearTutorialHighlightedTile();
+                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[CRUSADE FINALE] HOLY REPEL WALL SLAM",
-                        "His defenses are down and he's standing in front of his Obsidian Throne! Launch him into his throne with Holy Repel for the solo clear!",
-                        "Click [Holy Repel / Push] on the action bar and shove the Demon Lord into the throne pillar!",
+                        "⚔️ [FREE COMBAT] SLAY DEMON LORD MALAKOR ⚔️",
+                        "Only the Demon Lord remains! The training wheels are off—take full tactical command! Freely move, basic attack, or shove him into the stone pillars!",
+                        "Freely move, basic attack, or shove the Demon Lord to finish the raid!",
                         new Color(1f, 0.88f, 0.35f)
                     );
                     break;
@@ -655,6 +656,7 @@ namespace ElementalHexTactics3D.Tutorial
         {
             CurrentStage = TutorialStage.Stage1_HolyCrusade;
             CurrentStep = TutorialStep.Stage1_SelectPaladin;
+            isStage1Ending = false;
             Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Starting Stage 1: The Holy Crusade...");
 
             // 1. Enter in-game combat HUD view
@@ -679,7 +681,8 @@ namespace ElementalHexTactics3D.Tutorial
             HexGrid3D grid = HexGrid3D.Instance;
             if (grid != null)
             {
-                HexTile3D paladinTile = grid.GetTile(new HexCoordinates(0, -1));
+                // Paladin starts at (0, -2), steps forward to (0, -1) in Step 2, and strikes Slime at (0, 0)
+                HexTile3D paladinTile = grid.GetTile(new HexCoordinates(0, -2));
                 Sprite paladinSprite = TacticalUnitSpawner.LoadBattlerSprite("paladin.png");
                 PaladinUnit = TacticalUnitSpawner.SpawnUnitStandee(
                     "Paladin (Chosen Hero)",
@@ -693,6 +696,7 @@ namespace ElementalHexTactics3D.Tutorial
                     0.80f
                 );
 
+                // Holy Shielder starts at (-1, 0) on the flank, ready to shove Slime at (0, 0) eastward into (1, 0) Stone Pillar
                 HexTile3D shielderTile = grid.GetTile(new HexCoordinates(-1, 0));
                 Sprite shielderSprite = TacticalUnitSpawner.LoadBattlerSprite("holyshielder.png");
                 HolyShielderUnit = TacticalUnitSpawner.SpawnUnitStandee(
@@ -707,29 +711,31 @@ namespace ElementalHexTactics3D.Tutorial
                     0.75f
                 );
 
-                // 6. Spawn Enemy Units (Demon Lord Boss & Demon Slimes)
-                HexTile3D demonLordTile = grid.GetTile(new HexCoordinates(0, 1));
+                // 6. Spawn Enemy Units (Demon Lord Boss at throne & Demon Slime minion on frontline)
+                // Demon Lord Boss sits on his throne at (0, 2), waiting until his vanguard minion falls
+                HexTile3D demonLordTile = grid.GetTile(new HexCoordinates(0, 2));
                 Sprite demonLordSprite = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
                 DemonLordBoss = TacticalUnitSpawner.SpawnUnitStandee(
                     "Demon Lord",
                     UnitFaction.Enemy,
                     demonLordSprite,
                     demonLordTile,
-                    6, 2, // 3 Holy Strike dmg + 3 Holy Repel Wall Slam dmg = lethal!
+                    5, 2, // 5 HP: any combination of Strike (3), Bash (2), or Shove (3) finishes him in Round 2!
                     UnitArchetype.Commander,
                     ElementalAffinity.Fire,
                     2,
                     0.90f
                 );
 
-                HexTile3D slime1Tile = grid.GetTile(new HexCoordinates(-1, 1));
+                // Demon Slime vanguard sent forward by Demon Lord to center hex (0, 0)
+                HexTile3D slimeTile = grid.GetTile(new HexCoordinates(0, 0));
                 Sprite slimeSprite = TacticalUnitSpawner.LoadBattlerSprite("Demon Slime.png");
-                TacticalUnitSpawner.SpawnUnitStandee(
-                    "Demon Slime A",
+                DemonSlimeMinion = TacticalUnitSpawner.SpawnUnitStandee(
+                    "Demon Slime",
                     UnitFaction.Enemy,
                     slimeSprite,
-                    slime1Tile,
-                    3, 2, // 3 Wall Slam dmg = lethal!
+                    slimeTile,
+                    5, 1, // 5 HP: 3 Holy Strike + 3 Shield Shove Wall Slam = lethal!
                     UnitArchetype.Minion,
                     ElementalAffinity.None,
                     1,
@@ -794,15 +800,23 @@ namespace ElementalHexTactics3D.Tutorial
                         TierLevel = 1
                     };
 
-                    // Stone Pillars framing the throne room for Wall Slam collisions!
-                    if ((q == -1 && r == 2) || (q == 0 && r == 2) || (q == 1 && r == 2))
+                    // Stone Pillar at (1, 0) - directly east of Demon Slime at (0, 0)
+                    // When Holy Shielder at (-1, 0) pushes the slime, it slams into this pillar!
+                    if (q == 1 && r == 0)
                     {
                         spec.ElevationTier = 0;
                         spec.IsPillarObstacle = true;
                         spec.State = TileState.StonePillar;
                     }
-                    // Demon Lord Throne at (0, 1)
-                    else if (q == 0 && r == 1)
+                    // Stone Pillars framing the throne room for Wall Slam collisions!
+                    else if ((q == -1 && r == 2) || (q == 1 && r == 2) || (q == 0 && r == 3))
+                    {
+                        spec.ElevationTier = 0;
+                        spec.IsPillarObstacle = true;
+                        spec.State = TileState.StonePillar;
+                    }
+                    // Demon Lord Throne at (0, 2)
+                    else if (q == 0 && r == 2)
                     {
                         spec.ElevationTier = 1;
                         spec.State = TileState.Barren;
@@ -821,6 +835,9 @@ namespace ElementalHexTactics3D.Tutorial
 
         private void OnStage1Victory()
         {
+            if (isStage1Ending) return;
+            isStage1Ending = true;
+
             Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Stage 1 Holy Crusade WON! Triggering Transmigration Glitch...");
             SoundManager3D.Instance?.PlayVictory();
             ClearTutorialHighlightedTile();

@@ -560,12 +560,12 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "Demon Lord",
-                        "Insolent insects! You dare desecrate my abyssal domain with your pitiful spark? Your brittle bones shall feed the dark void!",
+                        "Insolent insects! Abyssal spawn, crawl forth and tear their holy flesh apart! Feed upon their bones!",
                         demonLordPortrait, false, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "Spare me your villainous bluster! Holy Vanguard, advance and purge this profane throne room!",
+                        "He's sending his vanguard minion forward! Holy Shielder, form ranks—let us purge this beast before taking down the Demon Lord!",
                         paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
                     ));
                     break;
