@@ -82,6 +82,12 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Button btnThemeModeToggle;
         [SerializeField] private Text txtThemeModeStatus;
 
+        [Header("Developer Options")]
+        [Tooltip("When enabled, pressing Play directly opens Citadel Town Hub with starter reserve units ready.")]
+        [SerializeField] private bool skipTutorialToHub = true;
+
+        public const string PREF_SKIP_TUTORIAL = "EHT3D_SkipTutorialToHub";
+
         // State Tracking
         private bool isInGame = false;
         private bool isInTownHub = false;
@@ -127,9 +133,10 @@ namespace ElementalHexTactics3D.UI
                 if (oldSpills != null) DestroyImmediate(oldSpills.gameObject);
             }
 
-            // Determine initial theme mode based on persistent meta-state
+            // Determine initial theme mode based on persistent meta-state or developer skip toggle
             bool transmigrated = ElementalHexTactics3D.Campaign.CampaignSaveManager.HasTransmigrated();
-            currentThemeMode = transmigrated ? TitleThemeMode.DemonLordRebellion : TitleThemeMode.PaladinHolyland;
+            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 1) == 1;
+            currentThemeMode = (transmigrated || isSkipActive) ? TitleThemeMode.DemonLordRebellion : TitleThemeMode.PaladinHolyland;
 
             AdjustModalLayouts();
             AdjustTitleScreenLayout();
@@ -594,6 +601,12 @@ namespace ElementalHexTactics3D.UI
             TitleThemeMode newMode = currentThemeMode == TitleThemeMode.PaladinHolyland
                 ? TitleThemeMode.DemonLordRebellion
                 : TitleThemeMode.PaladinHolyland;
+
+            bool enableSkip = (newMode == TitleThemeMode.DemonLordRebellion);
+            skipTutorialToHub = enableSkip;
+            PlayerPrefs.SetInt(PREF_SKIP_TUTORIAL, enableSkip ? 1 : 0);
+            PlayerPrefs.Save();
+
             ApplyTitleThemeMode(newMode, true);
             PlaySoundClick();
         }
@@ -615,7 +628,7 @@ namespace ElementalHexTactics3D.UI
                 HandleEscapeKey();
             }
 
-            // Developer Quick-Test Shortcuts: F1 = Stage 1, F2 = Stage 2, F3 = Stage 3
+            // Developer Quick-Test Shortcuts: F1 = Stage 1, F2 = Stage 2, F3 = Stage 3, F4 = Hub 2, F5 = Citadel Hub
             if (Keyboard.current != null)
             {
                 if (Keyboard.current.f1Key.wasPressedThisFrame)
@@ -637,6 +650,11 @@ namespace ElementalHexTactics3D.UI
                 {
                     Debug.Log("<color=#FF7043><b>[Dev Shortcut]</b></color> Starting Hub 2 (Titan Crisis)...");
                     Tutorial.TutorialScenarioManager.EnsureInstance().StartHubTitanCrisis();
+                }
+                else if (Keyboard.current.f5Key.wasPressedThisFrame)
+                {
+                    Debug.Log("<color=#81C784><b>[Dev Shortcut]</b></color> Quick Jump directly into Citadel Hub...");
+                    ShowTownHub();
                 }
             }
         }
@@ -686,7 +704,8 @@ namespace ElementalHexTactics3D.UI
             Text playTxt = btnPlay.GetComponentInChildren<Text>();
             if (playTxt == null) return;
 
-            if (currentThemeMode == TitleThemeMode.PaladinHolyland)
+            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 1) == 1;
+            if (currentThemeMode == TitleThemeMode.PaladinHolyland && !isSkipActive)
             {
                 playTxt.text = "⚔️ START HOLY QUEST";
                 return;
@@ -702,7 +721,7 @@ namespace ElementalHexTactics3D.UI
                 }
             }
 
-            playTxt.text = "👑 RESUME REBELLION";
+            playTxt.text = "👑 ENTER CITADEL HUB";
         }
 
         public void ShowTownHub()
@@ -716,6 +735,12 @@ namespace ElementalHexTactics3D.UI
             if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
             CloseAllModals();
 
+            // Ensure tutorial scenario is marked completed so Citadel Hub and Expedition Gateway are fully unlocked
+            if (Tutorial.TutorialScenarioManager.Instance != null)
+            {
+                Tutorial.TutorialScenarioManager.Instance.SkipTutorialDirectToCitadel();
+            }
+
             // Ensure player units wait in reserve and are hidden while in Citadel Town Hub
             ElementalHexTactics3D.Units.TacticalUnitSpawner.ResetPlayerReserveUnits();
 
@@ -725,9 +750,10 @@ namespace ElementalHexTactics3D.UI
         public void OnPlayClicked()
         {
             PlaySoundClick();
-            if (currentThemeMode == TitleThemeMode.PaladinHolyland)
+            bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 1) == 1;
+            if (isSkipActive || currentThemeMode == TitleThemeMode.DemonLordRebellion)
             {
-                StartHolyPrologueQuest();
+                ShowTownHub();
             }
             else if (townHubPanel != null)
             {
@@ -735,7 +761,7 @@ namespace ElementalHexTactics3D.UI
             }
             else
             {
-                EnterHexBattlefield();
+                StartHolyPrologueQuest();
             }
         }
 
@@ -947,8 +973,8 @@ namespace ElementalHexTactics3D.UI
             if (txtThemeModeStatus != null)
             {
                 txtThemeModeStatus.text = currentThemeMode == TitleThemeMode.PaladinHolyland
-                    ? "Theme: HOLYLAND EVOLVE (Paladin)"
-                    : "Theme: ELEMENTAL HEX (Demon Lord)";
+                    ? "Mode: HOLYLAND (Play = Tutorial)"
+                    : "Mode: DEMON LORD (Play = Citadel Hub)";
             }
         }
 

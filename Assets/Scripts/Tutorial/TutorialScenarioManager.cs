@@ -1501,6 +1501,22 @@ namespace ElementalHexTactics3D.Tutorial
             }
         }
 
+        /// <summary>
+        /// Instantly marks tutorial arc completed and unlocks Citadel Hub without playing scenarios.
+        /// </summary>
+        public void SkipTutorialDirectToCitadel()
+        {
+            CurrentStage = TutorialStage.Completed;
+            SetStep(TutorialStep.Completed);
+
+            CampaignSaveManager.SetTransmigrated(true);
+            CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: true, starterTitan: true);
+
+            ClearTutorialHighlightedTile();
+            CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+            TutorialGuidanceBannerUI.Instance?.HideGuidance();
+        }
+
         #endregion
 
         #region Victory / Defeat Interception
