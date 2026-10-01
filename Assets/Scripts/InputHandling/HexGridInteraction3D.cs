@@ -1716,6 +1716,7 @@ namespace ElementalHexTactics3D.InputHandling
                 // COMMANDER ABILITY: Summon / Warp Titan through Abyssal Rift
                 TacticalUnit3D titanUnit = FindTitanUnit();
                 bool titanAvailable = titanUnit != null;
+                bool titanOnField = titanUnit != null && titanUnit.gameObject.activeInHierarchy;
                 bool titanInReserve = titanUnit != null && !titanUnit.gameObject.activeInHierarchy;
                 bool canSummonTitan = isPlayerTurn &&
                                       AbyssalRiftConduit3D.Instance != null &&
