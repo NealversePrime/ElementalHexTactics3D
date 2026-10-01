@@ -228,6 +228,14 @@ namespace ElementalHexTactics3D.Tutorial
                             SetStep(TutorialStep.Stage1_FinishDemonLord);
                         }
                         break;
+
+                    case TutorialStep.Stage1_FinishDemonLord:
+                        if (DemonLordBoss == null || DemonLordBoss.CurrentHealth <= 0)
+                        {
+                            TacticalUnitSpawner.ClearAllEnemies();
+                            OnStage1Victory();
+                        }
+                        break;
                 }
             }
             // ================= STAGE 2 STEP EVALUATION ================= //
@@ -407,6 +415,10 @@ namespace ElementalHexTactics3D.Tutorial
                     break;
 
                 case TutorialStep.Stage1_FinishDemonLord:
+                    if (PaladinUnit != null)
+                    {
+                        HexGridInteraction3D.Instance?.SelectUnit(PaladinUnit);
+                    }
                     if (DemonLordBoss != null) SetTutorialHighlightedTile(DemonLordBoss.CurrentTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("PushOrStrike");
                     banner?.ShowGuidance(
@@ -718,19 +730,6 @@ namespace ElementalHexTactics3D.Tutorial
                     slimeSprite,
                     slime1Tile,
                     3, 2, // 3 Wall Slam dmg = lethal!
-                    UnitArchetype.Minion,
-                    ElementalAffinity.None,
-                    1,
-                    0.65f
-                );
-
-                HexTile3D slime2Tile = grid.GetTile(new HexCoordinates(1, 1));
-                TacticalUnitSpawner.SpawnUnitStandee(
-                    "Demon Slime B",
-                    UnitFaction.Enemy,
-                    slimeSprite,
-                    slime2Tile,
-                    3, 2,
                     UnitArchetype.Minion,
                     ElementalAffinity.None,
                     1,

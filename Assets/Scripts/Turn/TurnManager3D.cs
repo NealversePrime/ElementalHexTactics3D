@@ -213,6 +213,18 @@ namespace ElementalHexTactics3D.Turn
                 }
             }
 
+            // Tutorial Stage 1: Slaying Demon Lord Boss is the sole victory requirement!
+            if (Tutorial.TutorialScenarioManager.Instance != null && 
+                Tutorial.TutorialScenarioManager.Instance.IsStage1Active)
+            {
+                var dl = Tutorial.TutorialScenarioManager.Instance.DemonLordBoss;
+                if (dl == null || dl.CurrentHealth <= 0)
+                {
+                    TacticalUnitSpawner.ClearAllEnemies();
+                    aliveEnemies = 0;
+                }
+            }
+
             // Defeat only triggers if ALL player units (active on field AND reserve in Citadel) are eliminated
             if (activePlayers == 0 && reservePlayers == 0 && aliveEnemies > 0)
             {
