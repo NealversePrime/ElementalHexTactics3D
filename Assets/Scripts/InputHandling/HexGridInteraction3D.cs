@@ -373,6 +373,7 @@ namespace ElementalHexTactics3D.InputHandling
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SiphonElementalCore ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_EarthGolemCataclysm ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_HolyStrikeDemonLord ||
+                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_ShieldShoveSlime ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_FinishDemonLord);
 
             if (!isTutorialSkillStep && unit.Faction == UnitFaction.Player && !unit.HasMovedThisTurn && unit.EffectiveMoveRange > 0)

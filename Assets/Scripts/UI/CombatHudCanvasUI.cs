@@ -1063,6 +1063,7 @@ namespace ElementalHexTactics3D.UI
         {
             if (string.IsNullOrEmpty(activeTutorialButtonKey)) return;
 
+            bool isPushOrStrike = (activeTutorialButtonKey == "PushOrStrike");
             Button targetBtn = null;
             if (activeTutorialButtonKey == "Move") targetBtn = btnMove;
             else if (activeTutorialButtonKey == "Strike") targetBtn = btnTitanStrike;
@@ -1088,7 +1089,8 @@ namespace ElementalHexTactics3D.UI
             foreach (var btn in allActionButtons)
             {
                 if (btn == null) continue;
-                if (btn == targetBtn)
+                bool isAllowed = (btn == targetBtn) || (isPushOrStrike && (btn == btnPush || btn == btnTitanStrike));
+                if (isAllowed)
                 {
                     btn.interactable = true;
                     float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
