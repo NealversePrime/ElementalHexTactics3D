@@ -712,25 +712,20 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Then we shall answer divine barriers with primordial might. Fall back to the Citadel Hub! It is time to awaken the Abyssal Rift and summon a Titan!",
+                        "Then we shall answer divine barriers with primordial might. Look towards the Citadel's cliff—the Primordial Statue is blazing with draconic flame!",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Basalt Vanguard",
+                        "By the Ancients... the Primordial Statue! It is awakening the dormant slumber of the Magma Dragon! Let us return to the Citadel Hub and awaken our first Titan!",
+                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     break;
 
                 case StorySequenceId.HubTitanCrisisDialogue:
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Lord Malakor, the heavy crusade vanguard is massing outside the Abyssal Gateway! How can our garrison breach their divine aegis barriers?",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
-                    ));
-                    lines.Add(new DialogueLine(
-                        "MC / Demon Lord",
-                        "The Radiant Synod relies on rigid holy barriers, but this land still hums with Primordial Leyline energy. Look towards the eastern cliff—the Primordial Statue is blazing with draconic flame!",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
-                    ));
-                    lines.Add(new DialogueLine(
-                        "Basalt Vanguard",
-                        "By the Ancients... the Primordial Statue! It is awakening the dormant slumber of the Magma Dragon! Sire, commune with the statue and awaken our first Titan!",
+                        "Lord Malakor, the Primordial Statue on the cliff is resonating with flame energy! Commune with the statue and awaken our first Titan!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     break;

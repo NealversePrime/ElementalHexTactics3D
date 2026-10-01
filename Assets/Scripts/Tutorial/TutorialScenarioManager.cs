@@ -1164,6 +1164,7 @@ namespace ElementalHexTactics3D.Tutorial
             SoundManager3D.Instance?.PlayVictory();
             ClearTutorialHighlightedTile();
             CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+            TutorialGuidanceBannerUI.Instance?.HideGuidance();
 
             if (StoryDialogueUI.Instance != null)
             {
@@ -1185,7 +1186,6 @@ namespace ElementalHexTactics3D.Tutorial
         public void StartHubTitanCrisis()
         {
             CurrentStage = TutorialStage.Hub_TitanCrisis;
-            CurrentStep = TutorialStep.Hub_TitanCrisisDialogue;
             Debug.Log("<color=#FF7043><b>[Tutorial Scenario]</b></color> Entering Hub: The Titan Crisis...");
 
             PurgeAllBattlefieldUnits();
@@ -1196,16 +1196,8 @@ namespace ElementalHexTactics3D.Tutorial
                 TitleMenuCanvasUI.Instance.ShowTownHub();
             }
 
-            StartCoroutine(PlayDialogueDelayed(StorySequenceId.HubTitanCrisisDialogue, 0.6f, () =>
-            {
-                OnHubTitanCrisisDialogueFinished();
-            }));
-        }
-
-        private void OnHubTitanCrisisDialogueFinished()
-        {
+            // Immediately set step to Hub_ClickPrimordialStatue so player remains in Town Hub with glowing Primordial Statue!
             SetStep(TutorialStep.Hub_ClickPrimordialStatue);
-            Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Ready to summon Titans! Guided to Primordial Statue...");
 
             if (CombatFeedbackManager.Instance != null)
             {
@@ -1216,6 +1208,12 @@ namespace ElementalHexTactics3D.Tutorial
                     new Color(1f, 0.55f, 0.15f)
                 );
             }
+        }
+
+        private void OnHubTitanCrisisDialogueFinished()
+        {
+            // Kept for backward compatibility if ever called
+            SetStep(TutorialStep.Hub_ClickPrimordialStatue);
         }
 
         #endregion
@@ -1406,6 +1404,7 @@ namespace ElementalHexTactics3D.Tutorial
             SoundManager3D.Instance?.PlayVictory();
             ClearTutorialHighlightedTile();
             CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+            TutorialGuidanceBannerUI.Instance?.HideGuidance();
 
             if (StoryDialogueUI.Instance != null)
             {
