@@ -751,7 +751,7 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.Stage3Victory:
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "The holy crusade vanguard has been obliterated! The Magma Dragon's infernal breath incinerated their divine barriers into ash!",
+                        "The holy crusade vanguard has been obliterated! The Magma Dragon's dragon strike shattered their divine barriers into ash!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(

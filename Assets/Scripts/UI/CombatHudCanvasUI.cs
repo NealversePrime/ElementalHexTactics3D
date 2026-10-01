@@ -946,25 +946,29 @@ namespace ElementalHexTactics3D.UI
                 SetButtonActiveHighlight(btnMove, currentMode == UnitActionMode.Move);
             }
 
-            // Elemental Spells (Only for Demon Lord / Demonic Commander, disabled in Holy Crusade)
-            bool showElementalSpells = isCommander && !isTutorial1;
+            // Elemental Spells: Fireball for Fire Commander / Demon Lord. Water and Earth are NOT on Demon Lord!
+            bool isFireUnit = isCommander || (unit.Affinity == ElementalAffinity.Fire);
+            bool showFireball = isFireUnit && !isTutorial1;
+            bool showWaterSurge = !isCommander && (unit.Affinity == ElementalAffinity.Water);
+            bool showEarthPillar = !isCommander && (unit.Affinity == ElementalAffinity.Earth);
+
             if (btnFireball != null)
             {
-                btnFireball.gameObject.SetActive(showElementalSpells);
+                btnFireball.gameObject.SetActive(showFireball);
                 btnFireball.interactable = canCombat;
                 SetButtonActiveHighlight(btnFireball, currentMode == UnitActionMode.Fireball);
             }
 
             if (btnWaterSurge != null)
             {
-                btnWaterSurge.gameObject.SetActive(showElementalSpells);
+                btnWaterSurge.gameObject.SetActive(showWaterSurge);
                 btnWaterSurge.interactable = canCombat;
                 SetButtonActiveHighlight(btnWaterSurge, currentMode == UnitActionMode.WaterSurge);
             }
 
             if (btnEarthPillar != null)
             {
-                btnEarthPillar.gameObject.SetActive(showElementalSpells);
+                btnEarthPillar.gameObject.SetActive(showEarthPillar);
                 btnEarthPillar.interactable = canCombat;
                 SetButtonActiveHighlight(btnEarthPillar, currentMode == UnitActionMode.EarthSpire);
             }
@@ -993,7 +997,7 @@ namespace ElementalHexTactics3D.UI
                 SetButtonActiveHighlight(btnHarvestCore, currentMode == UnitActionMode.ConsumeLand);
             }
 
-            // Universal Strike (Holy Strike, Shield Bash, Boulder Smash, Titan Strike, Melee)
+            // Universal Strike (Holy Strike, Shield Bash, Boulder Smash, Dragon Strike, Titan Strike, Melee)
             if (btnTitanStrike != null)
             {
                 btnTitanStrike.gameObject.SetActive(true);
@@ -1004,7 +1008,7 @@ namespace ElementalHexTactics3D.UI
                     if (unit.UnitName.Contains("Paladin")) txtTitanStrike.text = "⚔️ Holy Strike\n<size=10>(3 Dmg)</size>";
                     else if (unit.UnitName.Contains("Shielder")) txtTitanStrike.text = "🛡️ Shield Bash\n<size=10>(2 Dmg)</size>";
                     else if (unit.UnitName.Contains("Basalt") || unit.UnitName.Contains("Golem")) txtTitanStrike.text = "👊 Boulder Smash\n<size=10>(3 Dmg)</size>";
-                    else if (unit.UnitName.Contains("Dragon")) txtTitanStrike.text = "🔥 Magma Breath\n<size=10>(Crit Strike)</size>";
+                    else if (unit.UnitName.Contains("Dragon")) txtTitanStrike.text = "🔥 Dragon Strike\n<size=10>(Crit Strike)</size>";
                     else if (isTitan) txtTitanStrike.text = "🐾 Titan Strike\n<size=10>(Crit)</size>";
                     else txtTitanStrike.text = "⚔️ Attack\n<size=10>(Melee)</size>";
                 }

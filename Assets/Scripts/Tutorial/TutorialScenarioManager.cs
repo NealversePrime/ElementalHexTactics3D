@@ -709,8 +709,8 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("TitanStrike");
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 5/5] UNLEASH TITAN MIGHT",
-                        "The Magma Dragon's emergence shockwave blasted the crusaders back! With Range 1-2 Magma Breath, scorch the Divine Warden!",
-                        "Select Magma Dragon, click [🔥 Magma Breath], and scorch the Divine Warden (or Move closer)!",
+                        "The Magma Dragon's emergence shockwave blasted the crusaders back! With Range 1-2 Dragon Strike, crush the Divine Warden!",
+                        "Select Magma Dragon, click [🔥 Dragon Strike], and strike the Divine Warden (or Move closer)!",
                         new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;

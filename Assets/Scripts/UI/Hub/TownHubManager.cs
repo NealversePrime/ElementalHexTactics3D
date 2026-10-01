@@ -489,7 +489,7 @@ namespace ElementalHexTactics3D.UI.Hub
             if (statsTrans != null)
             {
                 Text s = statsTrans.GetComponent<Text>();
-                if (s != null) s.text = "✦ STARTER TITAN: MAGMA DRAGON (FLAME) ✦\n• HP: 24 | ATK: 3 | Range: 1-2 | Movement: 3\n• Skill: Magma Breath & Titan Strike\n• Cost: FREE (First Titan Awakening)";
+                if (s != null) s.text = "✦ STARTER TITAN: MAGMA DRAGON (FLAME) ✦\n• HP: 24 | ATK: 3 | Range: 1-2 | Movement: 3\n• Skill: Dragon Strike & Titan Cataclysm\n• Cost: FREE (First Titan Awakening)";
             }
 
             Transform btnActionTrans = modalShrine.transform.Find("CardFrame/Btn_Action");
