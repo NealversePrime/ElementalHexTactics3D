@@ -244,6 +244,7 @@ namespace ElementalHexTactics3D.UI
 #if UNITY_EDITOR
             Font fontBold = UnityEditor.AssetDatabase.LoadAssetAtPath<Font>("Assets/Fonts/Font_Bold.ttf");
             if (fontBold != null) font = fontBold;
+#endif
             Sprite panelFrame = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_Panel_Frame.png");
             Sprite btnNormal = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
 
