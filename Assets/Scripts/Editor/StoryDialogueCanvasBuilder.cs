@@ -13,7 +13,9 @@ namespace ElementalHexTactics3D.Editor
     /// </summary>
     public static class StoryDialogueCanvasBuilder
     {
-        private const string PanelFramePath = "Assets/Sprites/UI/UI_Panel_Frame.png";
+        private const string PanelFramePath = "Assets/Sprites/UI/UI_WindowFrame_RPG.png";
+        private const string PanelBgPath = "Assets/Sprites/UI/UI_WindowBg_RPG.png";
+        private const string PauseIconPath = "Assets/Sprites/UI/UI_PauseIcon_RPG.png";
         private const string BtnNormalPath = "Assets/Sprites/UI/UI_Button_Normal.png";
         private const string FontBoldPath = "Assets/Fonts/Font_Bold.ttf";
         private const string FontRegularPath = "Assets/Fonts/Font_Regular.ttf";
@@ -33,7 +35,10 @@ namespace ElementalHexTactics3D.Editor
         {
             Debug.Log("<color=#FFD54F><b>[Story VN Builder]</b></color> Generating Visual Novel Dialogue Canvas...");
 
-            // Ensure all portraits and backgrounds are imported as Sprite 2D & UI
+            // Ensure all portraits, UI, and backgrounds are imported as Sprite 2D & UI
+            ConfigureSpriteImporter(PanelFramePath);
+            ConfigureSpriteImporter(PanelBgPath);
+            ConfigureSpriteImporter(PauseIconPath);
             ConfigureSpriteImporter(McSilhouettePath);
             ConfigureSpriteImporter(PaladinPortraitPath);
             ConfigureSpriteImporter(HolyShielderPortraitPath);
@@ -45,6 +50,8 @@ namespace ElementalHexTactics3D.Editor
             AssetDatabase.Refresh();
 
             Sprite panelFrame = AssetDatabase.LoadAssetAtPath<Sprite>(PanelFramePath);
+            Sprite panelBg = AssetDatabase.LoadAssetAtPath<Sprite>(PanelBgPath);
+            Sprite pauseIcon = AssetDatabase.LoadAssetAtPath<Sprite>(PauseIconPath);
             Sprite btnNormal = AssetDatabase.LoadAssetAtPath<Sprite>(BtnNormalPath);
 
             Sprite mcSilhouette = AssetDatabase.LoadAssetAtPath<Sprite>(McSilhouettePath);
@@ -108,14 +115,14 @@ namespace ElementalHexTactics3D.Editor
             glitchImg.raycastTarget = false;
             glitchObj.SetActive(false);
 
-            // 6. Left & Right Character Portraits
+            // 6. Left & Right Character Portraits (Placed on top of text box, behind the name box)
             GameObject leftPortraitObj = CreateUIObject("Portrait_Left", rootPanel.transform);
             RectTransform lpRect = leftPortraitObj.GetComponent<RectTransform>();
-            lpRect.anchorMin = new Vector2(0f, 0f);
-            lpRect.anchorMax = new Vector2(0f, 0f);
-            lpRect.pivot = new Vector2(0f, 0f);
-            lpRect.sizeDelta = new Vector2(480f, 660f);
-            lpRect.anchoredPosition = new Vector2(50f, 30f);
+            lpRect.anchorMin = new Vector2(0.5f, 0f);
+            lpRect.anchorMax = new Vector2(0.5f, 0f);
+            lpRect.pivot = new Vector2(0.5f, 0f);
+            lpRect.sizeDelta = new Vector2(350f, 350f);
+            lpRect.anchoredPosition = new Vector2(-497f, 280f);
             Image lpImg = leftPortraitObj.AddComponent<Image>();
             lpImg.preserveAspect = true;
             lpImg.raycastTarget = false;
@@ -124,65 +131,81 @@ namespace ElementalHexTactics3D.Editor
 
             GameObject rightPortraitObj = CreateUIObject("Portrait_Right", rootPanel.transform);
             RectTransform rpRect = rightPortraitObj.GetComponent<RectTransform>();
-            rpRect.anchorMin = new Vector2(1f, 0f);
-            rpRect.anchorMax = new Vector2(1f, 0f);
-            rpRect.pivot = new Vector2(1f, 0f);
-            rpRect.sizeDelta = new Vector2(480f, 660f);
-            rpRect.anchoredPosition = new Vector2(-50f, 30f);
+            rpRect.anchorMin = new Vector2(0.5f, 0f);
+            rpRect.anchorMax = new Vector2(0.5f, 0f);
+            rpRect.pivot = new Vector2(0.5f, 0f);
+            rpRect.sizeDelta = new Vector2(350f, 350f);
+            rpRect.anchoredPosition = new Vector2(495.5f, 281f);
             Image rpImg = rightPortraitObj.AddComponent<Image>();
             rpImg.preserveAspect = true;
             rpImg.raycastTarget = false;
             CanvasGroup rpGroup = rightPortraitObj.AddComponent<CanvasGroup>();
             rightPortraitObj.SetActive(false);
 
-            // 7. Dialogue Box Panel (Bottom Center)
+            // 7. Dialogue Box Panel (Bottom Center) - Rendered in front of character bust
             GameObject boxObj = CreateUIObject("DialogueBox", rootPanel.transform);
             RectTransform boxRect = boxObj.GetComponent<RectTransform>();
             boxRect.anchorMin = new Vector2(0.5f, 0f);
             boxRect.anchorMax = new Vector2(0.5f, 0f);
             boxRect.pivot = new Vector2(0.5f, 0f);
-            boxRect.sizeDelta = new Vector2(1380f, 250f);
-            boxRect.anchoredPosition = new Vector2(0f, 35f);
+            boxRect.sizeDelta = new Vector2(1360f, 250f);
+            boxRect.anchoredPosition = new Vector2(0f, 30f);
 
-            Image boxImg = boxObj.AddComponent<Image>();
+            // Layer 1: Back Section (Solid rich dark slate grey background fill)
+            Image boxBg = boxObj.AddComponent<Image>();
+            boxBg.sprite = null;
+            boxBg.type = Image.Type.Simple;
+            boxBg.color = new Color(0.12f, 0.14f, 0.19f, 0.92f); // Semi-translucent dark slate grey, 92% opacity
+            boxBg.raycastTarget = true;
+
+            // Layer 2: Frame Section (9-slice hollow golden/blue frame overlay)
+            GameObject frameOverlay = CreateUIObject("Frame_Overlay", boxObj.transform);
+            SetStretchAll(frameOverlay.GetComponent<RectTransform>());
+            Image frameImg = frameOverlay.AddComponent<Image>();
             if (panelFrame != null)
             {
-                boxImg.sprite = panelFrame;
-                boxImg.color = Color.white;
-                boxImg.type = Image.Type.Simple;
+                frameImg.sprite = panelFrame;
+                frameImg.type = Image.Type.Sliced;
+                frameImg.color = Color.white;
             }
-            else
-            {
-                boxImg.color = new Color(0.08f, 0.11f, 0.16f, 0.95f);
-            }
+            frameImg.raycastTarget = false;
+            LayoutElement foLe = frameOverlay.AddComponent<LayoutElement>();
+            foLe.ignoreLayout = true;
 
-            // 8. Nameplate (Top Left of Dialogue Box)
+            // 8. Nameplate (Top Left of Dialogue Box, overlapping top border directly in front of character bust)
             GameObject nameplateObj = CreateUIObject("Nameplate", boxObj.transform);
             RectTransform npRect = nameplateObj.GetComponent<RectTransform>();
             npRect.anchorMin = new Vector2(0f, 1f);
             npRect.anchorMax = new Vector2(0f, 1f);
-            npRect.pivot = new Vector2(0f, 1f);
-            npRect.sizeDelta = new Vector2(360f, 54f);
-            npRect.anchoredPosition = new Vector2(24f, 26f);
+            npRect.pivot = new Vector2(0f, 0.5f); // Astride top border
+            npRect.sizeDelta = new Vector2(280f, 48f);
+            npRect.anchoredPosition = new Vector2(30f, 0f);
 
-            Image npImg = nameplateObj.AddComponent<Image>();
-            if (btnNormal != null)
+            Image npBg = nameplateObj.AddComponent<Image>();
+            npBg.sprite = null;
+            npBg.type = Image.Type.Simple;
+            npBg.color = new Color(0.14f, 0.17f, 0.25f, 0.96f); // Solid dark slate/navy fill
+
+            GameObject npFrame = CreateUIObject("Frame_Overlay", nameplateObj.transform);
+            SetStretchAll(npFrame.GetComponent<RectTransform>());
+            Image npFrameImg = npFrame.AddComponent<Image>();
+            if (panelFrame != null)
             {
-                npImg.sprite = btnNormal;
-                npImg.color = Color.white;
+                npFrameImg.sprite = panelFrame;
+                npFrameImg.type = Image.Type.Sliced;
+                npFrameImg.color = Color.white;
             }
-            else
-            {
-                npImg.color = new Color(0.12f, 0.16f, 0.24f, 0.95f);
-            }
+            npFrameImg.raycastTarget = false;
+            LayoutElement npfoLe = npFrame.AddComponent<LayoutElement>();
+            npfoLe.ignoreLayout = true;
 
             GameObject nameTextObj = CreateUIObject("Text_SpeakerName", nameplateObj.transform);
             SetStretchAll(nameTextObj.GetComponent<RectTransform>());
             Text txtName = nameTextObj.AddComponent<Text>();
             txtName.font = fontBold;
-            txtName.fontSize = 22;
+            txtName.fontSize = 20;
             txtName.fontStyle = FontStyle.Bold;
-            txtName.color = new Color(1f, 0.88f, 0.35f);
+            txtName.color = new Color(0.95f, 0.97f, 1.0f);
             txtName.alignment = TextAnchor.MiddleCenter;
             txtName.text = "Character Name";
 
@@ -191,13 +214,13 @@ namespace ElementalHexTactics3D.Editor
             RectTransform bRect = bodyTextObj.GetComponent<RectTransform>();
             bRect.anchorMin = Vector2.zero;
             bRect.anchorMax = Vector2.one;
-            bRect.offsetMin = new Vector2(36f, 24f);
-            bRect.offsetMax = new Vector2(-40f, -48f);
+            bRect.offsetMin = new Vector2(40f, 25f);
+            bRect.offsetMax = new Vector2(-40f, -40f);
 
             Text txtBody = bodyTextObj.AddComponent<Text>();
             txtBody.font = fontRegular;
             txtBody.fontSize = 22;
-            txtBody.color = new Color(0.92f, 0.95f, 0.98f);
+            txtBody.color = new Color(0.94f, 0.96f, 0.98f);
             txtBody.lineSpacing = 1.25f;
             txtBody.horizontalOverflow = HorizontalWrapMode.Wrap;
             txtBody.verticalOverflow = VerticalWrapMode.Overflow;
@@ -209,16 +232,33 @@ namespace ElementalHexTactics3D.Editor
             cRect.anchorMin = new Vector2(1f, 0f);
             cRect.anchorMax = new Vector2(1f, 0f);
             cRect.pivot = new Vector2(1f, 0f);
-            cRect.sizeDelta = new Vector2(180f, 32f);
+            cRect.sizeDelta = new Vector2(200f, 36f);
             cRect.anchoredPosition = new Vector2(-25f, 15f);
 
-            Text txtCont = contObj.AddComponent<Text>();
+            GameObject contIconObj = CreateUIObject("Icon_Pause", contObj.transform);
+            RectTransform ciRect = contIconObj.GetComponent<RectTransform>();
+            ciRect.anchorMin = new Vector2(1f, 0.5f);
+            ciRect.anchorMax = new Vector2(1f, 0.5f);
+            ciRect.pivot = new Vector2(1f, 0.5f);
+            ciRect.sizeDelta = new Vector2(24f, 24f);
+            ciRect.anchoredPosition = new Vector2(0f, 0f);
+            Image ciImg = contIconObj.AddComponent<Image>();
+            if (pauseIcon != null) ciImg.sprite = pauseIcon;
+            ciImg.raycastTarget = false;
+
+            GameObject contTextObj = CreateUIObject("Text", contObj.transform);
+            RectTransform ctRect = contTextObj.GetComponent<RectTransform>();
+            ctRect.anchorMin = new Vector2(0f, 0f);
+            ctRect.anchorMax = new Vector2(1f, 1f);
+            ctRect.offsetMin = Vector2.zero;
+            ctRect.offsetMax = new Vector2(-28f, 0f);
+            Text txtCont = contTextObj.AddComponent<Text>();
             txtCont.font = fontRegular;
             txtCont.fontSize = 16;
             txtCont.fontStyle = FontStyle.Italic;
-            txtCont.color = new Color(0.7f, 0.75f, 0.85f, 0.85f);
+            txtCont.color = new Color(0.85f, 0.88f, 0.95f, 0.85f);
             txtCont.alignment = TextAnchor.MiddleRight;
-            txtCont.text = "▼ Klik / Spasi";
+            txtCont.text = "Klik / Spasi";
 
             // 11. Skip Button (Top Right of Screen)
             GameObject skipObj = CreateUIObject("Btn_Skip", rootPanel.transform);

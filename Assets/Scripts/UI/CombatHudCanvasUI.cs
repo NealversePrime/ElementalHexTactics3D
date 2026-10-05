@@ -109,6 +109,38 @@ namespace ElementalHexTactics3D.UI
         // Universal Button
         [SerializeField] private Button btnEndTurn;
 
+        [Header("Disgaea Style Panels")]
+        [SerializeField] private GameObject dispatchModalRoot;
+        [SerializeField] private Image dispatchPreviewPortrait;
+        [SerializeField] private Text dispatchPreviewName;
+        [SerializeField] private Text dispatchPreviewClass;
+        [SerializeField] private Text dispatchPreviewStats;
+        [SerializeField] private Text dispatchPreviewCost;
+        [SerializeField] private Transform dispatchListContent;
+        [SerializeField] private Button btnCloseDispatch;
+        [SerializeField] private Button btnDispatchConfirm;
+        [SerializeField] private Text txtDispatchConfirm;
+        private TacticalUnit3D currentPreviewDispatchUnit;
+
+        [SerializeField] private GameObject commandMenuRoot;
+        [SerializeField] private Text txtCmdHeader;
+        [SerializeField] private Button btnCmdMove;
+        [SerializeField] private Text txtCmdMove;
+        [SerializeField] private Button btnCmdAttack;
+        [SerializeField] private Text txtCmdAttack;
+        [SerializeField] private Button btnCmdSkill;
+        [SerializeField] private Text txtCmdSkill;
+        [SerializeField] private Button btnCmdPush;
+        [SerializeField] private Text txtCmdPush;
+        [SerializeField] private Button btnCmdSiphon;
+        [SerializeField] private Text txtCmdSiphon;
+        [SerializeField] private Button btnCmdCataclysm;
+        [SerializeField] private Text txtCmdCataclysm;
+        [SerializeField] private Button btnCmdRecall;
+        [SerializeField] private Text txtCmdRecall;
+        [SerializeField] private Button btnCmdWait;
+        [SerializeField] private Button btnCmdCancel;
+
         [Header("Theme Colors")]
         [SerializeField] private Color colHpFull = new Color(0.30f, 0.78f, 0.35f, 1f);
         [SerializeField] private Color colHpMid = new Color(1.0f, 0.65f, 0.15f, 1f);
@@ -117,10 +149,37 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Color colPlayerRibbon = new Color(0.08f, 0.25f, 0.38f, 0.95f);
         [SerializeField] private Color colEnemyRibbon = new Color(0.38f, 0.10f, 0.08f, 0.95f);
 
+        private CanvasGroup hudCanvasGroup;
+
+        public void SetHudVisible(bool visible)
+        {
+            if (hudCanvasGroup == null)
+            {
+                hudCanvasGroup = GetComponent<CanvasGroup>();
+                if (hudCanvasGroup == null)
+                {
+                    hudCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+                }
+            }
+
+            if (hudCanvasGroup != null)
+            {
+                hudCanvasGroup.alpha = visible ? 1f : 0f;
+                hudCanvasGroup.interactable = visible;
+                hudCanvasGroup.blocksRaycasts = visible;
+            }
+        }
+
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else if (Instance != this) { Destroy(gameObject); return; }
+
+            hudCanvasGroup = GetComponent<CanvasGroup>();
+            if (hudCanvasGroup == null)
+            {
+                hudCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+            }
 
             EnsureHudBuilt();
             WireButtonListeners();
@@ -129,21 +188,79 @@ namespace ElementalHexTactics3D.UI
         private void OnEnable()
         {
             EnsureHudBuilt();
+            StoryDialogueUI.OnDialogueStarted += HandleDialogueStarted;
+            StoryDialogueUI.OnDialogueFinished += HandleDialogueFinished;
+        }
+
+        private void OnDisable()
+        {
+            StoryDialogueUI.OnDialogueStarted -= HandleDialogueStarted;
+            StoryDialogueUI.OnDialogueFinished -= HandleDialogueFinished;
+        }
+
+        private void OnDestroy()
+        {
+            StoryDialogueUI.OnDialogueStarted -= HandleDialogueStarted;
+            StoryDialogueUI.OnDialogueFinished -= HandleDialogueFinished;
+            if (Instance == this) Instance = null;
+        }
+
+        private void HandleDialogueStarted()
+        {
+            SetHudVisible(false);
+        }
+
+        private void HandleDialogueFinished()
+        {
+            SetHudVisible(true);
         }
 
         public void EnsureHudBuilt()
         {
-            if (actionBarRoot != null && unitCardRoot != null) return;
-
-            // Check if hierarchy already exists under this GameObject
             Transform existing = transform.Find("CombatHUD_Container");
             if (existing != null)
             {
                 HookExistingContainer(existing);
-                if (actionBarRoot != null && unitCardRoot != null) return;
+            }
+            else if (actionBarRoot == null || unitCardRoot == null)
+            {
+                BuildDynamicHud();
             }
 
-            BuildDynamicHud();
+            Transform container = existing ?? transform;
+
+            Font f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Sprite pf = TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png") ?? TacticalUnitSpawner.LoadUISprite("UI_Panel_Frame.png");
+            Sprite bn = TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
+
+            if (dispatchModalRoot == null)
+            {
+                Transform disp = container.Find("Modal_DisgaeaDispatch");
+                if (disp != null) dispatchModalRoot = disp.gameObject;
+                else BuildDisgaeaDispatchModal(container, f, pf, bn);
+            }
+
+            if (commandMenuRoot == null)
+            {
+                Transform cmd = container.Find("Menu_DisgaeaCommand");
+                if (cmd != null)
+                {
+                    commandMenuRoot = cmd.gameObject;
+                    HookExistingCommandMenu(cmd);
+                }
+                else
+                {
+                    BuildDisgaeaCommandMenu(container, f, pf, bn);
+                }
+            }
+
+            if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
+            if (dispatchModalRoot != null && !dispatchModalRoot.activeSelf) dispatchModalRoot.SetActive(false);
+            if (commandMenuRoot != null && !commandMenuRoot.activeSelf) commandMenuRoot.SetActive(false);
+
+            ApplyRpgMakerWindowStyle(unitCardRoot, new Color(0.08f, 0.07f, 0.14f, 0.95f));
+            ApplyRpgMakerWindowStyle(dispatchModalRoot, new Color(0.08f, 0.07f, 0.14f, 0.96f));
+            ApplyRpgMakerWindowStyle(commandMenuRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
         }
 
         private void HookExistingContainer(Transform container)
@@ -233,6 +350,110 @@ namespace ElementalHexTactics3D.UI
 
                 btnEndTurn = bar.Find("Btn_EndTurn")?.GetComponent<Button>();
             }
+
+            Transform dispatch = container.Find("Modal_DisgaeaDispatch");
+            if (dispatch != null) dispatchModalRoot = dispatch.gameObject;
+            Transform cmdMenu = container.Find("Menu_DisgaeaCommand");
+            if (cmdMenu != null)
+            {
+                commandMenuRoot = cmdMenu.gameObject;
+                HookExistingCommandMenu(cmdMenu);
+            }
+            if (dispatchModalRoot == null || commandMenuRoot == null)
+            {
+                Font f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                Sprite pf = TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png") ?? TacticalUnitSpawner.LoadUISprite("UI_Panel_Frame.png");
+                Sprite bn = TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
+                if (dispatchModalRoot == null) BuildDisgaeaDispatchModal(container, f, pf, bn);
+                if (commandMenuRoot == null) BuildDisgaeaCommandMenu(container, f, pf, bn);
+            }
+
+            if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
+            if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
+            if (commandMenuRoot != null) commandMenuRoot.SetActive(false);
+
+            // Ensure RPG Maker 2-layer composite styling is applied to all key windows
+            ApplyRpgMakerWindowStyle(unitCardRoot, new Color(0.08f, 0.07f, 0.14f, 0.95f));
+            ApplyRpgMakerWindowStyle(dispatchModalRoot, new Color(0.08f, 0.07f, 0.14f, 0.96f));
+            ApplyRpgMakerWindowStyle(commandMenuRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
+        }
+
+        private void HookExistingCommandMenu(Transform cmd)
+        {
+            if (cmd == null) return;
+            commandMenuRoot = cmd.gameObject;
+            txtCmdHeader = cmd.Find("Txt_CmdHeader")?.GetComponent<Text>();
+            btnCmdMove = cmd.Find("Btn_CmdMove")?.GetComponent<Button>();
+            txtCmdMove = btnCmdMove?.GetComponentInChildren<Text>();
+            btnCmdAttack = cmd.Find("Btn_CmdAttack")?.GetComponent<Button>();
+            txtCmdAttack = btnCmdAttack?.GetComponentInChildren<Text>();
+            btnCmdSkill = cmd.Find("Btn_CmdSkill")?.GetComponent<Button>();
+            txtCmdSkill = btnCmdSkill?.GetComponentInChildren<Text>();
+            btnCmdPush = cmd.Find("Btn_CmdPush")?.GetComponent<Button>();
+            txtCmdPush = btnCmdPush?.GetComponentInChildren<Text>();
+            btnCmdSiphon = cmd.Find("Btn_CmdSiphon")?.GetComponent<Button>();
+            txtCmdSiphon = btnCmdSiphon?.GetComponentInChildren<Text>();
+            btnCmdCataclysm = cmd.Find("Btn_CmdCataclysm")?.GetComponent<Button>();
+            txtCmdCataclysm = btnCmdCataclysm?.GetComponentInChildren<Text>();
+            btnCmdRecall = cmd.Find("Btn_CmdRecall")?.GetComponent<Button>();
+            txtCmdRecall = btnCmdRecall?.GetComponentInChildren<Text>();
+            btnCmdWait = cmd.Find("Btn_CmdWait")?.GetComponent<Button>();
+            btnCmdCancel = cmd.Find("Btn_CmdCancel")?.GetComponent<Button>();
+
+            if (btnCmdMove != null) { btnCmdMove.onClick.RemoveAllListeners(); btnCmdMove.onClick.AddListener(() => OnActionClicked(UnitActionMode.Move)); }
+            if (btnCmdAttack != null) { btnCmdAttack.onClick.RemoveAllListeners(); btnCmdAttack.onClick.AddListener(() => OnActionClicked(UnitActionMode.TitanStrike)); }
+            if (btnCmdSkill != null) { btnCmdSkill.onClick.RemoveAllListeners(); btnCmdSkill.onClick.AddListener(OnCmdSkillClicked); }
+            if (btnCmdPush != null) { btnCmdPush.onClick.RemoveAllListeners(); btnCmdPush.onClick.AddListener(() => OnActionClicked(UnitActionMode.KineticPush)); }
+            if (btnCmdSiphon != null) { btnCmdSiphon.onClick.RemoveAllListeners(); btnCmdSiphon.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand)); }
+            if (btnCmdCataclysm != null) { btnCmdCataclysm.onClick.RemoveAllListeners(); btnCmdCataclysm.onClick.AddListener(() => OnActionClicked(UnitActionMode.MagmaCataclysm)); }
+            if (btnCmdRecall != null) { btnCmdRecall.onClick.RemoveAllListeners(); btnCmdRecall.onClick.AddListener(OnRecallClicked); }
+            if (btnCmdWait != null) { btnCmdWait.onClick.RemoveAllListeners(); btnCmdWait.onClick.AddListener(OnCmdWaitClicked); }
+            if (btnCmdCancel != null) { btnCmdCancel.onClick.RemoveAllListeners(); btnCmdCancel.onClick.AddListener(OnCmdCancelClicked); }
+        }
+
+        private void ApplyRpgMakerWindowStyle(GameObject panelObj, Color bgColor)
+        {
+            if (panelObj == null) return;
+            Sprite bgSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowBg_RPG.png");
+            Sprite frameSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png");
+
+            Image bgImg = panelObj.GetComponent<Image>() ?? panelObj.AddComponent<Image>();
+            if (bgSprite != null)
+            {
+                bgImg.sprite = bgSprite;
+                bgImg.type = Image.Type.Sliced;
+                bgImg.color = bgColor;
+            }
+            else
+            {
+                bgImg.color = bgColor;
+            }
+
+            Transform frameTrans = panelObj.transform.Find("Frame_Overlay");
+            GameObject frameObj = frameTrans != null ? frameTrans.gameObject : null;
+            if (frameObj == null)
+            {
+                frameObj = new GameObject("Frame_Overlay", typeof(RectTransform));
+                frameObj.transform.SetParent(panelObj.transform, false);
+            }
+            RectTransform foRect = frameObj.GetComponent<RectTransform>();
+            foRect.anchorMin = Vector2.zero;
+            foRect.anchorMax = Vector2.one;
+            foRect.offsetMin = Vector2.zero;
+            foRect.offsetMax = Vector2.zero;
+            frameObj.transform.SetAsFirstSibling();
+
+            LayoutElement foLe = frameObj.GetComponent<LayoutElement>() ?? frameObj.AddComponent<LayoutElement>();
+            foLe.ignoreLayout = true;
+
+            Image foImg = frameObj.GetComponent<Image>() ?? frameObj.AddComponent<Image>();
+            if (frameSprite != null)
+            {
+                foImg.sprite = frameSprite;
+                foImg.type = Image.Type.Sliced;
+                foImg.color = Color.white;
+            }
+            foImg.raycastTarget = false;
         }
 
         private void BuildDynamicHud()
@@ -246,6 +467,7 @@ namespace ElementalHexTactics3D.UI
             if (fontBold != null) font = fontBold;
 #endif
             Sprite panelFrame = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_Panel_Frame.png");
+            Sprite windowFrameRpg = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png") ?? panelFrame;
             Sprite btnNormal = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
 
             // ================= 1. UNIT STATUS CARD (Top-Left) ================= //
@@ -257,10 +479,7 @@ namespace ElementalHexTactics3D.UI
             cardRt.sizeDelta = new Vector2(365f, 130f);
             cardRt.anchoredPosition = new Vector2(20f, -20f);
 
-            Image cardBg = unitCardRoot.AddComponent<Image>();
-            cardBg.sprite = panelFrame;
-            cardBg.type = Image.Type.Sliced;
-            cardBg.color = new Color(0.08f, 0.07f, 0.14f, 0.92f);
+            ApplyRpgMakerWindowStyle(unitCardRoot, new Color(0.08f, 0.07f, 0.14f, 0.95f));
 
             // Portrait Avatar
             GameObject portObj = CreateUI("Portrait_Frame", unitCardRoot.transform);
@@ -424,6 +643,10 @@ namespace ElementalHexTactics3D.UI
             // Universal End Turn Button
             btnEndTurn = CreateBtn("Btn_EndTurn", actionBarRoot.transform, "⏳ END TURN", font, 13, btnNormal, new Color(0.78f, 0.25f, 0.18f, 1f), 125f, 52f);
             SetRect(btnEndTurn.GetComponent<RectTransform>(), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-12f, 0f), new Vector2(125f, 52f));
+
+            // ================= 4. DISGAEA-STYLE PANELS ================= //
+            BuildDisgaeaDispatchModal(container.transform, font, windowFrameRpg, btnNormal);
+            BuildDisgaeaCommandMenu(container.transform, font, windowFrameRpg, btnNormal);
         }
 
         private GameObject CreateUI(string name, Transform parent)
@@ -539,6 +762,20 @@ namespace ElementalHexTactics3D.UI
 
             // Universal End Turn
             if (btnEndTurn != null) btnEndTurn.onClick.AddListener(OnEndTurnClicked);
+
+            // Disgaea Command Menu
+            if (btnCmdMove != null) btnCmdMove.onClick.AddListener(() => OnActionClicked(UnitActionMode.Move));
+            if (btnCmdAttack != null) btnCmdAttack.onClick.AddListener(() => OnActionClicked(UnitActionMode.TitanStrike));
+            if (btnCmdSkill != null) btnCmdSkill.onClick.AddListener(OnCmdSkillClicked);
+            if (btnCmdPush != null) btnCmdPush.onClick.AddListener(() => OnActionClicked(UnitActionMode.KineticPush));
+            if (btnCmdSiphon != null) btnCmdSiphon.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand));
+            if (btnCmdCataclysm != null) btnCmdCataclysm.onClick.AddListener(() => OnActionClicked(UnitActionMode.MagmaCataclysm));
+            if (btnCmdRecall != null) btnCmdRecall.onClick.AddListener(OnRecallClicked);
+            if (btnCmdWait != null) btnCmdWait.onClick.AddListener(OnCmdWaitClicked);
+            if (btnCmdCancel != null) btnCmdCancel.onClick.AddListener(OnCmdCancelClicked);
+
+            // Disgaea Dispatch Modal
+            if (btnCloseDispatch != null) btnCloseDispatch.onClick.AddListener(OnCloseDispatchClicked);
         }
 
         private void OnTearRiftClicked()
@@ -650,6 +887,13 @@ namespace ElementalHexTactics3D.UI
 
         private void Update()
         {
+            if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue)
+            {
+                SetHudVisible(false);
+                return;
+            }
+
+            SetHudVisible(true);
             UpdateTurnPhaseRibbon();
             UpdateUnitStatusCard();
             UpdateBottomActionBar();
@@ -813,15 +1057,16 @@ namespace ElementalHexTactics3D.UI
                 // In Tutorial 1 (Holy Crusade), Abyssal Rift is completely hidden!
                 if (unanchoredSection != null) unanchoredSection.SetActive(false);
                 if (riftPanelSection != null) riftPanelSection.SetActive(false);
+                if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
+                if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
 
                 if (selectedUnit != null && selectedUnit.Faction == UnitFaction.Player)
                 {
-                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(true);
-                    UpdateUnitAbilityButtons(selectedUnit, interaction, isPlayerTurn, currentMode);
+                    UpdateDisgaeaCommandMenu(selectedUnit, interaction, isPlayerTurn, currentMode);
                 }
                 else
                 {
-                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
+                    if (commandMenuRoot != null) commandMenuRoot.SetActive(false);
                 }
             }
             else if (!riftExists && selectedUnit == null)
@@ -829,6 +1074,8 @@ namespace ElementalHexTactics3D.UI
                 if (unanchoredSection != null) unanchoredSection.SetActive(true);
                 if (riftPanelSection != null) riftPanelSection.SetActive(false);
                 if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
+                if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
+                if (commandMenuRoot != null) commandMenuRoot.SetActive(false);
 
                 if (btnTearRift != null)
                 {
@@ -851,25 +1098,29 @@ namespace ElementalHexTactics3D.UI
             else
             {
                 if (unanchoredSection != null) unanchoredSection.SetActive(false);
+                if (riftPanelSection != null) riftPanelSection.SetActive(false);
+                if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
 
-                bool showRiftPanel = (selectedUnit == null && (isRiftSelected || isDeployMode || noActiveUnits));
+                // Disgaea Rift Dispatch Modal (Opens when Rift is clicked!)
+                bool isRiftDispatchActive = (selectedUnit == null && isRiftSelected && !isDeployMode);
+                if (isRiftDispatchActive)
+                {
+                    UpdateDisgaeaDispatchModal(interaction);
+                }
+                else if (dispatchModalRoot != null && dispatchModalRoot.activeSelf)
+                {
+                    dispatchModalRoot.SetActive(false);
+                }
 
-                if (showRiftPanel)
+                // Disgaea Unit Command Menu (Opens when Unit is clicked!)
+                bool isUnitCommandActive = (selectedUnit != null && selectedUnit.Faction == UnitFaction.Player);
+                if (isUnitCommandActive)
                 {
-                    if (riftPanelSection != null) riftPanelSection.SetActive(true);
-                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
-                    UpdateRiftPanelButtons(interaction, isPlayerTurn, noActiveUnits, currentMode);
+                    UpdateDisgaeaCommandMenu(selectedUnit, interaction, isPlayerTurn, currentMode);
                 }
-                else if (selectedUnit != null && selectedUnit.Faction == UnitFaction.Player)
+                else if (commandMenuRoot != null && commandMenuRoot.activeSelf)
                 {
-                    if (riftPanelSection != null) riftPanelSection.SetActive(false);
-                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(true);
-                    UpdateUnitAbilityButtons(selectedUnit, interaction, isPlayerTurn, currentMode);
-                }
-                else
-                {
-                    if (riftPanelSection != null) riftPanelSection.SetActive(false);
-                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
+                    commandMenuRoot.SetActive(false);
                 }
             }
 
@@ -1097,7 +1348,9 @@ namespace ElementalHexTactics3D.UI
                 if (btn == null) continue;
                 bool isAllowed = (btn == targetBtn) || 
                                  (isPushOrStrike && (btn == btnPush || btn == btnTitanStrike)) ||
-                                 (isStrikeOrMove && (btn == btnTitanStrike || btn == btnMove));
+                                 (isStrikeOrMove && (btn == btnTitanStrike || btn == btnMove)) ||
+                                 (btn == btnMove) ||
+                                 (btn == btnTitanStrike && (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Move" || activeTutorialButtonKey == "Push"));
                 if (isAllowed)
                 {
                     btn.interactable = true;
@@ -1121,6 +1374,45 @@ namespace ElementalHexTactics3D.UI
                     btn.interactable = false;
                 }
             }
+
+            // Also apply training wheels & highlight to Disgaea Command Menu buttons when active!
+            if (commandMenuRoot != null && commandMenuRoot.activeSelf)
+            {
+                Button targetCmdBtn = null;
+                if (activeTutorialButtonKey == "Move") targetCmdBtn = btnCmdMove;
+                else if (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike") targetCmdBtn = btnCmdAttack;
+                else if (activeTutorialButtonKey == "Push") targetCmdBtn = btnCmdPush;
+                else if (activeTutorialButtonKey == "Fireball" || activeTutorialButtonKey == "WaterSurge" || activeTutorialButtonKey == "EarthPillar") targetCmdBtn = btnCmdSkill;
+                else if (activeTutorialButtonKey == "HarvestCore" || activeTutorialButtonKey == "Siphon") targetCmdBtn = btnCmdSiphon;
+                else if (activeTutorialButtonKey == "Cataclysm") targetCmdBtn = btnCmdCataclysm;
+
+                Button[] allCmdButtons = new Button[]
+                {
+                    btnCmdMove, btnCmdAttack, btnCmdSkill, btnCmdPush,
+                    btnCmdSiphon, btnCmdCataclysm, btnCmdRecall, btnCmdWait, btnCmdCancel
+                };
+
+                foreach (var cmdBtn in allCmdButtons)
+                {
+                    if (cmdBtn == null) continue;
+                    bool isCmdAllowed = (targetCmdBtn == null) || (cmdBtn == targetCmdBtn) || (cmdBtn == btnCmdCancel);
+                    cmdBtn.interactable = isCmdAllowed;
+                    if (cmdBtn == targetCmdBtn)
+                    {
+                        float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
+                        Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
+                        var colors = cmdBtn.colors;
+                        colors.normalColor = goldPulse;
+                        cmdBtn.colors = colors;
+                    }
+                    else
+                    {
+                        var colors = cmdBtn.colors;
+                        colors.normalColor = Color.white;
+                        cmdBtn.colors = colors;
+                    }
+                }
+            }
         }
 
         private void SetButtonActiveHighlight(Button btn, bool isActive)
@@ -1136,6 +1428,727 @@ namespace ElementalHexTactics3D.UI
                 colors.normalColor = Color.white;
             }
             btn.colors = colors;
+        }
+
+        // =========================================================================
+        // DISGAEA-STYLE PANELS: BASE PANEL (RIFT DISPATCH) & VERTICAL COMMAND MENU
+        // =========================================================================
+
+        private void BuildDisgaeaDispatchModal(Transform parent, Font font, Sprite frameSprite, Sprite btnSprite)
+        {
+            dispatchModalRoot = CreateUI("Modal_DisgaeaDispatch", parent);
+            SetRect(dispatchModalRoot.GetComponent<RectTransform>(),
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new Vector2(0f, 25f), new Vector2(620f, 410f));
+
+            ApplyRpgMakerWindowStyle(dispatchModalRoot, new Color(0.08f, 0.07f, 0.14f, 0.96f));
+
+            // Header Bar
+            GameObject headObj = CreateUI("HeaderBar", dispatchModalRoot.transform);
+            SetRect(headObj.GetComponent<RectTransform>(),
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                new Vector2(0f, -8f), new Vector2(-24f, 40f));
+
+            Text titleTxt = CreateTxt("Txt_Title", headObj.transform, "🌀 CITADEL RIFT — SQUAD DISPATCH", font, 15, new Color(1.0f, 0.85f, 0.35f), TextAnchor.MiddleLeft);
+            titleTxt.fontStyle = FontStyle.Bold;
+            SetRect(titleTxt.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0.5f), new Vector2(15f, 0f), new Vector2(-60f, 0f));
+
+            btnCloseDispatch = CreateBtn("Btn_Close", headObj.transform, "✕", font, 14, btnSprite, new Color(0.6f, 0.2f, 0.2f, 1f), 32f, 32f);
+            SetRect(btnCloseDispatch.GetComponent<RectTransform>(), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-5f, 0f), new Vector2(32f, 32f));
+            btnCloseDispatch.onClick.RemoveAllListeners();
+            btnCloseDispatch.onClick.AddListener(OnCloseDispatchClicked);
+
+            // Subtitle
+            Text subTxt = CreateTxt("Txt_Subtitle", dispatchModalRoot.transform, "Select a unit in reserve to emerge through the dimensional breach.", font, 11, new Color(0.75f, 0.75f, 0.85f), TextAnchor.MiddleLeft);
+            SetRect(subTxt.GetComponent<RectTransform>(),
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f),
+                new Vector2(20f, -44f), new Vector2(-40f, 18f));
+
+            // Left Pane: Roster List
+            GameObject leftPane = CreateUI("Pane_RosterList", dispatchModalRoot.transform);
+            SetRect(leftPane.GetComponent<RectTransform>(),
+                new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0f),
+                new Vector2(18f, 18f), new Vector2(285f, -85f));
+            Image leftBg = leftPane.AddComponent<Image>();
+            leftBg.sprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowBg_RPG.png") ?? frameSprite;
+            leftBg.type = Image.Type.Sliced;
+            leftBg.color = new Color(0.04f, 0.04f, 0.08f, 0.85f);
+
+            GameObject listContentObj = CreateUI("List_Content", leftPane.transform);
+            SetRect(listContentObj.GetComponent<RectTransform>(),
+                new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f),
+                new Vector2(0f, 0f), new Vector2(-16f, -16f));
+            dispatchListContent = listContentObj.transform;
+            VerticalLayoutGroup vl = listContentObj.AddComponent<VerticalLayoutGroup>();
+            vl.padding = new RectOffset(6, 6, 8, 8);
+            vl.spacing = 6f;
+            vl.childAlignment = TextAnchor.UpperCenter;
+            vl.childControlWidth = true;
+            vl.childControlHeight = false;
+            vl.childForceExpandWidth = true;
+            vl.childForceExpandHeight = false;
+
+            // Right Pane: Unit Preview
+            GameObject rightPane = CreateUI("Pane_UnitPreview", dispatchModalRoot.transform);
+            SetRect(rightPane.GetComponent<RectTransform>(),
+                new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(1f, 0f),
+                new Vector2(-18f, 18f), new Vector2(285f, -85f));
+            Image rightBg = rightPane.AddComponent<Image>();
+            rightBg.sprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowBg_RPG.png") ?? frameSprite;
+            rightBg.type = Image.Type.Sliced;
+            rightBg.color = new Color(0.04f, 0.04f, 0.08f, 0.85f);
+
+            // Portrait
+            GameObject portFrame = CreateUI("Portrait_Frame", rightPane.transform);
+            SetRect(portFrame.GetComponent<RectTransform>(),
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(14f, -14f), new Vector2(74f, 74f));
+            Image pFrameImg = portFrame.AddComponent<Image>();
+            pFrameImg.sprite = frameSprite;
+            pFrameImg.type = Image.Type.Sliced;
+            pFrameImg.color = new Color(0.18f, 0.15f, 0.28f, 1f);
+
+            GameObject portImgObj = CreateUI("Img_Portrait", portFrame.transform);
+            SetStretch(portImgObj.GetComponent<RectTransform>());
+            dispatchPreviewPortrait = portImgObj.AddComponent<Image>();
+            dispatchPreviewPortrait.preserveAspect = true;
+
+            // Name & Class
+            dispatchPreviewName = CreateTxt("Txt_PrevName", rightPane.transform, "Select Unit", font, 14, new Color(1.0f, 0.88f, 0.45f), TextAnchor.UpperLeft);
+            dispatchPreviewName.fontStyle = FontStyle.Bold;
+            SetRect(dispatchPreviewName.GetComponent<RectTransform>(),
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f),
+                new Vector2(98f, -14f), new Vector2(-108f, 24f));
+
+            dispatchPreviewClass = CreateTxt("Txt_PrevClass", rightPane.transform, "---", font, 11, new Color(0.7f, 0.8f, 0.9f), TextAnchor.UpperLeft);
+            SetRect(dispatchPreviewClass.GetComponent<RectTransform>(),
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f),
+                new Vector2(98f, -38f), new Vector2(-108f, 20f));
+
+            // Stats Area
+            dispatchPreviewStats = CreateTxt("Txt_PrevStats", rightPane.transform, "HP: --\nATK: --   MOV: --\nRNG: --", font, 12, Color.white, TextAnchor.UpperLeft);
+            SetRect(dispatchPreviewStats.GetComponent<RectTransform>(),
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f),
+                new Vector2(16f, -98f), new Vector2(-32f, 110f));
+
+            // Cost Area
+            dispatchPreviewCost = CreateTxt("Txt_PrevCost", rightPane.transform, "Cost: FREE", font, 12, new Color(0.4f, 0.9f, 0.5f), TextAnchor.UpperLeft);
+            dispatchPreviewCost.fontStyle = FontStyle.Bold;
+            SetRect(dispatchPreviewCost.GetComponent<RectTransform>(),
+                new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f),
+                new Vector2(16f, 62f), new Vector2(-32f, 26f));
+
+            // Confirm Button
+            btnDispatchConfirm = CreateBtn("Btn_DispatchConfirm", rightPane.transform, "🚀 DISPATCH TO FIELD", font, 13, btnSprite, new Color(0.25f, 0.60f, 0.28f, 1f), 250f, 42f);
+            SetRect(btnDispatchConfirm.GetComponent<RectTransform>(),
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(0f, 30f), new Vector2(250f, 42f));
+            txtDispatchConfirm = btnDispatchConfirm.GetComponentInChildren<Text>();
+
+            btnDispatchConfirm.onClick.RemoveAllListeners();
+            btnDispatchConfirm.onClick.AddListener(() =>
+            {
+                if (currentPreviewDispatchUnit != null)
+                {
+                    OnDispatchUnitSelected(currentPreviewDispatchUnit);
+                }
+            });
+
+            dispatchModalRoot.SetActive(false);
+        }
+
+        private void BuildDisgaeaCommandMenu(Transform parent, Font font, Sprite frameSprite, Sprite btnSprite)
+        {
+            commandMenuRoot = CreateUI("Menu_DisgaeaCommand", parent);
+            RectTransform menuRt = commandMenuRoot.GetComponent<RectTransform>();
+            SetRect(menuRt,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 1f),
+                new Vector2(0f, 0f), new Vector2(175f, 260f));
+
+            ApplyRpgMakerWindowStyle(commandMenuRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
+
+            VerticalLayoutGroup vl = commandMenuRoot.AddComponent<VerticalLayoutGroup>();
+            vl.padding = new RectOffset(8, 8, 10, 10);
+            vl.spacing = 4f;
+            vl.childAlignment = TextAnchor.UpperCenter;
+            vl.childControlWidth = true;
+            vl.childControlHeight = false;
+            vl.childForceExpandWidth = true;
+            vl.childForceExpandHeight = false;
+
+            ContentSizeFitter csf = commandMenuRoot.AddComponent<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            csf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            // Header
+            txtCmdHeader = CreateTxt("Txt_CmdHeader", commandMenuRoot.transform, "COMMAND", font, 12, new Color(1.0f, 0.88f, 0.40f), TextAnchor.MiddleCenter);
+            txtCmdHeader.fontStyle = FontStyle.Bold;
+            LayoutElement leH = txtCmdHeader.gameObject.AddComponent<LayoutElement>();
+            leH.preferredHeight = 22f;
+
+            // Commands
+            btnCmdMove = CreateBtn("Btn_CmdMove", commandMenuRoot.transform, "👣 Move", font, 12, btnSprite, new Color(0.18f, 0.35f, 0.55f, 1f), 154f, 32f);
+            txtCmdMove = btnCmdMove.GetComponentInChildren<Text>();
+            btnCmdMove.onClick.RemoveAllListeners();
+            btnCmdMove.onClick.AddListener(() => OnActionClicked(UnitActionMode.Move));
+
+            btnCmdAttack = CreateBtn("Btn_CmdAttack", commandMenuRoot.transform, "⚔️ Attack", font, 12, btnSprite, new Color(0.68f, 0.22f, 0.20f, 1f), 154f, 32f);
+            txtCmdAttack = btnCmdAttack.GetComponentInChildren<Text>();
+            btnCmdAttack.onClick.RemoveAllListeners();
+            btnCmdAttack.onClick.AddListener(() => OnActionClicked(UnitActionMode.TitanStrike));
+
+            btnCmdSkill = CreateBtn("Btn_CmdSkill", commandMenuRoot.transform, "🔥 Skill", font, 12, btnSprite, new Color(0.72f, 0.40f, 0.15f, 1f), 154f, 32f);
+            txtCmdSkill = btnCmdSkill.GetComponentInChildren<Text>();
+            btnCmdSkill.onClick.RemoveAllListeners();
+            btnCmdSkill.onClick.AddListener(OnCmdSkillClicked);
+
+            btnCmdPush = CreateBtn("Btn_CmdPush", commandMenuRoot.transform, "💨 Push", font, 12, btnSprite, new Color(0.45f, 0.20f, 0.60f, 1f), 154f, 32f);
+            txtCmdPush = btnCmdPush.GetComponentInChildren<Text>();
+            btnCmdPush.onClick.RemoveAllListeners();
+            btnCmdPush.onClick.AddListener(() => OnActionClicked(UnitActionMode.KineticPush));
+
+            btnCmdSiphon = CreateBtn("Btn_CmdSiphon", commandMenuRoot.transform, "⚡ Siphon", font, 12, btnSprite, new Color(0.70f, 0.55f, 0.15f, 1f), 154f, 32f);
+            txtCmdSiphon = btnCmdSiphon.GetComponentInChildren<Text>();
+            btnCmdSiphon.onClick.RemoveAllListeners();
+            btnCmdSiphon.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand));
+
+            btnCmdCataclysm = CreateBtn("Btn_CmdCataclysm", commandMenuRoot.transform, "🌋 Cataclysm", font, 12, btnSprite, new Color(0.85f, 0.25f, 0.10f, 1f), 154f, 32f);
+            txtCmdCataclysm = btnCmdCataclysm.GetComponentInChildren<Text>();
+            btnCmdCataclysm.onClick.RemoveAllListeners();
+            btnCmdCataclysm.onClick.AddListener(() => OnActionClicked(UnitActionMode.MagmaCataclysm));
+
+            btnCmdRecall = CreateBtn("Btn_CmdRecall", commandMenuRoot.transform, "🌀 Recall", font, 12, btnSprite, new Color(0.38f, 0.18f, 0.52f, 1f), 154f, 32f);
+            txtCmdRecall = btnCmdRecall.GetComponentInChildren<Text>();
+            btnCmdRecall.onClick.RemoveAllListeners();
+            btnCmdRecall.onClick.AddListener(OnRecallClicked);
+
+            btnCmdWait = CreateBtn("Btn_CmdWait", commandMenuRoot.transform, "⏳ Wait", font, 12, btnSprite, new Color(0.35f, 0.35f, 0.40f, 1f), 154f, 32f);
+            btnCmdWait.onClick.RemoveAllListeners();
+            btnCmdWait.onClick.AddListener(OnCmdWaitClicked);
+
+            btnCmdCancel = CreateBtn("Btn_CmdCancel", commandMenuRoot.transform, "✕ Cancel", font, 12, btnSprite, new Color(0.25f, 0.25f, 0.28f, 1f), 154f, 30f);
+            btnCmdCancel.onClick.RemoveAllListeners();
+            btnCmdCancel.onClick.AddListener(OnCmdCancelClicked);
+
+            commandMenuRoot.transform.SetAsLastSibling();
+            commandMenuRoot.SetActive(false);
+        }
+
+        private void UpdateDisgaeaDispatchModal(HexGridInteraction3D interaction)
+        {
+            if (dispatchModalRoot == null) return;
+            dispatchModalRoot.SetActive(true);
+
+            if (dispatchListContent == null) return;
+
+            TacticalUnit3D[] all = UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            List<TacticalUnit3D> roster = new List<TacticalUnit3D>();
+            foreach (var u in all)
+            {
+                if (u != null && u.Faction == UnitFaction.Player)
+                {
+                    roster.Add(u);
+                }
+            }
+
+            roster.Sort((a, b) =>
+            {
+                int scoreA = (a.Archetype == UnitArchetype.Commander) ? 0 : (a.Archetype == UnitArchetype.Titan ? 2 : 1);
+                int scoreB = (b.Archetype == UnitArchetype.Commander) ? 0 : (b.Archetype == UnitArchetype.Titan ? 2 : 1);
+                return scoreA.CompareTo(scoreB);
+            });
+
+            for (int i = dispatchListContent.childCount - 1; i >= 0; i--)
+            {
+                Destroy(dispatchListContent.GetChild(i).gameObject);
+            }
+
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Sprite btnNormal = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
+
+            foreach (var unit in roster)
+            {
+                TacticalUnit3D u = unit;
+                bool inReserve = !u.gameObject.activeInHierarchy;
+                string statusText = inReserve ? "<color=#FFD54F>[RESERVE]</color>" : "<color=#81C784>[ON FIELD]</color>";
+                string costText = (u.Archetype == UnitArchetype.Titan) ? "1 Core" : "FREE";
+                string icon = (u.Archetype == UnitArchetype.Commander) ? "👑" : (u.Archetype == UnitArchetype.Titan ? "🌋" : "🛡️");
+                string label = $"{icon} <b>{u.UnitName}</b> {statusText}\n<size=10><color=#CFD8DC>Cost: {costText} • {u.Affinity}</color></size>";
+
+                Color btnColor = inReserve ? new Color(0.20f, 0.22f, 0.32f, 1f) : new Color(0.15f, 0.28f, 0.20f, 1f);
+                Button rowBtn = CreateBtn("Btn_UnitRow_" + u.UnitName, dispatchListContent, label, font, 11, btnNormal, btnColor, 265f, 48f);
+                rowBtn.onClick.AddListener(() =>
+                {
+                    UpdateDispatchPreview(u);
+                });
+            }
+
+            if (currentPreviewDispatchUnit == null || !roster.Contains(currentPreviewDispatchUnit))
+            {
+                if (roster.Count > 0) UpdateDispatchPreview(roster[0]);
+            }
+            else
+            {
+                UpdateDispatchPreview(currentPreviewDispatchUnit);
+            }
+        }
+
+        private void UpdateDispatchPreview(TacticalUnit3D unit)
+        {
+            if (unit == null) return;
+            currentPreviewDispatchUnit = unit;
+
+            if (dispatchPreviewName != null) dispatchPreviewName.text = unit.UnitName;
+            if (dispatchPreviewClass != null) dispatchPreviewClass.text = $"{unit.Archetype} • {unit.Affinity} Element";
+            if (dispatchPreviewStats != null)
+            {
+                string trait = "";
+                if (unit.Archetype == UnitArchetype.Commander)
+                    trait = "👑 Vanguard Aura: Can cast Fireball spells & commands summons.";
+                else if (unit.Archetype == UnitArchetype.Titan)
+                    trait = "🌋 Colossal: Naturally immune to Magma, triggers radial knockback on emergence.";
+                else if (unit.UnitName.Contains("Basalt"))
+                    trait = "🛡️ Iron Wall: Heavy defense, slams foes into walls.";
+                else
+                    trait = "✨ Allied Vanguard.";
+
+                dispatchPreviewStats.text = $"❤️ HP: {unit.CurrentHealth}/{unit.MaxHealth}\n⚔️ ATK: {unit.EffectiveAttackDamage}   👣 MOV: {unit.MoveRange}\n🎯 Range: 1 Hex\n\n<i><color=#90A4AE>{trait}</color></i>";
+            }
+
+            bool inReserve = !unit.gameObject.activeInHierarchy;
+            bool isTitan = (unit.Archetype == UnitArchetype.Titan);
+            TacticalUnit3D cmdr = HexGridInteraction3D.FindCommanderUnit();
+            int cores = (cmdr != null) ? cmdr.ElementalCores : 0;
+
+            if (dispatchPreviewCost != null)
+            {
+                if (!inReserve)
+                {
+                    dispatchPreviewCost.text = "<color=#81C784>● Unit is already deployed on the field</color>";
+                }
+                else if (isTitan)
+                {
+                    bool canAfford = cores >= 1 || !HexGridInteraction3D.HasActivePlayerUnitsOnField();
+                    dispatchPreviewCost.text = canAfford
+                        ? $"<color=#FFD54F>💎 Summon Cost: 1 Core (Available: {cores})</color>"
+                        : $"<color=#EF5350>💎 Summon Cost: 1 Core (Available: {cores} - Insufficient!)</color>";
+                }
+                else
+                {
+                    dispatchPreviewCost.text = "<color=#81C784>✨ Summon Cost: FREE (Citadel Vanguard)</color>";
+                }
+            }
+
+            if (dispatchPreviewPortrait != null)
+            {
+                Sprite pSprite = unit.PortraitSprite ?? unit.StandeeSprite;
+                if (pSprite != null)
+                {
+                    dispatchPreviewPortrait.sprite = pSprite;
+                    dispatchPreviewPortrait.color = Color.white;
+                }
+                else
+                {
+                    dispatchPreviewPortrait.sprite = null;
+                    dispatchPreviewPortrait.color = Color.clear;
+                }
+            }
+
+            if (btnDispatchConfirm != null && txtDispatchConfirm != null)
+            {
+                if (inReserve)
+                {
+                    bool canSummon = !isTitan || cores >= 1 || !HexGridInteraction3D.HasActivePlayerUnitsOnField();
+                    btnDispatchConfirm.interactable = canSummon;
+                    txtDispatchConfirm.text = isTitan ? "🌋 SUMMON TITAN" : "🚀 DISPATCH VANGUARD";
+                    var cb = btnDispatchConfirm.colors;
+                    cb.normalColor = canSummon ? new Color(0.25f, 0.60f, 0.28f, 1f) : new Color(0.35f, 0.35f, 0.38f, 0.65f);
+                    btnDispatchConfirm.colors = cb;
+                }
+                else
+                {
+                    btnDispatchConfirm.interactable = true;
+                    txtDispatchConfirm.text = "🎯 FOCUS ON FIELD";
+                    var cb = btnDispatchConfirm.colors;
+                    cb.normalColor = new Color(0.18f, 0.38f, 0.65f, 1f);
+                    btnDispatchConfirm.colors = cb;
+                }
+            }
+        }
+
+        private void OnDispatchUnitSelected(TacticalUnit3D unit)
+        {
+            if (unit == null) return;
+            SoundManager3D.Instance?.PlayButtonClick();
+            HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
+            if (interaction == null) return;
+
+            if (unit.gameObject.activeInHierarchy)
+            {
+                if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
+                interaction.SelectTile(unit.CurrentTile);
+                interaction.SelectUnit(unit);
+                return;
+            }
+
+            if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
+            interaction.PendingDeployUnit = unit;
+            if (unit.Archetype == UnitArchetype.Titan)
+            {
+                interaction.SetActionMode(UnitActionMode.SummonTitan);
+            }
+            else
+            {
+                interaction.SetActionMode(UnitActionMode.DeployCommander);
+            }
+        }
+
+        private void OnCloseDispatchClicked()
+        {
+            SoundManager3D.Instance?.PlayButtonClick();
+            if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
+            HexGridInteraction3D.Instance?.DeselectAll();
+        }
+
+        private void UpdateDisgaeaCommandMenu(TacticalUnit3D unit, HexGridInteraction3D interaction, bool isPlayerTurn, UnitActionMode currentMode)
+        {
+            if (commandMenuRoot == null) return;
+
+            // While unit is actively traversing tiles, hide menu until it arrives
+            if (unit != null && unit.IsMoving)
+            {
+                commandMenuRoot.SetActive(false);
+                return;
+            }
+
+            commandMenuRoot.SetActive(true);
+            commandMenuRoot.transform.SetAsLastSibling();
+
+            if (txtCmdHeader != null)
+            {
+                txtCmdHeader.text = $"<b>{unit.UnitName.ToUpper()}</b>";
+            }
+
+            UpdateDisgaeaCommandMenuPosition(unit);
+
+            bool canCombat = isPlayerTurn && !unit.HasActedThisTurn;
+            bool isCommander = (unit.Archetype == UnitArchetype.Commander);
+            bool isTitan = (unit.Archetype == UnitArchetype.Titan);
+            bool isTutorial1 = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage1Active;
+
+            // 1. Move
+            if (btnCmdMove != null)
+            {
+                btnCmdMove.interactable = isPlayerTurn && !unit.HasMovedThisTurn && !unit.IsImmobilized;
+                SetButtonActiveHighlight(btnCmdMove, currentMode == UnitActionMode.Move);
+                if (txtCmdMove != null)
+                {
+                    txtCmdMove.text = unit.HasMovedThisTurn ? "👣 Move (Done)" : (unit.IsCrippled ? "👣 Move (1)" : "👣 Move");
+                }
+            }
+
+            // 2. Attack (Melee)
+            if (btnCmdAttack != null)
+            {
+                btnCmdAttack.interactable = canCombat;
+                SetButtonActiveHighlight(btnCmdAttack, currentMode == UnitActionMode.TitanStrike);
+                if (txtCmdAttack != null)
+                {
+                    if (unit.UnitName.Contains("Paladin")) txtCmdAttack.text = "⚔️ Holy Strike";
+                    else if (unit.UnitName.Contains("Basalt") || unit.UnitName.Contains("Golem")) txtCmdAttack.text = "👊 Boulder Smash";
+                    else if (isTitan) txtCmdAttack.text = "🐾 Titan Strike";
+                    else txtCmdAttack.text = "⚔️ Attack";
+                }
+            }
+
+            // 3. Skill / Spell
+            bool showFireball = (isCommander || unit.Affinity == ElementalAffinity.Fire) && !isTutorial1 && !isTitan;
+            bool showWater = !isCommander && unit.Affinity == ElementalAffinity.Water;
+            bool showEarth = !isCommander && unit.Affinity == ElementalAffinity.Earth;
+
+            if (btnCmdSkill != null)
+            {
+                bool hasSkill = showFireball || showWater || showEarth;
+                btnCmdSkill.gameObject.SetActive(hasSkill);
+                if (hasSkill)
+                {
+                    btnCmdSkill.interactable = canCombat;
+                    if (showFireball)
+                    {
+                        txtCmdSkill.text = "🔥 Fireball (Dmg 3)";
+                        SetButtonActiveHighlight(btnCmdSkill, currentMode == UnitActionMode.Fireball);
+                    }
+                    else if (showWater)
+                    {
+                        txtCmdSkill.text = "💧 Water Surge";
+                        SetButtonActiveHighlight(btnCmdSkill, currentMode == UnitActionMode.WaterSurge);
+                    }
+                    else if (showEarth)
+                    {
+                        txtCmdSkill.text = "⛰️ Earth Pillar";
+                        SetButtonActiveHighlight(btnCmdSkill, currentMode == UnitActionMode.EarthSpire);
+                    }
+                }
+            }
+
+            // 4. Push
+            if (btnCmdPush != null)
+            {
+                btnCmdPush.interactable = canCombat;
+                SetButtonActiveHighlight(btnCmdPush, currentMode == UnitActionMode.KineticPush);
+                if (txtCmdPush != null)
+                {
+                    if (isTitan) txtCmdPush.text = "🐊 Tail Shove";
+                    else if (unit.UnitName.Contains("Basalt") || unit.UnitName.Contains("Golem")) txtCmdPush.text = "💥 Golem Slam";
+                    else if (unit.UnitName.Contains("Paladin")) txtCmdPush.text = "⚜️ Holy Repel";
+                    else txtCmdPush.text = "💨 Push";
+                }
+            }
+
+            // 5. Siphon Land
+            if (btnCmdSiphon != null)
+            {
+                bool showSiphon = !isTutorial1 && !isTitan;
+                btnCmdSiphon.gameObject.SetActive(showSiphon);
+                if (showSiphon)
+                {
+                    btnCmdSiphon.interactable = canCombat && !unit.HasSiphonedThisTurn;
+                    SetButtonActiveHighlight(btnCmdSiphon, currentMode == UnitActionMode.ConsumeLand);
+                }
+            }
+
+            // 6. Cataclysm (Titan only)
+            if (btnCmdCataclysm != null)
+            {
+                btnCmdCataclysm.gameObject.SetActive(isTitan && !isTutorial1);
+                if (isTitan && !isTutorial1)
+                {
+                    bool canCataclysm = canCombat && unit.ElementalCores >= 1;
+                    btnCmdCataclysm.interactable = canCataclysm;
+                    SetButtonActiveHighlight(btnCmdCataclysm, currentMode == UnitActionMode.MagmaCataclysm);
+                    if (txtCmdCataclysm != null)
+                    {
+                        txtCmdCataclysm.text = (unit.ElementalCores >= 1) ? "🌋 Cataclysm" : "🌋 Cataclysm (Req 1)";
+                    }
+                }
+            }
+
+            // 7. Recall
+            if (btnCmdRecall != null)
+            {
+                bool showRecall = !isTutorial1;
+                btnCmdRecall.gameObject.SetActive(showRecall);
+                btnCmdRecall.interactable = isPlayerTurn;
+            }
+
+            // 8. Wait
+            if (btnCmdWait != null)
+            {
+                btnCmdWait.interactable = isPlayerTurn && (!unit.HasActedThisTurn || !unit.HasMovedThisTurn);
+            }
+
+            // 9. Cancel
+            if (btnCmdCancel != null)
+            {
+                btnCmdCancel.interactable = true;
+            }
+
+            ApplyDisgaeaTutorialPulse();
+        }
+
+        private void OnCmdSkillClicked()
+        {
+            SoundManager3D.Instance?.PlayButtonClick();
+            HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
+            if (interaction == null) return;
+
+            TacticalUnit3D sel = interaction.CurrentSelectedUnit;
+            if (sel == null) return;
+
+            if (sel.Archetype == UnitArchetype.Commander || sel.Affinity == ElementalAffinity.Fire)
+            {
+                OnActionClicked(UnitActionMode.Fireball);
+            }
+            else if (sel.Affinity == ElementalAffinity.Water)
+            {
+                OnActionClicked(UnitActionMode.WaterSurge);
+            }
+            else if (sel.Affinity == ElementalAffinity.Earth)
+            {
+                OnActionClicked(UnitActionMode.EarthSpire);
+            }
+            else if (sel.Archetype == UnitArchetype.Titan)
+            {
+                OnActionClicked(UnitActionMode.MagmaCataclysm);
+            }
+        }
+
+        private void OnCmdWaitClicked()
+        {
+            SoundManager3D.Instance?.PlayButtonClick();
+            HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
+            if (interaction == null) return;
+
+            TacticalUnit3D sel = interaction.CurrentSelectedUnit;
+            if (sel != null)
+            {
+                sel.HasActedThisTurn = true;
+                sel.HasMovedThisTurn = true;
+                interaction.ClearUnitSelection();
+                interaction.SetActionMode(UnitActionMode.None);
+            }
+        }
+
+        private void OnCmdCancelClicked()
+        {
+            SoundManager3D.Instance?.PlayButtonClick();
+            HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
+            if (interaction == null) return;
+
+            if (interaction.CurrentActionMode != UnitActionMode.None)
+            {
+                interaction.SetActionMode(UnitActionMode.None);
+            }
+            else
+            {
+                interaction.ClearUnitSelection();
+            }
+        }
+
+        private void ApplyDisgaeaTutorialPulse()
+        {
+            if (string.IsNullOrEmpty(activeTutorialButtonKey)) return;
+
+            Button targetBtn = null;
+            if (activeTutorialButtonKey == "Move") targetBtn = btnCmdMove;
+            else if (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike") targetBtn = btnCmdAttack;
+            else if (activeTutorialButtonKey == "Fireball") targetBtn = btnCmdSkill;
+            else if (activeTutorialButtonKey == "Push") targetBtn = btnCmdPush;
+            else if (activeTutorialButtonKey == "HarvestCore" || activeTutorialButtonKey == "Siphon") targetBtn = btnCmdSiphon;
+            else if (activeTutorialButtonKey == "Cataclysm") targetBtn = btnCmdCataclysm;
+
+            Button[] menuButtons = new Button[]
+            {
+                btnCmdMove, btnCmdAttack, btnCmdSkill, btnCmdPush,
+                btnCmdSiphon, btnCmdCataclysm, btnCmdRecall, btnCmdWait, btnCmdCancel
+            };
+
+            bool isPushOrStrike = (activeTutorialButtonKey == "PushOrStrike");
+            bool isStrikeOrMove = (activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "StrikeOrMove");
+
+            foreach (var btn in menuButtons)
+            {
+                if (btn == null) continue;
+                bool isAllowed = (btn == targetBtn) ||
+                                 (isPushOrStrike && (btn == btnCmdPush || btn == btnCmdAttack)) ||
+                                 (isStrikeOrMove && (btn == btnCmdAttack || btn == btnCmdMove)) ||
+                                 (btn == btnCmdMove) ||
+                                 (btn == btnCmdCancel) ||
+                                 (btn == btnCmdAttack && (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Move" || activeTutorialButtonKey == "Push"));
+
+                if (isAllowed)
+                {
+                    btn.interactable = true;
+                    if (btn == targetBtn)
+                    {
+                        float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
+                        Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
+                        var colors = btn.colors;
+                        colors.normalColor = goldPulse;
+                        btn.colors = colors;
+                    }
+                }
+                else
+                {
+                    btn.interactable = false;
+                }
+            }
+        }
+
+        public void UpdateDisgaeaCommandMenuPosition(TacticalUnit3D unit)
+        {
+            if (commandMenuRoot == null || unit == null) return;
+            Camera cam = Camera.main;
+            if (cam == null) return;
+
+            // Project world point above standee chest/head level (1.5m) to screen space
+            Vector3 worldPos = unit.transform.position + Vector3.up * 1.5f;
+            Vector3 screenPos = cam.WorldToScreenPoint(worldPos);
+
+            // Hide if behind camera frustum
+            if (screenPos.z <= 0)
+            {
+                commandMenuRoot.SetActive(false);
+                return;
+            }
+
+            Canvas canvas = GetComponentInParent<Canvas>();
+            Camera uiCamera = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? canvas.worldCamera : null;
+
+            RectTransform parentRect = commandMenuRoot.transform.parent as RectTransform;
+            if (parentRect == null) parentRect = GetComponent<RectTransform>();
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPos, uiCamera, out Vector2 localPoint))
+            {
+                RectTransform menuRect = commandMenuRoot.GetComponent<RectTransform>();
+                menuRect.anchorMin = new Vector2(0.5f, 0.5f);
+                menuRect.anchorMax = new Vector2(0.5f, 0.5f);
+                menuRect.pivot = new Vector2(0f, 1f); // Top-left pivot
+
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(menuRect);
+
+                float menuWidth = menuRect.rect.width > 0 ? menuRect.rect.width : 175f;
+                float menuHeight = menuRect.rect.height > 0 ? menuRect.rect.height : 260f;
+
+                float edgeMargin = 20f;
+                float xMin = parentRect.rect.xMin + edgeMargin;
+                float xMax = parentRect.rect.xMax - edgeMargin - menuWidth;
+                float yMin = parentRect.rect.yMin + edgeMargin + menuHeight;
+                float yMax = parentRect.rect.yMax - edgeMargin;
+
+                float offsetX = 55f;
+                float offsetY = 20f;
+
+                // Disgaea TRPG Smart Flip:
+                // Default: display to the right of the unit
+                // If overflowing the right screen edge, flip to the left of the unit
+                float targetX;
+                if (localPoint.x + offsetX + menuWidth <= parentRect.rect.xMax - edgeMargin)
+                {
+                    targetX = localPoint.x + offsetX;
+                }
+                else if (localPoint.x - offsetX - menuWidth >= xMin)
+                {
+                    targetX = localPoint.x - offsetX - menuWidth;
+                }
+                else
+                {
+                    targetX = Mathf.Clamp(localPoint.x + offsetX, xMin, xMax);
+                }
+
+                float targetY = Mathf.Clamp(localPoint.y + offsetY, yMin, yMax);
+                menuRect.anchoredPosition = new Vector2(targetX, targetY);
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if (commandMenuRoot != null && commandMenuRoot.activeSelf)
+            {
+                HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
+                if (interaction != null && interaction.CurrentSelectedUnit != null)
+                {
+                    TacticalUnit3D sel = interaction.CurrentSelectedUnit;
+                    if (sel.IsMoving)
+                    {
+                        commandMenuRoot.SetActive(false);
+                    }
+                    else
+                    {
+                        UpdateDisgaeaCommandMenuPosition(sel);
+                    }
+                }
+            }
         }
     }
 }

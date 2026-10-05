@@ -970,7 +970,7 @@ namespace ElementalHexTactics3D.Tutorial
             SoundManager3D.Instance?.PlayVictory();
             ClearTutorialHighlightedTile();
             CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
-            TutorialGuidanceBannerUI.Instance?.HideGuidance();
+            TutorialGuidanceBannerUI.SafeHideGuidance();
 
             if (StoryDialogueUI.Instance != null)
             {
@@ -1002,7 +1002,7 @@ namespace ElementalHexTactics3D.Tutorial
             Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Waking up in Citadel Town Hub as Demon Lord...");
 
             PurgeAllBattlefieldUnits();
-            TutorialGuidanceBannerUI.Instance?.HideGuidance();
+            TutorialGuidanceBannerUI.SafeHideGuidance();
 
             if (TitleMenuCanvasUI.Instance != null)
             {
@@ -1213,7 +1213,7 @@ namespace ElementalHexTactics3D.Tutorial
             SoundManager3D.Instance?.PlayVictory();
             ClearTutorialHighlightedTile();
             CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
-            TutorialGuidanceBannerUI.Instance?.HideGuidance();
+            TutorialGuidanceBannerUI.SafeHideGuidance();
 
             if (StoryDialogueUI.Instance != null)
             {
@@ -1238,7 +1238,7 @@ namespace ElementalHexTactics3D.Tutorial
             Debug.Log("<color=#FF7043><b>[Tutorial Scenario]</b></color> Entering Hub: The Titan Crisis...");
 
             PurgeAllBattlefieldUnits();
-            TutorialGuidanceBannerUI.Instance?.HideGuidance();
+            TutorialGuidanceBannerUI.SafeHideGuidance();
 
             if (TitleMenuCanvasUI.Instance != null)
             {
@@ -1453,7 +1453,7 @@ namespace ElementalHexTactics3D.Tutorial
             SoundManager3D.Instance?.PlayVictory();
             ClearTutorialHighlightedTile();
             CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
-            TutorialGuidanceBannerUI.Instance?.HideGuidance();
+            TutorialGuidanceBannerUI.SafeHideGuidance();
 
             if (StoryDialogueUI.Instance != null)
             {
@@ -1514,7 +1514,7 @@ namespace ElementalHexTactics3D.Tutorial
 
             ClearTutorialHighlightedTile();
             CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
-            TutorialGuidanceBannerUI.Instance?.HideGuidance();
+            TutorialGuidanceBannerUI.SafeHideGuidance();
         }
 
         #endregion

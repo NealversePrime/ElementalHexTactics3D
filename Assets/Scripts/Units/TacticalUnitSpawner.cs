@@ -308,8 +308,14 @@ namespace ElementalHexTactics3D.Units
                 Texture2D tex = new Texture2D(128, 128, TextureFormat.RGBA32, false);
                 if (tex.LoadImage(bytes))
                 {
-                    tex.name = baseName;
-                    Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                    Vector4 border = Vector4.zero;
+                    if (fileName.Contains("WindowFrame")) border = new Vector4(24f, 24f, 24f, 24f);
+                    else if (fileName.Contains("SelectBox")) border = new Vector4(12f, 12f, 12f, 12f);
+                    else if (fileName.Contains("WindowBg")) border = new Vector4(12f, 12f, 12f, 12f);
+                    else if (fileName.Contains("Panel_Frame")) border = new Vector4(16f, 16f, 16f, 16f);
+                    else if (fileName.Contains("Button")) border = new Vector4(8f, 8f, 8f, 8f);
+
+                    Sprite sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
                     spriteCache[cacheKey] = sp;
                     return sp;
                 }

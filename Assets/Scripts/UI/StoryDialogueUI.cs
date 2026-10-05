@@ -99,9 +99,14 @@ namespace ElementalHexTactics3D.UI
         private Coroutine typingCoroutine;
         private bool isTyping = false;
         private string currentTargetText = "";
+        private Vector3 continueIndicatorBasePos;
+        private bool continueIndicatorBasePosSaved = false;
 
         public event Action<StorySequenceId> OnStorySequenceStarted;
         public event Action<StorySequenceId> OnStorySequenceFinished;
+
+        public static event Action OnDialogueStarted;
+        public static event Action OnDialogueFinished;
 
         private void Awake()
         {
@@ -130,6 +135,30 @@ namespace ElementalHexTactics3D.UI
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (!Application.isPlaying)
+            {
+                UnityEditor.EditorApplication.delayCall += () =>
+                {
+                    if (this != null && gameObject != null)
+                    {
+                        EnsureUIHierarchy();
+                    }
+                };
+            }
+        }
+#endif
+
         private void Update()
         {
             if (!IsPlayingDialogue) return;
@@ -157,6 +186,21 @@ namespace ElementalHexTactics3D.UI
             if (advancePressed)
             {
                 OnAdvanceInput();
+            }
+
+            if (continueIndicator != null && continueIndicator.activeInHierarchy)
+            {
+                if (!continueIndicatorBasePosSaved)
+                {
+                    continueIndicatorBasePos = continueIndicator.transform.localPosition;
+                    continueIndicatorBasePosSaved = true;
+                }
+                float bob = Mathf.Sin(Time.unscaledTime * 7f) * 3f;
+                continueIndicator.transform.localPosition = new Vector3(
+                    continueIndicatorBasePos.x,
+                    continueIndicatorBasePos.y + bob,
+                    continueIndicatorBasePos.z
+                );
             }
         }
 
@@ -242,18 +286,44 @@ namespace ElementalHexTactics3D.UI
                     if (pl != null)
                     {
                         portraitLeft = pl.GetComponent<Image>();
-                        portraitLeftGroup = pl.GetComponent<CanvasGroup>() ?? pl.gameObject.AddComponent<CanvasGroup>();
+                        portraitLeftGroup = pl.GetComponent<CanvasGroup>();
+                        if (portraitLeftGroup == null) portraitLeftGroup = pl.gameObject.AddComponent<CanvasGroup>();
                     }
                 }
+                if (portraitLeft != null)
+                {
+                    portraitLeft.preserveAspect = true;
+                    RectTransform lpRect = portraitLeft.rectTransform;
+                    lpRect.anchorMin = new Vector2(0.5f, 0f);
+                    lpRect.anchorMax = new Vector2(0.5f, 0f);
+                    lpRect.pivot = new Vector2(0.5f, 0f);
+                    lpRect.sizeDelta = new Vector2(350f, 350f);
+                    lpRect.anchoredPosition = new Vector2(-497f, 280f);
+                    lpRect.SetSiblingIndex(2);
+                }
+
                 if (portraitRight == null)
                 {
                     Transform pr = rootDialoguePanel.transform.Find("Portrait_Right");
                     if (pr != null)
                     {
                         portraitRight = pr.GetComponent<Image>();
-                        portraitRightGroup = pr.GetComponent<CanvasGroup>() ?? pr.gameObject.AddComponent<CanvasGroup>();
+                        portraitRightGroup = pr.GetComponent<CanvasGroup>();
+                        if (portraitRightGroup == null) portraitRightGroup = pr.gameObject.AddComponent<CanvasGroup>();
                     }
                 }
+                if (portraitRight != null)
+                {
+                    portraitRight.preserveAspect = true;
+                    RectTransform rpRect = portraitRight.rectTransform;
+                    rpRect.anchorMin = new Vector2(0.5f, 0f);
+                    rpRect.anchorMax = new Vector2(0.5f, 0f);
+                    rpRect.pivot = new Vector2(0.5f, 0f);
+                    rpRect.sizeDelta = new Vector2(350f, 350f);
+                    rpRect.anchoredPosition = new Vector2(495.5f, 281f);
+                    rpRect.SetSiblingIndex(3);
+                }
+
                 if (dialogueBoxRect == null)
                 {
                     Transform box = rootDialoguePanel.transform.Find("DialogueBox");
@@ -261,26 +331,145 @@ namespace ElementalHexTactics3D.UI
                 }
                 if (dialogueBoxRect != null)
                 {
+                    dialogueBoxRect.anchorMin = new Vector2(0.5f, 0f);
+                    dialogueBoxRect.anchorMax = new Vector2(0.5f, 0f);
+                    dialogueBoxRect.pivot = new Vector2(0.5f, 0f);
+                    dialogueBoxRect.sizeDelta = new Vector2(1360f, 250f);
+                    dialogueBoxRect.anchoredPosition = new Vector2(0f, 30f);
+                    dialogueBoxRect.SetAsLastSibling(); // Ensure dialogue box and nameplate render on top of portraits
+
+                    Sprite bgSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowBg_RPG.png");
+                    Sprite frameSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png");
+                    Sprite pauseIcon = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_PauseIcon_RPG.png");
+
+                    // 1. Back Section: Solid rich dark slate grey background fill (92% opacity, highly readable)
+                    Image dbImg = dialogueBoxRect.GetComponent<Image>() ?? dialogueBoxRect.gameObject.AddComponent<Image>();
+                    dbImg.sprite = null;
+                    dbImg.type = Image.Type.Simple;
+                    dbImg.color = new Color(0.12f, 0.14f, 0.19f, 0.92f);
+                    dbImg.raycastTarget = true;
+
+                    // 2. Frame Section: child overlay with hollow 9-sliced frame
+                    Transform frameTrans = dialogueBoxRect.Find("Frame_Overlay");
+                    GameObject frameObj = frameTrans != null ? frameTrans.gameObject : null;
+                    if (frameObj == null)
+                    {
+                        frameObj = new GameObject("Frame_Overlay", typeof(RectTransform));
+                        frameObj.transform.SetParent(dialogueBoxRect, false);
+                    }
+                    RectTransform foRect = frameObj.GetComponent<RectTransform>();
+                    foRect.anchorMin = Vector2.zero;
+                    foRect.anchorMax = Vector2.one;
+                    foRect.offsetMin = Vector2.zero;
+                    foRect.offsetMax = Vector2.zero;
+                    frameObj.transform.SetAsFirstSibling(); // Underneath text & nameplate, above background
+
+                    LayoutElement foLe = frameObj.GetComponent<LayoutElement>() ?? frameObj.AddComponent<LayoutElement>();
+                    foLe.ignoreLayout = true;
+
+                    Image foImg = frameObj.GetComponent<Image>() ?? frameObj.AddComponent<Image>();
+                    if (frameSprite != null)
+                    {
+                        foImg.sprite = frameSprite;
+                        foImg.type = Image.Type.Sliced;
+                        foImg.color = Color.white;
+                    }
+                    foImg.raycastTarget = false;
+
+                    // 3. Nameplate (Top Left, overlapping top border directly in front of portrait)
+                    Transform nameplateTrans = dialogueBoxRect.Find("Nameplate");
+                    if (nameplateTrans != null)
+                    {
+                        RectTransform npRect = nameplateTrans.GetComponent<RectTransform>();
+                        npRect.anchorMin = new Vector2(0f, 1f);
+                        npRect.anchorMax = new Vector2(0f, 1f);
+                        npRect.pivot = new Vector2(0f, 0.5f); // Astride top border
+                        npRect.sizeDelta = new Vector2(280f, 48f);
+                        npRect.anchoredPosition = new Vector2(30f, 0f);
+
+                        Image npImg = nameplateTrans.GetComponent<Image>() ?? nameplateTrans.gameObject.AddComponent<Image>();
+                        npImg.sprite = null;
+                        npImg.type = Image.Type.Simple;
+                        npImg.color = new Color(0.14f, 0.17f, 0.25f, 0.96f); // Solid dark slate/navy fill
+
+                        Transform npFrameTrans = nameplateTrans.Find("Frame_Overlay");
+                        GameObject npFrameObj = npFrameTrans != null ? npFrameTrans.gameObject : null;
+                        if (npFrameObj == null)
+                        {
+                            npFrameObj = new GameObject("Frame_Overlay", typeof(RectTransform));
+                            npFrameObj.transform.SetParent(nameplateTrans, false);
+                        }
+                        RectTransform npfoRect = npFrameObj.GetComponent<RectTransform>();
+                        npfoRect.anchorMin = Vector2.zero;
+                        npfoRect.anchorMax = Vector2.one;
+                        npfoRect.offsetMin = Vector2.zero;
+                        npfoRect.offsetMax = Vector2.zero;
+                        npFrameObj.transform.SetAsFirstSibling();
+
+                        LayoutElement npfoLe = npFrameObj.GetComponent<LayoutElement>() ?? npFrameObj.AddComponent<LayoutElement>();
+                        npfoLe.ignoreLayout = true;
+
+                        Image npfoImg = npFrameObj.GetComponent<Image>() ?? npFrameObj.AddComponent<Image>();
+                        if (frameSprite != null)
+                        {
+                            npfoImg.sprite = frameSprite;
+                            npfoImg.type = Image.Type.Sliced;
+                            npfoImg.color = Color.white;
+                        }
+                        npfoImg.raycastTarget = false;
+                    }
+
                     if (txtSpeakerName == null)
                     {
                         Transform tName = dialogueBoxRect.Find("Nameplate/Text_SpeakerName");
                         if (tName != null) txtSpeakerName = tName.GetComponent<Text>();
                     }
+                    if (txtSpeakerName != null)
+                    {
+                        txtSpeakerName.alignment = TextAnchor.MiddleCenter;
+                        txtSpeakerName.fontSize = 20;
+                        txtSpeakerName.fontStyle = FontStyle.Bold;
+                        txtSpeakerName.color = new Color(0.95f, 0.97f, 1.0f, 1.0f); // Crisp white text
+                    }
+
                     if (txtDialogueBody == null)
                     {
                         Transform tBody = dialogueBoxRect.Find("Text_DialogueBody");
                         if (tBody != null) txtDialogueBody = tBody.GetComponent<Text>();
                     }
+                    if (txtDialogueBody != null)
+                    {
+                        RectTransform bRect = txtDialogueBody.rectTransform;
+                        bRect.anchorMin = Vector2.zero;
+                        bRect.anchorMax = Vector2.one;
+                        bRect.offsetMin = new Vector2(40f, 25f);
+                        bRect.offsetMax = new Vector2(-40f, -40f);
+                        txtDialogueBody.color = new Color(0.94f, 0.96f, 0.98f, 1.0f);
+                    }
+
                     if (continueIndicator == null)
                     {
                         Transform ind = dialogueBoxRect.Find("ContinueIndicator");
                         if (ind != null) continueIndicator = ind.gameObject;
+                    }
+                    if (continueIndicator != null && pauseIcon != null)
+                    {
+                        Transform pIcon = continueIndicator.transform.Find("Icon_Pause");
+                        if (pIcon != null)
+                        {
+                            Image piImg = pIcon.GetComponent<Image>();
+                            if (piImg != null) piImg.sprite = pauseIcon;
+                        }
                     }
                 }
                 if (btnSkip == null)
                 {
                     Transform s = rootDialoguePanel.transform.Find("Btn_Skip");
                     if (s != null) btnSkip = s.GetComponent<Button>();
+                }
+                if (btnSkip != null)
+                {
+                    btnSkip.transform.SetAsLastSibling();
                 }
             }
         }
@@ -324,6 +513,37 @@ namespace ElementalHexTactics3D.UI
             currentLineIndex = -1;
             onSequenceCompleteCallback = onComplete;
             IsPlayingDialogue = true;
+
+            // Pre-populate portraits if both left and right speakers exist in the sequence
+            Sprite firstLeftSprite = null;
+            Sprite firstRightSprite = null;
+            foreach (var l in lines)
+            {
+                if (l.isLeftSpeaker && firstLeftSprite == null && l.speakerPortrait != null) firstLeftSprite = l.speakerPortrait;
+                if (!l.isLeftSpeaker && firstRightSprite == null && l.speakerPortrait != null) firstRightSprite = l.speakerPortrait;
+            }
+
+            if (firstLeftSprite != null && firstRightSprite != null)
+            {
+                if (portraitLeft != null)
+                {
+                    portraitLeft.sprite = firstLeftSprite;
+                    portraitLeft.color = Color.white;
+                    portraitLeft.gameObject.SetActive(true);
+                    portraitLeft.transform.localScale = Vector3.one * 0.525f;
+                    SetGroupAlpha(portraitLeftGroup, 0.45f);
+                }
+                if (portraitRight != null)
+                {
+                    portraitRight.sprite = firstRightSprite;
+                    portraitRight.color = Color.white;
+                    portraitRight.gameObject.SetActive(true);
+                    portraitRight.transform.localScale = Vector3.one * 0.525f;
+                    SetGroupAlpha(portraitRightGroup, 0.45f);
+                }
+            }
+
+            OnDialogueStarted?.Invoke();
 
             if (rootDialoguePanel != null)
             {
@@ -418,8 +638,9 @@ namespace ElementalHexTactics3D.UI
                     if (portraitRight != null && portraitRight.gameObject.activeSelf)
                     {
                         SetGroupAlpha(portraitRightGroup, 0.45f);
-                        portraitRight.transform.localScale = Vector3.one * 0.95f;
+                        portraitRight.transform.localScale = Vector3.one * 0.525f; // Twice as reduced size (half scale of 1.05)
                     }
+                    SetNameplatePosition(true);
                 }
                 else
                 {
@@ -434,8 +655,9 @@ namespace ElementalHexTactics3D.UI
                     if (portraitLeft != null && portraitLeft.gameObject.activeSelf)
                     {
                         SetGroupAlpha(portraitLeftGroup, 0.45f);
-                        portraitLeft.transform.localScale = Vector3.one * 0.95f;
+                        portraitLeft.transform.localScale = Vector3.one * 0.525f; // Twice as reduced size (half scale of 1.05)
                     }
+                    SetNameplatePosition(false);
                 }
             }
             else
@@ -443,6 +665,24 @@ namespace ElementalHexTactics3D.UI
                 // System or anonymous narration: hide portraits
                 if (portraitLeft != null) portraitLeft.gameObject.SetActive(false);
                 if (portraitRight != null) portraitRight.gameObject.SetActive(false);
+            }
+        }
+
+        private void SetNameplatePosition(bool isLeft)
+        {
+            if (dialogueBoxRect == null) return;
+            Transform nameplateTrans = dialogueBoxRect.Find("Nameplate");
+            if (nameplateTrans != null)
+            {
+                RectTransform npRect = nameplateTrans.GetComponent<RectTransform>();
+                if (npRect != null)
+                {
+                    npRect.anchorMin = new Vector2(0f, 1f);
+                    npRect.anchorMax = new Vector2(0f, 1f);
+                    npRect.pivot = new Vector2(0f, 0.5f);
+                    npRect.sizeDelta = new Vector2(280f, 48f);
+                    npRect.anchoredPosition = new Vector2(isLeft ? 30f : 1035f, 0f);
+                }
             }
         }
 
@@ -522,6 +762,8 @@ namespace ElementalHexTactics3D.UI
             {
                 rootDialoguePanel.SetActive(false);
             }
+
+            OnDialogueFinished?.Invoke();
 
             Action cb = onSequenceCompleteCallback;
             onSequenceCompleteCallback = null;

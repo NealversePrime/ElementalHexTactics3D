@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using ElementalHexTactics3D.Combat;
+using ElementalHexTactics3D.UI;
 
 namespace ElementalHexTactics3D.Tutorial
 {
@@ -33,6 +34,34 @@ namespace ElementalHexTactics3D.Tutorial
         private Coroutine pulseCoroutine;
         private Canvas rootCanvas;
         private bool isBuilt = false;
+        private CanvasGroup bannerCanvasGroup;
+
+        public void SetBannerVisibility(bool visible)
+        {
+            if (bannerCanvasGroup == null)
+            {
+                bannerCanvasGroup = GetComponent<CanvasGroup>();
+                if (bannerCanvasGroup == null)
+                {
+                    bannerCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+                }
+            }
+
+            if (bannerCanvasGroup != null)
+            {
+                bannerCanvasGroup.alpha = visible ? 1f : 0f;
+                bannerCanvasGroup.blocksRaycasts = visible;
+                bannerCanvasGroup.interactable = visible;
+            }
+        }
+
+        public static void SafeHideGuidance()
+        {
+            if (Instance != null)
+            {
+                Instance.HideGuidance();
+            }
+        }
 
         private static GameObject CreateUI(string name, Transform parent)
         {
@@ -103,6 +132,50 @@ namespace ElementalHexTactics3D.Tutorial
                 {
                     BuildUIHierarchy(canvas);
                 }
+            }
+        }
+
+        private void OnEnable()
+        {
+            StoryDialogueUI.OnDialogueStarted += HandleDialogueStarted;
+            StoryDialogueUI.OnDialogueFinished += HandleDialogueFinished;
+        }
+
+        private void OnDisable()
+        {
+            StoryDialogueUI.OnDialogueStarted -= HandleDialogueStarted;
+            StoryDialogueUI.OnDialogueFinished -= HandleDialogueFinished;
+        }
+
+        private void OnDestroy()
+        {
+            StoryDialogueUI.OnDialogueStarted -= HandleDialogueStarted;
+            StoryDialogueUI.OnDialogueFinished -= HandleDialogueFinished;
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
+        private void HandleDialogueStarted()
+        {
+            SetBannerVisibility(false);
+        }
+
+        private void HandleDialogueFinished()
+        {
+            SetBannerVisibility(true);
+        }
+
+        private void Update()
+        {
+            if (StoryDialogueUI.Instance != null && StoryDialogueUI.Instance.IsPlayingDialogue)
+            {
+                SetBannerVisibility(false);
+            }
+            else
+            {
+                SetBannerVisibility(true);
             }
         }
 

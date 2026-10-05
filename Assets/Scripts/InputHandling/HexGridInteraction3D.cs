@@ -67,6 +67,7 @@ namespace ElementalHexTactics3D.InputHandling
         public HexTile3D CurrentSelectedTile => currentSelectedTile;
         public TacticalUnit3D CurrentSelectedUnit => currentSelectedUnit;
         public UnitActionMode CurrentActionMode => currentMode;
+        public TacticalUnit3D PendingDeployUnit { get; set; }
 
         private void Awake()
         {
@@ -315,6 +316,50 @@ namespace ElementalHexTactics3D.InputHandling
                     return;
                 }
 
+                // 1a. INTUITIVE DIRECT MOVE ON REACHABLE EMPTY TILE
+                if (currentMode == UnitActionMode.None && currentSelectedUnit != null && currentSelectedUnit.Faction == UnitFaction.Player && !currentSelectedUnit.HasMovedThisTurn && !currentSelectedUnit.IsImmobilized && clickedTile != null && !clickedTile.IsOccupied)
+                {
+                    int moveDist = currentSelectedUnit.Coordinates.DistanceTo(clickedTile.Coordinates);
+                    if (moveDist > 0 && moveDist <= currentSelectedUnit.EffectiveMoveRange)
+                    {
+                        SetActionMode(UnitActionMode.Move);
+                        if (activeTargetTiles.Contains(clickedTile))
+                        {
+                            ExecuteAction(clickedTile);
+                            return;
+                        }
+                    }
+                }
+
+                // 1b. INTUITIVE MELEE ATTACK ON CLICKED ENEMY
+                // If a player unit is selected, ready to act, and player clicks an enemy unit:
+                TacticalUnit3D targetEnemy = directHitUnit ?? (clickedTile != null ? clickedTile.GetOccupant() : null);
+                if (currentSelectedUnit != null && currentSelectedUnit.Faction == UnitFaction.Player && targetEnemy != null && targetEnemy.Faction == UnitFaction.Enemy && targetEnemy.gameObject.activeInHierarchy && targetEnemy.CurrentHealth > 0)
+                {
+                    if (!currentSelectedUnit.HasActedThisTurn)
+                    {
+                        int dist = currentSelectedUnit.Coordinates.DistanceTo(targetEnemy.Coordinates);
+                        if (dist <= 1)
+                        {
+                            // Adjacent enemy clicked! Seamlessly execute melee strike without deselecting or wasting move!
+                            HexTile3D enemyTile = targetEnemy.CurrentTile ?? clickedTile;
+                            SetActionMode(UnitActionMode.TitanStrike);
+                            ExecuteAction(enemyTile);
+                            return;
+                        }
+                        else
+                        {
+                            // Enemy is out of melee range! Keep player unit selected, give clear feedback to move closer.
+                            Combat.SoundManager3D.Instance?.PlayButtonClick();
+                            if (CombatFeedbackManager.Instance != null)
+                            {
+                                CombatFeedbackManager.Instance.SpawnDamageText(targetEnemy.transform.position, "Out of Reach!", Color.yellow);
+                            }
+                            return;
+                        }
+                    }
+                }
+
                 // 2. UNIT SELECTION ON CLICKED TILE (Prioritize living unit over empty Rift)
                 TacticalUnit3D unitOnClickedTile = directHitUnit ?? (clickedTile != null ? clickedTile.GetOccupant() : null);
                 if (unitOnClickedTile != null && unitOnClickedTile.gameObject.activeInHierarchy && unitOnClickedTile.CurrentHealth > 0)
@@ -406,14 +451,9 @@ namespace ElementalHexTactics3D.InputHandling
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_HolyStrikeDemonLord ||
                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_ShieldShoveSlime);
 
-            if (!isTutorialSkillStep && unit.Faction == UnitFaction.Player && !unit.HasMovedThisTurn && unit.EffectiveMoveRange > 0)
-            {
-                SetActionMode(UnitActionMode.Move);
-            }
-            else
-            {
-                SetActionMode(UnitActionMode.None);
-            }
+            // In Disgaea / TRPG style: Selecting a unit opens the Vertical Command Menu!
+            // We do NOT auto-switch to Move mode, letting the player choose their command (Move, Attack, Skill, etc.)
+            SetActionMode(UnitActionMode.None);
         }
 
         public void SetActionMode(UnitActionMode mode)
@@ -725,11 +765,12 @@ namespace ElementalHexTactics3D.InputHandling
                 case UnitActionMode.DeployCommander:
                     if (AbyssalRiftConduit3D.Instance != null && HexGrid3D.Instance != null)
                     {
-                        TacticalUnit3D cmdr = FindCommanderUnit();
+                        TacticalUnit3D cmdr = (PendingDeployUnit != null) ? PendingDeployUnit : FindCommanderUnit();
                         if (cmdr != null)
                         {
                             ClearTargetHighlights();
                             StartCoroutine(ExecuteDeployCommanderRoutine(cmdr, targetTile));
+                            PendingDeployUnit = null;
                             SetActionMode(UnitActionMode.None);
                         }
                     }
@@ -738,7 +779,7 @@ namespace ElementalHexTactics3D.InputHandling
                 case UnitActionMode.SummonTitan:
                     if (AbyssalRiftConduit3D.Instance != null && HexGrid3D.Instance != null)
                     {
-                        TacticalUnit3D titan = FindTitanUnit();
+                        TacticalUnit3D titan = (PendingDeployUnit != null) ? PendingDeployUnit : FindTitanUnit();
                         TacticalUnit3D cmdr = FindCommanderUnit();
                         if (titan != null)
                         {
@@ -749,6 +790,7 @@ namespace ElementalHexTactics3D.InputHandling
                             }
                             ClearTargetHighlights();
                             StartCoroutine(ExecuteDeployTitanRoutine(titan, targetTile));
+                            PendingDeployUnit = null;
                             SetActionMode(UnitActionMode.None);
                         }
                     }
