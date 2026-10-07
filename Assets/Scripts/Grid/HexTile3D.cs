@@ -178,6 +178,12 @@ namespace ElementalHexTactics3D.Grid
                 occupant.transform.position = GetTopCenterPosition();
             }
 
+            if (newState != TileState.Barren && newState != TileState.StonePillar)
+            {
+                customBaseTint = null;
+                customBaseEmission = null;
+            }
+
             if (HexGrid3D.Instance != null)
             {
                 Material mat = HexGrid3D.Instance.GetTopMaterial(state, tierLevel);
@@ -189,6 +195,67 @@ namespace ElementalHexTactics3D.Grid
             }
 
             UpdateAmbientVFX();
+        }
+
+        private Color? customBaseTint = null;
+        private Color? customBaseEmission = null;
+
+        /// <summary>
+        /// Sets a custom aesthetic tint and optional emission for interior / thematic tiles (e.g., royal red carpet, dark marble).
+        /// </summary>
+        public void SetCustomTint(Color tint, Color? emission = null)
+        {
+            customBaseTint = tint;
+            customBaseEmission = emission;
+            UpdateVisuals();
+        }
+
+        public void ClearCustomTint()
+        {
+            customBaseTint = null;
+            customBaseEmission = null;
+            UpdateVisuals();
+        }
+
+        /// <summary>
+        /// Projects a continuous top-down battlemap texture across the hex surface in world space,
+        /// ensuring seamless carpets, borders, and marble floors without per-hex tiling repetition.
+        /// </summary>
+        public void ApplyWorldProjectedUVs(Material projectedMaterial)
+        {
+            ApplyWorldProjectedUVs(projectedMaterial, -5.5f, 5.5f, -5.0f, 5.0f);
+        }
+
+        public void ApplyWorldProjectedUVs(Material projectedMaterial, float minX, float maxX, float minZ, float maxZ)
+        {
+            EnsureComponents();
+            if (meshFilter == null || meshFilter.sharedMesh == null) return;
+
+            Mesh instancedMesh = Instantiate(meshFilter.sharedMesh);
+            instancedMesh.name = $"{meshFilter.sharedMesh.name}_WorldUV_{coordinates.Q}_{coordinates.R}";
+
+            Vector3[] verts = instancedMesh.vertices;
+            Vector2[] uvs = instancedMesh.uv;
+
+            // Top cap comprises vertices 0..6 (center + 6 outer corners)
+            int topVertCount = Mathf.Min(7, verts.Length);
+            for (int i = 0; i < topVertCount; i++)
+            {
+                Vector3 worldV = transform.TransformPoint(verts[i]);
+                float u = Mathf.Clamp01((worldV.x - minX) / (maxX - minX));
+                float v = Mathf.Clamp01((worldV.z - minZ) / (maxZ - minZ));
+                uvs[i] = new Vector2(u, v);
+            }
+
+            instancedMesh.uv = uvs;
+            meshFilter.sharedMesh = instancedMesh;
+            if (meshCollider != null) meshCollider.sharedMesh = instancedMesh;
+
+            ClearCustomTint();
+            if (projectedMaterial != null)
+            {
+                SetTopMaterial(projectedMaterial);
+            }
         }
 
         public void SetTopMaterial(Material topMat)
@@ -227,8 +294,8 @@ namespace ElementalHexTactics3D.Grid
 
             meshRenderer.GetPropertyBlock(propBlock, 0); // Submesh 0 (Top Cap)
 
-            Color tintColor = Color.white;
-            Color emissionColor = Color.black;
+            Color tintColor = customBaseTint.HasValue ? customBaseTint.Value : Color.white;
+            Color emissionColor = customBaseEmission.HasValue ? customBaseEmission.Value : Color.black;
 
             if (state == TileState.Mud)
             {
@@ -260,7 +327,13 @@ namespace ElementalHexTactics3D.Grid
                 }
                 else
                 {
-                    tintColor = (state == TileState.Mud || state == TileState.StonePillar) ? tintColor * 1.35f : new Color(1.35f, 1.35f, 1.35f, 1f);
+                    if (state == TileState.Mud || state == TileState.StonePillar)
+                        tintColor *= 1.35f;
+                    else if (customBaseTint.HasValue)
+                        tintColor = customBaseTint.Value * 1.35f;
+                    else
+                        tintColor = new Color(1.35f, 1.35f, 1.35f, 1f);
+
                     emissionColor = new Color(0.12f, 0.12f, 0.12f, 1f);
                 }
             }

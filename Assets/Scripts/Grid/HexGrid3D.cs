@@ -244,6 +244,11 @@ namespace ElementalHexTactics3D.Grid
                 tile.Initialize(coord, spec.ElevationTier, sharedPillarMesh, topMat, sidePillarMaterial);
                 tile.SetState(spec.State, spec.TierLevel);
 
+                if (spec.CustomTint.HasValue)
+                {
+                    tile.SetCustomTint(spec.CustomTint.Value, spec.CustomEmission);
+                }
+
                 tiles[coord] = tile;
             }
         }

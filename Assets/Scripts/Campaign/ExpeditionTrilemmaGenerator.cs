@@ -39,7 +39,7 @@ namespace ElementalHexTactics3D.Campaign
             int daysUntilCrusade = (CampaignManager.Instance != null) ? CampaignManager.Instance.DaysUntilCrusade : 24;
             int currentFood = (CampaignManager.Instance != null) ? CampaignManager.Instance.Food : 50;
 
-            int baseSeed = Environment.TickCount + day * 37 + cycle * 13;
+            int baseSeed = System.Environment.TickCount + day * 37 + cycle * 13;
             System.Random rng = new System.Random(baseSeed);
 
             // Compute threat level based on campaign progression

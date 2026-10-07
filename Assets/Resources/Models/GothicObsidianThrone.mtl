@@ -1,0 +1,8 @@
+newmtl GothicObsidianThrone_Mat
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.200 0.200 0.200
+Ns 30.000
+d 1.0
+illum 2
+map_Kd GothicObsidianThrone_Diffuse.jpg

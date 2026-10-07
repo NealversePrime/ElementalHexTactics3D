@@ -11,6 +11,7 @@ using ElementalHexTactics3D.UI.Hub;
 using ElementalHexTactics3D.Campaign;
 using ElementalHexTactics3D.InputHandling;
 using ElementalHexTactics3D.CameraControl;
+using ElementalHexTactics3D.StageEnvironment;
 
 namespace ElementalHexTactics3D.Tutorial
 {
@@ -871,6 +872,12 @@ namespace ElementalHexTactics3D.Tutorial
                 );
             }
 
+            // 6.5. Setup 3D Throne Room Architecture (Procedural 3D Gothic Throne, Pillar Capitals & Braziers)
+            if (grid != null)
+            {
+                ThroneRoomEnvironment3D.SetupThroneRoomEnvironment(grid);
+            }
+
             // 7. Reset Turn State
             if (TurnManager3D.Instance != null)
             {
@@ -928,30 +935,53 @@ namespace ElementalHexTactics3D.Tutorial
                         TierLevel = 1
                     };
 
-                    // Stone Pillar at (1, 0) - directly east of Demon Slime at (0, 0)
-                    // When Holy Shielder at (-1, 0) pushes the slime, it slams into this pillar!
+                    // === PALACE SANCTUM & THRONE ROOM ELEVATION & LAYOUT ===
+
+                    // 1. Kinetic Shove Stone Pillar at (1, 0) - directly east of Demon Slime at (0, 0)
+                    // When Holy Shielder at (-1, 0) pushes the slime, it slams into this pillar for collision damage!
                     if (q == 1 && r == 0)
                     {
                         spec.ElevationTier = 0;
                         spec.IsPillarObstacle = true;
                         spec.State = TileState.StonePillar;
                     }
-                    // Stone Pillars framing the throne room for Wall Slam collisions!
+                    // 2. Pillars framing the Throne Dais at Elevation Tier 2!
                     else if ((q == -1 && r == 2) || (q == 1 && r == 2) || (q == 0 && r == 3))
+                    {
+                        spec.ElevationTier = 2; // High dais platform elevation!
+                        spec.IsPillarObstacle = true;
+                        spec.State = TileState.StonePillar;
+                    }
+                    // 3. Colonnade Side Wall Pillars enclosing the grand cathedral hall
+                    else if ((q == -2 && r == 1) || (q == -2 && r == -1) || (q == 2 && r == 0) || (q == 2 && r == -2))
                     {
                         spec.ElevationTier = 0;
                         spec.IsPillarObstacle = true;
                         spec.State = TileState.StonePillar;
                     }
-                    // Demon Lord Throne at (0, 2)
+                    // 4. Demon Lord Throne Dais at (0, 2) - High Elevation Tier 2! (Twice as high, holding Gothic Throne)
                     else if (q == 0 && r == 2)
+                    {
+                        spec.ElevationTier = 2;
+                        spec.State = TileState.Barren;
+                    }
+                    // 4.5. Approach Steps at (0, 1) and (-1, 1) - Elevation Tier 1! (Stepped approach to dais)
+                    else if ((q == 0 && r == 1) || (q == -1 && r == 1))
                     {
                         spec.ElevationTier = 1;
                         spec.State = TileState.Barren;
                     }
+                    // 5. Demonic Scorched Ground at (1, 1) - Demonic hellfire residue
                     else if (q == 1 && r == 1)
                     {
+                        spec.ElevationTier = 0;
                         spec.State = TileState.Scorched;
+                    }
+                    // 6. Ground Level Floor Tiles (Elevation Tier 0)
+                    else
+                    {
+                        spec.ElevationTier = 0;
+                        spec.State = TileState.Barren;
                     }
 
                     data.Tiles[coord] = spec;
@@ -1602,6 +1632,8 @@ namespace ElementalHexTactics3D.Tutorial
                     else DestroyImmediate(u.gameObject);
                 }
             }
+
+            ThroneRoomEnvironment3D.ClearEnvironment(HexGrid3D.Instance);
         }
 
         #endregion

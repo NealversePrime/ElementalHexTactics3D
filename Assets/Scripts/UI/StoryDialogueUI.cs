@@ -90,6 +90,8 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Sprite bgMcRoom;
         [SerializeField] private Sprite bgCathedral;
         [SerializeField] private Sprite bgDemonLordThrone;
+        [SerializeField] private Sprite bgCrusadeAtrocity;
+        [SerializeField] private Sprite bgCitadelSanctuary;
 
         public bool IsPlayingDialogue { get; private set; } = false;
 
@@ -227,6 +229,10 @@ namespace ElementalHexTactics3D.UI
                 bgCathedral = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_holyland_cathedral.jpg");
             if (bgDemonLordThrone == null)
                 bgDemonLordThrone = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_demonlord_throne.jpg");
+            if (bgCrusadeAtrocity == null)
+                bgCrusadeAtrocity = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_crusade_atrocity.jpg");
+            if (bgCitadelSanctuary == null)
+                bgCitadelSanctuary = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/Backgrounds/bg_citadel_sanctuary.jpg");
 #endif
             // Universal runtime fallbacks via TacticalUnitSpawner
             if (mcSilhouetteSprite == null)
@@ -246,6 +252,10 @@ namespace ElementalHexTactics3D.UI
                 bgCathedral = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_holyland_cathedral.jpg");
             if (bgDemonLordThrone == null)
                 bgDemonLordThrone = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_demonlord_throne.jpg");
+            if (bgCrusadeAtrocity == null)
+                bgCrusadeAtrocity = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_crusade_atrocity.jpg") ?? bgCathedral;
+            if (bgCitadelSanctuary == null)
+                bgCitadelSanctuary = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_citadel_sanctuary.jpg") ?? bgDemonLordThrone;
         }
 
         /// <summary>
@@ -823,36 +833,49 @@ namespace ElementalHexTactics3D.UI
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
                         "Victory for the Radiant Synod! The lord of shadows has been cleansed from Omniterra!",
-                        paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
+                        paladinPortrait, true, bgDemonLordThrone, new Color(1f, 0.85f, 0.25f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "MC (Real World)",
-                        "Phew... solo raid clear complete! That cements my spot as the server's #1 solo ranker... But man, my head is throbbing...",
+                        "Phew... solo raid clear. Server's #1 solo ranker, locked in. Why does my chest feel this tight though...",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "MC (Real World)",
-                        "Wait... my chest feels tight... my monitor's screen is distorting... I just need to lie down...",
+                        "The screen is distorting... it feels like something is pulling me in...",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f), true
                     ));
+
                     lines.Add(new DialogueLine(
                         "The Architect (System Creator)",
                         "[ ACHIEVEMENT CONFIRMED: 100% SOLO CLEAR — 'OMNITERRA' ]",
                         null, true, null, new Color(0.2f, 0.95f, 0.6f), true
                     ));
+
+                    // === INI BAGIAN WHY YANG HARUS NANCEP ===
                     lines.Add(new DialogueLine(
                         "The Architect (System Creator)",
-                        "You boast of 'divine righteousness' while trampling the forgotten... Yet have you ever heard the cries of those you branded 'monsters'?",
-                        null, true, null, new Color(0.2f, 0.95f, 0.6f)
+                        "You cheered for 'divine righteousness' while the Radiant Synod burned the villages of those they called monsters.",
+                        null, true, bgCrusadeAtrocity, new Color(0.2f, 0.95f, 0.6f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "The Architect (System Creator)",
-                        "Congratulations, Ranker #1. You have qualified. Now... let us see how you fare when the chessboard is inverted.",
+                        "The one you just killed was the last shield of the forsaken. The Citadel was never a den of evil. It was a sanctuary.",
+                        null, true, bgCitadelSanctuary, new Color(0.2f, 0.95f, 0.6f)
+                    ));
+
+                    lines.Add(new DialogueLine(
+                        "The Architect (System Creator)",
+                        "Congratulations, Ranker #1. The chessboard is inverted. Now you are the one they will hunt.",
                         null, true, null, new Color(0.2f, 0.95f, 0.6f), true
                     ));
+
                     lines.Add(new DialogueLine(
                         "MC (Real World)",
-                        "W-what is this?! The monitor is pulling my arms in... My body is being dragged into the screen—WAIT, STOP—AAAAAAAGH!!",
+                        "W-what is this?! Stop—AAAAAAAGH!!",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.95f, 0.3f, 0.3f), true
                     ));
                     break;
@@ -860,52 +883,61 @@ namespace ElementalHexTactics3D.UI
                 case StorySequenceId.HubAwakeningDemonLord:
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Ugh... my skull is splitting... Where am I? These hands... obsidian talons?! And this mantle of abyssal steel...?!",
+                        "Ugh... my head... These hands... black claws? This mantle...?",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Lord Malakor! Praise the Primordials, your consciousness has returned! The Citadel's core altar held through the dimensional cataclysm!",
+                        "Lord Malakor! Your consciousness has returned! The core altar held through the dimensional collapse!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "(Wait... this booming voice, this hulking beastkin warrior in jagged basalt plate... Basalt Vanguard?! The frontline general of the outcast sanctuary?! Did I actually transmigrate into Omniterra?! Into the body of the Demon Lord I just killed in the raid?!)",
+                        "(Basalt Vanguard...? The general of the outcast sanctuary... I really transmigrated into the Demon Lord I just killed...)",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Wait... Status Window! Open!\n[ SYSTEM STATUS: MALAKOR — LEVEL 1 ]\n[ HP: 18 / 18  |  MANA: 10 / 10  |  CORES: 0 ]\nWhat is this?! All my maxed endgame gear, god-tier attributes, and 9999 mana pool... stripped clean by The Architect?!",
+                        "Status Window!\n[ MALAKOR — LEVEL 1 ]\n[ HP: 18/18 | MANA: 10/10 | CORES: 0 ]\nEverything is gone...?",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.35f, 0.35f), true
                     ));
+
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Sire, during the cataclysm your abyssal core fractured! Your mana flow is reduced to fledgling sparks... Even manifesting a single basic Fireball will tax your current reserves.",
+                        "Your abyssal core fractured, Sire. Even a basic Fireball will drain what little remains.",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "(Level 1... A fractured core and pathetic F-rank mana. But wait. I was the server's #1 solo ranker. I memorized every damage formula, reaction rule, and terrain threshold in Omniterra. Even at Level 1, game knowledge beats raw brute force!)",
+                        "(Level 1... But I was the server's number one. I know every formula, every terrain reaction, every weakness of the Radiant Synod. Knowledge is all I have left.)",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.4f, 0.85f, 1f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Sire, an emergency! A scout company of the Radiant Synod of Aethelgard has breached our outer perimeter in the Ashen Verge! They are pillaging the frontier outpost!",
+                        "Emergency! A Radiant Synod scout company has already breached the Ashen Verge. They are taking prisoners from the frontier outpost!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "(The Holy Empire troops I used to command... are invading my sanctuary?! If this citadel falls, I die for real in this world!)",
+                        "(The same Holy Empire I used to play as... is now hunting the people of this sanctuary. If the Citadel falls, I die for real. And so do they.)",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Our frontier guards are falling back! Sire, we must ride to the frontier outpost immediately before their inquisitors locate the Citadel's hidden passage!",
+                        "Our guards are falling back! We must move before their inquisitors find the hidden path to the Citadel!",
                         basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
                     ));
+
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Steady, General. As someone who knows every tactic of the Radiant Synod inside and out... I know their exact blindspots. Lead the way to the frontier clearing!",
+                        "Steady, General. I know their tactics better than they do. Lead the way. We hold this line.",
                         demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;

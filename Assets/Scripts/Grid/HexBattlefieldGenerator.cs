@@ -13,6 +13,8 @@ namespace ElementalHexTactics3D.Grid
         public TileState State;
         public int TierLevel;     // 1 or 2
         public bool IsPillarObstacle;
+        public Color? CustomTint;
+        public Color? CustomEmission;
     }
 
     public class GeneratedEnemySpec
@@ -46,7 +48,7 @@ namespace ElementalHexTactics3D.Grid
     {
         public static GeneratedBattlefieldData Generate(ExpeditionMissionData mission, int radius = 4)
         {
-            int seed = (mission != null && mission.Seed != 0) ? mission.Seed : Environment.TickCount;
+            int seed = (mission != null && mission.Seed != 0) ? mission.Seed : System.Environment.TickCount;
             System.Random rng = new System.Random(seed);
 
             GeneratedBattlefieldData data = new GeneratedBattlefieldData

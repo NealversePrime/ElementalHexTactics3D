@@ -583,6 +583,87 @@ namespace ElementalHexTactics3D.Editor
                 interaction = interObj.AddComponent<HexGridInteraction3D>();
             }
         }
+
+        [MenuItem("Elemental Hex 3D/Tutorial/Preview Stage 1 Throne Room Map", false, 55)]
+        public static void PreviewStage1ThroneRoomMap()
+        {
+            HexGrid3D grid = Object.FindFirstObjectByType<HexGrid3D>();
+            if (grid == null)
+            {
+                Debug.LogError("[Stage 1 Throne Room] No HexGrid3D found in scene!");
+                return;
+            }
+
+            GeneratedBattlefieldData data = new GeneratedBattlefieldData
+            {
+                Radius = 3,
+                Seed = 1001
+            };
+
+            int radius = 3;
+            for (int q = -radius; q <= radius; q++)
+            {
+                int r1 = Mathf.Max(-radius, -q - radius);
+                int r2 = Mathf.Min(radius, -q + radius);
+                for (int r = r1; r <= r2; r++)
+                {
+                    HexCoordinates coord = new HexCoordinates(q, r);
+                    GeneratedTileSpec spec = new GeneratedTileSpec
+                    {
+                        Coordinates = coord,
+                        ElevationTier = 0,
+                        State = TileState.Barren,
+                        TierLevel = 1
+                    };
+
+                    if (q == 1 && r == 0)
+                    {
+                        spec.ElevationTier = 0;
+                        spec.IsPillarObstacle = true;
+                        spec.State = TileState.StonePillar;
+                    }
+                    else if ((q == -1 && r == 2) || (q == 1 && r == 2) || (q == 0 && r == 3))
+                    {
+                        spec.ElevationTier = 2; // High dais platform elevation!
+                        spec.IsPillarObstacle = true;
+                        spec.State = TileState.StonePillar;
+                    }
+                    else if ((q == -2 && r == 1) || (q == -2 && r == -1) || (q == 2 && r == 0) || (q == 2 && r == -2))
+                    {
+                        spec.ElevationTier = 0;
+                        spec.IsPillarObstacle = true;
+                        spec.State = TileState.StonePillar;
+                    }
+                    else if (q == 0 && r == 2)
+                    {
+                        spec.ElevationTier = 2; // High dais platform holding Gothic Obsidian Throne!
+                        spec.State = TileState.Barren;
+                    }
+                    else if ((q == 0 && r == 1) || (q == -1 && r == 1))
+                    {
+                        spec.ElevationTier = 1; // Stepped approach to dais
+                        spec.State = TileState.Barren;
+                    }
+                    else if (q == 1 && r == 1)
+                    {
+                        spec.ElevationTier = 0;
+                        spec.State = TileState.Scorched;
+                    }
+                    else
+                    {
+                        spec.ElevationTier = 0;
+                        spec.State = TileState.Barren;
+                    }
+
+                    data.Tiles[coord] = spec;
+                }
+            }
+
+            grid.BuildFromBattlefieldData(data);
+            ElementalHexTactics3D.StageEnvironment.ThroneRoomEnvironment3D.SetupThroneRoomEnvironment(grid);
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            Debug.Log("<color=#FFD54F><b>[Stage 1 Throne Room]</b></color> Successfully previewed Throne Room map with Royal Red Carpet, Dark Marble, 3D Gothic Throne, and Torch Braziers!");
+        }
     }
 }
 #endif
