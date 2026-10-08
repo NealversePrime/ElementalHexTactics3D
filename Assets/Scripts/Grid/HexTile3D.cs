@@ -147,6 +147,25 @@ namespace ElementalHexTactics3D.Grid
         }
 
         /// <summary>
+        /// When true, StonePillar tiles remain flush at their floor elevation instead of popping up by +1.0m,
+        /// used for indoor architecture where 3D pillar/column props sit on top of the flat floor.
+        /// </summary>
+        public bool SuppressPillarElevationPop
+        {
+            get => suppressPillarElevationPop;
+            set
+            {
+                suppressPillarElevationPop = value;
+                if (state == TileState.StonePillar)
+                {
+                    restingLocalPosition = suppressPillarElevationPop ? originalBasePosition : (originalBasePosition + Vector3.up * 1.0f);
+                    transform.localPosition = restingLocalPosition;
+                }
+            }
+        }
+        private bool suppressPillarElevationPop = false;
+
+        /// <summary>
         /// Changes the elemental state and tier of the tile, updating to the correct elemental material.
         /// </summary>
         public void SetState(TileState newState, int newTier)
@@ -159,8 +178,8 @@ namespace ElementalHexTactics3D.Grid
                 originalBasePosition = transform.localPosition;
             }
 
-            // Visually pop Stone Pillar up by 1 unit elevation
-            if (state == TileState.StonePillar)
+            // Visually pop Stone Pillar up by 1 unit elevation (unless suppressed for interior architecture props)
+            if (state == TileState.StonePillar && !suppressPillarElevationPop)
             {
                 restingLocalPosition = originalBasePosition + Vector3.up * 1.0f;
                 transform.localPosition = restingLocalPosition;
@@ -302,7 +321,7 @@ namespace ElementalHexTactics3D.Grid
                 tintColor = new Color(0.42f, 0.28f, 0.16f, 1f); // Rich muddy clay brown
                 emissionColor = new Color(0.06f, 0.04f, 0.02f, 1f);
             }
-            else if (state == TileState.StonePillar)
+            else if (state == TileState.StonePillar && !suppressPillarElevationPop)
             {
                 tintColor = new Color(0.62f, 0.64f, 0.68f, 1f); // Solid granite gray
                 emissionColor = new Color(0.12f, 0.12f, 0.14f, 1f);
@@ -327,7 +346,7 @@ namespace ElementalHexTactics3D.Grid
                 }
                 else
                 {
-                    if (state == TileState.Mud || state == TileState.StonePillar)
+                    if (state == TileState.Mud || (state == TileState.StonePillar && !suppressPillarElevationPop))
                         tintColor *= 1.35f;
                     else if (customBaseTint.HasValue)
                         tintColor = customBaseTint.Value * 1.35f;

@@ -87,11 +87,15 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Sprite basaltVanguardPortrait;
 
         [Header("Key Background Sprites")]
+        [SerializeField] private Sprite bgMcLivingRoom;
         [SerializeField] private Sprite bgMcRoom;
         [SerializeField] private Sprite bgCathedral;
         [SerializeField] private Sprite bgDemonLordThrone;
         [SerializeField] private Sprite bgCrusadeAtrocity;
         [SerializeField] private Sprite bgCitadelSanctuary;
+        [SerializeField] private Sprite bgFrontierOutpost;
+        [SerializeField] private Sprite bgSynodPropagandaMyth;
+        [SerializeField] private Sprite bgCrusadeVanguardMarch;
 
         public bool IsPlayingDialogue { get; private set; } = false;
 
@@ -246,6 +250,8 @@ namespace ElementalHexTactics3D.UI
             if (basaltVanguardPortrait == null)
                 basaltVanguardPortrait = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("minotaurportrait.png");
 
+            if (bgMcLivingRoom == null)
+                bgMcLivingRoom = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_mc_livingroom.jpg");
             if (bgMcRoom == null)
                 bgMcRoom = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_mc_room.jpg");
             if (bgCathedral == null)
@@ -253,9 +259,23 @@ namespace ElementalHexTactics3D.UI
             if (bgDemonLordThrone == null)
                 bgDemonLordThrone = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_demonlord_throne.jpg");
             if (bgCrusadeAtrocity == null)
-                bgCrusadeAtrocity = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_crusade_atrocity.jpg") ?? bgCathedral;
+                bgCrusadeAtrocity = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("beastkinvillageburned.png")
+                    ?? ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_crusade_atrocity.jpg")
+                    ?? bgCathedral;
             if (bgCitadelSanctuary == null)
-                bgCitadelSanctuary = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_citadel_sanctuary.jpg") ?? bgDemonLordThrone;
+                bgCitadelSanctuary = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("beastkinrefugeesemptythroneroom.png")
+                    ?? ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_citadel_sanctuary.jpg")
+                    ?? bgDemonLordThrone;
+            if (bgFrontierOutpost == null)
+                bgFrontierOutpost = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("outpostgetattacked.png")
+                    ?? ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_frontier_outpost.jpg")
+                    ?? bgCitadelSanctuary;
+            if (bgSynodPropagandaMyth == null)
+                bgSynodPropagandaMyth = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_synod_propaganda_myth.jpg")
+                    ?? bgCathedral;
+            if (bgCrusadeVanguardMarch == null)
+                bgCrusadeVanguardMarch = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadBackgroundSprite("bg_crusade_vanguard_march.jpg")
+                    ?? bgCathedral;
         }
 
         /// <summary>
@@ -789,25 +809,50 @@ namespace ElementalHexTactics3D.UI
             switch (id)
             {
                 case StorySequenceId.RealWorldPrologue:
+                    // === 1. REAL WORLD — PULANG KERJA OVERTIME (LIVING ROOM) ===
                     lines.Add(new DialogueLine(
-                        "MC (Gamer / Salaryman)",
-                        "23:45... Finally punched out after another brutal day of unpaid overtime.",
+                        "MC (Real World)",
+                        "*SLAM* ...23:45. Finally made it back. Another brutal day of unpaid overtime in this concrete cage...",
+                        mcSilhouetteSprite, true, bgMcLivingRoom, new Color(0.4f, 0.85f, 1f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC (Real World)",
+                        "(I toss my soaked jacket and backpack onto the sofa. Empty energy drink cans, instant cup noodles piling up... Work 14 hours, commute, sleep 4 hours, repeat. Is this even a life?)",
+                        mcSilhouetteSprite, true, bgMcLivingRoom, new Color(0.4f, 0.85f, 1f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC (Real World)",
+                        "(The only place where I actually feel alive... is Omniterra. The server's #1 solo ranker. The only player who conquered every high-tier raid without a guild.)",
+                        mcSilhouetteSprite, true, bgMcLivingRoom, new Color(0.4f, 0.85f, 1f)
+                    ));
+
+                    // === 2. REAL WORLD — DUDUK MAIN GAME (GAMING DESK) ===
+                    lines.Add(new DialogueLine(
+                        "MC (Real World)",
+                        "Just one final raid boss left to conquer. Demon Lord Malakor. I spent three months analyzing every hex damage multiplier, elemental terrain reaction, and boss AI pattern.",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
                     lines.Add(new DialogueLine(
-                        "MC (Gamer / Salaryman)",
-                        "Just one last raid boss in Omniterra before I crash. As the server's #1 solo ranker, that Demon Lord falls tonight.",
+                        "MC (Real World)",
+                        "My Paladin is armed with the empire's ultimate holy relics. Tonight, Malakor falls, and I claim the world-first solo clear title.",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
+
+                    // === 3. WORLD INTRODUCTION — VERSI RADIANT SYNOD (PROPAGANDA) ===
                     lines.Add(new DialogueLine(
-                        "System (Omniterra)",
-                        "[ SYSTEM ALERT: ENTERING THE ABYSSAL THRONE — RADIANT CRUSADE DISPATCHED ]",
-                        null, true, bgCathedral, new Color(1f, 0.88f, 0.25f)
+                        "The Radiant Synod (Imperial Decree)",
+                        "[ IN THE REALM OF OMNITERRA, THE RADIANT SYNOD STANDS AS HUMANITY'S SOLE BASTION AGAINST THE ETERNAL ABYSS. ]",
+                        null, true, bgCathedral, new Color(1f, 0.88f, 0.35f)
                     ));
                     lines.Add(new DialogueLine(
-                        "MC (Gamer / Salaryman)",
-                        "My Paladin is fully geared. Time to purge the darkness and clear this game once and for all.",
-                        mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
+                        "The Radiant Synod (Imperial Decree)",
+                        "For centuries, Demon Lord Malakor and his shadowy fiends have desecrated the holy frontiers—slaughtering pilgrims, burning sanctuaries, and defiling the sacred light.",
+                        null, true, bgSynodPropagandaMyth, new Color(1f, 0.88f, 0.35f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "The Radiant Synod (Imperial Decree)",
+                        "Tonight, the Chosen Hero—the supreme ranker of the realm—leads the holy vanguard into the Abyssal Throne to extinguish the darkness forever!",
+                        null, true, bgCrusadeVanguardMarch, new Color(1f, 0.88f, 0.35f)
                     ));
                     break;
 
@@ -815,12 +860,17 @@ namespace ElementalHexTactics3D.UI
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
                         "Foul fiend! Your reign of shadow ends tonight in the holy name of the Radiant Synod of Aethelgard!",
-                        paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
+                        paladinPortrait, true, bgDemonLordThrone, new Color(1f, 0.85f, 0.25f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "Paladin (Chosen Hero)",
+                        "The divine light shall purge every last monster that hides in this den of evil!",
+                        paladinPortrait, true, bgDemonLordThrone, new Color(1f, 0.85f, 0.25f)
                     ));
                     lines.Add(new DialogueLine(
                         "Demon Lord",
                         "Insolent insects! Abyssal spawn, crawl forth and tear their holy flesh apart! Feed upon their bones!",
-                        demonLordPortrait, false, null, new Color(0.95f, 0.4f, 0.4f)
+                        demonLordPortrait, false, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
@@ -920,19 +970,19 @@ namespace ElementalHexTactics3D.UI
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "Emergency! A Radiant Synod scout company has already breached the Ashen Verge. They are taking prisoners from the frontier outpost!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, bgFrontierOutpost, new Color(0.85f, 0.7f, 0.4f)
                     ));
 
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
                         "(The same Holy Empire I used to play as... is now hunting the people of this sanctuary. If the Citadel falls, I die for real. And so do they.)",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        demonLordPortrait, true, bgFrontierOutpost, new Color(0.95f, 0.4f, 0.4f)
                     ));
 
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "Our guards are falling back! We must move before their inquisitors find the hidden path to the Citadel!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, bgFrontierOutpost, new Color(0.85f, 0.7f, 0.4f)
                     ));
 
                     lines.Add(new DialogueLine(

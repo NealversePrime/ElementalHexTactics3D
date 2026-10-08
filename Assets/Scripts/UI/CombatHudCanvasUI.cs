@@ -5,6 +5,7 @@ using ElementalHexTactics3D.InputHandling;
 using ElementalHexTactics3D.Units;
 using ElementalHexTactics3D.Turn;
 using ElementalHexTactics3D.Combat;
+using ElementalHexTactics3D.CameraControl;
 
 namespace ElementalHexTactics3D.UI
 {
@@ -813,6 +814,7 @@ namespace ElementalHexTactics3D.UI
             else
             {
                 interaction.SetActionMode(mode);
+                if (commandMenuRoot != null) commandMenuRoot.SetActive(false);
             }
         }
 
@@ -1814,8 +1816,25 @@ namespace ElementalHexTactics3D.UI
         {
             if (commandMenuRoot == null) return;
 
-            // While unit is actively traversing tiles, hide menu until it arrives
-            if (unit != null && unit.IsMoving)
+            // 1. While unit is actively traversing tiles, or not player turn, hide menu
+            if (!isPlayerTurn || unit == null || unit.IsMoving)
+            {
+                commandMenuRoot.SetActive(false);
+                return;
+            }
+
+            // 2. Disgaea TRPG UX: While player is in targeting mode (Move, Attack, Push, Skill, Siphon, etc.),
+            // hide command menu immediately so the battlefield and targets are completely clear!
+            if (currentMode != UnitActionMode.None)
+            {
+                commandMenuRoot.SetActive(false);
+                return;
+            }
+
+            // 3. If unit is fully exhausted for this turn (already acted AND moved, or acted and immobilized),
+            // hide the command menu so it does not clutter the screen
+            bool isFullyDone = unit.HasActedThisTurn && (unit.HasMovedThisTurn || unit.IsImmobilized);
+            if (isFullyDone)
             {
                 commandMenuRoot.SetActive(false);
                 return;
@@ -2008,6 +2027,10 @@ namespace ElementalHexTactics3D.UI
             if (interaction.CurrentActionMode != UnitActionMode.None)
             {
                 interaction.SetActionMode(UnitActionMode.None);
+                if (interaction.CurrentSelectedUnit != null)
+                {
+                    TacticalCameraController.Instance?.FocusOnPosition(interaction.CurrentSelectedUnit.transform.position);
+                }
             }
             else
             {
@@ -2139,7 +2162,7 @@ namespace ElementalHexTactics3D.UI
                 if (interaction != null && interaction.CurrentSelectedUnit != null)
                 {
                     TacticalUnit3D sel = interaction.CurrentSelectedUnit;
-                    if (sel.IsMoving)
+                    if (sel.IsMoving || interaction.CurrentActionMode != UnitActionMode.None)
                     {
                         commandMenuRoot.SetActive(false);
                     }

@@ -31662,11 +31662,15 @@ MonoBehaviour:
   holyShielderPortrait: {fileID: 21300000, guid: 0b45df934f7644e5adaf23a3bed8dd79, type: 3}
   demonLordPortrait: {fileID: 21300000, guid: bab69b60d02d4b4b8fd11eb25d5ede03, type: 3}
   basaltVanguardPortrait: {fileID: 21300000, guid: ea9842e13769407ca1ec7da42deedf61, type: 3}
+  bgMcLivingRoom: {fileID: 0}
   bgMcRoom: {fileID: 21300000, guid: f2a0c3a2e7f44b27b7e91c8d0cd1cf77, type: 3}
   bgCathedral: {fileID: 21300000, guid: 09350c15f8a3442096e00b13db9a4c16, type: 3}
   bgDemonLordThrone: {fileID: 21300000, guid: dd682914efa54261a8d3bd94cfd76d84, type: 3}
   bgCrusadeAtrocity: {fileID: 0}
   bgCitadelSanctuary: {fileID: 0}
+  bgFrontierOutpost: {fileID: 0}
+  bgSynodPropagandaMyth: {fileID: 0}
+  bgCrusadeVanguardMarch: {fileID: 0}
 --- !u!114 &1812138867
 MonoBehaviour:
   m_ObjectHideFlags: 0

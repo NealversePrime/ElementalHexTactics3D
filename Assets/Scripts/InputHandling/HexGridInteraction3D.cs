@@ -310,54 +310,19 @@ namespace ElementalHexTactics3D.InputHandling
 
                 // 1. ACTION RESOLUTION (Move, Spells, Push, Deploy Commander, Summon Titan, Tear Rift)
                 bool isDeploying = (currentMode == UnitActionMode.DeployCommander || currentMode == UnitActionMode.SummonTitan || currentMode == UnitActionMode.TearRift);
-                if ((currentSelectedUnit != null || isDeploying) && activeTargetTiles.Contains(clickedTile))
+                if (currentMode != UnitActionMode.None)
                 {
-                    ExecuteAction(clickedTile);
+                    if ((currentSelectedUnit != null || isDeploying) && clickedTile != null && activeTargetTiles.Contains(clickedTile))
+                    {
+                        ExecuteAction(clickedTile);
+                    }
+                    else
+                    {
+                        // Misclicked outside valid target tiles while targeting:
+                        // Play feedback and do NOT switch selection or corrupt targeting mode!
+                        Combat.SoundManager3D.Instance?.PlayButtonClick();
+                    }
                     return;
-                }
-
-                // 1a. INTUITIVE DIRECT MOVE ON REACHABLE EMPTY TILE
-                if (currentMode == UnitActionMode.None && currentSelectedUnit != null && currentSelectedUnit.Faction == UnitFaction.Player && !currentSelectedUnit.HasMovedThisTurn && !currentSelectedUnit.IsImmobilized && clickedTile != null && !clickedTile.IsOccupied)
-                {
-                    int moveDist = currentSelectedUnit.Coordinates.DistanceTo(clickedTile.Coordinates);
-                    if (moveDist > 0 && moveDist <= currentSelectedUnit.EffectiveMoveRange)
-                    {
-                        SetActionMode(UnitActionMode.Move);
-                        if (activeTargetTiles.Contains(clickedTile))
-                        {
-                            ExecuteAction(clickedTile);
-                            return;
-                        }
-                    }
-                }
-
-                // 1b. INTUITIVE MELEE ATTACK ON CLICKED ENEMY
-                // If a player unit is selected, ready to act, and player clicks an enemy unit:
-                TacticalUnit3D targetEnemy = directHitUnit ?? (clickedTile != null ? clickedTile.GetOccupant() : null);
-                if (currentSelectedUnit != null && currentSelectedUnit.Faction == UnitFaction.Player && targetEnemy != null && targetEnemy.Faction == UnitFaction.Enemy && targetEnemy.gameObject.activeInHierarchy && targetEnemy.CurrentHealth > 0)
-                {
-                    if (!currentSelectedUnit.HasActedThisTurn)
-                    {
-                        int dist = currentSelectedUnit.Coordinates.DistanceTo(targetEnemy.Coordinates);
-                        if (dist <= 1)
-                        {
-                            // Adjacent enemy clicked! Seamlessly execute melee strike without deselecting or wasting move!
-                            HexTile3D enemyTile = targetEnemy.CurrentTile ?? clickedTile;
-                            SetActionMode(UnitActionMode.TitanStrike);
-                            ExecuteAction(enemyTile);
-                            return;
-                        }
-                        else
-                        {
-                            // Enemy is out of melee range! Keep player unit selected, give clear feedback to move closer.
-                            Combat.SoundManager3D.Instance?.PlayButtonClick();
-                            if (CombatFeedbackManager.Instance != null)
-                            {
-                                CombatFeedbackManager.Instance.SpawnDamageText(targetEnemy.transform.position, "Out of Reach!", Color.yellow);
-                            }
-                            return;
-                        }
-                    }
                 }
 
                 // 2. UNIT SELECTION ON CLICKED TILE (Prioritize living unit over empty Rift)
@@ -378,29 +343,39 @@ namespace ElementalHexTactics3D.InputHandling
                     return;
                 }
 
-                // 3. UNIT / TILE SELECTION
+                // 4. EMPTY TILE / FIELD CLICKED: Clear unit selection / select tile
                 if (clickedTile != null)
                 {
                     SelectTile(clickedTile);
-                }
-
-                TacticalUnit3D unitToSelect = directHitUnit ?? (clickedTile != null ? clickedTile.GetOccupant() : null);
-                if (unitToSelect != null)
-                {
-                    SelectUnit(unitToSelect);
-                }
-                else if (currentMode == UnitActionMode.None)
-                {
                     ClearUnitSelection();
                 }
+                else
+                {
+                    DeselectAll();
+                }
             }
-            else if (mouse.rightButton.wasPressedThisFrame)
+            else if (mouse.rightButton.wasPressedThisFrame || (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame))
             {
-                // Right click cancels current skill or clears selection
+                Combat.SoundManager3D.Instance?.PlayButtonClick();
+
+                // Disgaea TRPG Cancel Flow:
+                // 1. If currently in targeting mode (Move, Attack, Skill, Push, Siphon, etc.):
+                //    Cancel the action mode, refocus camera on the selected character,
+                //    and reopen the Disgaea Command Menu!
                 if (currentMode != UnitActionMode.None)
                 {
                     SetActionMode(UnitActionMode.None);
+                    if (currentSelectedUnit != null)
+                    {
+                        TacticalCameraController.Instance?.FocusOnPosition(currentSelectedUnit.transform.position);
+                    }
+                    else if (AbyssalRiftConduit3D.Instance != null && AbyssalRiftConduit3D.Instance.RiftTile != null)
+                    {
+                        TacticalCameraController.Instance?.FocusOnPosition(AbyssalRiftConduit3D.Instance.RiftTile.transform.position);
+                    }
                 }
+                // 2. If command menu is already open / no action mode active:
+                //    Deselect the character and close the command window!
                 else
                 {
                     DeselectAll();
@@ -433,23 +408,8 @@ namespace ElementalHexTactics3D.InputHandling
             currentSelectedUnit = unit;
             currentSelectedUnit.SetSelected(true);
 
-            // If player unit and can move, default to Move mode
-            // BUT during tutorial steps that require casting a skill or push, don't auto-switch to Move mode
-            // so the player does not accidentally walk when trying to cast a skill!
-            bool isTutorialSkillStep = Tutorial.TutorialScenarioManager.Instance != null && 
-                Tutorial.TutorialScenarioManager.Instance.IsTutorialActive && 
-                (Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballScorched ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballMagma ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_CastFireballOnGrass ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_SelectBasaltVanguard ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage2_PushEnemyIntoHazard ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SiphonElementalCore ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_SummonEarthGolemTitan ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_EarthGolemCataclysm ||
-                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_TitanAbsorbLand ||
-                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_MagmaDragonCataclysm ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_HolyStrikeDemonLord ||
-                 Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage1_ShieldShoveSlime);
+            // Refocus camera on selected unit
+            TacticalCameraController.Instance?.FocusOnPosition(currentSelectedUnit.transform.position);
 
             // In Disgaea / TRPG style: Selecting a unit opens the Vertical Command Menu!
             // We do NOT auto-switch to Move mode, letting the player choose their command (Move, Attack, Skill, etc.)

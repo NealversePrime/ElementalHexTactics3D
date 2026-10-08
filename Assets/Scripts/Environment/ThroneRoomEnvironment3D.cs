@@ -94,13 +94,19 @@ namespace ElementalHexTactics3D.StageEnvironment
                 floorMat.color = new Color(0.20f, 0.22f, 0.26f, 1f);
             }
 
-            // Project seamless battlemap across all non-pillar, non-scorched hex tiles
+            // Project seamless battlemap across all hex tiles (including StonePillar tiles!)
+            // Keep pillar tiles flat on the floor level instead of popping up like outdoor dirt crags
             if (grid.Tiles != null)
             {
                 foreach (var kvp in grid.Tiles)
                 {
                     HexTile3D tile = kvp.Value;
-                    if (tile != null && tile.State != TileState.StonePillar && tile.State != TileState.Scorched)
+                    if (tile == null) continue;
+
+                    // Ensure StonePillar tiles remain flat on the floor level
+                    tile.SuppressPillarElevationPop = true;
+
+                    if (tile.State != TileState.Scorched)
                     {
                         tile.ApplyWorldProjectedUVs(floorMat, -5.5f, 5.5f, -5.0f, 5.0f);
                     }
@@ -136,15 +142,50 @@ namespace ElementalHexTactics3D.StageEnvironment
                 SpawnThrone(throneTile, litShader, stoneMat, cushionMat, goldTrimMat);
             }
 
-            // 4. Spawn Pillar Capitals & Braziers with Torchlights at (-1, 2) and (1, 2) [Elevation Tier 2]
+            // 4. Kinetic Shove Obstacle: Broken Pillar at (1, 0) [Elevation Tier 0]
+            // Directly East of Demon Slime at (0, 0) - when Holy Shielder at (-1, 0) shoves, slime slams into this broken pillar!
+            HexTile3D shovePillar = grid.GetTile(new HexCoordinates(1, 0));
+            if (shovePillar != null)
+            {
+                SpawnPillarColumn(shovePillar, litShader, stoneMat, goldTrimMat, flameMat, isBroken: true, hasBrazier: false);
+            }
+
+            // 5. Dais Flanking Columns with Torch Braziers at (-1, 2) and (1, 2) [Elevation Tier 2]
             HexTile3D leftPillar = grid.GetTile(new HexCoordinates(-1, 2));
-            if (leftPillar != null) SpawnPillarBrazier(leftPillar, stoneMat, goldTrimMat, flameMat);
+            if (leftPillar != null)
+            {
+                SpawnPillarColumn(leftPillar, litShader, stoneMat, goldTrimMat, flameMat, isBroken: false, hasBrazier: true, hasLight: true);
+            }
 
             HexTile3D rightPillar = grid.GetTile(new HexCoordinates(1, 2));
-            if (rightPillar != null) SpawnPillarBrazier(rightPillar, stoneMat, goldTrimMat, flameMat);
+            if (rightPillar != null)
+            {
+                SpawnPillarColumn(rightPillar, litShader, stoneMat, goldTrimMat, flameMat, isBroken: false, hasBrazier: true, hasLight: true);
+            }
 
+            // 6. Rear Dais Pillar behind throne at (0, 3) [Elevation Tier 2]
             HexTile3D rearPillar = grid.GetTile(new HexCoordinates(0, 3));
-            if (rearPillar != null) SpawnPillarBrazier(rearPillar, stoneMat, goldTrimMat, flameMat, hasLight: false);
+            if (rearPillar != null)
+            {
+                SpawnPillarColumn(rearPillar, litShader, stoneMat, goldTrimMat, flameMat, isBroken: false, hasBrazier: true, hasLight: false);
+            }
+
+            // 7. Grand Cathedral Colonnade Side Wall Columns at (-2, 1), (-2, -1), (2, 0), (2, -2) [Elevation Tier 0]
+            HexCoordinates[] colonnadeCoords = new HexCoordinates[]
+            {
+                new HexCoordinates(-2, 1),
+                new HexCoordinates(-2, -1),
+                new HexCoordinates(2, 0),
+                new HexCoordinates(2, -2)
+            };
+            foreach (var cCoord in colonnadeCoords)
+            {
+                HexTile3D colTile = grid.GetTile(cCoord);
+                if (colTile != null)
+                {
+                    SpawnPillarColumn(colTile, litShader, stoneMat, goldTrimMat, flameMat, isBroken: false, hasBrazier: false);
+                }
+            }
         }
 
         private void SpawnThrone(HexTile3D throneTile, Shader litShader, Material stoneMat, Material cushionMat, Material goldTrimMat)
@@ -233,37 +274,193 @@ namespace ElementalHexTactics3D.StageEnvironment
             Debug.Log("<color=#FFD54F><b>[ThroneRoomEnvironment]</b></color> Procedural 3D Gothic Throne assembled at (0, 2) [Elevation Tier 2].");
         }
 
-        private void SpawnPillarBrazier(HexTile3D pillarTile, Material stoneMat, Material goldTrimMat, Material flameMat, bool hasLight = true)
+        private void SpawnPillarColumn(
+            HexTile3D tile,
+            Shader litShader,
+            Material stoneMat,
+            Material goldTrimMat,
+            Material flameMat,
+            bool isBroken,
+            bool hasBrazier = false,
+            bool hasLight = false)
         {
-            Vector3 topCenter = pillarTile.GetTopCenterPosition();
+            Vector3 topCenter = tile.GetTopCenterPosition();
+            string pName = isBroken ? $"BrokenPillar_{tile.Coordinates.Q}_{tile.Coordinates.R}" : $"Pillar_{tile.Coordinates.Q}_{tile.Coordinates.R}";
 
-            GameObject brazierObj = new GameObject($"Brazier_{pillarTile.Coordinates.Q}_{pillarTile.Coordinates.R}");
-            brazierObj.transform.SetParent(propsContainer.transform, false);
-            brazierObj.transform.position = topCenter;
+            // 1. Check for external 3D model asset (downloaded low-poly model)
+            GameObject externalPrefab = TryLoadExternalPillarModel(isBroken);
+            if (externalPrefab != null)
+            {
+                GameObject extObj = Instantiate(externalPrefab, topCenter, Quaternion.identity, propsContainer.transform);
+                extObj.name = $"{pName}_Model";
 
-            // 1. Carved Architectural Stone Capital
-            CreateBoxPart(brazierObj, "Pillar_Capital", new Vector3(0f, 0.08f, 0f), new Vector3(0.90f, 0.15f, 0.90f), stoneMat);
+                float targetHeight = isBroken ? 1.05f : 2.65f;
+                AdjustModelScaleToHeight(extObj, targetHeight);
+                StripColliders(extObj);
 
-            // 2. Bronze / Gilded Brazier Bowl
-            CreateCylinderPart(brazierObj, "Brazier_Bowl", new Vector3(0f, 0.22f, 0f), new Vector3(0.55f, 0.14f, 0.55f), goldTrimMat);
+                // If this is a dais pillar requiring a torch brazier on top, attach it
+                if (hasBrazier)
+                {
+                    AttachBrazierHead(extObj, new Vector3(0f, targetHeight, 0f), goldTrimMat, flameMat, hasLight);
+                }
 
-            // 3. Glowing Fire Core / Embers
-            CreateSpherePart(brazierObj, "Flame_Embers", new Vector3(0f, 0.33f, 0f), new Vector3(0.38f, 0.22f, 0.38f), flameMat);
+                Debug.Log($"<color=#FFD54F><b>[ThroneRoomEnvironment]</b></color> Instantiated external 3D model for {(isBroken ? "Broken Pillar" : "Pillar")} at ({tile.Coordinates.Q}, {tile.Coordinates.R}).");
+                return;
+            }
 
-            // 4. Warm Flickering Torchlight
+            // 2. High-Detail Stylized Procedural 3D Pillar Geometry Fallback
+            GameObject pillarObj = new GameObject(pName);
+            pillarObj.transform.SetParent(propsContainer.transform, false);
+            pillarObj.transform.position = topCenter;
+
+            if (isBroken)
+            {
+                BuildProceduralBrokenPillar(pillarObj, stoneMat);
+            }
+            else
+            {
+                BuildProceduralIntactColumn(pillarObj, stoneMat, goldTrimMat, flameMat, hasBrazier, hasLight);
+            }
+        }
+
+        private void BuildProceduralBrokenPillar(GameObject parent, Material stoneMat)
+        {
+            // --- Stepped Square Plinth Base on floor ---
+            CreateBoxPart(parent, "Plinth_Step1", new Vector3(0f, 0.08f, 0f), new Vector3(1.10f, 0.16f, 1.10f), stoneMat);
+            CreateBoxPart(parent, "Plinth_Step2", new Vector3(0f, 0.20f, 0f), new Vector3(0.95f, 0.10f, 0.95f), stoneMat);
+
+            // --- Lower Intact Cylindrical Shaft ---
+            CreateCylinderPart(parent, "Shaft_Lower", new Vector3(0f, 0.50f, 0f), new Vector3(0.72f, 0.50f, 0.72f), stoneMat);
+
+            // --- Jagged Fractured Stone Top (Sheared off in battle) ---
+            GameObject jaggedTop1 = CreateBoxPart(parent, "Fracture_Shard_1", new Vector3(0.04f, 0.82f, 0.02f), new Vector3(0.62f, 0.32f, 0.62f), stoneMat);
+            jaggedTop1.transform.localRotation = Quaternion.Euler(18f, 25f, -12f);
+
+            GameObject jaggedTop2 = CreateBoxPart(parent, "Fracture_Shard_2", new Vector3(0.12f, 0.96f, -0.08f), new Vector3(0.28f, 0.32f, 0.28f), stoneMat);
+            jaggedTop2.transform.localRotation = Quaternion.Euler(-15f, 40f, 20f);
+
+            // --- Fallen Rubble & Stone Debris Chunks around base on marble floor ---
+            GameObject rubble1 = CreateBoxPart(parent, "Rubble_Chunk_1", new Vector3(-0.46f, 0.06f, 0.32f), new Vector3(0.22f, 0.12f, 0.26f), stoneMat);
+            rubble1.transform.localRotation = Quaternion.Euler(12f, 45f, 20f);
+
+            GameObject rubble2 = CreateBoxPart(parent, "Rubble_Chunk_2", new Vector3(0.42f, 0.05f, -0.36f), new Vector3(0.20f, 0.10f, 0.22f), stoneMat);
+            rubble2.transform.localRotation = Quaternion.Euler(-18f, 70f, 10f);
+
+            GameObject rubble3 = CreateBoxPart(parent, "Rubble_Chunk_3", new Vector3(0.20f, 0.04f, 0.44f), new Vector3(0.16f, 0.08f, 0.18f), stoneMat);
+            rubble3.transform.localRotation = Quaternion.Euler(30f, 15f, -25f);
+        }
+
+        private void BuildProceduralIntactColumn(
+            GameObject parent,
+            Material stoneMat,
+            Material goldTrimMat,
+            Material flameMat,
+            bool hasBrazier,
+            bool hasLight)
+        {
+            // --- Stepped Square Plinth Base on floor ---
+            CreateBoxPart(parent, "Plinth_Step1", new Vector3(0f, 0.08f, 0f), new Vector3(1.10f, 0.16f, 1.10f), stoneMat);
+            CreateBoxPart(parent, "Plinth_Step2", new Vector3(0f, 0.20f, 0f), new Vector3(0.95f, 0.10f, 0.95f), stoneMat);
+            CreateCylinderPart(parent, "Plinth_Torus", new Vector3(0f, 0.28f, 0f), new Vector3(0.86f, 0.08f, 0.86f), stoneMat);
+
+            // --- Tall Fluted Cylinder Column Shaft ---
+            CreateCylinderPart(parent, "Column_Shaft", new Vector3(0f, 1.48f, 0f), new Vector3(0.68f, 2.30f, 0.68f), stoneMat);
+
+            // --- Sculpted Architectural Capital (Head) ---
+            CreateCylinderPart(parent, "Capital_Astragal", new Vector3(0f, 2.68f, 0f), new Vector3(0.82f, 0.10f, 0.82f), stoneMat);
+            CreateBoxPart(parent, "Capital_Abacus", new Vector3(0f, 2.80f, 0f), new Vector3(1.00f, 0.16f, 1.00f), stoneMat);
+            CreateBoxPart(parent, "Capital_GoldTrim", new Vector3(0f, 2.92f, 0f), new Vector3(1.08f, 0.08f, 1.08f), goldTrimMat);
+
+            // --- Top Feature (Brazier or Architectural Cornice) ---
+            if (hasBrazier)
+            {
+                AttachBrazierHead(parent, new Vector3(0f, 2.96f, 0f), goldTrimMat, flameMat, hasLight);
+            }
+            else
+            {
+                CreateBoxPart(parent, "Cornice_Crown", new Vector3(0f, 3.08f, 0f), new Vector3(0.82f, 0.24f, 0.82f), stoneMat);
+                CreateBoxPart(parent, "Cornice_Finial", new Vector3(0f, 3.24f, 0f), new Vector3(0.40f, 0.16f, 0.40f), goldTrimMat);
+            }
+        }
+
+        private void AttachBrazierHead(GameObject parent, Vector3 localPos, Material goldTrimMat, Material flameMat, bool hasLight)
+        {
+            // 1. Bronze / Gilded Brazier Bowl
+            CreateCylinderPart(parent, "Brazier_Bowl", localPos + new Vector3(0f, 0.12f, 0f), new Vector3(0.60f, 0.14f, 0.60f), goldTrimMat);
+
+            // 2. Glowing Fire Core / Embers
+            CreateSpherePart(parent, "Flame_Embers", localPos + new Vector3(0f, 0.24f, 0f), new Vector3(0.40f, 0.22f, 0.40f), flameMat);
+
+            // 3. Warm Flickering Torchlight
             if (hasLight)
             {
                 GameObject lightObj = new GameObject("Brazier_Light");
-                lightObj.transform.SetParent(brazierObj.transform, false);
-                lightObj.transform.localPosition = new Vector3(0f, 0.55f, 0f);
+                lightObj.transform.SetParent(parent.transform, false);
+                lightObj.transform.localPosition = localPos + new Vector3(0f, 0.50f, 0f);
 
                 Light ptLight = lightObj.AddComponent<Light>();
                 ptLight.type = LightType.Point;
                 ptLight.color = new Color(1.0f, 0.65f, 0.28f, 1f); // Warm torch amber
-                ptLight.intensity = 1.35f;
+                ptLight.intensity = 1.45f;
                 ptLight.range = 5.5f;
 
                 lightObj.AddComponent<BrazierLightFlicker>();
+            }
+        }
+
+        private static GameObject TryLoadExternalPillarModel(bool isBroken)
+        {
+            string[] resourceNames = isBroken
+                ? new[] { "Models/BrokenPillar", "Models/broken_pillar", "Models/Pillar_Broken", "Prefabs/BrokenPillar" }
+                : new[] { "Models/Pillar", "Models/GothicPillar", "Models/Column", "Prefabs/Pillar" };
+
+            foreach (var name in resourceNames)
+            {
+                GameObject prefab = Resources.Load<GameObject>(name);
+                if (prefab != null) return prefab;
+            }
+
+#if UNITY_EDITOR
+            string[] editorPaths = isBroken
+                ? new[] {
+                    "Assets/Resources/Models/BrokenPillar.obj", "Assets/Resources/Models/BrokenPillar.fbx",
+                    "Assets/Models/BrokenPillar.obj", "Assets/Models/BrokenPillar.fbx",
+                    "Assets/Models/broken_pillar.obj", "Assets/Models/broken_pillar.fbx"
+                  }
+                : new[] {
+                    "Assets/Resources/Models/Pillar.obj", "Assets/Resources/Models/Pillar.fbx",
+                    "Assets/Resources/Models/GothicPillar.obj", "Assets/Resources/Models/GothicPillar.fbx",
+                    "Assets/Models/Pillar.obj", "Assets/Models/Pillar.fbx",
+                    "Assets/Models/column.obj", "Assets/Models/column.fbx"
+                  };
+
+            foreach (var path in editorPaths)
+            {
+                GameObject prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (prefab != null) return prefab;
+            }
+#endif
+
+            return null;
+        }
+
+        private static void AdjustModelScaleToHeight(GameObject obj, float targetHeight)
+        {
+            Renderer[] rends = obj.GetComponentsInChildren<Renderer>();
+            if (rends == null || rends.Length == 0)
+            {
+                obj.transform.localScale = Vector3.one;
+                return;
+            }
+
+            Bounds bounds = rends[0].bounds;
+            for (int i = 1; i < rends.Length; i++) bounds.Encapsulate(rends[i].bounds);
+
+            float currentHeight = bounds.size.y;
+            if (currentHeight > 0.05f)
+            {
+                float factor = targetHeight / currentHeight;
+                obj.transform.localScale = Vector3.one * factor;
             }
         }
 
