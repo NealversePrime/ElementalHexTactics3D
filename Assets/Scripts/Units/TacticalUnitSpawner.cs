@@ -79,6 +79,15 @@ namespace ElementalHexTactics3D.Units
                 return resSprite;
             }
 
+            Texture2D resTex = Resources.Load<Texture2D>("Battlers/" + baseName);
+            if (resTex == null) resTex = Resources.Load<Texture2D>("Sprites/Battlers/" + baseName);
+            if (resTex != null)
+            {
+                Sprite sp = Sprite.Create(resTex, new Rect(0, 0, resTex.width, resTex.height), new Vector2(0.5f, 0.5f), 100f);
+                spriteCache[fileName] = sp;
+                return sp;
+            }
+
 #if UNITY_EDITOR
             // 2. AssetDatabase (Editor fast path)
             string assetPath = "Assets/Sprites/Battlers/" + fileName;
@@ -162,6 +171,15 @@ namespace ElementalHexTactics3D.Units
                 return resSprite;
             }
 
+            Texture2D resTex = Resources.Load<Texture2D>("Portraits/" + baseName);
+            if (resTex == null) resTex = Resources.Load<Texture2D>("Sprites/Portraits/" + baseName);
+            if (resTex != null)
+            {
+                Sprite sp = Sprite.Create(resTex, new Rect(0, 0, resTex.width, resTex.height), new Vector2(0.5f, 0.5f), 100f);
+                spriteCache[cacheKey] = sp;
+                return sp;
+            }
+
 #if UNITY_EDITOR
             // 2. AssetDatabase
             string assetPath = "Assets/Sprites/Portraits/" + fileName;
@@ -241,6 +259,15 @@ namespace ElementalHexTactics3D.Units
                 return resSprite;
             }
 
+            Texture2D resTex = Resources.Load<Texture2D>("Backgrounds/" + baseName);
+            if (resTex == null) resTex = Resources.Load<Texture2D>("Sprites/Backgrounds/" + baseName);
+            if (resTex != null)
+            {
+                Sprite sp = Sprite.Create(resTex, new Rect(0, 0, resTex.width, resTex.height), new Vector2(0.5f, 0.5f), 100f);
+                spriteCache[cacheKey] = sp;
+                return sp;
+            }
+
 #if UNITY_EDITOR
             string assetPath = "Assets/Sprites/Backgrounds/" + fileName;
             Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
@@ -288,6 +315,20 @@ namespace ElementalHexTactics3D.Units
             {
                 spriteCache[cacheKey] = resSprite;
                 return resSprite;
+            }
+
+            Texture2D resTex = Resources.Load<Texture2D>("UI/" + baseName);
+            if (resTex == null) resTex = Resources.Load<Texture2D>("Sprites/UI/" + baseName);
+            if (resTex != null)
+            {
+                Vector4 border = Vector4.zero;
+                if (fileName.Contains("WindowFrame")) border = new Vector4(24f, 24f, 24f, 24f);
+                else if (fileName.Contains("SelectBox")) border = new Vector4(12f, 12f, 12f, 12f);
+                else if (fileName.Contains("WindowBg")) border = new Vector4(12f, 12f, 12f, 12f);
+                else if (fileName.Contains("Panel_Frame")) border = new Vector4(16f, 16f, 16f, 16f);
+                Sprite sp = Sprite.Create(resTex, new Rect(0, 0, resTex.width, resTex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.Tight, border);
+                spriteCache[cacheKey] = sp;
+                return sp;
             }
 
 #if UNITY_EDITOR

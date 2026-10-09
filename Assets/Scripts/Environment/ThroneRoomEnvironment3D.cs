@@ -79,19 +79,36 @@ namespace ElementalHexTactics3D.StageEnvironment
                 : (Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard") ?? Shader.Find("Diffuse"));
 
             // 2. Continuous Planar Battlemap Floor Projection
-            Texture2D battlemapTex = LoadTextureFromFile("Sprites/Tiles/ThroneRoom_Floor_Battlemap.png")
-                ?? LoadTextureFromFile("Resources/Sprites/Tiles/ThroneRoom_Floor_Battlemap.png");
+            Texture2D battlemapTex = LoadTexture("ThroneRoom_Floor_Battlemap.png")
+                ?? LoadTexture("Tiles/ThroneRoom_Floor_Battlemap")
+                ?? LoadTextureFromFile("Sprites/Tiles/ThroneRoom_Floor_Battlemap.png");
 
-            Material floorMat = new Material(litShader);
-            floorMat.name = "Mat_ThroneRoom_ProjectedFloor";
+            Material floorMat = null;
             if (battlemapTex != null)
             {
+                floorMat = new Material(litShader);
+                floorMat.name = "Mat_ThroneRoom_ProjectedFloor";
                 floorMat.mainTexture = battlemapTex;
                 if (floorMat.HasProperty("_BaseMap")) floorMat.SetTexture("_BaseMap", battlemapTex);
+                if (floorMat.HasProperty("_Color")) floorMat.SetColor("_Color", Color.white);
+                if (floorMat.HasProperty("_BaseColor")) floorMat.SetColor("_BaseColor", Color.white);
             }
             else
             {
-                floorMat.color = new Color(0.20f, 0.22f, 0.26f, 1f);
+                // Safety net: If battlemap texture is missing, use base barren material copy
+                // so tiles never appear as blank flat white surfaces!
+                if (baseMat != null)
+                {
+                    floorMat = new Material(baseMat);
+                    floorMat.name = "Mat_ThroneRoom_ProjectedFloor_Fallback";
+                }
+                else
+                {
+                    floorMat = new Material(litShader);
+                    Color darkSlate = new Color(0.20f, 0.22f, 0.26f, 1f);
+                    floorMat.color = darkSlate;
+                    if (floorMat.HasProperty("_BaseColor")) floorMat.SetColor("_BaseColor", darkSlate);
+                }
             }
 
             // Project seamless battlemap across all hex tiles (including StonePillar tiles!)
@@ -108,7 +125,10 @@ namespace ElementalHexTactics3D.StageEnvironment
 
                     if (tile.State != TileState.Scorched)
                     {
-                        tile.ApplyWorldProjectedUVs(floorMat, -5.5f, 5.5f, -5.0f, 5.0f);
+                        if (floorMat != null)
+                        {
+                            tile.ApplyWorldProjectedUVs(floorMat, -5.5f, 5.5f, -5.0f, 5.0f);
+                        }
                     }
                 }
             }
@@ -218,17 +238,29 @@ namespace ElementalHexTactics3D.StageEnvironment
                 extObj.transform.localScale = Vector3.one * 0.28f;
 
                 // Bind diffuse texture to mesh materials
-                Texture2D throneTex = LoadTextureFromFile("Resources/Models/GothicObsidianThrone_Diffuse.jpg")
-                    ?? LoadTextureFromFile("Models/GothicObsidianThrone_Diffuse.jpg");
+                Texture2D throneTex = LoadTexture("GothicObsidianThrone_Diffuse.jpg")
+                    ?? LoadTexture("Models/GothicObsidianThrone_Diffuse")
+                    ?? LoadTextureFromFile("Resources/Models/GothicObsidianThrone_Diffuse.jpg");
                 if (throneTex != null)
                 {
                     Material throneMat = new Material(litShader);
+                    throneMat.name = "Mat_GothicObsidianThrone";
                     throneMat.mainTexture = throneTex;
                     if (throneMat.HasProperty("_BaseMap")) throneMat.SetTexture("_BaseMap", throneTex);
+                    if (throneMat.HasProperty("_Color")) throneMat.SetColor("_Color", Color.white);
+                    if (throneMat.HasProperty("_BaseColor")) throneMat.SetColor("_BaseColor", Color.white);
 
                     foreach (var mr in extObj.GetComponentsInChildren<MeshRenderer>(true))
                     {
                         if (mr != null) mr.sharedMaterial = throneMat;
+                    }
+                }
+                else
+                {
+                    // Fallback to dark obsidian stone material so the throne is NEVER pure white!
+                    foreach (var mr in extObj.GetComponentsInChildren<MeshRenderer>(true))
+                    {
+                        if (mr != null) mr.sharedMaterial = stoneMat;
                     }
                 }
 
@@ -465,6 +497,47 @@ namespace ElementalHexTactics3D.StageEnvironment
         }
 
         #region Geometry & Texture Helpers
+
+        public static Texture2D LoadTexture(string pathOrName)
+        {
+            if (string.IsNullOrEmpty(pathOrName)) return null;
+
+            string baseName = Path.GetFileNameWithoutExtension(pathOrName);
+
+            // 1. Resources.Load (Texture2D) - WebGL & Standalone & Editor
+            Texture2D resTex = Resources.Load<Texture2D>("Tiles/" + baseName)
+                ?? Resources.Load<Texture2D>("Models/" + baseName)
+                ?? Resources.Load<Texture2D>("Sprites/Tiles/" + baseName)
+                ?? Resources.Load<Texture2D>(baseName);
+            if (resTex != null) return resTex;
+
+            // 1b. Resources.Load (Sprite -> Texture)
+            Sprite resSprite = Resources.Load<Sprite>("Tiles/" + baseName)
+                ?? Resources.Load<Sprite>("Models/" + baseName)
+                ?? Resources.Load<Sprite>("Sprites/Tiles/" + baseName)
+                ?? Resources.Load<Sprite>(baseName);
+            if (resSprite != null && resSprite.texture != null) return resSprite.texture;
+
+#if UNITY_EDITOR
+            // 2. Editor AssetDatabase (Immediate fallback inside Editor)
+            string[] searchPaths = new string[]
+            {
+                "Assets/Sprites/Tiles/" + Path.GetFileName(pathOrName),
+                "Assets/Resources/Tiles/" + Path.GetFileName(pathOrName),
+                "Assets/Resources/Models/" + Path.GetFileName(pathOrName),
+                "Assets/Models/" + Path.GetFileName(pathOrName),
+                "Assets/" + pathOrName
+            };
+            foreach (var p in searchPaths)
+            {
+                Texture2D edTex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+                if (edTex != null) return edTex;
+            }
+#endif
+
+            // 3. StreamingAssets / Disk file fallback (Standalone non-WebGL)
+            return LoadTextureFromFile(pathOrName);
+        }
 
         public static Texture2D LoadTextureFromFile(string relativePath)
         {

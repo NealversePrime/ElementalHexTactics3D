@@ -201,6 +201,10 @@ namespace ElementalHexTactics3D.Combat
         {
             if (!Application.isPlaying || mainCamera == null) return;
 
+            // Completely suppress overhead health bars, turn banners, and floating numbers during story dialogue cutscenes!
+            if (ElementalHexTactics3D.UI.StoryDialogueUI.Instance != null && ElementalHexTactics3D.UI.StoryDialogueUI.Instance.IsPlayingDialogue)
+                return;
+
             bool isMenuBlocking = TitleMenuCanvasUI.Instance != null
                 ? (!TitleMenuCanvasUI.Instance.IsInGame || TitleMenuCanvasUI.Instance.IsPaused)
                 : (TitleMenuManager3D.Instance != null && (!TitleMenuManager3D.Instance.IsInGame || TitleMenuManager3D.Instance.IsPaused));

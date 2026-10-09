@@ -283,6 +283,13 @@ namespace ElementalHexTactics3D.UI
         /// </summary>
         public void EnsureUIHierarchy()
         {
+            Canvas canvas = GetComponent<Canvas>();
+            if (canvas != null)
+            {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = 500;
+            }
+
             if (rootDialoguePanel == null)
             {
                 Transform panel = transform.Find("Panel_StoryDialogueRoot");

@@ -111,6 +111,15 @@ namespace ElementalHexTactics3D.UI.Hub
                     if (bgImg.sprite == null || bgImg.sprite.name != "full")
                     {
                         Sprite resSp = Resources.Load<Sprite>("Hub/full");
+                        if (resSp == null)
+                        {
+                            Texture2D hTex = Resources.Load<Texture2D>("Hub/full");
+                            if (hTex != null)
+                            {
+                                resSp = Sprite.Create(hTex, new Rect(0, 0, hTex.width, hTex.height), new Vector2(0.5f, 0.5f));
+                                resSp.name = "full";
+                            }
+                        }
                         if (resSp != null)
                         {
                             bgImg.sprite = resSp;

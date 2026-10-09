@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -66,6 +67,12 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Text txtSubtitle;
         [SerializeField] private Text txtVersion;
 
+        [Header("Custom Graphic Title Logo (Canva / Photoshop Graphic)")]
+        [SerializeField] private Image imgCustomTitleLogo;
+        [SerializeField] private Sprite customLogoSprite;
+        [SerializeField] private Sprite holyLogoSprite;
+        [SerializeField] private Sprite demonLogoSprite;
+
         [Header("Modal Dynamic Texts")]
         [SerializeField] private Text txtStoryTitle;
         [SerializeField] private Text txtStoryBody;
@@ -117,6 +124,12 @@ namespace ElementalHexTactics3D.UI
             if (legacy != null && legacy != gameObject)
             {
                 Destroy(legacy);
+            }
+
+            if (titlePanel == null)
+            {
+                Transform t = transform.Find("Panel_TitleScreenRoot") ?? transform.Find("Panel_Title");
+                if (t != null) titlePanel = t.gameObject;
             }
 
             if (townHubPanel == null)
@@ -211,7 +224,11 @@ namespace ElementalHexTactics3D.UI
                     if (tTrans != null)
                     {
                         RectTransform tRect = tTrans.GetComponent<RectTransform>();
-                        if (tRect != null) tRect.anchoredPosition = new Vector2(0f, 185f);
+                        if (tRect != null)
+                        {
+                            tRect.anchoredPosition = new Vector2(0f, 145f);
+                            tRect.sizeDelta = new Vector2(520f, 36f);
+                        }
                     }
                 }
             }
@@ -229,7 +246,48 @@ namespace ElementalHexTactics3D.UI
                     if (tTrans != null)
                     {
                         RectTransform tRect = tTrans.GetComponent<RectTransform>();
-                        if (tRect != null) tRect.anchoredPosition = new Vector2(0f, 195f);
+                        if (tRect != null)
+                        {
+                            tRect.anchoredPosition = new Vector2(0f, 140f);
+                            tRect.sizeDelta = new Vector2(740f, 38f);
+                        }
+                        Text t = tTrans.GetComponent<Text>();
+                        if (t != null)
+                        {
+                            t.fontSize = 22;
+                            t.fontStyle = FontStyle.Bold;
+                            t.alignment = TextAnchor.MiddleCenter;
+                            t.color = new Color(1f, 0.88f, 0.38f);
+                        }
+                    }
+
+                    Transform bTrans = card.Find("Text_StoryBody");
+                    if (bTrans != null)
+                    {
+                        RectTransform bRect = bTrans.GetComponent<RectTransform>();
+                        if (bRect != null)
+                        {
+                            bRect.anchoredPosition = new Vector2(0f, -15f);
+                            bRect.sizeDelta = new Vector2(740f, 260f);
+                        }
+                        Text b = bTrans.GetComponent<Text>();
+                        if (b != null)
+                        {
+                            b.fontSize = 17;
+                            b.lineSpacing = 1.35f;
+                            b.alignment = TextAnchor.UpperLeft;
+                        }
+                    }
+
+                    Transform backTrans = card.Find("Btn_BackStory");
+                    if (backTrans != null)
+                    {
+                        RectTransform backRect = backTrans.GetComponent<RectTransform>();
+                        if (backRect != null)
+                        {
+                            backRect.anchoredPosition = new Vector2(0f, -205f);
+                            backRect.sizeDelta = new Vector2(280f, 48f);
+                        }
                     }
                 }
             }
@@ -247,7 +305,48 @@ namespace ElementalHexTactics3D.UI
                     if (tTrans != null)
                     {
                         RectTransform tRect = tTrans.GetComponent<RectTransform>();
-                        if (tRect != null) tRect.anchoredPosition = new Vector2(0f, 205f);
+                        if (tRect != null)
+                        {
+                            tRect.anchoredPosition = new Vector2(0f, 150f);
+                            tRect.sizeDelta = new Vector2(740f, 38f);
+                        }
+                        Text t = tTrans.GetComponent<Text>();
+                        if (t != null)
+                        {
+                            t.fontSize = 22;
+                            t.fontStyle = FontStyle.Bold;
+                            t.alignment = TextAnchor.MiddleCenter;
+                            t.color = new Color(1f, 0.88f, 0.38f);
+                        }
+                    }
+
+                    Transform bTrans = card.Find("Text_HowToPlayBody");
+                    if (bTrans != null)
+                    {
+                        RectTransform bRect = bTrans.GetComponent<RectTransform>();
+                        if (bRect != null)
+                        {
+                            bRect.anchoredPosition = new Vector2(0f, -15f);
+                            bRect.sizeDelta = new Vector2(740f, 275f);
+                        }
+                        Text b = bTrans.GetComponent<Text>();
+                        if (b != null)
+                        {
+                            b.fontSize = 17;
+                            b.lineSpacing = 1.35f;
+                            b.alignment = TextAnchor.UpperLeft;
+                        }
+                    }
+
+                    Transform backTrans = card.Find("Btn_BackHowToPlay");
+                    if (backTrans != null)
+                    {
+                        RectTransform backRect = backTrans.GetComponent<RectTransform>();
+                        if (backRect != null)
+                        {
+                            backRect.anchoredPosition = new Vector2(0f, -215f);
+                            backRect.sizeDelta = new Vector2(280f, 48f);
+                        }
                     }
                 }
             }
@@ -267,15 +366,15 @@ namespace ElementalHexTactics3D.UI
                 RectTransform hRect = header.GetComponent<RectTransform>();
                 if (hRect != null)
                 {
-                    hRect.sizeDelta = new Vector2(880f, 260f);
-                    hRect.anchoredPosition = new Vector2(0f, -30f);
+                    hRect.sizeDelta = new Vector2(980f, 320f);
+                    hRect.anchoredPosition = new Vector2(0f, -20f);
                 }
 
                 Transform tBadge = header.Find("Text_Badge");
                 if (tBadge != null)
                 {
                     var r = tBadge.GetComponent<RectTransform>();
-                    if (r != null) { r.anchoredPosition = new Vector2(0f, 75f); r.sizeDelta = new Vector2(840f, 28f); }
+                    if (r != null) { r.anchoredPosition = new Vector2(0f, 140f); r.sizeDelta = new Vector2(840f, 28f); }
                     txtBadge = tBadge.GetComponent<Text>();
                     if (txtBadge != null) { txtBadge.horizontalOverflow = HorizontalWrapMode.Overflow; txtBadge.verticalOverflow = VerticalWrapMode.Overflow; }
                 }
@@ -311,9 +410,81 @@ namespace ElementalHexTactics3D.UI
                 if (ver != null)
                 {
                     var r = ver.GetComponent<RectTransform>();
-                    if (r != null) { r.anchoredPosition = new Vector2(0f, -86f); r.sizeDelta = new Vector2(840f, 22f); }
+                    if (r != null) { r.anchoredPosition = new Vector2(0f, -145f); r.sizeDelta = new Vector2(840f, 22f); }
                     txtVersion = ver.GetComponent<Text>();
                     if (txtVersion != null) { txtVersion.horizontalOverflow = HorizontalWrapMode.Overflow; txtVersion.verticalOverflow = VerticalWrapMode.Overflow; }
+                }
+
+                // Check for graphic logo overrides (e.g. designed in Canva or Photoshop)
+                if (holyLogoSprite == null)
+                {
+                    holyLogoSprite = LoadLogoSprite("Logo_Omniterra_Holy")
+                                  ?? LoadLogoSprite("Logo_Omniterra");
+                }
+                if (demonLogoSprite == null)
+                {
+                    demonLogoSprite = LoadLogoSprite("Logo_Omniterra_Demon")
+                                   ?? LoadLogoSprite("Logo_Omniterra");
+                }
+
+                Transform logoTrans = header.Find("Image_CustomLogo");
+                Sprite activeLogo = (currentThemeMode == TitleThemeMode.PaladinHolyland) ? holyLogoSprite : demonLogoSprite;
+                Image headerBoxImg = header.GetComponent<Image>();
+                if (headerBoxImg != null)
+                {
+                    headerBoxImg.enabled = (activeLogo == null);
+                }
+
+                if (activeLogo != null)
+                {
+                    if (logoTrans == null)
+                    {
+                        GameObject logoObj = new GameObject("Image_CustomLogo", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                        logoObj.transform.SetParent(header, false);
+                        logoTrans = logoObj.transform;
+                    }
+                    imgCustomTitleLogo = logoTrans.GetComponent<Image>();
+                    imgCustomTitleLogo.sprite = activeLogo;
+                    imgCustomTitleLogo.preserveAspect = true;
+                    imgCustomTitleLogo.raycastTarget = false;
+                    imgCustomTitleLogo.gameObject.SetActive(true);
+
+                    RectTransform logoRect = imgCustomTitleLogo.GetComponent<RectTransform>();
+                    logoRect.anchoredPosition = new Vector2(0f, -5f);
+                    logoRect.sizeDelta = new Vector2(920f, 280f);
+
+                    if (txtBadge != null)
+                    {
+                        var br = txtBadge.GetComponent<RectTransform>();
+                        if (br != null) br.anchoredPosition = new Vector2(0f, 140f);
+                    }
+                    if (txtVersion != null)
+                    {
+                        var vr = txtVersion.GetComponent<RectTransform>();
+                        if (vr != null) vr.anchoredPosition = new Vector2(0f, -145f);
+                    }
+
+                    // When graphic logo image is present, hide procedural text titles and subtitle!
+                    if (txtTitle1 != null) txtTitle1.gameObject.SetActive(false);
+                    if (txtTitle2 != null) txtTitle2.gameObject.SetActive(false);
+                    if (txtSubtitle != null) txtSubtitle.gameObject.SetActive(false);
+                }
+                else
+                {
+                    if (logoTrans != null) logoTrans.gameObject.SetActive(false);
+                    if (txtTitle1 != null) txtTitle1.gameObject.SetActive(true);
+                    if (txtTitle2 != null) txtTitle2.gameObject.SetActive(true);
+                    if (txtSubtitle != null) txtSubtitle.gameObject.SetActive(true);
+                    if (txtBadge != null)
+                    {
+                        var br = txtBadge.GetComponent<RectTransform>();
+                        if (br != null) br.anchoredPosition = new Vector2(0f, 75f);
+                    }
+                    if (txtVersion != null)
+                    {
+                        var vr = txtVersion.GetComponent<RectTransform>();
+                        if (vr != null) vr.anchoredPosition = new Vector2(0f, -86f);
+                    }
                 }
             }
 
@@ -325,15 +496,6 @@ namespace ElementalHexTactics3D.UI
                 {
                     mRect.sizeDelta = new Vector2(380f, 310f);
                     mRect.anchoredPosition = new Vector2(0f, -75f);
-                }
-                var vlg = menuButtons.GetComponent<VerticalLayoutGroup>();
-                if (vlg != null) vlg.spacing = 10;
-
-                Text[] buttonTexts = menuButtons.GetComponentsInChildren<Text>(true);
-                foreach (var bt in buttonTexts)
-                {
-                    bt.horizontalOverflow = HorizontalWrapMode.Overflow;
-                    bt.verticalOverflow = VerticalWrapMode.Overflow;
                 }
             }
 
@@ -449,34 +611,126 @@ namespace ElementalHexTactics3D.UI
                 titleBackgroundImage.gameObject.SetActive(true);
             }
 
-            // 2. Texts & Styling
+            // 2. Custom Graphic Logo switching (Holy vs Demon Lord)
+            if (holyLogoSprite == null)
+            {
+                holyLogoSprite = LoadLogoSprite("Logo_Omniterra_Holy")
+                              ?? LoadLogoSprite("Logo_Omniterra");
+            }
+            if (demonLogoSprite == null)
+            {
+                demonLogoSprite = LoadLogoSprite("Logo_Omniterra_Demon")
+                               ?? LoadLogoSprite("Logo_Omniterra");
+            }
+
+            Sprite targetLogo = (mode == TitleThemeMode.PaladinHolyland) ? holyLogoSprite : demonLogoSprite;
+
+            if (imgCustomTitleLogo == null && titlePanel != null)
+            {
+                Transform header = titlePanel.transform.Find("Panel_TitleHeader");
+                if (header != null)
+                {
+                    Transform logoTrans = header.Find("Image_CustomLogo");
+                    if (logoTrans == null && targetLogo != null)
+                    {
+                        GameObject logoObj = new GameObject("Image_CustomLogo", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                        logoObj.transform.SetParent(header, false);
+                        logoTrans = logoObj.transform;
+                    }
+                    if (logoTrans != null)
+                    {
+                        imgCustomTitleLogo = logoTrans.GetComponent<Image>();
+                    }
+                }
+            }
+
+            if (titlePanel != null)
+            {
+                Transform header = titlePanel.transform.Find("Panel_TitleHeader");
+                if (header != null)
+                {
+                    Image headerBoxImg = header.GetComponent<Image>();
+                    if (headerBoxImg != null) headerBoxImg.enabled = (targetLogo == null);
+                }
+            }
+
+            if (imgCustomTitleLogo != null)
+            {
+                RectTransform logoRect = imgCustomTitleLogo.GetComponent<RectTransform>();
+                if (targetLogo != null)
+                {
+                    imgCustomTitleLogo.sprite = targetLogo;
+                    imgCustomTitleLogo.preserveAspect = true;
+                    imgCustomTitleLogo.raycastTarget = false;
+                    imgCustomTitleLogo.gameObject.SetActive(true);
+                    if (logoRect != null)
+                    {
+                        logoRect.anchoredPosition = new Vector2(0f, -5f);
+                        logoRect.sizeDelta = new Vector2(920f, 280f);
+                    }
+
+                    if (txtBadge != null)
+                    {
+                        var br = txtBadge.GetComponent<RectTransform>();
+                        if (br != null) br.anchoredPosition = new Vector2(0f, 140f);
+                    }
+                    if (txtVersion != null)
+                    {
+                        var vr = txtVersion.GetComponent<RectTransform>();
+                        if (vr != null) vr.anchoredPosition = new Vector2(0f, -145f);
+                    }
+
+                    if (txtTitle1 != null) txtTitle1.gameObject.SetActive(false);
+                    if (txtTitle2 != null) txtTitle2.gameObject.SetActive(false);
+                    if (txtSubtitle != null) txtSubtitle.gameObject.SetActive(false);
+                }
+                else
+                {
+                    imgCustomTitleLogo.gameObject.SetActive(false);
+                    if (txtTitle1 != null) txtTitle1.gameObject.SetActive(true);
+                    if (txtTitle2 != null) txtTitle2.gameObject.SetActive(true);
+                    if (txtSubtitle != null) txtSubtitle.gameObject.SetActive(true);
+                    if (txtBadge != null)
+                    {
+                        var br = txtBadge.GetComponent<RectTransform>();
+                        if (br != null) br.anchoredPosition = new Vector2(0f, 75f);
+                    }
+                    if (txtVersion != null)
+                    {
+                        var vr = txtVersion.GetComponent<RectTransform>();
+                        if (vr != null) vr.anchoredPosition = new Vector2(0f, -86f);
+                    }
+                }
+            }
+
+            // 3. Texts & Styling
             if (mode == TitleThemeMode.PaladinHolyland)
             {
                 if (txtBadge != null)
                 {
-                    txtBadge.text = "✦ HOLY CRUSADE EDITION • PROLOGUE: THE CHOSEN HERO ✦";
+                    txtBadge.text = "✦ SACRED SYNOD EDITION • PROLOGUE: THE CHOSEN HERO ✦";
                     txtBadge.color = new Color(0.35f, 0.85f, 1f);
                 }
                 if (txtTitle1 != null)
                 {
-                    txtTitle1.text = "HOLYLAND";
-                    txtTitle1.fontSize = 36;
+                    txtTitle1.text = "OMNITERRA";
+                    txtTitle1.fontSize = 38;
                     txtTitle1.color = Color.white;
                 }
                 if (txtTitle2 != null)
                 {
-                    txtTitle2.text = "EVOLVE";
+                    txtTitle2.text = "ASCENDANCE";
                     txtTitle2.fontSize = 42;
                     txtTitle2.color = new Color(1f, 0.85f, 0.25f);
                 }
                 if (txtSubtitle != null)
                 {
-                    txtSubtitle.text = "〜 The Sacred Crusade of the Chosen Hero 〜";
+                    txtSubtitle.text = "〜 The Righteous Crusade of the Radiant Synod 〜";
                     txtSubtitle.color = new Color(0.85f, 0.90f, 0.98f);
                 }
                 if (txtVersion != null)
                 {
-                    txtVersion.text = "Holyland Evolve • Pre-Alpha v1.0.0 • Sacred Empire Edition";
+                    txtVersion.text = "Omniterra: Ascendance • Pre-Alpha v1.0.0 • Sacred Synod Edition";
                 }
 
                 if (btnPlay != null)
@@ -495,30 +749,30 @@ namespace ElementalHexTactics3D.UI
                     if (hTxt != null) hTxt.text = "🎮 HOLY TACTICS (Guide)";
                 }
 
-                if (txtStoryTitle != null) txtStoryTitle.text = "📖 SACRED SCRIPTURES: THE HOLY CRUSADE";
+                if (txtStoryTitle != null) txtStoryTitle.text = "📖 SACRED SCRIPTURES: THE RADIANT SYNOD";
                 if (txtStoryBody != null)
                 {
                     txtStoryBody.text =
-                        "<b><color=#FBBF24>[ The Divine Mandate ]</color></b>\n" +
-                        "Under the sacred light of the Holy Empire, the Chosen Hero—the Paladin of Radiance—marches with the consecrated vanguard to eradicate the wicked Abyssal demons.\n\n" +
+                        "<b><color=#FBBF24>[ The Radiant Mandate ]</color></b>\n" +
+                        "Under the sacred light of the Holy Empire, the Chosen Hero—the Paladin of Radiance—marches with the consecrated vanguard into the fractured underworld to eradicate all demonic existence.\n\n" +
                         "<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\n" +
-                        "Deep within the fractured underworld, the foul Demon Lord cowers on his blackened throne. Command your Holy Vanguard, smite the demonic minions, and cleanse the taint!\n\n" +
-                        "<b><color=#34D399>[ The Holy Promise ]</color></b>\n" +
-                        "Purge the dark taint and claim eternal glory in Holyland Evolve!";
+                        "Deep within the Ashen Bastion, the reviled Demon Lord cowers upon his blackened throne. Command your Holy Vanguard, smite the monstrous heretics, and cleanse the taint!\n\n" +
+                        "<b><color=#34D399>[ The Synod's Promise ]</color></b>\n" +
+                        "Purity through fire. Purge the dark underworld and claim immortal salvation in Omniterra!";
                 }
 
-                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 HOLY TACTICS: BASIC COMBAT GUIDE";
+                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 HOLY TACTICS: BASIC COMMANDS";
                 if (txtHowToPlayBody != null)
                 {
                     txtHowToPlayBody.text =
-                        "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60° | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n" +
-                        "<b><color=#38BDF8>2. Holy Orders:</color></b> <b>Left-Click</b> to Select Unit / Strike | <b>Right-Click</b> to Cancel\n\n" +
-                        "<b><color=#FBBF24>3. Tactical Movement:</color></b>\n" +
+                        "<b><color=#38BDF8>✦ Camera Controls:</color></b> <b>Q / E</b> Rotate 60°  •  <b>WASD</b> Pan  •  <b>Scroll</b> Zoom in/out\n\n" +
+                        "<b><color=#FBBF24>✦ Movement & Positioning:</color></b>\n" +
                         "• Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n" +
                         "• Click any highlighted hex to advance toward the demon lines.\n\n" +
-                        "<b><color=#EF5350>4. Righteous Strike:</color></b>\n" +
-                        "• When adjacent to an enemy (red highlights), click to unleash holy damage!\n\n" +
-                        "<b><color=#34D399>5. Victory Objective:</color></b>\n" +
+                        "<b><color=#EF5350>✦ Righteous Strike & Wall Slams:</color></b>\n" +
+                        "• When adjacent to an enemy (red highlights), click to unleash holy damage!\n" +
+                        "• Pushing enemies into walls or stone pillars inflicts bonus kinetic slam damage!\n\n" +
+                        "<b><color=#34D399>✦ Victory Objective:</color></b>\n" +
                         "• Slay the Demon Lord to purge the underworld and complete the sacred crusade!";
                 }
             }
@@ -531,13 +785,13 @@ namespace ElementalHexTactics3D.UI
                 }
                 if (txtTitle1 != null)
                 {
-                    txtTitle1.text = "ELEMENTAL HEX";
-                    txtTitle1.fontSize = 34;
+                    txtTitle1.text = "OMNITERRA";
+                    txtTitle1.fontSize = 38;
                     txtTitle1.color = Color.white;
                 }
                 if (txtTitle2 != null)
                 {
-                    txtTitle2.text = "TACTICS 3D";
+                    txtTitle2.text = "ABYSSAL BASTION";
                     txtTitle2.fontSize = 40;
                     txtTitle2.color = new Color(1f, 0.75f, 0.20f);
                 }
@@ -548,7 +802,7 @@ namespace ElementalHexTactics3D.UI
                 }
                 if (txtVersion != null)
                 {
-                    txtVersion.text = "Elemental Hex Tactics 3D • TGFI Edition • Solo Dev by Neal Sage";
+                    txtVersion.text = "Omniterra • Pre-Alpha v1.0.0 • Ashen Sanctuary Edition";
                 }
 
                 UpdatePlayButtonLabel();
@@ -556,7 +810,7 @@ namespace ElementalHexTactics3D.UI
                 if (btnStory != null)
                 {
                     Text sTxt = btnStory.GetComponentInChildren<Text>();
-                    if (sTxt != null) sTxt.text = "📖 STORY & LORE (Rebellion)";
+                    if (sTxt != null) sTxt.text = "📖 STORY & LORE (Bastion)";
                 }
                 if (btnHowToPlay != null)
                 {
@@ -564,36 +818,29 @@ namespace ElementalHexTactics3D.UI
                     if (hTxt != null) hTxt.text = "🎮 HOW TO PLAY (Tactics)";
                 }
 
-                if (txtStoryTitle != null) txtStoryTitle.text = "📖 STORY PROLOGUE: THE WEAKEST TAMER'S AWAKENING";
+                if (txtStoryTitle != null) txtStoryTitle.text = "📖 MEMOIRS OF THE OUTCAST SANCTUARY";
                 if (txtStoryBody != null)
                 {
                     txtStoryBody.text =
-                        "<b><color=#38BDF8>[ The Reincarnation ]</color></b>\n" +
-                        "You were summoned from modern Earth into <b>Terranox</b>, a brutal fantasy realm where nobility and authority belong exclusively to beast summoners.\n\n" +
-                        "<b><color=#EF5350>[ The Tyrant's Cruelty: Cursed Collars ]</color></b>\n" +
-                        "Imperial aristocrats treat beasts as disposable war tools, torturing them into obedience with painful <b>Cursed Collars</b>. Having zero physical strength or destructive battle mana, the Adventurer's Guild stamped you as a pathetic <b>Rank-F Trash Tamer</b>.\n\n" +
-                        "<b><color=#FBBF24>[ The Divine Cheat: Beast Resonance ]</color></b>\n" +
-                        "Unknown to anyone, you possess the God-Given Cheat: <b>[Beast Talker & Primordial Resonance]</b>. You understand the souls and cries of beasts! When treated with empathy, your beasts awaken dormant elemental powers, physically terraforming the 3D hex earth!\n\n" +
-                        "<b><color=#34D399>[ Your Mission: Break Chains & Awaken Titans ]</color></b>\n" +
-                        "Enter dangerous 3D dungeon plateaus, defeat corrupt summoners to shatter their cursed collars, gather ancient <b>Elemental Cores</b>, and hatch apocalyptic Titans!";
+                        "<b><color=#F97316>[ The Transmigrated Sovereign ]</color></b>\n" +
+                        "A former grandmaster strategist awakens within the frail body of the fallen Demon Lord. The Radiant Synod preaches holy benevolence while enslaving beastkin and burning peaceful monster villages.\n\n" +
+                        "<b><color=#38BDF8>[ The Ashen Sanctuary ]</color></b>\n" +
+                        "Surrounded by relentless crusaders, the Citadel is the final refuge for the hunted outcasts. Defend the realm, manage provisions, and rebuild the fallen domain.\n\n" +
+                        "<b><color=#A855F7>[ Primordial Titan Awakening ]</color></b>\n" +
+                        "Siphon elemental cores through the Abyssal Rift and awaken apocalyptic Primordial Titans to break the Holy Empire's chains!";
                 }
 
-                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 TACTICAL COMBAT & TERRAFORM GUIDE";
+                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 CITADEL COMMAND: TACTICAL FIELD GUIDE";
                 if (txtHowToPlayBody != null)
                 {
                     txtHowToPlayBody.text =
-                        "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60° | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n" +
-                        "<b><color=#38BDF8>2. Tactical Orders:</color></b> <b>Left-Click</b> to Select Unit / Cast Spell | <b>Right-Click</b> to Cancel\n\n" +
-                        "<b><color=#FBBF24>3. Dynamic Terraforming (Divinity Style):</color></b>\n" +
-                        "• 🔥 <b>Fireball:</b> Chars grass into <b>Scorched Earth (Tier 1)</b>; a second Fireball melts it into molten <b>Magma (Tier 2)</b> (damages enemies, gives Fire Titan +2 ATK!).\n" +
-                        "• 💧 <b>Water Blast:</b> Extinguishes lava into <b>Steam Smokescreens</b>; forms water pools.\n" +
-                        "• 🪨 <b>Earth Spire:</b> Raises high <b>Stone Pillars</b> (creates physical barriers & collision surfaces).\n\n" +
-                        "<b><color=#EF5350>4. Kinetic Push & Wall Slams (Into the Breach):</color></b>\n" +
-                        "• 💥 <b>Kinetic Shove:</b> Push enemies 1 hex away. Slamming an enemy into a Stone Pillar, cliff, or another unit triggers <b>💥 -2 HP WALL SLAM damage</b>!\n" +
-                        "• Shove fragile enemy Tamers into lava or water to neutralize them instantly!\n\n" +
-                        "<b><color=#34D399>5. Siphon Land & Cataclysm:</color></b>\n" +
-                        "• ⚡ <b>Siphon:</b> Your Titan drains active lava into Barren Earth to harvest <b>Elemental Cores</b>.\n" +
-                        "• 🌋 <b>Magma Cataclysm:</b> Spend 3 Cores to trigger a screen-shattering volcanic blast wiping the field!";
+                        "<b><color=#38BDF8>✦ Battlefield Navigation:</color></b> <b>Q / E</b> Rotate 60°  •  <b>WASD</b> Pan  •  <b>Scroll</b> Zoom  •  <b>Right-Click</b> Cancel\n\n" +
+                        "<b><color=#F97316>✦ Elemental Terraforming:</color></b>\n" +
+                        "• 🔥 <b>Fireball:</b> Chars grass into <b>Scorched Earth</b>; cast again to erupt into molten <b>Magma</b>!\n" +
+                        "• 🪨 <b>Kinetic Shove:</b> Push enemies 1 hex away. Slamming foes into obstacles deals bonus damage!\n\n" +
+                        "<b><color=#A855F7>✦ Abyssal Rift & Titan Summoning:</color></b>\n" +
+                        "• Deploy reserve vanguard units directly onto the hex grid via the Abyssal Rift.\n" +
+                        "• Awaken Primordial Titans at the Citadel Shrine to unleash catastrophic Cataclysm powers!";
                 }
             }
 
@@ -767,6 +1014,11 @@ namespace ElementalHexTactics3D.UI
 
         public void StartHolyPrologueQuest()
         {
+            if (titlePanel != null) titlePanel.SetActive(false);
+            if (townHubPanel != null) townHubPanel.SetActive(false);
+            if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
+            CloseAllModals();
+
             if (StoryDialogueUI.Instance != null)
             {
                 StoryDialogueUI.Instance.PlayPrebuiltSequence(StorySequenceId.RealWorldPrologue, () =>
@@ -976,6 +1228,104 @@ namespace ElementalHexTactics3D.UI
                     ? "Mode: HOLYLAND (Play = Tutorial)"
                     : "Mode: DEMON LORD (Play = Citadel Hub)";
             }
+        }
+
+        private static readonly Dictionary<string, Sprite> s_logoSpriteCache = new Dictionary<string, Sprite>();
+
+        /// <summary>
+        /// Robustly loads a custom UI logo sprite from Resources, AssetDatabase (in editor),
+        /// StreamingAssets, or raw PNG file bytes on disk, caching the result.
+        /// </summary>
+        public static Sprite LoadLogoSprite(string baseName)
+        {
+            if (string.IsNullOrEmpty(baseName)) return null;
+            if (baseName.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase))
+            {
+                baseName = Path.GetFileNameWithoutExtension(baseName);
+            }
+
+            if (s_logoSpriteCache.TryGetValue(baseName, out Sprite cached) && cached != null)
+            {
+                return cached;
+            }
+
+            // 1. Try Resources.Load<Sprite>
+            Sprite sp = Resources.Load<Sprite>($"UI/{baseName}");
+            if (sp == null)
+            {
+                Texture2D resTex = Resources.Load<Texture2D>($"UI/{baseName}");
+                if (resTex != null)
+                {
+                    sp = Sprite.Create(resTex, new Rect(0, 0, resTex.width, resTex.height), new Vector2(0.5f, 0.5f), 100f);
+                    sp.name = baseName;
+                }
+            }
+            if (sp != null)
+            {
+                s_logoSpriteCache[baseName] = sp;
+                return sp;
+            }
+
+#if UNITY_EDITOR
+            // 2. Editor AssetDatabase lookup
+            string[] searchPaths = new string[]
+            {
+                $"Assets/Resources/UI/{baseName}.png",
+                $"Assets/Sprites/UI/{baseName}.png",
+                $"Assets/UI/{baseName}.png"
+            };
+
+            foreach (string p in searchPaths)
+            {
+                Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(p);
+                if (edSprite != null)
+                {
+                    s_logoSpriteCache[baseName] = edSprite;
+                    return edSprite;
+                }
+                Texture2D edTex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+                if (edTex != null)
+                {
+                    sp = Sprite.Create(edTex, new Rect(0, 0, edTex.width, edTex.height), new Vector2(0.5f, 0.5f), 100f);
+                    sp.name = baseName;
+                    s_logoSpriteCache[baseName] = sp;
+                    return sp;
+                }
+            }
+#endif
+
+            // 3. Direct disk file fallback (Assets/Resources/UI, Assets/Sprites/UI, StreamingAssets)
+            string[] diskPaths = new string[]
+            {
+                Path.Combine(Application.dataPath, "Resources", "UI", $"{baseName}.png"),
+                Path.Combine(Application.dataPath, "Sprites", "UI", $"{baseName}.png"),
+                Path.Combine(Application.streamingAssetsPath, "UI", $"{baseName}.png")
+            };
+
+            foreach (string diskPath in diskPaths)
+            {
+                if (File.Exists(diskPath))
+                {
+                    try
+                    {
+                        byte[] bytes = File.ReadAllBytes(diskPath);
+                        Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                        if (tex.LoadImage(bytes))
+                        {
+                            tex.name = baseName;
+                            sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                            s_logoSpriteCache[baseName] = sp;
+                            return sp;
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"[TitleMenuCanvasUI] Failed to load logo from {diskPath}: {ex.Message}");
+                    }
+                }
+            }
+
+            return null;
         }
 
         private void PlaySoundClick()

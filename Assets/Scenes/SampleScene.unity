@@ -1434,6 +1434,10 @@ MonoBehaviour:
   txtTitle2: {fileID: 820966495}
   txtSubtitle: {fileID: 999894202}
   txtVersion: {fileID: 1135930048}
+  imgCustomTitleLogo: {fileID: 0}
+  customLogoSprite: {fileID: 0}
+  holyLogoSprite: {fileID: 0}
+  demonLogoSprite: {fileID: 0}
   txtStoryTitle: {fileID: 1838444577}
   txtStoryBody: {fileID: 1063986423}
   txtHowToPlayTitle: {fileID: 856916918}
@@ -11012,7 +11016,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: HOLYLAND
+  m_Text: OMNITERRA
 --- !u!1 &688888064
 GameObject:
   m_ObjectHideFlags: 0
@@ -12081,7 +12085,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Tip: You can switch between Holyland (Paladin) & Rebellion (Demon Lord) themes anytime.'
+  m_Text: 'Tip: You can switch between Paladin (Synod) & Rebellion (Demon Lord) themes anytime.'
 --- !u!222 &793539763
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12184,7 +12188,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: EVOLVE
+  m_Text: ASCENDANCE
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -15770,7 +15774,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "<b><color=#FBBF24>[ The Divine Mandate ]</color></b>\nUnder the sacred light of the Holy Empire, the Chosen Hero\u2014the Paladin of Radiance\u2014marches with the consecrated vanguard to eradicate the wicked Abyssal demons.\n\n<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\nDeep within the fractured underworld, the foul Demon Lord cowers on his blackened throne. Command your Holy Vanguard, smite the demonic minions, and cleanse the taint!\n\n<b><color=#34D399>[ The Holy Promise ]</color></b>\nPurge the dark taint and claim eternal glory in Holyland Evolve!"
+  m_Text: "<b><color=#FBBF24>[ The Radiant Mandate ]</color></b>\nUnder the sacred light of the Holy Empire, the Chosen Hero\u2014the Paladin of Radiance\u2014marches with the consecrated vanguard into the fractured underworld to eradicate all demonic existence.\n\n<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\nDeep within the Ashen Bastion, the reviled Demon Lord cowers upon his blackened throne. Command your Holy Vanguard, smite the monstrous heretics, and cleanse the taint!\n\n<b><color=#34D399>[ The Synod's Promise ]</color></b>\nPurity through fire. Purge the dark underworld and claim immortal salvation in Omniterra!"
 --- !u!1 &1068486647
 GameObject:
   m_ObjectHideFlags: 0
@@ -16966,7 +16970,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "Holyland Evolve \u2022 Pre-Alpha v1.0.0 \u2022 Sacred Empire Edition"
+  m_Text: "Omniterra: Ascendance \u2022 Pre-Alpha v1.0.0 \u2022 Sacred Synod Edition"
 --- !u!114 &1135930049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31733,7 +31737,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 200
+  m_SortingOrder: 500
   m_TargetDisplay: 0
 --- !u!224 &1812138870
 RectTransform:
@@ -35927,7 +35931,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'Theme: HOLYLAND (Paladin)'
+  m_Text: 'Theme: PALADIN (Synod)'
 --- !u!114 &2099239746
 MonoBehaviour:
   m_ObjectHideFlags: 0
