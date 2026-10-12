@@ -58,6 +58,18 @@ namespace ElementalHexTactics3D.Combat
                     // 2. MATCH Check: Fire matches Scorched Earth -> upgrades to Magma
                     if (currentState == TileState.Scorched)
                     {
+                        // In Tutorial 1 (Throne Room), keep burnt carpet at Scorched Earth (Tier 1) without erupting molten magma!
+                        bool isTutorial1 = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage1Active;
+                        if (isTutorial1)
+                        {
+                            result.ResultingState = TileState.Scorched;
+                            result.ResultingTier = 1;
+                            result.ReactionName = "Persistent Holy Blaze";
+                            result.TriggeredReaction = false;
+                            result.Description = "The scorched velvet carpet continues to sizzle with fiery embers!";
+                            return result;
+                        }
+
                         result.ResultingState = TileState.Magma;
                         result.ResultingTier = 2;
                         result.ReactionName = "Magma Surge";

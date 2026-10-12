@@ -127,7 +127,7 @@ namespace ElementalHexTactics3D.StageEnvironment
                     {
                         if (floorMat != null)
                         {
-                            tile.ApplyWorldProjectedUVs(floorMat, -5.5f, 5.5f, -5.0f, 5.0f);
+                            tile.ApplyWorldProjectedUVs(floorMat, -7.5f, 7.5f, -6.5f, 6.5f);
                         }
                     }
                 }
@@ -190,13 +190,15 @@ namespace ElementalHexTactics3D.StageEnvironment
                 SpawnPillarColumn(rearPillar, litShader, stoneMat, goldTrimMat, flameMat, isBroken: false, hasBrazier: true, hasLight: false);
             }
 
-            // 7. Grand Cathedral Colonnade Side Wall Columns at (-2, 1), (-2, -1), (2, 0), (2, -2) [Elevation Tier 0]
+            // 7. Grand Cathedral Colonnade Side Wall Columns enclosing the wider Radius 4 hall [Elevation Tier 0]
             HexCoordinates[] colonnadeCoords = new HexCoordinates[]
             {
-                new HexCoordinates(-2, 1),
-                new HexCoordinates(-2, -1),
-                new HexCoordinates(2, 0),
-                new HexCoordinates(2, -2)
+                new HexCoordinates(-3, 2),
+                new HexCoordinates(-3, 0),
+                new HexCoordinates(-3, -1),
+                new HexCoordinates(3, 1),
+                new HexCoordinates(3, -1),
+                new HexCoordinates(3, -3)
             };
             foreach (var cCoord in colonnadeCoords)
             {

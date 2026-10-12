@@ -388,22 +388,25 @@ namespace ElementalHexTactics3D.Turn
             bool isShielder = enemyName.Contains("shielder") || enemyName.Contains("templar");
             bool isPaladin = enemyName.Contains("paladin") || enemyName.Contains("hero");
             bool isDracomancer = enemyName.Contains("dracomancer");
-            bool isRangedOrCaster = isArcher || isSaintess || isDracomancer;
+            bool isDemonLord = enemyName.Contains("demon lord") || enemyName.Contains("malakor") || enemyName.Contains("demon king");
+            bool isImp = enemyName.Contains("imp");
+            bool isRangedOrCaster = isArcher || isSaintess || isDracomancer || isDemonLord || isImp;
 
             // 1. POSITIONING / ADVANCEMENT
             if (isRangedOrCaster)
             {
-                // Ranged/Caster: only advance if out of range (distance > 3)
-                if (currentDist > 3)
+                // Ranged/Caster: only advance if out of range
+                int maxCombatRange = isImp ? 2 : 3;
+                if (currentDist > maxCombatRange)
                 {
                     var path = HexPathfinder3D.FindPath(HexGrid3D.Instance, enemy.CurrentTile, targetPlayer.CurrentTile);
                     if (path != null && path.Count > 1)
                     {
-                        int desiredSteps = path.Count - 3;
+                        int desiredSteps = path.Count - maxCombatRange;
                         int steps = Mathf.Clamp(desiredSteps, 1, enemy.EffectiveMoveRange);
                         if (steps > 0)
                         {
-                            CombatFeedbackManager.Instance.ShowBanner("ENEMY MOVEMENT", $"{enemy.UnitName} repositions to cast/aim!", 0.8f, new Color(0.95f, 0.45f, 0.2f));
+                            CombatFeedbackManager.Instance.ShowBanner("ENEMY MOVEMENT", $"{enemy.UnitName} repositions to attack!", 0.8f, new Color(0.95f, 0.45f, 0.2f));
                             List<HexTile3D> movePath = new List<HexTile3D>();
                             for (int i = 0; i < steps; i++) movePath.Add(path[i]);
 
@@ -550,6 +553,85 @@ namespace ElementalHexTactics3D.Turn
 
                     TerrainReactionSystem.ApplySpell(targetPlayer.CurrentTile, ElementType.Fire, damage: 3);
                     yield return new WaitForSeconds(0.7f);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(0.3f);
+                }
+            }
+            else if (isDemonLord)
+            {
+                if (newDist == 1)
+                {
+                    // MELEE: 💀 ABYSSAL CLEAVE & SHOCKWAVE (3 Dmg + Kinetic Push + Screen Shake)
+                    CombatFeedbackManager.Instance?.ShowBanner(
+                        "💀 ABYSSAL CLEAVE!",
+                        $"{enemy.UnitName} cleaves {targetPlayer.UnitName} with crushing abyssal shockwaves!",
+                        1.2f,
+                        new Color(0.85f, 0.2f, 0.2f)
+                    );
+                    yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+                    SpellVFXManager3D.Instance?.PlayCleaveVFX(targetPlayer.transform.position);
+                    TacticalCameraController.Instance?.Shake(0.45f, 0.45f);
+
+                    targetPlayer.TakeDamage(3, customLabel: "💀 -3 CLEAVE");
+                    yield return PushMechanic3D.ExecutePushRoutine(enemy, targetPlayer, HexGrid3D.Instance);
+                    yield return new WaitForSeconds(0.6f);
+                }
+                else if (newDist <= 3)
+                {
+                    // RANGED: 🔥 HELLFIRE BLAST (3 Dmg + Fiery Projectile)
+                    CombatFeedbackManager.Instance?.ShowBanner(
+                        "🔥 HELLFIRE BLAST!",
+                        $"{enemy.UnitName} hurls dark abyssal hellfire at {targetPlayer.UnitName}!",
+                        1.2f,
+                        new Color(1.0f, 0.35f, 0.1f)
+                    );
+                    yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+                    TacticalCameraController.Instance?.Shake(0.35f, 0.35f);
+
+                    Vector3 casterHand = enemy.transform.position + Vector3.up * 1.0f;
+                    Vector3 targetChest = targetPlayer.transform.position + Vector3.up * 0.8f;
+                    yield return CombatFeedbackManager.Instance?.SpawnSpellProjectile(
+                        casterHand,
+                        targetChest,
+                        new Color(1.0f, 0.3f, 0.1f),
+                        0.28f
+                    );
+
+                    SpellVFXManager3D.Instance?.PlayHellfireBlastVFX(targetPlayer.transform.position);
+                    targetPlayer.TakeDamage(3, customLabel: "🔥 -3 HELLFIRE");
+                    yield return new WaitForSeconds(0.7f);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(0.3f);
+                }
+            }
+            else if (isImp)
+            {
+                if (newDist <= 2)
+                {
+                    CombatFeedbackManager.Instance?.ShowBanner(
+                        "🔥 IMP FIRE SPIT!",
+                        $"{enemy.UnitName} spits demonic flames at {targetPlayer.UnitName}!",
+                        1.0f,
+                        new Color(1.0f, 0.5f, 0.15f)
+                    );
+                    yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
+
+                    Vector3 casterHand = enemy.transform.position + Vector3.up * 0.6f;
+                    Vector3 targetChest = targetPlayer.transform.position + Vector3.up * 0.6f;
+                    yield return CombatFeedbackManager.Instance?.SpawnSpellProjectile(
+                        casterHand,
+                        targetChest,
+                        new Color(1.0f, 0.5f, 0.15f),
+                        0.22f
+                    );
+
+                    SpellVFXManager3D.Instance?.PlayImpSpitVFX(targetPlayer.transform.position);
+                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage, customLabel: "🔥 -2");
+                    yield return new WaitForSeconds(0.5f);
                 }
                 else
                 {

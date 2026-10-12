@@ -48,15 +48,13 @@ namespace ElementalHexTactics3D.Combat
             if (isBlocked)
             {
                 string slamCause = (destTile != null && destTile.State == TileState.StonePillar) ? "into a Stone Pillar!" : "into an obstacle!";
-                Debug.Log($"<color=#EF5350><b>[Wall Slam!]</b></color> {target.UnitName}'s push was blocked {slamCause} Took 2 collision damage.");
-                yield return new WaitForSeconds(0.15f);
-                TacticalCameraController.Instance?.Shake(0.32f, 0.35f);
-                SoundManager3D.Instance?.PlayWallSlam(1.2f);
+                Debug.Log($"<color=#EF5350><b>[Wall Slam!]</b></color> {target.UnitName}'s push was blocked {slamCause} Took 3 collision damage.");
+                yield return new WaitForSeconds(0.12f);
                 Vector3 slamPos = target.transform.position + Vector3.up * 0.5f;
-                CombatVFXManager.Instance?.PlayWallSlam(slamPos, Vector3.up);
+                SpellVFXManager3D.Instance?.PlayWallSlamVFX(slamPos, Vector3.up);
                 if (target != null && target.CurrentHealth > 0)
                 {
-                    target.TakeDamage(2, "💥 WALL SLAM! -2");
+                    target.TakeDamage(3, "💥 WALL SLAM! -3");
                 }
                 yield break;
             }
@@ -81,17 +79,28 @@ namespace ElementalHexTactics3D.Combat
             {
                 Debug.Log($"<color=#FF3D00><b>[Hazard Ignition!]</b></color> {target.UnitName} was pushed into molten Magma!");
                 yield return new WaitForSeconds(0.1f);
-                TacticalCameraController.Instance?.Shake(0.35f, 0.40f);
+                TacticalCameraController.Instance?.Shake(0.38f, 0.40f);
                 SoundManager3D.Instance?.PlayFireball();
                 CombatVFXManager.Instance?.PlayFireBurst(destTile.GetTopCenterPosition());
+                target.TakeDamage(3, "🔥 MAGMA BURN! -3");
+            }
+            else if (destTile.State == TileState.Scorched)
+            {
+                Debug.Log($"<color=#FF7043><b>[Scorched Earth Hazard!]</b></color> {target.UnitName} was shoved onto sizzling Scorched Earth!");
+                yield return new WaitForSeconds(0.1f);
+                TacticalCameraController.Instance?.Shake(0.28f, 0.30f);
+                SoundManager3D.Instance?.PlayFireball();
+                CombatVFXManager.Instance?.PlayFireBurst(destTile.GetTopCenterPosition());
+                target.TakeDamage(2, "🔥 SCORCHED BURN! -2");
             }
             else if (destTile.State == TileState.Water && destTile.TierLevel >= 2)
             {
                 Debug.Log($"<color=#0288D1><b>[Deep Water Submersion!]</b></color> {target.UnitName} was plunged into Deep Water!");
                 yield return new WaitForSeconds(0.1f);
-                TacticalCameraController.Instance?.Shake(0.22f, 0.25f);
+                TacticalCameraController.Instance?.Shake(0.25f, 0.25f);
                 SoundManager3D.Instance?.PlayWaterSurge();
                 CombatVFXManager.Instance?.PlayWaterSplash(destTile.GetTopCenterPosition());
+                target.TakeDamage(1, "💧 WATER TRAP! -1");
             }
             else if (destTile.State == TileState.Mud)
             {

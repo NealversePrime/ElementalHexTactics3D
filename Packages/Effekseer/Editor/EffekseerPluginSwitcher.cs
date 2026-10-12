@@ -1,0 +1,61 @@
+#if UNITY_EDITOR
+
+using UnityEngine;
+using UnityEditor;
+using System.Linq;
+using System.Collections.Generic;
+
+[InitializeOnLoad]
+public class EffekseerPluginSwitcher
+{
+	static readonly string tempFilePath = "Temp/EffekseerPluginSwitcher";
+
+#if UNITY_6000_5_OR_NEWER
+	static readonly string bcPath = "WebGL/4.0.19-64bit/libEffekseerUnity.a";
+#elif UNITY_2023_2_OR_NEWER
+	static readonly string bcPath = "WebGL/3.1.38-64bit/libEffekseerUnity.a";
+#elif UNITY_2022_2_OR_NEWER
+	static readonly string bcPath = "WebGL/3.1.8-64bit/libEffekseerUnity.a";
+#elif UNITY_2021_2_OR_NEWER
+	static readonly string bcPath = "WebGL/2.0.19-64bit/libEffekseerUnity.a";
+#else
+	static readonly string bcPath = string.Empty;
+#endif
+	static readonly bool webglSupported =
+#if UNITY_2021_2_OR_NEWER
+		true;
+#else
+		false;
+#endif
+
+	static EffekseerPluginSwitcher()
+	{
+		Run();
+	}
+
+	static public void Run()
+	{
+		// called only once
+		if (!System.IO.File.Exists(tempFilePath))
+		{
+			var importers = PluginImporter.GetAllImporters().Where(importer => importer.assetPath.Contains("libEffekseerUnity.bc") || importer.assetPath.Contains("libEffekseerUnity.a"));
+
+			if (importers.Count() > 0)
+			{
+				var processed = new List<string>();
+				foreach (var importer in importers)
+				{
+					// Only enable the modern .a static library matching the current Unity version.
+					// Never enable .bc on modern Emscripten as clang -c fails on ar archives (!<arch>).
+					var enabled = webglSupported && !string.IsNullOrEmpty(bcPath) && importer.assetPath.Replace('\\', '/').EndsWith(bcPath);
+					importer.SetCompatibleWithPlatform(BuildTarget.WebGL, enabled);
+					processed.Add(importer.assetPath + " : " + enabled.ToString());
+				}
+				System.IO.File.WriteAllLines(tempFilePath, processed.ToArray());
+			}
+		}
+	}
+}
+
+#endif
+

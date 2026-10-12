@@ -131,6 +131,8 @@ namespace ElementalHexTactics3D.Tutorial
         public TacticalUnit3D PaladinUnit { get; private set; }
         public TacticalUnit3D HolyShielderUnit { get; private set; }
         public TacticalUnit3D DemonSlimeMinion { get; private set; }
+        public TacticalUnit3D DemonSlimeMinion2 { get; private set; }
+        public TacticalUnit3D MagmaImpMinion { get; private set; }
         public TacticalUnit3D DemonLordBoss { get; private set; }
         public TacticalUnit3D DemonLordPlayer { get; private set; }
         public TacticalUnit3D BasaltVanguardPlayer { get; private set; }
@@ -185,6 +187,14 @@ namespace ElementalHexTactics3D.Tutorial
             // ================= STAGE 1 STEP EVALUATION ================= //
             if (CurrentStage == TutorialStage.Stage1_HolyCrusade)
             {
+                // Instant Victory Check: If Demon Lord Boss falls at any point, trigger Glitch & Victory!
+                if (DemonLordBoss == null || DemonLordBoss.CurrentHealth <= 0)
+                {
+                    TacticalUnitSpawner.ClearAllEnemies();
+                    OnStage1Victory();
+                    return;
+                }
+
                 switch (CurrentStep)
                 {
                     case TutorialStep.Stage1_SelectPaladin:
@@ -192,12 +202,16 @@ namespace ElementalHexTactics3D.Tutorial
                         {
                             SetStep(TutorialStep.Stage1_MovePaladin);
                         }
+                        else if (PaladinUnit != null && (PaladinUnit.HasMovedThisTurn || PaladinUnit.HasActedThisTurn))
+                        {
+                            SetStep(TutorialStep.Stage1_SelectHolyShielder);
+                        }
                         break;
 
                     case TutorialStep.Stage1_MovePaladin:
-                        if (interaction != null && interaction.SelectedUnit != PaladinUnit && PaladinUnit != null && !PaladinUnit.HasMovedThisTurn)
+                        if (PaladinUnit != null && PaladinUnit.HasActedThisTurn)
                         {
-                            SetStep(TutorialStep.Stage1_SelectPaladin);
+                            SetStep(TutorialStep.Stage1_SelectHolyShielder);
                         }
                         else if (PaladinUnit != null && PaladinUnit.HasMovedThisTurn)
                         {
@@ -216,6 +230,10 @@ namespace ElementalHexTactics3D.Tutorial
                         if (interaction != null && interaction.SelectedUnit == HolyShielderUnit)
                         {
                             SetStep(TutorialStep.Stage1_ShieldShoveSlime);
+                        }
+                        else if (HolyShielderUnit != null && HolyShielderUnit.HasActedThisTurn)
+                        {
+                            SetStep(TutorialStep.Stage1_MoveShielderOrEndTurn);
                         }
                         break;
 
@@ -241,66 +259,28 @@ namespace ElementalHexTactics3D.Tutorial
                         break;
 
                     case TutorialStep.Stage1_FinishDemonLord:
-                        if (DemonLordBoss == null || DemonLordBoss.CurrentHealth <= 0)
-                        {
-                            TacticalUnitSpawner.ClearAllEnemies();
-                            OnStage1Victory();
-                        }
+                        // Demon Lord defeat checked at top of block
                         break;
                 }
             }
             // ================= STAGE 2 STEP EVALUATION ================= //
             else if (CurrentStage == TutorialStage.Stage2_FrontierHazards)
             {
-                switch (CurrentStep)
+                // Free Tactical Sandbox: 100% agency, no forced steps or input locks!
+                // Victory triggers when all enemy scouts are eliminated.
+                bool anyScoutAlive = false;
+                TacticalUnit3D[] allUnits = UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+                foreach (var u in allUnits)
                 {
-                    case TutorialStep.Stage2_TearOpenRift:
-                        if (AbyssalRiftConduit3D.Instance != null && AbyssalRiftConduit3D.Instance.RiftTile != null)
-                        {
-                            SetStep(TutorialStep.Stage2_DeployDemonLord);
-                        }
+                    if (u.Faction == UnitFaction.Enemy && u.CurrentHealth > 0)
+                    {
+                        anyScoutAlive = true;
                         break;
-
-                    case TutorialStep.Stage2_DeployDemonLord:
-                        if (DemonLordPlayer != null && DemonLordPlayer.gameObject.activeInHierarchy && DemonLordPlayer.CurrentTile != null)
-                        {
-                            SetStep(TutorialStep.Stage2_CastFireballScorched);
-                        }
-                        break;
-
-                    case TutorialStep.Stage2_SelectDemonLord:
-                        if (interaction != null && interaction.SelectedUnit == DemonLordPlayer)
-                        {
-                            SetStep(TutorialStep.Stage2_CastFireballScorched);
-                        }
-                        break;
-
-                    case TutorialStep.Stage2_CastFireballScorched:
-                        HexGrid3D gridS = HexGrid3D.Instance;
-                        HexTile3D centerTileS = gridS != null ? gridS.GetTile(new HexCoordinates(0, 0)) : null;
-                        if ((centerTileS != null && centerTileS.State == TileState.Magma) || (DemonLordPlayer != null && DemonLordPlayer.HasActedThisTurn))
-                        {
-                            SetStep(TutorialStep.Stage2_SelectBasaltVanguard);
-                        }
-                        break;
-
-                    case TutorialStep.Stage2_CastFireballMagma:
-                        SetStep(TutorialStep.Stage2_SelectBasaltVanguard);
-                        break;
-
-                    case TutorialStep.Stage2_SelectBasaltVanguard:
-                        if (interaction != null && interaction.SelectedUnit == BasaltVanguardPlayer)
-                        {
-                            SetStep(TutorialStep.Stage2_PushEnemyIntoHazard);
-                        }
-                        break;
-
-                    case TutorialStep.Stage2_PushEnemyIntoHazard:
-                        if (BasaltVanguardPlayer != null && (BasaltVanguardPlayer.HasActedThisTurn || BasaltVanguardPlayer.HasMovedThisTurn))
-                        {
-                            SetStep(TutorialStep.Stage2_VanquishScouts);
-                        }
-                        break;
+                    }
+                }
+                if (!anyScoutAlive && allUnits.Length > 0)
+                {
+                    OnStage2Victory();
                 }
             }
             // ================= STAGE 3 STEP EVALUATION ================= //
@@ -412,10 +392,10 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(slimeStrikeTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Strike");
                     banner?.ShowGuidance(
-                        "[STEP 3/6] UNLEASH HOLY STRIKE",
-                        "The vanguard demon slime is right in front of us! Let's soften it up with a basic Holy Strike!",
-                        "Click [Holy Strike] on the action bar, then strike the Demon Slime at (0, 0)!",
-                        new Color(1f, 0.45f, 0.25f)
+                        "[STEP 3/6] ☀️ RADIANT SMITE (HOLY FIRE)",
+                        "Unleash holy flame! Radiant Smite purges the minion and scorches the velvet carpet into blazing Scorched Earth!",
+                        "Click [Radiant Smite] or [Holy Strike], then attack the Demon Slime at (0, 0)!",
+                        new Color(1f, 0.65f, 0.25f)
                     );
                     break;
 
@@ -436,8 +416,8 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(slimeShoveTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
                     banner?.ShowGuidance(
-                        "[STEP 5/6] KINETIC SHOVE: WALL SLAM",
-                        "Notice that solid Stone Pillar behind the slime at (1, 0)! Shoving an enemy into obstacles inflicts heavy bonus Wall Slam collision damage!",
+                        "[STEP 5/6] 🛡️ KINETIC SHOVE: WALL SLAM & HAZARDS",
+                        "Notice that solid Stone Pillar behind the slime at (1, 0)! Shoving enemies into pillars inflicts 3 Wall Slam damage! You can also shove enemies onto Scorched tiles to burn them!",
                         "Click [Shield Shove / Push] on the action bar, then target the slime at (0, 0) to slam it into the pillar!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
@@ -459,7 +439,7 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
                         "[ENEMY PHASE] WITHSTAND RETALIATION",
-                        "The Demon Lord marches forward with furious dark claws! But our Paladin's blessed armor easily withstands the blow!",
+                        "Demon Lord Malakor unleashes dark abyssal power while his minions swarm! But our holy crusaders stand firm!",
                         "Observing enemy turn...",
                         new Color(0.95f, 0.35f, 0.25f)
                     );
@@ -470,8 +450,8 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
                         "⚔️ [FREE COMBAT] SLAY DEMON LORD MALAKOR ⚔️",
-                        "Only the Demon Lord remains! The training wheels are off—take full tactical command! Freely move, basic attack, or shove him into the stone pillars!",
-                        "Freely move, basic attack, or shove the Demon Lord to finish the raid!",
+                        "The training wheels are off—take full tactical command! Freely move, cast Radiant Smite, or shove enemies into stone pillars and scorched hazards to finish the raid!",
+                        "Purge the minions and defeat Demon Lord Malakor to finish the raid!",
                         new Color(1f, 0.88f, 0.35f)
                     );
                     break;
@@ -600,10 +580,10 @@ namespace ElementalHexTactics3D.Tutorial
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "[COMBAT EXECUTION] CLEAR THE FRONTIER",
-                        "The scout was shoved into the lava and took heavy burn damage! Now finish off the remaining scouts with basic attacks!",
-                        "Attack and eliminate the remaining Holy Synod scouts!",
-                        new Color(0.35f, 0.95f, 0.45f)
+                        "🔥 [TACTICAL CRISIS] DEFEND THE FRONTIER",
+                        "Your demonic body is Level 1 with frail stats, but you have the mind of a Rank 1 Tactician! Use Fireball to reshape the battlefield or command Basalt Vanguard to shove scouts into the molten Magma for lethal damage!",
+                        "Total Freedom of Combat: Move, strike, cast spells, and shove freely without any restrictions!",
+                        new Color(1f, 0.55f, 0.15f)
                     );
                     break;
 
@@ -818,9 +798,9 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Player,
                     paladinSprite,
                     paladinTile,
-                    14, 2,
+                    14, 3, // 14 HP, 3 Atk: strong endgame raid protagonist stats
                     UnitArchetype.Commander,
-                    ElementalAffinity.None,
+                    ElementalAffinity.Fire, // Grants Radiant Smite (Holy Fire)!
                     3,
                     0.80f
                 );
@@ -840,23 +820,24 @@ namespace ElementalHexTactics3D.Tutorial
                     0.75f
                 );
 
-                // 6. Spawn Enemy Units (Demon Lord Boss at throne & Demon Slime minion on frontline)
-                // Demon Lord Boss sits on his throne at (0, 2), waiting until his vanguard minion falls
+                // 6. Spawn Enemy Forces (Demon Lord Malakor Raid Boss + Vanguard Minions)
+
+                // Demon Lord Boss sits on his throne at (0, 2)
                 HexTile3D demonLordTile = grid.GetTile(new HexCoordinates(0, 2));
                 Sprite demonLordSprite = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
                 DemonLordBoss = TacticalUnitSpawner.SpawnUnitStandee(
-                    "Demon Lord",
+                    "Demon Lord Malakor",
                     UnitFaction.Enemy,
                     demonLordSprite,
                     demonLordTile,
-                    5, 2, // 5 HP: any combination of Strike (3), Bash (2), or Shove (3) finishes him in Round 2!
+                    10, 3, // 10 HP raid boss with Hellfire Eruption & Abyssal Cleave!
                     UnitArchetype.Commander,
                     ElementalAffinity.Fire,
                     2,
                     0.90f
                 );
 
-                // Demon Slime vanguard sent forward by Demon Lord to center hex (0, 0)
+                // Center Vanguard Demon Slime #1 at (0, 0)
                 HexTile3D slimeTile = grid.GetTile(new HexCoordinates(0, 0));
                 Sprite slimeSprite = TacticalUnitSpawner.LoadBattlerSprite("Demon Slime.png");
                 DemonSlimeMinion = TacticalUnitSpawner.SpawnUnitStandee(
@@ -869,6 +850,35 @@ namespace ElementalHexTactics3D.Tutorial
                     ElementalAffinity.None,
                     1,
                     0.65f
+                );
+
+                // Flank Demon Slime #2 at (-2, 1)
+                HexTile3D slimeTile2 = grid.GetTile(new HexCoordinates(-2, 1));
+                DemonSlimeMinion2 = TacticalUnitSpawner.SpawnUnitStandee(
+                    "Demon Slime (Flanker)",
+                    UnitFaction.Enemy,
+                    slimeSprite,
+                    slimeTile2,
+                    4, 1,
+                    UnitArchetype.Minion,
+                    ElementalAffinity.None,
+                    1,
+                    0.65f
+                );
+
+                // Flank Magma Imp at (2, -1)
+                HexTile3D impTile = grid.GetTile(new HexCoordinates(2, -1));
+                Sprite impSprite = TacticalUnitSpawner.LoadBattlerSprite("MagmaImp.png");
+                MagmaImpMinion = TacticalUnitSpawner.SpawnUnitStandee(
+                    "Magma Imp",
+                    UnitFaction.Enemy,
+                    impSprite,
+                    impTile,
+                    4, 2,
+                    UnitArchetype.Minion,
+                    ElementalAffinity.Fire,
+                    2,
+                    0.70f
                 );
             }
 
@@ -895,7 +905,7 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "⚜️ THE RADIANT CRUSADE: SLAY THE DEMON LORD ⚜️",
-                    "Master Movement, Holy Strikes & Kinetic Shoves (Wall Slams) against the Demon Lord!",
+                    "Unleash Holy Strikes, Radiant Smite & Kinetic Wall Slams against the Demon Lord!",
                     3.5f,
                     new Color(1f, 0.88f, 0.35f)
                 );
@@ -915,11 +925,11 @@ namespace ElementalHexTactics3D.Tutorial
 
             GeneratedBattlefieldData data = new GeneratedBattlefieldData
             {
-                Radius = 3,
+                Radius = 4,
                 Seed = 1001
             };
 
-            int radius = 3;
+            int radius = 4;
             for (int q = -radius; q <= radius; q++)
             {
                 int r1 = Mathf.Max(-radius, -q - radius);
@@ -935,7 +945,7 @@ namespace ElementalHexTactics3D.Tutorial
                         TierLevel = 1
                     };
 
-                    // === PALACE SANCTUM & THRONE ROOM ELEVATION & LAYOUT ===
+                    // === PALACE SANCTUM & THRONE ROOM ELEVATION & LAYOUT (RADIUS 4) ===
 
                     // 1. Kinetic Shove Stone Pillar at (1, 0) - directly east of Demon Slime at (0, 0)
                     // When Holy Shielder at (-1, 0) pushes the slime, it slams into this pillar for collision damage!
@@ -945,39 +955,34 @@ namespace ElementalHexTactics3D.Tutorial
                         spec.IsPillarObstacle = true;
                         spec.State = TileState.StonePillar;
                     }
-                    // 2. Pillars framing the Throne Dais at Elevation Tier 2!
+                    // 2. Demon Lord Throne Dais at (0, 2) - High Elevation Tier 2! (Holds Gothic Throne)
+                    else if (q == 0 && r == 2)
+                    {
+                        spec.ElevationTier = 2;
+                        spec.State = TileState.Barren;
+                    }
+                    // 2.5. Pillars framing the Throne Dais at Elevation Tier 2!
                     else if ((q == -1 && r == 2) || (q == 1 && r == 2) || (q == 0 && r == 3))
                     {
                         spec.ElevationTier = 2; // High dais platform elevation!
                         spec.IsPillarObstacle = true;
                         spec.State = TileState.StonePillar;
                     }
-                    // 3. Colonnade Side Wall Pillars enclosing the grand cathedral hall
-                    else if ((q == -2 && r == 1) || (q == -2 && r == -1) || (q == 2 && r == 0) || (q == 2 && r == -2))
-                    {
-                        spec.ElevationTier = 0;
-                        spec.IsPillarObstacle = true;
-                        spec.State = TileState.StonePillar;
-                    }
-                    // 4. Demon Lord Throne Dais at (0, 2) - High Elevation Tier 2! (Twice as high, holding Gothic Throne)
-                    else if (q == 0 && r == 2)
-                    {
-                        spec.ElevationTier = 2;
-                        spec.State = TileState.Barren;
-                    }
-                    // 4.5. Approach Steps at (0, 1) and (-1, 1) - Elevation Tier 1! (Stepped approach to dais)
+                    // 3. Stepped approach to Dais at (0, 1) and (-1, 1) - Elevation Tier 1!
                     else if ((q == 0 && r == 1) || (q == -1 && r == 1))
                     {
                         spec.ElevationTier = 1;
                         spec.State = TileState.Barren;
                     }
-                    // 5. Demonic Scorched Ground at (1, 1) - Demonic hellfire residue
-                    else if (q == 1 && r == 1)
+                    // 4. Grand Colonnade Side Wall Pillars enclosing the wide cathedral hall (Elevation Tier 0)
+                    else if ((q == -3 && r == 2) || (q == -3 && r == 0) || (q == -3 && r == -1) ||
+                             (q == 3 && r == 1) || (q == 3 && r == -1) || (q == 3 && r == -3))
                     {
                         spec.ElevationTier = 0;
-                        spec.State = TileState.Scorched;
+                        spec.IsPillarObstacle = true;
+                        spec.State = TileState.StonePillar;
                     }
-                    // 6. Ground Level Floor Tiles (Elevation Tier 0)
+                    // 5. Ground Level Cathedral Floor Tiles (Elevation Tier 0)
                     else
                     {
                         spec.ElevationTier = 0;
@@ -1081,43 +1086,44 @@ namespace ElementalHexTactics3D.Tutorial
 
             SetupStage2Battlefield();
 
-            // Spawn Demon Lord (Commander caster) in Reserve!
+            HexGrid3D grid = HexGrid3D.Instance;
+
+            // Spawn Demon Lord (Commander caster) directly on the field at (1, -2)!
+            HexTile3D dlTile = grid != null ? grid.GetTile(new HexCoordinates(1, -2)) : null;
             Sprite dlSprite = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
             DemonLordPlayer = TacticalUnitSpawner.SpawnUnitStandee(
                 "Demon Lord",
                 UnitFaction.Player,
                 dlSprite,
-                null, // In reserve behind the rift!
+                dlTile,
                 18, 2,
                 UnitArchetype.Commander,
                 ElementalAffinity.Fire,
                 3,
                 0.85f
             );
-            if (DemonLordPlayer != null)
-            {
-                DemonLordPlayer.gameObject.SetActive(false);
-            }
 
-            // Spawn Basalt Vanguard (Infantry Tank general) in Reserve!
+            // Spawn Basalt Vanguard (Infantry Tank general) directly on the field at (0, -2)!
+            HexTile3D basaltTile = grid != null ? grid.GetTile(new HexCoordinates(0, -2)) : null;
             Sprite basaltSprite = TacticalUnitSpawner.LoadBattlerSprite("BasaltVanguard.png");
             BasaltVanguardPlayer = TacticalUnitSpawner.SpawnUnitStandee(
                 "Basalt Vanguard",
                 UnitFaction.Player,
                 basaltSprite,
-                null, // In reserve behind the rift!
+                basaltTile,
                 16, 2,
                 UnitArchetype.Minion, // Infantry tank! Not a Titan in Stage 2!
                 ElementalAffinity.Earth,
                 2,
                 0.80f
             );
-            if (BasaltVanguardPlayer != null)
+
+            // Anchor the Abyssal Rift Conduit at (0, -2) as visual entry point
+            if (grid != null && basaltTile != null)
             {
-                BasaltVanguardPlayer.gameObject.SetActive(false);
+                Combat.AbyssalRiftConduit3D.OpenRiftAt(basaltTile);
             }
 
-            HexGrid3D grid = HexGrid3D.Instance;
             if (grid != null)
             {
                 // Spawn Radiant Synod Scouts: Defender at (0, -1) right in front of Basalt Vanguard and Magma pit!
@@ -1128,7 +1134,7 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Enemy,
                     shielderSprite,
                     shielderTile,
-                    8, 2,
+                    6, 2, // 6 HP: Push into Magma deals 1 (push) + 3 (magma burn) = 4 dmg, leaving 2 HP!
                     UnitArchetype.Minion,
                     ElementalAffinity.None,
                     2,
@@ -1164,7 +1170,7 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "🌲 STAGE 2: FRONTIER SKIRMISH 🌲",
-                    "Tear open the Abyssal Rift, deploy forces, ignite Magma, and shove scouts into hazards!",
+                    "Level 1 Underdog Survival: Master Fireball & Golem Slam to push scouts into the molten Magma!",
                     3.5f,
                     new Color(0.95f, 0.55f, 0.15f)
                 );
@@ -1172,7 +1178,7 @@ namespace ElementalHexTactics3D.Tutorial
 
             StartCoroutine(PlayDialogueDelayed(StorySequenceId.Stage2FrontierIntro, 0.8f, () =>
             {
-                SetStep(TutorialStep.Stage2_TearOpenRift);
+                SetStep(TutorialStep.Stage2_VanquishScouts);
             }));
         }
 
@@ -1206,11 +1212,11 @@ namespace ElementalHexTactics3D.Tutorial
                         TierLevel = 1
                     };
 
-                    // Smoldering Scorched Earth at (0, 0): hitting with Fireball triggers thermal breach directly into Molten Magma (Tier 2)!
+                    // Active Molten Magma Pit at (0, 0): Direct hazard for shove kills!
                     if (q == 0 && r == 0)
                     {
-                        spec.State = TileState.Scorched;
-                        spec.TierLevel = 1;
+                        spec.State = TileState.Magma;
+                        spec.TierLevel = 2;
                     }
                     // Water tiles on left flank (slow or quench)
                     else if ((q == -1 && r == 0) || (q == -2 && r == 0))
@@ -1619,7 +1625,7 @@ namespace ElementalHexTactics3D.Tutorial
 
         public static void PurgeAllBattlefieldUnits()
         {
-            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include);
             foreach (var u in units)
             {
                 if (u != null)

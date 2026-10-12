@@ -373,10 +373,8 @@ namespace ElementalHexTactics3D.UI
                 Transform tBadge = header.Find("Text_Badge");
                 if (tBadge != null)
                 {
-                    var r = tBadge.GetComponent<RectTransform>();
-                    if (r != null) { r.anchoredPosition = new Vector2(0f, 140f); r.sizeDelta = new Vector2(840f, 28f); }
                     txtBadge = tBadge.GetComponent<Text>();
-                    if (txtBadge != null) { txtBadge.horizontalOverflow = HorizontalWrapMode.Overflow; txtBadge.verticalOverflow = VerticalWrapMode.Overflow; }
+                    tBadge.gameObject.SetActive(false); // Permanently hidden per user request
                 }
 
                 Transform t1 = header.Find("Text_Title1");
@@ -409,10 +407,8 @@ namespace ElementalHexTactics3D.UI
                 Transform ver = header.Find("Text_Version");
                 if (ver != null)
                 {
-                    var r = ver.GetComponent<RectTransform>();
-                    if (r != null) { r.anchoredPosition = new Vector2(0f, -145f); r.sizeDelta = new Vector2(840f, 22f); }
                     txtVersion = ver.GetComponent<Text>();
-                    if (txtVersion != null) { txtVersion.horizontalOverflow = HorizontalWrapMode.Overflow; txtVersion.verticalOverflow = VerticalWrapMode.Overflow; }
+                    ver.gameObject.SetActive(false); // Permanently hidden per user request
                 }
 
                 // Check for graphic logo overrides (e.g. designed in Canva or Photoshop)
@@ -450,19 +446,17 @@ namespace ElementalHexTactics3D.UI
                     imgCustomTitleLogo.gameObject.SetActive(true);
 
                     RectTransform logoRect = imgCustomTitleLogo.GetComponent<RectTransform>();
-                    logoRect.anchoredPosition = new Vector2(0f, -5f);
-                    logoRect.sizeDelta = new Vector2(920f, 280f);
+                    if (logoRect != null)
+                    {
+                        logoRect.anchorMin = new Vector2(0.5f, 0.5f);
+                        logoRect.anchorMax = new Vector2(0.5f, 0.5f);
+                        logoRect.pivot = new Vector2(0.5f, 0.5f);
+                        logoRect.anchoredPosition = new Vector2(0f, 0f);
+                        logoRect.sizeDelta = new Vector2(920f, 280f);
+                    }
 
-                    if (txtBadge != null)
-                    {
-                        var br = txtBadge.GetComponent<RectTransform>();
-                        if (br != null) br.anchoredPosition = new Vector2(0f, 140f);
-                    }
-                    if (txtVersion != null)
-                    {
-                        var vr = txtVersion.GetComponent<RectTransform>();
-                        if (vr != null) vr.anchoredPosition = new Vector2(0f, -145f);
-                    }
+                    if (txtBadge != null) txtBadge.gameObject.SetActive(false);
+                    if (txtVersion != null) txtVersion.gameObject.SetActive(false);
 
                     // When graphic logo image is present, hide procedural text titles and subtitle!
                     if (txtTitle1 != null) txtTitle1.gameObject.SetActive(false);
@@ -475,16 +469,8 @@ namespace ElementalHexTactics3D.UI
                     if (txtTitle1 != null) txtTitle1.gameObject.SetActive(true);
                     if (txtTitle2 != null) txtTitle2.gameObject.SetActive(true);
                     if (txtSubtitle != null) txtSubtitle.gameObject.SetActive(true);
-                    if (txtBadge != null)
-                    {
-                        var br = txtBadge.GetComponent<RectTransform>();
-                        if (br != null) br.anchoredPosition = new Vector2(0f, 75f);
-                    }
-                    if (txtVersion != null)
-                    {
-                        var vr = txtVersion.GetComponent<RectTransform>();
-                        if (vr != null) vr.anchoredPosition = new Vector2(0f, -86f);
-                    }
+                    if (txtBadge != null) txtBadge.gameObject.SetActive(false);
+                    if (txtVersion != null) txtVersion.gameObject.SetActive(false);
                 }
             }
 
@@ -494,8 +480,18 @@ namespace ElementalHexTactics3D.UI
                 RectTransform mRect = menuButtons.GetComponent<RectTransform>();
                 if (mRect != null)
                 {
-                    mRect.sizeDelta = new Vector2(380f, 310f);
+                    mRect.sizeDelta = new Vector2(430f, 350f);
                     mRect.anchoredPosition = new Vector2(0f, -75f);
+                }
+
+                LayoutElement[] les = menuButtons.GetComponentsInChildren<LayoutElement>(true);
+                foreach (var le in les)
+                {
+                    if (le != null)
+                    {
+                        le.preferredHeight = 60f;
+                        le.minHeight = 58f;
+                    }
                 }
             }
 
@@ -665,20 +661,15 @@ namespace ElementalHexTactics3D.UI
                     imgCustomTitleLogo.gameObject.SetActive(true);
                     if (logoRect != null)
                     {
-                        logoRect.anchoredPosition = new Vector2(0f, -5f);
+                        logoRect.anchorMin = new Vector2(0.5f, 0.5f);
+                        logoRect.anchorMax = new Vector2(0.5f, 0.5f);
+                        logoRect.pivot = new Vector2(0.5f, 0.5f);
+                        logoRect.anchoredPosition = new Vector2(0f, 0f);
                         logoRect.sizeDelta = new Vector2(920f, 280f);
                     }
 
-                    if (txtBadge != null)
-                    {
-                        var br = txtBadge.GetComponent<RectTransform>();
-                        if (br != null) br.anchoredPosition = new Vector2(0f, 140f);
-                    }
-                    if (txtVersion != null)
-                    {
-                        var vr = txtVersion.GetComponent<RectTransform>();
-                        if (vr != null) vr.anchoredPosition = new Vector2(0f, -145f);
-                    }
+                    if (txtBadge != null) txtBadge.gameObject.SetActive(false);
+                    if (txtVersion != null) txtVersion.gameObject.SetActive(false);
 
                     if (txtTitle1 != null) txtTitle1.gameObject.SetActive(false);
                     if (txtTitle2 != null) txtTitle2.gameObject.SetActive(false);
@@ -690,27 +681,17 @@ namespace ElementalHexTactics3D.UI
                     if (txtTitle1 != null) txtTitle1.gameObject.SetActive(true);
                     if (txtTitle2 != null) txtTitle2.gameObject.SetActive(true);
                     if (txtSubtitle != null) txtSubtitle.gameObject.SetActive(true);
-                    if (txtBadge != null)
-                    {
-                        var br = txtBadge.GetComponent<RectTransform>();
-                        if (br != null) br.anchoredPosition = new Vector2(0f, 75f);
-                    }
-                    if (txtVersion != null)
-                    {
-                        var vr = txtVersion.GetComponent<RectTransform>();
-                        if (vr != null) vr.anchoredPosition = new Vector2(0f, -86f);
-                    }
+                    if (txtBadge != null) txtBadge.gameObject.SetActive(false);
+                    if (txtVersion != null) txtVersion.gameObject.SetActive(false);
                 }
             }
 
             // 3. Texts & Styling
+            if (txtBadge != null) txtBadge.gameObject.SetActive(false);
+            if (txtVersion != null) txtVersion.gameObject.SetActive(false);
+
             if (mode == TitleThemeMode.PaladinHolyland)
             {
-                if (txtBadge != null)
-                {
-                    txtBadge.text = "✦ SACRED SYNOD EDITION • PROLOGUE: THE CHOSEN HERO ✦";
-                    txtBadge.color = new Color(0.35f, 0.85f, 1f);
-                }
                 if (txtTitle1 != null)
                 {
                     txtTitle1.text = "OMNITERRA";
@@ -728,25 +709,21 @@ namespace ElementalHexTactics3D.UI
                     txtSubtitle.text = "〜 The Righteous Crusade of the Radiant Synod 〜";
                     txtSubtitle.color = new Color(0.85f, 0.90f, 0.98f);
                 }
-                if (txtVersion != null)
-                {
-                    txtVersion.text = "Omniterra: Ascendance • Pre-Alpha v1.0.0 • Sacred Synod Edition";
-                }
 
                 if (btnPlay != null)
                 {
                     Text pTxt = btnPlay.GetComponentInChildren<Text>();
-                    if (pTxt != null) pTxt.text = "⚔️ START HOLY QUEST";
+                    if (pTxt != null) pTxt.text = "START HOLY QUEST";
                 }
                 if (btnStory != null)
                 {
                     Text sTxt = btnStory.GetComponentInChildren<Text>();
-                    if (sTxt != null) sTxt.text = "📖 SACRED SCRIPTURES (Lore)";
+                    if (sTxt != null) sTxt.text = "SACRED SCRIPTURES (Lore)";
                 }
                 if (btnHowToPlay != null)
                 {
                     Text hTxt = btnHowToPlay.GetComponentInChildren<Text>();
-                    if (hTxt != null) hTxt.text = "🎮 HOLY TACTICS (Guide)";
+                    if (hTxt != null) hTxt.text = "HOLY TACTICS (Guide)";
                 }
 
                 if (txtStoryTitle != null) txtStoryTitle.text = "📖 SACRED SCRIPTURES: THE RADIANT SYNOD";
@@ -778,11 +755,6 @@ namespace ElementalHexTactics3D.UI
             }
             else // DemonLordRebellion
             {
-                if (txtBadge != null)
-                {
-                    txtBadge.text = "✦ 2.5D TACTICAL HEX BATTLE • DEMON LORD SANCTUARY ✦";
-                    txtBadge.color = new Color(1f, 0.45f, 0.25f);
-                }
                 if (txtTitle1 != null)
                 {
                     txtTitle1.text = "OMNITERRA";
@@ -800,22 +772,18 @@ namespace ElementalHexTactics3D.UI
                     txtSubtitle.text = "〜 Reincarnated as the Demon Lord, Awakening Primordial Titans 〜";
                     txtSubtitle.color = new Color(0.88f, 0.85f, 0.78f);
                 }
-                if (txtVersion != null)
-                {
-                    txtVersion.text = "Omniterra • Pre-Alpha v1.0.0 • Ashen Sanctuary Edition";
-                }
 
                 UpdatePlayButtonLabel();
 
                 if (btnStory != null)
                 {
                     Text sTxt = btnStory.GetComponentInChildren<Text>();
-                    if (sTxt != null) sTxt.text = "📖 STORY & LORE (Bastion)";
+                    if (sTxt != null) sTxt.text = "STORY & LORE (Bastion)";
                 }
                 if (btnHowToPlay != null)
                 {
                     Text hTxt = btnHowToPlay.GetComponentInChildren<Text>();
-                    if (hTxt != null) hTxt.text = "🎮 HOW TO PLAY (Tactics)";
+                    if (hTxt != null) hTxt.text = "HOW TO PLAY (Tactics)";
                 }
 
                 if (txtStoryTitle != null) txtStoryTitle.text = "📖 MEMOIRS OF THE OUTCAST SANCTUARY";
@@ -842,6 +810,65 @@ namespace ElementalHexTactics3D.UI
                         "• Deploy reserve vanguard units directly onto the hex grid via the Abyssal Rift.\n" +
                         "• Awaken Primordial Titans at the Citadel Shrine to unleash catastrophic Cataclysm powers!";
                 }
+            }
+
+            // 4. Update Menu Buttons with Holy/Demon Fantasy UI button frames
+            Sprite buttonSprite = (mode == TitleThemeMode.PaladinHolyland)
+                ? LoadButtonSprite("UI_Button_Holy")
+                : LoadButtonSprite("UI_Button_Demon");
+
+            Button[] menuBtns = new Button[] { btnPlay, btnStory, btnHowToPlay, btnOptions, btnExit };
+
+            foreach (var b in menuBtns)
+            {
+                if (b == null) continue;
+                if (buttonSprite != null)
+                {
+                    Image bImg = b.GetComponent<Image>();
+                    if (bImg != null)
+                    {
+                        bImg.sprite = buttonSprite;
+                        bImg.type = (buttonSprite.border != Vector4.zero) ? Image.Type.Sliced : Image.Type.Simple;
+                        bImg.preserveAspect = false;
+                        bImg.color = Color.white;
+                    }
+                }
+
+                Text bTxt = b.GetComponentInChildren<Text>();
+                if (bTxt != null)
+                {
+                    bTxt.color = (mode == TitleThemeMode.PaladinHolyland)
+                        ? new Color(1f, 0.94f, 0.75f)
+                        : new Color(1f, 0.90f, 0.85f);
+                    bTxt.fontSize = 19;
+                    bTxt.fontStyle = FontStyle.Bold;
+                    bTxt.alignment = TextAnchor.MiddleCenter;
+                    bTxt.alignByGeometry = true;
+
+                    // Optical vertical centering: anchor to vertical centerline with fixed height,
+                    // precisely tuned for Holy (+1f) and Demon (+2f) button cavity geometry.
+                    RectTransform tRect = bTxt.rectTransform;
+                    if (tRect != null)
+                    {
+                        tRect.anchorMin = new Vector2(0f, 0.5f);
+                        tRect.anchorMax = new Vector2(1f, 0.5f);
+                        tRect.pivot = new Vector2(0.5f, 0.5f);
+                        tRect.sizeDelta = new Vector2(0f, 28f);
+                        float textOffsetY = (mode == TitleThemeMode.PaladinHolyland) ? 1.0f : 2.0f;
+                        tRect.anchoredPosition = new Vector2(0f, textOffsetY);
+                    }
+                }
+            }
+
+            if (btnOptions != null)
+            {
+                Text oTxt = btnOptions.GetComponentInChildren<Text>();
+                if (oTxt != null) oTxt.text = "OPTIONS (Settings)";
+            }
+            if (btnExit != null)
+            {
+                Text eTxt = btnExit.GetComponentInChildren<Text>();
+                if (eTxt != null) eTxt.text = "EXIT GAME";
             }
 
             UpdateOptionsDisplay();
@@ -958,7 +985,7 @@ namespace ElementalHexTactics3D.UI
             bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 0) == 1;
             if (currentThemeMode == TitleThemeMode.PaladinHolyland && !isSkipActive)
             {
-                playTxt.text = "⚔️ START HOLY QUEST";
+                playTxt.text = "START HOLY QUEST";
                 return;
             }
 
@@ -967,12 +994,12 @@ namespace ElementalHexTactics3D.UI
                 var save = ElementalHexTactics3D.Campaign.CampaignSaveManager.LoadSaveData();
                 if (save != null && save.currentDay > 1)
                 {
-                    playTxt.text = $"⚔️ CONTINUE RUN (DAY {save.currentDay})";
+                    playTxt.text = $"CONTINUE RUN (DAY {save.currentDay})";
                     return;
                 }
             }
 
-            playTxt.text = "👑 ENTER CITADEL HUB";
+            playTxt.text = "ENTER CITADEL HUB";
         }
 
         public void ShowTownHub(bool skipTutorial = false)
@@ -1321,6 +1348,105 @@ namespace ElementalHexTactics3D.UI
                     catch (System.Exception ex)
                     {
                         Debug.LogWarning($"[TitleMenuCanvasUI] Failed to load logo from {diskPath}: {ex.Message}");
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static readonly Dictionary<string, Sprite> s_buttonSpriteCache = new Dictionary<string, Sprite>();
+
+        /// <summary>
+        /// Robustly loads a custom UI button sprite from Resources, AssetDatabase (in editor),
+        /// or raw PNG file bytes on disk, caching the result.
+        /// </summary>
+        public static Sprite LoadButtonSprite(string baseName)
+        {
+            if (string.IsNullOrEmpty(baseName)) return null;
+            if (baseName.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase))
+            {
+                baseName = Path.GetFileNameWithoutExtension(baseName);
+            }
+
+            if (s_buttonSpriteCache.TryGetValue(baseName, out Sprite cached) && cached != null)
+            {
+                return cached;
+            }
+
+            // 1. Try Resources.Load<Sprite>
+            Sprite sp = Resources.Load<Sprite>($"UI/{baseName}");
+            if (sp == null)
+            {
+                Texture2D resTex = Resources.Load<Texture2D>($"UI/{baseName}");
+                if (resTex != null)
+                {
+                    sp = Sprite.Create(resTex, new Rect(0, 0, resTex.width, resTex.height), new Vector2(0.5f, 0.5f), 100f);
+                    sp.name = baseName;
+                }
+            }
+            if (sp != null)
+            {
+                s_buttonSpriteCache[baseName] = sp;
+                return sp;
+            }
+
+#if UNITY_EDITOR
+            // 2. Editor AssetDatabase lookup
+            string[] searchPaths = new string[]
+            {
+                $"Assets/Resources/UI/{baseName}.png",
+                $"Assets/Sprites/UI/{baseName}.png",
+                $"Assets/UI/{baseName}.png"
+            };
+
+            foreach (string p in searchPaths)
+            {
+                Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(p);
+                if (edSprite != null)
+                {
+                    s_buttonSpriteCache[baseName] = edSprite;
+                    return edSprite;
+                }
+                Texture2D edTex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+                if (edTex != null)
+                {
+                    Vector4 border = new Vector4(60f, 60f, 60f, 60f);
+                    sp = Sprite.Create(edTex, new Rect(0, 0, edTex.width, edTex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+                    sp.name = baseName;
+                    s_buttonSpriteCache[baseName] = sp;
+                    return sp;
+                }
+            }
+#endif
+
+            // 3. Direct disk file fallback
+            string[] diskPaths = new string[]
+            {
+                Path.Combine(Application.dataPath, "Resources", "UI", $"{baseName}.png"),
+                Path.Combine(Application.dataPath, "Sprites", "UI", $"{baseName}.png")
+            };
+
+            foreach (string diskPath in diskPaths)
+            {
+                if (File.Exists(diskPath))
+                {
+                    try
+                    {
+                        byte[] bytes = File.ReadAllBytes(diskPath);
+                        Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                        if (tex.LoadImage(bytes))
+                        {
+                            tex.name = baseName;
+                            Vector4 border = new Vector4(60f, 60f, 60f, 60f);
+                            sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+                            s_buttonSpriteCache[baseName] = sp;
+                            return sp;
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"[TitleMenuCanvasUI] Failed to load button sprite from {diskPath}: {ex.Message}");
                     }
                 }
             }

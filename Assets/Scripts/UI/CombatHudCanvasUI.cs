@@ -840,8 +840,14 @@ namespace ElementalHexTactics3D.UI
             if (interaction == null) return;
 
             TacticalUnit3D cmdr = HexGridInteraction3D.FindCommanderUnit();
+            if (cmdr == null && Tutorial.TutorialScenarioManager.Instance != null)
+            {
+                cmdr = Tutorial.TutorialScenarioManager.Instance.DemonLordPlayer;
+            }
+
             if (cmdr != null && !cmdr.gameObject.activeInHierarchy)
             {
+                interaction.PendingDeployUnit = cmdr;
                 interaction.SetActionMode(interaction.CurrentActionMode == UnitActionMode.DeployCommander 
                     ? UnitActionMode.None 
                     : UnitActionMode.DeployCommander);
@@ -860,8 +866,14 @@ namespace ElementalHexTactics3D.UI
             if (interaction == null) return;
 
             TacticalUnit3D titan = HexGridInteraction3D.FindTitanUnit();
+            if (titan == null && Tutorial.TutorialScenarioManager.Instance != null)
+            {
+                titan = Tutorial.TutorialScenarioManager.Instance.MagmaDragonPlayer;
+            }
+
             if (titan != null && !titan.gameObject.activeInHierarchy)
             {
+                interaction.PendingDeployUnit = titan;
                 interaction.SetActionMode(interaction.CurrentActionMode == UnitActionMode.SummonTitan 
                     ? UnitActionMode.None 
                     : UnitActionMode.SummonTitan);
@@ -1100,29 +1112,39 @@ namespace ElementalHexTactics3D.UI
             else
             {
                 if (unanchoredSection != null) unanchoredSection.SetActive(false);
-                if (riftPanelSection != null) riftPanelSection.SetActive(false);
-                if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
 
-                // Disgaea Rift Dispatch Modal (Opens when Rift is clicked!)
-                bool isRiftDispatchActive = (selectedUnit == null && isRiftSelected && !isDeployMode);
-                if (isRiftDispatchActive)
-                {
-                    UpdateDisgaeaDispatchModal(interaction);
-                }
-                else if (dispatchModalRoot != null && dispatchModalRoot.activeSelf)
-                {
-                    dispatchModalRoot.SetActive(false);
-                }
+                bool isPlayerUnitSelected = (selectedUnit != null && selectedUnit.Faction == UnitFaction.Player);
 
-                // Disgaea Unit Command Menu (Opens when Unit is clicked!)
-                bool isUnitCommandActive = (selectedUnit != null && selectedUnit.Faction == UnitFaction.Player);
-                if (isUnitCommandActive)
+                if (isPlayerUnitSelected)
                 {
+                    // A player unit on the field is selected -> Show Unit Abilities on bar & Disgaea Command Menu
+                    if (riftPanelSection != null) riftPanelSection.SetActive(false);
+                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(true);
+                    if (dispatchModalRoot != null && dispatchModalRoot.activeSelf) dispatchModalRoot.SetActive(false);
+
+                    UpdateUnitAbilityButtons(selectedUnit, interaction, isPlayerTurn, currentMode);
                     UpdateDisgaeaCommandMenu(selectedUnit, interaction, isPlayerTurn, currentMode);
                 }
-                else if (commandMenuRoot != null && commandMenuRoot.activeSelf)
+                else
                 {
-                    commandMenuRoot.SetActive(false);
+                    // No unit selected on the field (Rift is active on battlefield, or targeting deployment)
+                    if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
+                    if (commandMenuRoot != null && commandMenuRoot.activeSelf) commandMenuRoot.SetActive(false);
+
+                    // Show Rift Panel buttons on action bar (Deploy Commander, Summon Titan)
+                    if (riftPanelSection != null) riftPanelSection.SetActive(true);
+                    UpdateRiftPanelButtons(interaction, isPlayerTurn, noActiveUnits, currentMode);
+
+                    // Disgaea Rift Dispatch Modal (Opens when Rift is clicked directly)
+                    bool isRiftDispatchActive = (isRiftSelected && !isDeployMode);
+                    if (isRiftDispatchActive)
+                    {
+                        UpdateDisgaeaDispatchModal(interaction);
+                    }
+                    else if (dispatchModalRoot != null && dispatchModalRoot.activeSelf && !isDeployMode)
+                    {
+                        dispatchModalRoot.SetActive(false);
+                    }
                 }
             }
 
@@ -1131,12 +1153,24 @@ namespace ElementalHexTactics3D.UI
             {
                 btnEndTurn.interactable = isPlayerTurn;
             }
+
+            // Always apply tutorial training wheels & pulsing highlights across active buttons!
+            ApplyTutorialButtonPulse();
         }
 
         private void UpdateRiftPanelButtons(HexGridInteraction3D interaction, bool isPlayerTurn, bool noActiveUnits, UnitActionMode currentMode)
         {
             TacticalUnit3D cmdr = HexGridInteraction3D.FindCommanderUnit();
+            if (cmdr == null && Tutorial.TutorialScenarioManager.Instance != null)
+            {
+                cmdr = Tutorial.TutorialScenarioManager.Instance.DemonLordPlayer;
+            }
+
             TacticalUnit3D titan = HexGridInteraction3D.FindTitanUnit();
+            if (titan == null && Tutorial.TutorialScenarioManager.Instance != null)
+            {
+                titan = Tutorial.TutorialScenarioManager.Instance.MagmaDragonPlayer;
+            }
 
             bool cmdrInReserve = (cmdr != null && !cmdr.gameObject.activeInHierarchy);
             bool titanInReserve = (titan != null && !titan.gameObject.activeInHierarchy);
@@ -1148,7 +1182,9 @@ namespace ElementalHexTactics3D.UI
 
             if (btnDeployCommander != null)
             {
+                btnDeployCommander.gameObject.SetActive(true);
                 btnDeployCommander.interactable = canDeployCmdr;
+                SetButtonActiveHighlight(btnDeployCommander, currentMode == UnitActionMode.DeployCommander);
                 if (txtDeployCommander != null)
                 {
                     if (!cmdrInReserve)
@@ -1165,6 +1201,7 @@ namespace ElementalHexTactics3D.UI
                 bool isStage2 = isTut && Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage2Active;
                 btnSummonTitanRift.gameObject.SetActive(!isStage2);
                 btnSummonTitanRift.interactable = canSummonTitan && !isStage2;
+                SetButtonActiveHighlight(btnSummonTitanRift, currentMode == UnitActionMode.SummonTitan);
                 if (txtSummonTitanRift != null)
                 {
                     string titanName = isTut ? "Magma Dragon" : (titan != null ? titan.UnitName : "Titan");
@@ -1196,17 +1233,23 @@ namespace ElementalHexTactics3D.UI
                 SetButtonActiveHighlight(btnMove, currentMode == UnitActionMode.Move);
             }
 
-            // Elemental Spells: Fireball for Fire Commander / Demon Lord. Water and Earth are NOT on Demon Lord!
+            // Elemental Spells: Fireball for Fire Commander / Demon Lord, Radiant Smite for Paladin!
             bool isFireUnit = isCommander || (unit.Affinity == ElementalAffinity.Fire);
-            bool showFireball = isFireUnit && !isTutorial1;
-            bool showWaterSurge = !isCommander && (unit.Affinity == ElementalAffinity.Water);
-            bool showEarthPillar = !isCommander && (unit.Affinity == ElementalAffinity.Earth);
+            bool isPaladin = unit.UnitName.Contains("Paladin");
+            bool showFireball = isFireUnit && (!isTutorial1 || isPaladin);
+            bool showWaterSurge = !isCommander && (unit.Affinity == ElementalAffinity.Water) && !isTutorial1;
+            bool showEarthPillar = !isCommander && (unit.Affinity == ElementalAffinity.Earth) && !isTutorial1;
 
             if (btnFireball != null)
             {
                 btnFireball.gameObject.SetActive(showFireball);
                 btnFireball.interactable = canCombat;
                 SetButtonActiveHighlight(btnFireball, currentMode == UnitActionMode.Fireball);
+                if (txtFireball != null)
+                {
+                    if (isPaladin) txtFireball.text = "☀️ Radiant Smite\n<size=10>(Holy Fire)</size>";
+                    else txtFireball.text = "🔥 Fireball\n<size=10>(3 Dmg)</size>";
+                }
             }
 
             if (btnWaterSurge != null)
@@ -1323,6 +1366,7 @@ namespace ElementalHexTactics3D.UI
 
             bool isPushOrStrike = (activeTutorialButtonKey == "PushOrStrike");
             bool isStrikeOrMove = (activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "StrikeOrMove");
+            bool isStrikeOrSkill = (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Fireball" || activeTutorialButtonKey == "Skill");
             Button targetBtn = null;
             if (activeTutorialButtonKey == "Move") targetBtn = btnMove;
             else if (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike") targetBtn = btnTitanStrike;
@@ -1351,12 +1395,13 @@ namespace ElementalHexTactics3D.UI
                 bool isAllowed = (btn == targetBtn) || 
                                  (isPushOrStrike && (btn == btnPush || btn == btnTitanStrike)) ||
                                  (isStrikeOrMove && (btn == btnTitanStrike || btn == btnMove)) ||
+                                 (isStrikeOrSkill && (btn == btnTitanStrike || btn == btnFireball)) ||
                                  (btn == btnMove) ||
                                  (btn == btnTitanStrike && (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Move" || activeTutorialButtonKey == "Push"));
                 if (isAllowed)
                 {
                     btn.interactable = true;
-                    if (btn == targetBtn)
+                    if (btn == targetBtn || (isStrikeOrSkill && (btn == btnTitanStrike || btn == btnFireball)))
                     {
                         float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
                         Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
@@ -1881,9 +1926,10 @@ namespace ElementalHexTactics3D.UI
             }
 
             // 3. Skill / Spell
-            bool showFireball = (isCommander || unit.Affinity == ElementalAffinity.Fire) && !isTutorial1 && !isTitan;
-            bool showWater = !isCommander && unit.Affinity == ElementalAffinity.Water;
-            bool showEarth = !isCommander && unit.Affinity == ElementalAffinity.Earth;
+            bool isPaladin = unit.UnitName.Contains("Paladin");
+            bool showFireball = (isCommander || unit.Affinity == ElementalAffinity.Fire) && (!isTutorial1 || isPaladin) && !isTitan;
+            bool showWater = !isCommander && unit.Affinity == ElementalAffinity.Water && !isTutorial1;
+            bool showEarth = !isCommander && unit.Affinity == ElementalAffinity.Earth && !isTutorial1;
 
             if (btnCmdSkill != null)
             {
@@ -1894,7 +1940,7 @@ namespace ElementalHexTactics3D.UI
                     btnCmdSkill.interactable = canCombat;
                     if (showFireball)
                     {
-                        txtCmdSkill.text = "🔥 Fireball (Dmg 3)";
+                        txtCmdSkill.text = isPaladin ? "☀️ Radiant Smite (Dmg 3)" : "🔥 Fireball (Dmg 3)";
                         SetButtonActiveHighlight(btnCmdSkill, currentMode == UnitActionMode.Fireball);
                     }
                     else if (showWater)
@@ -2058,6 +2104,7 @@ namespace ElementalHexTactics3D.UI
 
             bool isPushOrStrike = (activeTutorialButtonKey == "PushOrStrike");
             bool isStrikeOrMove = (activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "StrikeOrMove");
+            bool isStrikeOrSkill = (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Fireball" || activeTutorialButtonKey == "Skill");
 
             foreach (var btn in menuButtons)
             {
@@ -2065,6 +2112,7 @@ namespace ElementalHexTactics3D.UI
                 bool isAllowed = (btn == targetBtn) ||
                                  (isPushOrStrike && (btn == btnCmdPush || btn == btnCmdAttack)) ||
                                  (isStrikeOrMove && (btn == btnCmdAttack || btn == btnCmdMove)) ||
+                                 (isStrikeOrSkill && (btn == btnCmdAttack || btn == btnCmdSkill)) ||
                                  (btn == btnCmdMove) ||
                                  (btn == btnCmdCancel) ||
                                  (btn == btnCmdAttack && (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Move" || activeTutorialButtonKey == "Push"));
@@ -2072,12 +2120,18 @@ namespace ElementalHexTactics3D.UI
                 if (isAllowed)
                 {
                     btn.interactable = true;
-                    if (btn == targetBtn)
+                    if (btn == targetBtn || (isStrikeOrSkill && (btn == btnCmdAttack || btn == btnCmdSkill)))
                     {
                         float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
                         Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
                         var colors = btn.colors;
                         colors.normalColor = goldPulse;
+                        btn.colors = colors;
+                    }
+                    else
+                    {
+                        var colors = btn.colors;
+                        colors.normalColor = Color.white;
                         btn.colors = colors;
                     }
                 }

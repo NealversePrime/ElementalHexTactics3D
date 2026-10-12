@@ -881,7 +881,7 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "He's sending his vanguard minion forward! Holy Shielder, form ranks—let us purge this beast before taking down the Demon Lord!",
+                        "He's sending his vanguard minions forward! Holy Shielder, form ranks—let us purge their center before taking down Malakor!",
                         paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
                     ));
                     break;

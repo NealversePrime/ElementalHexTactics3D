@@ -265,43 +265,16 @@ namespace ElementalHexTactics3D.InputHandling
                 // Don't accept actions during Enemy Turn
                 if (TurnManager3D.Instance != null && !TurnManager3D.Instance.IsPlayerTurn) return;
 
-                // TRPG Tutorial Training Wheels: Gating clicks to tutorial target tile
+                // TRPG Tutorial: Non-intrusive guidance with 100% Player Agency
+                // Heapcleaner bug fix: Never block valid actions (Attack, Push, Move, Spells) during tutorial!
                 if (Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive)
                 {
-                    HexTile3D tutTile = Tutorial.TutorialScenarioManager.Instance.CurrentHighlightedTile;
-                    if (tutTile != null && clickedTile != tutTile)
+                    // If player is in an active action targeting mode, allow ANY valid target tile in activeTargetTiles!
+                    if (currentMode != UnitActionMode.None)
                     {
-                        // Allow selecting friendly units if needed, otherwise ignore misclicks to protect tutorial flow
-                        TacticalUnit3D allyUnit = directHitUnit ?? (clickedTile != null ? clickedTile.GetOccupant() : null);
-                        if (allyUnit != null && allyUnit.Faction == UnitFaction.Player)
+                        if (!activeTargetTiles.Contains(clickedTile))
                         {
-                            // Friendly unit selection allowed!
-                        }
-                        // Allow moving to any valid reachable tile when in Move mode
-                        else if (currentMode == UnitActionMode.Move && activeTargetTiles.Contains(clickedTile))
-                        {
-                            // Valid move destination allowed!
-                        }
-                        // Allow harvesting any valid consumable tile when in ConsumeLand mode
-                        else if (currentMode == UnitActionMode.ConsumeLand && activeTargetTiles.Contains(clickedTile))
-                        {
-                            // Valid land harvest destination allowed!
-                        }
-                        // Allow targeting any valid tile when in MagmaCataclysm mode
-                        else if (currentMode == UnitActionMode.MagmaCataclysm && activeTargetTiles.Contains(clickedTile))
-                        {
-                            // Valid cataclysm blast target allowed!
-                        }
-                        // In Stage 3 Magma Dragon strike / cataclysm, allow targeting any living enemy within attack range
-                        else if ((Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_MagmaDragonTitanStrike ||
-                                  Tutorial.TutorialScenarioManager.Instance.CurrentStep == Tutorial.TutorialStep.Stage3_MagmaDragonCataclysm) &&
-                                 (currentMode == UnitActionMode.TitanStrike || currentMode == UnitActionMode.None) &&
-                                 clickedTile != null && clickedTile.IsOccupied && clickedTile.GetOccupant()?.Faction == UnitFaction.Enemy)
-                        {
-                            // Enemy target allowed!
-                        }
-                        else
-                        {
+                            // Misclicked outside valid range - play feedback and return without breaking mode
                             Combat.SoundManager3D.Instance?.PlayButtonClick();
                             return;
                         }
@@ -994,11 +967,22 @@ namespace ElementalHexTactics3D.InputHandling
                 Vector3 casterPos = currentSelectedUnit.transform.position + Vector3.up * 0.8f;
                 Vector3 targetPos = targetTile.GetTopCenterPosition() + Vector3.up * 0.4f;
 
-                SoundManager3D.Instance?.PlaySpellCast(element);
-
                 if (CombatFeedbackManager.Instance != null)
                 {
                     yield return CombatFeedbackManager.Instance.SpawnSpellProjectile(casterPos, targetPos, projColor, 0.26f);
+                }
+
+                if (currentSelectedUnit.UnitName.ToLower().Contains("paladin"))
+                {
+                    SpellVFXManager3D.Instance?.PlayRadiantSmiteVFX(targetPos, casterPos);
+                }
+                else if (currentSelectedUnit.UnitName.ToLower().Contains("demon") || currentSelectedUnit.UnitName.ToLower().Contains("malakor"))
+                {
+                    SpellVFXManager3D.Instance?.PlayHellfireBlastVFX(targetPos);
+                }
+                else
+                {
+                    SoundManager3D.Instance?.PlaySpellCast(element);
                 }
             }
 

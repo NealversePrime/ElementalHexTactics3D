@@ -125,6 +125,14 @@ namespace ElementalHexTactics3D.Combat
         /// </summary>
         public IEnumerator SpawnSpellProjectile(Vector3 start, Vector3 target, Color projectileColor, float duration = 0.28f)
         {
+            // Prefer the EVFX Blast (Effekseer) projectile; the plain sphere orb is only a fallback.
+            var spellVfx = SpellVFXManager3D.Instance;
+            if (spellVfx != null && spellVfx.HasProjectileEffect)
+            {
+                yield return spellVfx.PlayProjectileVFX(start, target, projectileColor, duration);
+                yield break;
+            }
+
             GameObject orb = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             orb.name = "SpellProjectile";
             orb.transform.localScale = Vector3.one * 0.35f;

@@ -35,11 +35,15 @@ namespace ElementalHexTactics3D.Combat
         [SerializeField] [Range(0f, 1f)] private float sfxVolume = 0.80f;
         [SerializeField] [Range(0f, 1f)] private float bgmVolume = 0.45f;
 
-        [Header("Spell Audio (MP3)")]
+        [Header("Spell Audio (MP3 & OGG)")]
         [SerializeField] private AudioClip[] fireballClips;
         [SerializeField] private AudioClip[] waterballClips;
         [SerializeField] private AudioClip[] earthmagicClips;
         [SerializeField] private AudioClip airblastClip;
+        [SerializeField] private AudioClip radiantSmiteClip;
+        [SerializeField] private AudioClip hellfireBlastClip;
+        [SerializeField] private AudioClip impSpitClip;
+        [SerializeField] private AudioClip chainBlastClip;
 
         [Header("Combat & Ability Audio (MP3)")]
         [SerializeField] private AudioClip coreAbsorbClip;
@@ -210,8 +214,24 @@ namespace ElementalHexTactics3D.Combat
             if (riftSacrificeClip == null)
                 riftSacrificeClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/enemygeteatenbyrift.mp3");
 
+            if (radiantSmiteClip == null)
+                radiantSmiteClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/EVFX06_05_EnergyBeam.ogg");
+
+            if (hellfireBlastClip == null)
+                hellfireBlastClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/EVFX06_04_OverloadedBlast.ogg");
+
+            if (impSpitClip == null)
+                impSpitClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/EVFX06_01_SingleBlast.ogg");
+
+            if (chainBlastClip == null)
+                chainBlastClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/EVFX06_03_ChainBlast.ogg");
+
             if (wallSlamClip == null)
-                wallSlamClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/bodyimpact.mp3");
+            {
+                wallSlamClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/EVFX06_02_SmokeBlast.ogg");
+                if (wallSlamClip == null)
+                    wallSlamClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/bodyimpact.mp3");
+            }
 
             if (mudTrapClip == null)
                 mudTrapClip = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/SFX/mudsound.mp3");
@@ -288,6 +308,10 @@ namespace ElementalHexTactics3D.Combat
         public void PlayGetHit() => PlaySingleClip(getHitClip, impactThudClip, 0.95f);
         public void PlayVictory() => PlaySingleClip(victoryClip, siphonChimeClip, 1.2f);
         public void PlayDefeat() => PlaySingleClip(defeatClip, cataclysmBoomClip, 1.2f);
+        public void PlayRadiantSmite(float volumeScale = 1.0f) => PlaySingleClip(radiantSmiteClip, siphonChimeClip, 1.3f * volumeScale);
+        public void PlayHellfireBlast(float volumeScale = 1.0f) => PlaySingleClip(hellfireBlastClip, cataclysmBoomClip, 1.3f * volumeScale);
+        public void PlayImpSpit(float volumeScale = 1.0f) => PlaySingleClip(impSpitClip, fireWhooshClip, 1.05f * volumeScale);
+        public void PlayChainBlast(float volumeScale = 1.0f) => PlaySingleClip(chainBlastClip, cataclysmBoomClip, 1.25f * volumeScale);
 
         public void PlaySpellCast(ElementType element)
         {

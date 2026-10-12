@@ -161,7 +161,7 @@ namespace ElementalHexTactics3D.Editor
             menuBoxRect.anchorMin = new Vector2(0.5f, 0.5f);
             menuBoxRect.anchorMax = new Vector2(0.5f, 0.5f);
             menuBoxRect.pivot = new Vector2(0.5f, 0.5f);
-            menuBoxRect.sizeDelta = new Vector2(380f, 310f);
+            menuBoxRect.sizeDelta = new Vector2(430f, 350f);
             menuBoxRect.anchoredPosition = new Vector2(0f, -75f);
 
             VerticalLayoutGroup vlg = menuBoxObj.AddComponent<VerticalLayoutGroup>();
@@ -172,11 +172,11 @@ namespace ElementalHexTactics3D.Editor
             vlg.childForceExpandWidth = true;
             vlg.childForceExpandHeight = false;
 
-            Button btnPlay = CreateCustomButton("Btn_PlayAdventure", menuBoxObj.transform, "⚔️ START HOLY QUEST", fontBold, 20, btnHighlight != null ? btnHighlight : btnNormal, new Color(1f, 0.92f, 0.45f), height: 52f);
-            Button btnStory = CreateCustomButton("Btn_StoryLore", menuBoxObj.transform, "📖 SACRED SCRIPTURES (Lore)", fontBold, 17, btnNormal, Color.white, height: 50f);
-            Button btnHowToPlay = CreateCustomButton("Btn_HowToPlay", menuBoxObj.transform, "🎮 HOLY TACTICS (Guide)", fontBold, 17, btnNormal, Color.white, height: 50f);
-            Button btnOptions = CreateCustomButton("Btn_Options", menuBoxObj.transform, "⚙️ OPTIONS (Settings)", fontBold, 17, btnNormal, Color.white, height: 50f);
-            Button btnExit = CreateCustomButton("Btn_Exit", menuBoxObj.transform, "🚪 EXIT GAME", fontBold, 17, btnNormal, new Color(0.95f, 0.55f, 0.55f), height: 50f);
+            Button btnPlay = CreateCustomButton("Btn_PlayAdventure", menuBoxObj.transform, "START HOLY QUEST", fontBold, 19, btnHighlight != null ? btnHighlight : btnNormal, new Color(1f, 0.94f, 0.75f), height: 60f);
+            Button btnStory = CreateCustomButton("Btn_StoryLore", menuBoxObj.transform, "SACRED SCRIPTURES (Lore)", fontBold, 19, btnNormal, new Color(1f, 0.94f, 0.75f), height: 60f);
+            Button btnHowToPlay = CreateCustomButton("Btn_HowToPlay", menuBoxObj.transform, "HOLY TACTICS (Guide)", fontBold, 19, btnNormal, new Color(1f, 0.94f, 0.75f), height: 60f);
+            Button btnOptions = CreateCustomButton("Btn_Options", menuBoxObj.transform, "OPTIONS (Settings)", fontBold, 19, btnNormal, new Color(1f, 0.94f, 0.75f), height: 60f);
+            Button btnExit = CreateCustomButton("Btn_Exit", menuBoxObj.transform, "EXIT GAME", fontBold, 19, btnNormal, new Color(1f, 0.94f, 0.75f), height: 60f);
 
             // 9. Modals Container
             GameObject modalsContainer = CreateUIObject("Panel_ModalsContainer", canvasObj.transform);
@@ -476,7 +476,11 @@ namespace ElementalHexTactics3D.Editor
 
             GameObject textObj = CreateUIObject("Text", btnObj.transform);
             RectTransform textRect = textObj.GetComponent<RectTransform>();
-            SetStretchAll(textRect);
+            textRect.anchorMin = new Vector2(0f, 0.5f);
+            textRect.anchorMax = new Vector2(1f, 0.5f);
+            textRect.pivot = new Vector2(0.5f, 0.5f);
+            textRect.sizeDelta = new Vector2(0f, 28f);
+            textRect.anchoredPosition = new Vector2(0f, 1f);
 
             Text text = textObj.AddComponent<Text>();
             text.text = label;
@@ -484,6 +488,7 @@ namespace ElementalHexTactics3D.Editor
             text.fontSize = fontSize;
             text.fontStyle = FontStyle.Bold;
             text.alignment = TextAnchor.MiddleCenter;
+            text.alignByGeometry = true;
             text.color = textColor;
             text.raycastTarget = false;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
