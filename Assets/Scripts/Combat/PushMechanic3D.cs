@@ -49,7 +49,12 @@ namespace ElementalHexTactics3D.Combat
             {
                 string slamCause = (destTile != null && destTile.State == TileState.StonePillar) ? "into a Stone Pillar!" : "into an obstacle!";
                 Debug.Log($"<color=#EF5350><b>[Wall Slam!]</b></color> {target.UnitName}'s push was blocked {slamCause} Took 3 collision damage.");
-                yield return new WaitForSeconds(0.12f);
+
+                // Visceral combat juice: heavy screen shake, impact sound & hit-stop
+                TacticalCameraController.Instance?.Shake(0.45f, 0.40f);
+                SoundManager3D.Instance?.PlayWallSlam(1.3f);
+
+                yield return new WaitForSeconds(0.08f);
                 Vector3 slamPos = target.transform.position + Vector3.up * 0.5f;
                 SpellVFXManager3D.Instance?.PlayWallSlamVFX(slamPos, Vector3.up);
                 if (target != null && target.CurrentHealth > 0)

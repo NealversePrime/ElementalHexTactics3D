@@ -123,24 +123,36 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Text txtDispatchConfirm;
         private TacticalUnit3D currentPreviewDispatchUnit;
 
+        [Header("Disgaea Command Menu")]
         [SerializeField] private GameObject commandMenuRoot;
         [SerializeField] private Text txtCmdHeader;
         [SerializeField] private Button btnCmdMove;
         [SerializeField] private Text txtCmdMove;
         [SerializeField] private Button btnCmdAttack;
         [SerializeField] private Text txtCmdAttack;
-        [SerializeField] private Button btnCmdSkill;
-        [SerializeField] private Text txtCmdSkill;
+        [SerializeField] private Button btnCmdSpecial;
+        [SerializeField] private Text txtCmdSpecial;
+        [SerializeField] private Button btnCmdDefend;
+        [SerializeField] private Text txtCmdDefend;
         [SerializeField] private Button btnCmdPush;
         [SerializeField] private Text txtCmdPush;
-        [SerializeField] private Button btnCmdSiphon;
-        [SerializeField] private Text txtCmdSiphon;
-        [SerializeField] private Button btnCmdCataclysm;
-        [SerializeField] private Text txtCmdCataclysm;
-        [SerializeField] private Button btnCmdRecall;
-        [SerializeField] private Text txtCmdRecall;
+        [SerializeField] private Button btnCmdAbsorb;
+        [SerializeField] private Text txtCmdAbsorb;
+        [SerializeField] private Button btnCmdItem;
+        [SerializeField] private Text txtCmdItem;
         [SerializeField] private Button btnCmdWait;
         [SerializeField] private Button btnCmdCancel;
+
+        [Header("Disgaea Submenus")]
+        [SerializeField] private GameObject specialSubmenuRoot;
+        [SerializeField] private Transform specialSubmenuContent;
+        [SerializeField] private Text txtSpecialHeader;
+        [SerializeField] private Button btnSpecialBack;
+
+        [SerializeField] private GameObject itemSubmenuRoot;
+        [SerializeField] private Transform itemSubmenuContent;
+        [SerializeField] private Text txtItemHeader;
+        [SerializeField] private Button btnItemBack;
 
         [Header("Theme Colors")]
         [SerializeField] private Color colHpFull = new Color(0.30f, 0.78f, 0.35f, 1f);
@@ -258,10 +270,14 @@ namespace ElementalHexTactics3D.UI
             if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
             if (dispatchModalRoot != null && !dispatchModalRoot.activeSelf) dispatchModalRoot.SetActive(false);
             if (commandMenuRoot != null && !commandMenuRoot.activeSelf) commandMenuRoot.SetActive(false);
+            if (specialSubmenuRoot != null && !specialSubmenuRoot.activeSelf) specialSubmenuRoot.SetActive(false);
+            if (itemSubmenuRoot != null && !itemSubmenuRoot.activeSelf) itemSubmenuRoot.SetActive(false);
 
             ApplyRpgMakerWindowStyle(unitCardRoot, new Color(0.08f, 0.07f, 0.14f, 0.95f));
             ApplyRpgMakerWindowStyle(dispatchModalRoot, new Color(0.08f, 0.07f, 0.14f, 0.96f));
             ApplyRpgMakerWindowStyle(commandMenuRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
+            ApplyRpgMakerWindowStyle(specialSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
+            ApplyRpgMakerWindowStyle(itemSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
         }
 
         private void HookExistingContainer(Transform container)
@@ -372,44 +388,80 @@ namespace ElementalHexTactics3D.UI
             if (unitAbilitiesSection != null) unitAbilitiesSection.SetActive(false);
             if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
             if (commandMenuRoot != null) commandMenuRoot.SetActive(false);
+            if (specialSubmenuRoot != null) specialSubmenuRoot.SetActive(false);
+            if (itemSubmenuRoot != null) itemSubmenuRoot.SetActive(false);
 
             // Ensure RPG Maker 2-layer composite styling is applied to all key windows
             ApplyRpgMakerWindowStyle(unitCardRoot, new Color(0.08f, 0.07f, 0.14f, 0.95f));
             ApplyRpgMakerWindowStyle(dispatchModalRoot, new Color(0.08f, 0.07f, 0.14f, 0.96f));
             ApplyRpgMakerWindowStyle(commandMenuRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
+            ApplyRpgMakerWindowStyle(specialSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
+            ApplyRpgMakerWindowStyle(itemSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
         }
 
         private void HookExistingCommandMenu(Transform cmd)
         {
             if (cmd == null) return;
+
+            // Self-healing check: if the existing menu in scene lacks the new buttons, rebuild it!
+            if (cmd.Find("Btn_CmdDefend") == null || cmd.Find("Btn_CmdSpecial") == null)
+            {
+                Transform parent = cmd.parent;
+                Destroy(cmd.gameObject);
+                Font f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                Sprite pf = TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png") ?? TacticalUnitSpawner.LoadUISprite("UI_Panel_Frame.png");
+                Sprite bn = TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
+                BuildDisgaeaCommandMenu(parent, f, pf, bn);
+                return;
+            }
+
             commandMenuRoot = cmd.gameObject;
             txtCmdHeader = cmd.Find("Txt_CmdHeader")?.GetComponent<Text>();
             btnCmdMove = cmd.Find("Btn_CmdMove")?.GetComponent<Button>();
             txtCmdMove = btnCmdMove?.GetComponentInChildren<Text>();
             btnCmdAttack = cmd.Find("Btn_CmdAttack")?.GetComponent<Button>();
             txtCmdAttack = btnCmdAttack?.GetComponentInChildren<Text>();
-            btnCmdSkill = cmd.Find("Btn_CmdSkill")?.GetComponent<Button>();
-            txtCmdSkill = btnCmdSkill?.GetComponentInChildren<Text>();
+            btnCmdSpecial = cmd.Find("Btn_CmdSpecial")?.GetComponent<Button>();
+            txtCmdSpecial = btnCmdSpecial?.GetComponentInChildren<Text>();
+            btnCmdDefend = cmd.Find("Btn_CmdDefend")?.GetComponent<Button>();
+            txtCmdDefend = btnCmdDefend?.GetComponentInChildren<Text>();
             btnCmdPush = cmd.Find("Btn_CmdPush")?.GetComponent<Button>();
             txtCmdPush = btnCmdPush?.GetComponentInChildren<Text>();
-            btnCmdSiphon = cmd.Find("Btn_CmdSiphon")?.GetComponent<Button>();
-            txtCmdSiphon = btnCmdSiphon?.GetComponentInChildren<Text>();
-            btnCmdCataclysm = cmd.Find("Btn_CmdCataclysm")?.GetComponent<Button>();
-            txtCmdCataclysm = btnCmdCataclysm?.GetComponentInChildren<Text>();
-            btnCmdRecall = cmd.Find("Btn_CmdRecall")?.GetComponent<Button>();
-            txtCmdRecall = btnCmdRecall?.GetComponentInChildren<Text>();
+            btnCmdAbsorb = cmd.Find("Btn_CmdAbsorb")?.GetComponent<Button>();
+            txtCmdAbsorb = btnCmdAbsorb?.GetComponentInChildren<Text>();
+            btnCmdItem = cmd.Find("Btn_CmdItem")?.GetComponent<Button>();
+            txtCmdItem = btnCmdItem?.GetComponentInChildren<Text>();
             btnCmdWait = cmd.Find("Btn_CmdWait")?.GetComponent<Button>();
             btnCmdCancel = cmd.Find("Btn_CmdCancel")?.GetComponent<Button>();
 
             if (btnCmdMove != null) { btnCmdMove.onClick.RemoveAllListeners(); btnCmdMove.onClick.AddListener(() => OnActionClicked(UnitActionMode.Move)); }
             if (btnCmdAttack != null) { btnCmdAttack.onClick.RemoveAllListeners(); btnCmdAttack.onClick.AddListener(() => OnActionClicked(UnitActionMode.TitanStrike)); }
-            if (btnCmdSkill != null) { btnCmdSkill.onClick.RemoveAllListeners(); btnCmdSkill.onClick.AddListener(OnCmdSkillClicked); }
+            if (btnCmdSpecial != null) { btnCmdSpecial.onClick.RemoveAllListeners(); btnCmdSpecial.onClick.AddListener(OnCmdSpecialClicked); }
+            if (btnCmdDefend != null) { btnCmdDefend.onClick.RemoveAllListeners(); btnCmdDefend.onClick.AddListener(OnCmdDefendClicked); }
             if (btnCmdPush != null) { btnCmdPush.onClick.RemoveAllListeners(); btnCmdPush.onClick.AddListener(() => OnActionClicked(UnitActionMode.KineticPush)); }
-            if (btnCmdSiphon != null) { btnCmdSiphon.onClick.RemoveAllListeners(); btnCmdSiphon.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand)); }
-            if (btnCmdCataclysm != null) { btnCmdCataclysm.onClick.RemoveAllListeners(); btnCmdCataclysm.onClick.AddListener(() => OnActionClicked(UnitActionMode.MagmaCataclysm)); }
-            if (btnCmdRecall != null) { btnCmdRecall.onClick.RemoveAllListeners(); btnCmdRecall.onClick.AddListener(OnRecallClicked); }
+            if (btnCmdAbsorb != null) { btnCmdAbsorb.onClick.RemoveAllListeners(); btnCmdAbsorb.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand)); }
+            if (btnCmdItem != null) { btnCmdItem.onClick.RemoveAllListeners(); btnCmdItem.onClick.AddListener(OnCmdItemClicked); }
             if (btnCmdWait != null) { btnCmdWait.onClick.RemoveAllListeners(); btnCmdWait.onClick.AddListener(OnCmdWaitClicked); }
             if (btnCmdCancel != null) { btnCmdCancel.onClick.RemoveAllListeners(); btnCmdCancel.onClick.AddListener(OnCmdCancelClicked); }
+
+            Transform specialSub = cmd.parent.Find("Menu_DisgaeaSpecialSubmenu");
+            if (specialSub != null)
+            {
+                specialSubmenuRoot = specialSub.gameObject;
+                specialSubmenuContent = specialSub.Find("Special_Content");
+                txtSpecialHeader = specialSub.Find("Txt_SpecialHeader")?.GetComponent<Text>();
+                btnSpecialBack = specialSub.Find("Btn_SpecialBack")?.GetComponent<Button>();
+                if (btnSpecialBack != null) { btnSpecialBack.onClick.RemoveAllListeners(); btnSpecialBack.onClick.AddListener(OnSpecialBackClicked); }
+            }
+            Transform itemSub = cmd.parent.Find("Menu_DisgaeaItemSubmenu");
+            if (itemSub != null)
+            {
+                itemSubmenuRoot = itemSub.gameObject;
+                itemSubmenuContent = itemSub.Find("Item_Content");
+                txtItemHeader = itemSub.Find("Txt_ItemHeader")?.GetComponent<Text>();
+                btnItemBack = itemSub.Find("Btn_ItemBack")?.GetComponent<Button>();
+                if (btnItemBack != null) { btnItemBack.onClick.RemoveAllListeners(); btnItemBack.onClick.AddListener(OnItemBackClicked); }
+            }
         }
 
         private void ApplyRpgMakerWindowStyle(GameObject panelObj, Color bgColor)
@@ -767,11 +819,11 @@ namespace ElementalHexTactics3D.UI
             // Disgaea Command Menu
             if (btnCmdMove != null) btnCmdMove.onClick.AddListener(() => OnActionClicked(UnitActionMode.Move));
             if (btnCmdAttack != null) btnCmdAttack.onClick.AddListener(() => OnActionClicked(UnitActionMode.TitanStrike));
-            if (btnCmdSkill != null) btnCmdSkill.onClick.AddListener(OnCmdSkillClicked);
+            if (btnCmdSpecial != null) btnCmdSpecial.onClick.AddListener(OnCmdSpecialClicked);
+            if (btnCmdDefend != null) btnCmdDefend.onClick.AddListener(OnCmdDefendClicked);
             if (btnCmdPush != null) btnCmdPush.onClick.AddListener(() => OnActionClicked(UnitActionMode.KineticPush));
-            if (btnCmdSiphon != null) btnCmdSiphon.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand));
-            if (btnCmdCataclysm != null) btnCmdCataclysm.onClick.AddListener(() => OnActionClicked(UnitActionMode.MagmaCataclysm));
-            if (btnCmdRecall != null) btnCmdRecall.onClick.AddListener(OnRecallClicked);
+            if (btnCmdAbsorb != null) btnCmdAbsorb.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand));
+            if (btnCmdItem != null) btnCmdItem.onClick.AddListener(OnCmdItemClicked);
             if (btnCmdWait != null) btnCmdWait.onClick.AddListener(OnCmdWaitClicked);
             if (btnCmdCancel != null) btnCmdCancel.onClick.AddListener(OnCmdCancelClicked);
 
@@ -1429,14 +1481,13 @@ namespace ElementalHexTactics3D.UI
                 if (activeTutorialButtonKey == "Move") targetCmdBtn = btnCmdMove;
                 else if (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike") targetCmdBtn = btnCmdAttack;
                 else if (activeTutorialButtonKey == "Push") targetCmdBtn = btnCmdPush;
-                else if (activeTutorialButtonKey == "Fireball" || activeTutorialButtonKey == "WaterSurge" || activeTutorialButtonKey == "EarthPillar") targetCmdBtn = btnCmdSkill;
-                else if (activeTutorialButtonKey == "HarvestCore" || activeTutorialButtonKey == "Siphon") targetCmdBtn = btnCmdSiphon;
-                else if (activeTutorialButtonKey == "Cataclysm") targetCmdBtn = btnCmdCataclysm;
+                else if (activeTutorialButtonKey == "Fireball" || activeTutorialButtonKey == "WaterSurge" || activeTutorialButtonKey == "EarthPillar" || activeTutorialButtonKey == "Skill" || activeTutorialButtonKey == "Cataclysm") targetCmdBtn = btnCmdSpecial;
+                else if (activeTutorialButtonKey == "HarvestCore" || activeTutorialButtonKey == "Siphon" || activeTutorialButtonKey == "Absorb") targetCmdBtn = btnCmdAbsorb;
 
                 Button[] allCmdButtons = new Button[]
                 {
-                    btnCmdMove, btnCmdAttack, btnCmdSkill, btnCmdPush,
-                    btnCmdSiphon, btnCmdCataclysm, btnCmdRecall, btnCmdWait, btnCmdCancel
+                    btnCmdMove, btnCmdAttack, btnCmdSpecial, btnCmdDefend, btnCmdPush,
+                    btnCmdAbsorb, btnCmdItem, btnCmdWait, btnCmdCancel
                 };
 
                 foreach (var cmdBtn in allCmdButtons)
@@ -1610,7 +1661,7 @@ namespace ElementalHexTactics3D.UI
             RectTransform menuRt = commandMenuRoot.GetComponent<RectTransform>();
             SetRect(menuRt,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 1f),
-                new Vector2(0f, 0f), new Vector2(175f, 260f));
+                new Vector2(0f, 0f), new Vector2(175f, 320f));
 
             ApplyRpgMakerWindowStyle(commandMenuRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
 
@@ -1633,52 +1684,170 @@ namespace ElementalHexTactics3D.UI
             LayoutElement leH = txtCmdHeader.gameObject.AddComponent<LayoutElement>();
             leH.preferredHeight = 22f;
 
-            // Commands
+            // 1. Move
             btnCmdMove = CreateBtn("Btn_CmdMove", commandMenuRoot.transform, "👣 Move", font, 12, btnSprite, new Color(0.18f, 0.35f, 0.55f, 1f), 154f, 32f);
             txtCmdMove = btnCmdMove.GetComponentInChildren<Text>();
             btnCmdMove.onClick.RemoveAllListeners();
             btnCmdMove.onClick.AddListener(() => OnActionClicked(UnitActionMode.Move));
 
+            // 2. Attack (Basic weapon attack: 1 hex melee or 2-3 hexes ranged)
             btnCmdAttack = CreateBtn("Btn_CmdAttack", commandMenuRoot.transform, "⚔️ Attack", font, 12, btnSprite, new Color(0.68f, 0.22f, 0.20f, 1f), 154f, 32f);
             txtCmdAttack = btnCmdAttack.GetComponentInChildren<Text>();
             btnCmdAttack.onClick.RemoveAllListeners();
             btnCmdAttack.onClick.AddListener(() => OnActionClicked(UnitActionMode.TitanStrike));
 
-            btnCmdSkill = CreateBtn("Btn_CmdSkill", commandMenuRoot.transform, "🔥 Skill", font, 12, btnSprite, new Color(0.72f, 0.40f, 0.15f, 1f), 154f, 32f);
-            txtCmdSkill = btnCmdSkill.GetComponentInChildren<Text>();
-            btnCmdSkill.onClick.RemoveAllListeners();
-            btnCmdSkill.onClick.AddListener(OnCmdSkillClicked);
+            // 3. Special (Opens unique skills sub-menu)
+            btnCmdSpecial = CreateBtn("Btn_CmdSpecial", commandMenuRoot.transform, "✨ Special", font, 12, btnSprite, new Color(0.72f, 0.38f, 0.15f, 1f), 154f, 32f);
+            txtCmdSpecial = btnCmdSpecial.GetComponentInChildren<Text>();
+            btnCmdSpecial.onClick.RemoveAllListeners();
+            btnCmdSpecial.onClick.AddListener(OnCmdSpecialClicked);
 
+            // 4. Defend (Guard stance: -50% incoming damage)
+            btnCmdDefend = CreateBtn("Btn_CmdDefend", commandMenuRoot.transform, "🛡️ Defend", font, 12, btnSprite, new Color(0.20f, 0.45f, 0.65f, 1f), 154f, 32f);
+            txtCmdDefend = btnCmdDefend.GetComponentInChildren<Text>();
+            btnCmdDefend.onClick.RemoveAllListeners();
+            btnCmdDefend.onClick.AddListener(OnCmdDefendClicked);
+
+            // 5. Push (Normal 1-hex kinetic shove)
             btnCmdPush = CreateBtn("Btn_CmdPush", commandMenuRoot.transform, "💨 Push", font, 12, btnSprite, new Color(0.45f, 0.20f, 0.60f, 1f), 154f, 32f);
             txtCmdPush = btnCmdPush.GetComponentInChildren<Text>();
             btnCmdPush.onClick.RemoveAllListeners();
             btnCmdPush.onClick.AddListener(() => OnActionClicked(UnitActionMode.KineticPush));
 
-            btnCmdSiphon = CreateBtn("Btn_CmdSiphon", commandMenuRoot.transform, "⚡ Siphon", font, 12, btnSprite, new Color(0.70f, 0.55f, 0.15f, 1f), 154f, 32f);
-            txtCmdSiphon = btnCmdSiphon.GetComponentInChildren<Text>();
-            btnCmdSiphon.onClick.RemoveAllListeners();
-            btnCmdSiphon.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand));
+            // 6. Absorb (Contextual Siphon Core)
+            btnCmdAbsorb = CreateBtn("Btn_CmdAbsorb", commandMenuRoot.transform, "⚡ Absorb", font, 12, btnSprite, new Color(0.70f, 0.55f, 0.15f, 1f), 154f, 32f);
+            txtCmdAbsorb = btnCmdAbsorb.GetComponentInChildren<Text>();
+            btnCmdAbsorb.onClick.RemoveAllListeners();
+            btnCmdAbsorb.onClick.AddListener(() => OnActionClicked(UnitActionMode.ConsumeLand));
 
-            btnCmdCataclysm = CreateBtn("Btn_CmdCataclysm", commandMenuRoot.transform, "🌋 Cataclysm", font, 12, btnSprite, new Color(0.85f, 0.25f, 0.10f, 1f), 154f, 32f);
-            txtCmdCataclysm = btnCmdCataclysm.GetComponentInChildren<Text>();
-            btnCmdCataclysm.onClick.RemoveAllListeners();
-            btnCmdCataclysm.onClick.AddListener(() => OnActionClicked(UnitActionMode.MagmaCataclysm));
+            // 7. Item (Inventory potion sub-menu)
+            btnCmdItem = CreateBtn("Btn_CmdItem", commandMenuRoot.transform, "🎒 Item", font, 12, btnSprite, new Color(0.22f, 0.50f, 0.35f, 1f), 154f, 32f);
+            txtCmdItem = btnCmdItem.GetComponentInChildren<Text>();
+            btnCmdItem.onClick.RemoveAllListeners();
+            btnCmdItem.onClick.AddListener(OnCmdItemClicked);
 
-            btnCmdRecall = CreateBtn("Btn_CmdRecall", commandMenuRoot.transform, "🌀 Recall", font, 12, btnSprite, new Color(0.38f, 0.18f, 0.52f, 1f), 154f, 32f);
-            txtCmdRecall = btnCmdRecall.GetComponentInChildren<Text>();
-            btnCmdRecall.onClick.RemoveAllListeners();
-            btnCmdRecall.onClick.AddListener(OnRecallClicked);
-
+            // 8. Wait
             btnCmdWait = CreateBtn("Btn_CmdWait", commandMenuRoot.transform, "⏳ Wait", font, 12, btnSprite, new Color(0.35f, 0.35f, 0.40f, 1f), 154f, 32f);
             btnCmdWait.onClick.RemoveAllListeners();
             btnCmdWait.onClick.AddListener(OnCmdWaitClicked);
 
+            // 9. Cancel
             btnCmdCancel = CreateBtn("Btn_CmdCancel", commandMenuRoot.transform, "✕ Cancel", font, 12, btnSprite, new Color(0.25f, 0.25f, 0.28f, 1f), 154f, 30f);
             btnCmdCancel.onClick.RemoveAllListeners();
             btnCmdCancel.onClick.AddListener(OnCmdCancelClicked);
 
             commandMenuRoot.transform.SetAsLastSibling();
             commandMenuRoot.SetActive(false);
+
+            // Build Submenus alongside Main Menu
+            BuildDisgaeaSpecialSubmenu(parent, font, frameSprite, btnSprite);
+            BuildDisgaeaItemSubmenu(parent, font, frameSprite, btnSprite);
+        }
+
+        private void BuildDisgaeaSpecialSubmenu(Transform parent, Font font, Sprite frameSprite, Sprite btnSprite)
+        {
+            specialSubmenuRoot = CreateUI("Menu_DisgaeaSpecialSubmenu", parent);
+            RectTransform menuRt = specialSubmenuRoot.GetComponent<RectTransform>();
+            SetRect(menuRt,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 1f),
+                new Vector2(0f, 0f), new Vector2(185f, 220f));
+
+            ApplyRpgMakerWindowStyle(specialSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
+
+            VerticalLayoutGroup vl = specialSubmenuRoot.AddComponent<VerticalLayoutGroup>();
+            vl.padding = new RectOffset(8, 8, 10, 10);
+            vl.spacing = 4f;
+            vl.childAlignment = TextAnchor.UpperCenter;
+            vl.childControlWidth = true;
+            vl.childControlHeight = false;
+            vl.childForceExpandWidth = true;
+            vl.childForceExpandHeight = false;
+
+            ContentSizeFitter csf = specialSubmenuRoot.AddComponent<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            csf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            // Header
+            txtSpecialHeader = CreateTxt("Txt_SpecialHeader", specialSubmenuRoot.transform, "✨ SPECIAL SKILLS", font, 11, new Color(1.0f, 0.88f, 0.40f), TextAnchor.MiddleCenter);
+            txtSpecialHeader.fontStyle = FontStyle.Bold;
+            LayoutElement leH = txtSpecialHeader.gameObject.AddComponent<LayoutElement>();
+            leH.preferredHeight = 22f;
+
+            // Dynamic Container
+            GameObject contentObj = CreateUI("Special_Content", specialSubmenuRoot.transform);
+            specialSubmenuContent = contentObj.transform;
+            VerticalLayoutGroup cvl = contentObj.AddComponent<VerticalLayoutGroup>();
+            cvl.padding = new RectOffset(0, 0, 0, 0);
+            cvl.spacing = 4f;
+            cvl.childAlignment = TextAnchor.UpperCenter;
+            cvl.childControlWidth = true;
+            cvl.childControlHeight = false;
+            cvl.childForceExpandWidth = true;
+            cvl.childForceExpandHeight = false;
+            ContentSizeFitter ccsf = contentObj.AddComponent<ContentSizeFitter>();
+            ccsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            ccsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            // Persistent Back Button
+            btnSpecialBack = CreateBtn("Btn_SpecialBack", specialSubmenuRoot.transform, "🔙 Back", font, 12, btnSprite, new Color(0.28f, 0.28f, 0.32f, 1f), 164f, 30f);
+            btnSpecialBack.onClick.RemoveAllListeners();
+            btnSpecialBack.onClick.AddListener(OnSpecialBackClicked);
+
+            specialSubmenuRoot.transform.SetAsLastSibling();
+            specialSubmenuRoot.SetActive(false);
+        }
+
+        private void BuildDisgaeaItemSubmenu(Transform parent, Font font, Sprite frameSprite, Sprite btnSprite)
+        {
+            itemSubmenuRoot = CreateUI("Menu_DisgaeaItemSubmenu", parent);
+            RectTransform menuRt = itemSubmenuRoot.GetComponent<RectTransform>();
+            SetRect(menuRt,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 1f),
+                new Vector2(0f, 0f), new Vector2(185f, 180f));
+
+            ApplyRpgMakerWindowStyle(itemSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
+
+            VerticalLayoutGroup vl = itemSubmenuRoot.AddComponent<VerticalLayoutGroup>();
+            vl.padding = new RectOffset(8, 8, 10, 10);
+            vl.spacing = 4f;
+            vl.childAlignment = TextAnchor.UpperCenter;
+            vl.childControlWidth = true;
+            vl.childControlHeight = false;
+            vl.childForceExpandWidth = true;
+            vl.childForceExpandHeight = false;
+
+            ContentSizeFitter csf = itemSubmenuRoot.AddComponent<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            csf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            // Header
+            txtItemHeader = CreateTxt("Txt_ItemHeader", itemSubmenuRoot.transform, "🎒 INVENTORY", font, 11, new Color(1.0f, 0.88f, 0.40f), TextAnchor.MiddleCenter);
+            txtItemHeader.fontStyle = FontStyle.Bold;
+            LayoutElement leH = txtItemHeader.gameObject.AddComponent<LayoutElement>();
+            leH.preferredHeight = 22f;
+
+            // Dynamic Container
+            GameObject contentObj = CreateUI("Item_Content", itemSubmenuRoot.transform);
+            itemSubmenuContent = contentObj.transform;
+            VerticalLayoutGroup cvl = contentObj.AddComponent<VerticalLayoutGroup>();
+            cvl.padding = new RectOffset(0, 0, 0, 0);
+            cvl.spacing = 4f;
+            cvl.childAlignment = TextAnchor.UpperCenter;
+            cvl.childControlWidth = true;
+            cvl.childControlHeight = false;
+            cvl.childForceExpandWidth = true;
+            cvl.childForceExpandHeight = false;
+            ContentSizeFitter ccsf = contentObj.AddComponent<ContentSizeFitter>();
+            ccsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            ccsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            // Persistent Back Button
+            btnItemBack = CreateBtn("Btn_ItemBack", itemSubmenuRoot.transform, "🔙 Back", font, 12, btnSprite, new Color(0.28f, 0.28f, 0.32f, 1f), 164f, 30f);
+            btnItemBack.onClick.RemoveAllListeners();
+            btnItemBack.onClick.AddListener(OnItemBackClicked);
+
+            itemSubmenuRoot.transform.SetAsLastSibling();
+            itemSubmenuRoot.SetActive(false);
         }
 
         private void UpdateDisgaeaDispatchModal(HexGridInteraction3D interaction)
@@ -1865,23 +2034,24 @@ namespace ElementalHexTactics3D.UI
             if (!isPlayerTurn || unit == null || unit.IsMoving)
             {
                 commandMenuRoot.SetActive(false);
+                CloseAllSubmenus();
                 return;
             }
 
-            // 2. Disgaea TRPG UX: While player is in targeting mode (Move, Attack, Push, Skill, Siphon, etc.),
-            // hide command menu immediately so the battlefield and targets are completely clear!
+            // 2. Disgaea TRPG UX: While player is in targeting mode, hide command menu immediately
             if (currentMode != UnitActionMode.None)
             {
                 commandMenuRoot.SetActive(false);
+                CloseAllSubmenus();
                 return;
             }
 
-            // 3. If unit is fully exhausted for this turn (already acted AND moved, or acted and immobilized),
-            // hide the command menu so it does not clutter the screen
+            // 3. If unit is fully exhausted for this turn, hide command menu
             bool isFullyDone = unit.HasActedThisTurn && (unit.HasMovedThisTurn || unit.IsImmobilized);
             if (isFullyDone)
             {
                 commandMenuRoot.SetActive(false);
+                CloseAllSubmenus();
                 return;
             }
 
@@ -1894,6 +2064,8 @@ namespace ElementalHexTactics3D.UI
             }
 
             UpdateDisgaeaCommandMenuPosition(unit);
+            if (specialSubmenuRoot != null && specialSubmenuRoot.activeSelf) UpdateSubmenuPosition(specialSubmenuRoot);
+            if (itemSubmenuRoot != null && itemSubmenuRoot.activeSelf) UpdateSubmenuPosition(itemSubmenuRoot);
 
             bool canCombat = isPlayerTurn && !unit.HasActedThisTurn;
             bool isCommander = (unit.Archetype == UnitArchetype.Commander);
@@ -1911,99 +2083,62 @@ namespace ElementalHexTactics3D.UI
                 }
             }
 
-            // 2. Attack (Melee)
+            // 2. Attack (Melee 1 hex or Ranged weapon attack)
             if (btnCmdAttack != null)
             {
                 btnCmdAttack.interactable = canCombat;
                 SetButtonActiveHighlight(btnCmdAttack, currentMode == UnitActionMode.TitanStrike);
                 if (txtCmdAttack != null)
                 {
-                    if (unit.UnitName.Contains("Paladin")) txtCmdAttack.text = "⚔️ Holy Strike";
-                    else if (unit.UnitName.Contains("Basalt") || unit.UnitName.Contains("Golem")) txtCmdAttack.text = "👊 Boulder Smash";
-                    else if (isTitan) txtCmdAttack.text = "🐾 Titan Strike";
-                    else txtCmdAttack.text = "⚔️ Attack";
+                    txtCmdAttack.text = unit.IsRangedAttack ? "🏹 Attack" : "⚔️ Attack";
                 }
             }
 
-            // 3. Skill / Spell
-            bool isPaladin = unit.UnitName.Contains("Paladin");
-            bool showFireball = (isCommander || unit.Affinity == ElementalAffinity.Fire) && (!isTutorial1 || isPaladin) && !isTitan;
-            bool showWater = !isCommander && unit.Affinity == ElementalAffinity.Water && !isTutorial1;
-            bool showEarth = !isCommander && unit.Affinity == ElementalAffinity.Earth && !isTutorial1;
-
-            if (btnCmdSkill != null)
+            // 3. Special
+            if (btnCmdSpecial != null)
             {
-                bool hasSkill = showFireball || showWater || showEarth;
-                btnCmdSkill.gameObject.SetActive(hasSkill);
-                if (hasSkill)
-                {
-                    btnCmdSkill.interactable = canCombat;
-                    if (showFireball)
-                    {
-                        txtCmdSkill.text = isPaladin ? "☀️ Radiant Smite (Dmg 3)" : "🔥 Fireball (Dmg 3)";
-                        SetButtonActiveHighlight(btnCmdSkill, currentMode == UnitActionMode.Fireball);
-                    }
-                    else if (showWater)
-                    {
-                        txtCmdSkill.text = "💧 Water Surge";
-                        SetButtonActiveHighlight(btnCmdSkill, currentMode == UnitActionMode.WaterSurge);
-                    }
-                    else if (showEarth)
-                    {
-                        txtCmdSkill.text = "⛰️ Earth Pillar";
-                        SetButtonActiveHighlight(btnCmdSkill, currentMode == UnitActionMode.EarthSpire);
-                    }
-                }
+                btnCmdSpecial.interactable = canCombat;
+                SetButtonActiveHighlight(btnCmdSpecial, specialSubmenuRoot != null && specialSubmenuRoot.activeSelf);
+                if (txtCmdSpecial != null) txtCmdSpecial.text = "✨ Special";
             }
 
-            // 4. Push
+            // 4. Defend (Guard stance)
+            if (btnCmdDefend != null)
+            {
+                btnCmdDefend.interactable = isPlayerTurn && !unit.HasActedThisTurn;
+                if (txtCmdDefend != null) txtCmdDefend.text = "🛡️ Defend";
+            }
+
+            // 5. Push (Normal 1-hex kinetic shove)
             if (btnCmdPush != null)
             {
                 btnCmdPush.interactable = canCombat;
                 SetButtonActiveHighlight(btnCmdPush, currentMode == UnitActionMode.KineticPush);
                 if (txtCmdPush != null)
                 {
-                    if (isTitan) txtCmdPush.text = "🐊 Tail Shove";
-                    else if (unit.UnitName.Contains("Basalt") || unit.UnitName.Contains("Golem")) txtCmdPush.text = "💥 Golem Slam";
-                    else if (unit.UnitName.Contains("Paladin")) txtCmdPush.text = "⚜️ Holy Repel";
-                    else txtCmdPush.text = "💨 Push";
+                    txtCmdPush.text = (isTitan ? "🐊 Tail Shove" : "💨 Push");
                 }
             }
 
-            // 5. Siphon Land
-            if (btnCmdSiphon != null)
+            // 6. Absorb (Contextual: visible when unit can harvest/siphon cores, like Demon Lord or Titans)
+            if (btnCmdAbsorb != null)
             {
-                bool showSiphon = !isTutorial1 && !isTitan;
-                btnCmdSiphon.gameObject.SetActive(showSiphon);
-                if (showSiphon)
+                bool showAbsorb = !isTutorial1 && (isCommander || isTitan || unit.ElementalCores > 0);
+                btnCmdAbsorb.gameObject.SetActive(showAbsorb);
+                if (showAbsorb)
                 {
-                    btnCmdSiphon.interactable = canCombat && !unit.HasSiphonedThisTurn;
-                    SetButtonActiveHighlight(btnCmdSiphon, currentMode == UnitActionMode.ConsumeLand);
+                    btnCmdAbsorb.interactable = canCombat && !unit.HasSiphonedThisTurn;
+                    SetButtonActiveHighlight(btnCmdAbsorb, currentMode == UnitActionMode.ConsumeLand);
+                    if (txtCmdAbsorb != null) txtCmdAbsorb.text = "⚡ Absorb";
                 }
             }
 
-            // 6. Cataclysm (Titan only)
-            if (btnCmdCataclysm != null)
+            // 7. Item (Inventory potions)
+            if (btnCmdItem != null)
             {
-                btnCmdCataclysm.gameObject.SetActive(isTitan && !isTutorial1);
-                if (isTitan && !isTutorial1)
-                {
-                    bool canCataclysm = canCombat && unit.ElementalCores >= 1;
-                    btnCmdCataclysm.interactable = canCataclysm;
-                    SetButtonActiveHighlight(btnCmdCataclysm, currentMode == UnitActionMode.MagmaCataclysm);
-                    if (txtCmdCataclysm != null)
-                    {
-                        txtCmdCataclysm.text = (unit.ElementalCores >= 1) ? "🌋 Cataclysm" : "🌋 Cataclysm (Req 1)";
-                    }
-                }
-            }
-
-            // 7. Recall
-            if (btnCmdRecall != null)
-            {
-                bool showRecall = !isTutorial1;
-                btnCmdRecall.gameObject.SetActive(showRecall);
-                btnCmdRecall.interactable = isPlayerTurn;
+                btnCmdItem.interactable = isPlayerTurn && !unit.HasActedThisTurn;
+                SetButtonActiveHighlight(btnCmdItem, itemSubmenuRoot != null && itemSubmenuRoot.activeSelf);
+                if (txtCmdItem != null) txtCmdItem.text = "🎒 Item";
             }
 
             // 8. Wait
@@ -2021,7 +2156,7 @@ namespace ElementalHexTactics3D.UI
             ApplyDisgaeaTutorialPulse();
         }
 
-        private void OnCmdSkillClicked()
+        private void OnCmdSpecialClicked()
         {
             SoundManager3D.Instance?.PlayButtonClick();
             HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
@@ -2030,22 +2165,284 @@ namespace ElementalHexTactics3D.UI
             TacticalUnit3D sel = interaction.CurrentSelectedUnit;
             if (sel == null) return;
 
-            if (sel.Archetype == UnitArchetype.Commander || sel.Affinity == ElementalAffinity.Fire)
+            if (specialSubmenuRoot != null && specialSubmenuRoot.activeSelf)
             {
-                OnActionClicked(UnitActionMode.Fireball);
+                specialSubmenuRoot.SetActive(false);
             }
-            else if (sel.Affinity == ElementalAffinity.Water)
+            else
             {
-                OnActionClicked(UnitActionMode.WaterSurge);
+                OpenSpecialSubmenu(sel);
             }
-            else if (sel.Affinity == ElementalAffinity.Earth)
+        }
+
+        private void OnCmdDefendClicked()
+        {
+            SoundManager3D.Instance?.PlayButtonClick();
+            HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
+            if (interaction == null) return;
+
+            TacticalUnit3D sel = interaction.CurrentSelectedUnit;
+            if (sel != null && !sel.HasActedThisTurn)
             {
-                OnActionClicked(UnitActionMode.EarthSpire);
+                sel.ExecuteDefend();
+                CloseAllSubmenus();
+                if (commandMenuRoot != null) commandMenuRoot.SetActive(false);
+                interaction.ClearUnitSelection();
+                interaction.SetActionMode(UnitActionMode.None);
             }
-            else if (sel.Archetype == UnitArchetype.Titan)
+        }
+
+        private void OnCmdItemClicked()
+        {
+            SoundManager3D.Instance?.PlayButtonClick();
+            HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
+            if (interaction == null) return;
+
+            TacticalUnit3D sel = interaction.CurrentSelectedUnit;
+            if (sel == null) return;
+
+            if (itemSubmenuRoot != null && itemSubmenuRoot.activeSelf)
             {
-                OnActionClicked(UnitActionMode.MagmaCataclysm);
+                itemSubmenuRoot.SetActive(false);
             }
+            else
+            {
+                OpenItemSubmenu(sel);
+            }
+        }
+
+        private void OpenSpecialSubmenu(TacticalUnit3D unit)
+        {
+            if (unit == null) return;
+            if (itemSubmenuRoot != null) itemSubmenuRoot.SetActive(false);
+            if (specialSubmenuRoot == null) return;
+
+            specialSubmenuRoot.SetActive(true);
+            specialSubmenuRoot.transform.SetAsLastSibling();
+
+            PopulateSpecialSkills(unit);
+            UpdateSubmenuPosition(specialSubmenuRoot);
+        }
+
+        private void PopulateSpecialSkills(TacticalUnit3D unit)
+        {
+            if (specialSubmenuContent == null) return;
+
+            for (int i = specialSubmenuContent.childCount - 1; i >= 0; i--)
+            {
+                Destroy(specialSubmenuContent.GetChild(i).gameObject);
+            }
+
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Sprite btnSprite = TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
+
+            bool isPlayerTurn = TurnManager3D.Instance != null && TurnManager3D.Instance.CurrentPhase == TurnPhase.PlayerTurn;
+            bool canCombat = isPlayerTurn && !unit.HasActedThisTurn;
+            bool isCommander = (unit.Archetype == UnitArchetype.Commander);
+            bool isTitan = (unit.Archetype == UnitArchetype.Titan);
+            bool isPaladin = unit.UnitName.Contains("Paladin");
+            bool isTutorial1 = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage1Active;
+
+            int skillCount = 0;
+
+            // 1. Holy Paladin Skills
+            if (isPaladin)
+            {
+                skillCount++;
+                Button btnSmite = CreateBtn("Btn_Skill_Smite", specialSubmenuContent, "☀️ Radiant Smite (Dmg 3)", font, 11, btnSprite, new Color(0.75f, 0.55f, 0.15f, 1f), 164f, 32f);
+                btnSmite.interactable = canCombat;
+                btnSmite.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    OnActionClicked(UnitActionMode.Fireball);
+                });
+
+                skillCount++;
+                Button btnRepel = CreateBtn("Btn_Skill_Repel", specialSubmenuContent, "⚜️ Holy Repel (Push 1)", font, 11, btnSprite, new Color(0.40f, 0.55f, 0.70f, 1f), 164f, 32f);
+                btnRepel.interactable = canCombat;
+                btnRepel.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    OnActionClicked(UnitActionMode.KineticPush);
+                });
+            }
+            // 2. Demon Lord / Fire Commander Skills
+            else if (isCommander || unit.Affinity == ElementalAffinity.Fire)
+            {
+                if (!isTitan)
+                {
+                    skillCount++;
+                    Button btnFire = CreateBtn("Btn_Skill_Fireball", specialSubmenuContent, "🔥 Fireball (Dmg 3)", font, 11, btnSprite, new Color(0.72f, 0.35f, 0.12f, 1f), 164f, 32f);
+                    btnFire.interactable = canCombat;
+                    btnFire.onClick.AddListener(() =>
+                    {
+                        CloseAllSubmenus();
+                        OnActionClicked(UnitActionMode.Fireball);
+                    });
+                }
+            }
+
+            // 3. Water Affinity Skills
+            if (!isPaladin && !isCommander && unit.Affinity == ElementalAffinity.Water && !isTutorial1)
+            {
+                skillCount++;
+                Button btnWater = CreateBtn("Btn_Skill_WaterSurge", specialSubmenuContent, "💧 Water Surge", font, 11, btnSprite, new Color(0.15f, 0.45f, 0.70f, 1f), 164f, 32f);
+                btnWater.interactable = canCombat;
+                btnWater.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    OnActionClicked(UnitActionMode.WaterSurge);
+                });
+            }
+
+            // 4. Earth Affinity Skills
+            if (!isPaladin && !isCommander && unit.Affinity == ElementalAffinity.Earth && !isTutorial1)
+            {
+                skillCount++;
+                Button btnEarth = CreateBtn("Btn_Skill_EarthSpire", specialSubmenuContent, "⛰️ Earth Pillar", font, 11, btnSprite, new Color(0.45f, 0.32f, 0.18f, 1f), 164f, 32f);
+                btnEarth.interactable = canCombat;
+                btnEarth.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    OnActionClicked(UnitActionMode.EarthSpire);
+                });
+            }
+
+            // 5. Titan Colossal Skills
+            if (isTitan && !isTutorial1)
+            {
+                skillCount++;
+                bool canCataclysm = canCombat && unit.ElementalCores >= 1;
+                string cataLabel = (unit.ElementalCores >= 1) ? "🌋 Magma Cataclysm" : "🌋 Cataclysm (Req 1 Core)";
+                Button btnCata = CreateBtn("Btn_Skill_Cataclysm", specialSubmenuContent, cataLabel, font, 11, btnSprite, new Color(0.85f, 0.22f, 0.10f, 1f), 164f, 32f);
+                btnCata.interactable = canCataclysm;
+                btnCata.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    OnActionClicked(UnitActionMode.MagmaCataclysm);
+                });
+
+                skillCount++;
+                Button btnTail = CreateBtn("Btn_Skill_TailShove", specialSubmenuContent, "🐊 Tail Shove", font, 11, btnSprite, new Color(0.50f, 0.25f, 0.65f, 1f), 164f, 32f);
+                btnTail.interactable = canCombat;
+                btnTail.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    OnActionClicked(UnitActionMode.KineticPush);
+                });
+            }
+
+            // 6. Recall Skill
+            if (!isTutorial1 && (isCommander || isTitan))
+            {
+                skillCount++;
+                Button btnRec = CreateBtn("Btn_Skill_Recall", specialSubmenuContent, "🌀 Recall to Citadel", font, 11, btnSprite, new Color(0.38f, 0.18f, 0.52f, 1f), 164f, 32f);
+                btnRec.interactable = isPlayerTurn;
+                btnRec.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    OnRecallClicked();
+                });
+            }
+
+            if (skillCount == 0)
+            {
+                CreateTxt("Txt_NoSkills", specialSubmenuContent, "<i>(No Special Skills)</i>", font, 11, new Color(0.6f, 0.6f, 0.65f), TextAnchor.MiddleCenter);
+            }
+        }
+
+        private void OpenItemSubmenu(TacticalUnit3D unit)
+        {
+            if (unit == null) return;
+            if (specialSubmenuRoot != null) specialSubmenuRoot.SetActive(false);
+            if (itemSubmenuRoot == null) return;
+
+            itemSubmenuRoot.SetActive(true);
+            itemSubmenuRoot.transform.SetAsLastSibling();
+
+            PopulateItems(unit);
+            UpdateSubmenuPosition(itemSubmenuRoot);
+        }
+
+        private void PopulateItems(TacticalUnit3D unit)
+        {
+            if (itemSubmenuContent == null) return;
+
+            for (int i = itemSubmenuContent.childCount - 1; i >= 0; i--)
+            {
+                Destroy(itemSubmenuContent.GetChild(i).gameObject);
+            }
+
+            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Sprite btnSprite = TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
+
+            bool isPlayerTurn = TurnManager3D.Instance != null && TurnManager3D.Instance.CurrentPhase == TurnPhase.PlayerTurn;
+            bool canUseItem = isPlayerTurn && !unit.HasActedThisTurn && unit.CurrentHealth < unit.MaxHealth;
+
+            string potLabel = (unit.CurrentHealth >= unit.MaxHealth) ? "🧪 Potion (HP Full)" : "🧪 Health Potion (+5 HP)";
+            Button btnPot = CreateBtn("Btn_Item_Potion", itemSubmenuContent, potLabel, font, 11, btnSprite, new Color(0.18f, 0.55f, 0.30f, 1f), 164f, 32f);
+            btnPot.interactable = canUseItem;
+            btnPot.onClick.AddListener(() =>
+            {
+                SoundManager3D.Instance?.PlayCoreAbsorb();
+                unit.Heal(5, "🧪 +5 HP (Potion)");
+                unit.HasActedThisTurn = true;
+                CloseAllSubmenus();
+                if (unit.IsExhausted)
+                {
+                    HexGridInteraction3D.Instance?.ClearUnitSelection();
+                }
+            });
+        }
+
+        public void UpdateSubmenuPosition(GameObject subMenuRoot)
+        {
+            if (subMenuRoot == null || commandMenuRoot == null) return;
+
+            RectTransform cmdRect = commandMenuRoot.GetComponent<RectTransform>();
+            RectTransform subRect = subMenuRoot.GetComponent<RectTransform>();
+            RectTransform parentRect = cmdRect.parent as RectTransform;
+            if (parentRect == null) parentRect = GetComponent<RectTransform>();
+
+            subRect.anchorMin = cmdRect.anchorMin;
+            subRect.anchorMax = cmdRect.anchorMax;
+            subRect.pivot = new Vector2(0f, 1f);
+
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(subRect);
+
+            float menuWidth = cmdRect.rect.width > 0 ? cmdRect.rect.width : 175f;
+            float subWidth = subRect.rect.width > 0 ? subRect.rect.width : 185f;
+            float edgeMargin = 20f;
+
+            // Cascading sub-menu: try right side first
+            float targetX = cmdRect.anchoredPosition.x + menuWidth + 6f;
+            if (targetX + subWidth > parentRect.rect.xMax - edgeMargin)
+            {
+                // Cascade to left if right edge exceeded
+                targetX = cmdRect.anchoredPosition.x - subWidth - 6f;
+            }
+
+            subRect.anchoredPosition = new Vector2(targetX, cmdRect.anchoredPosition.y);
+        }
+
+        public void CloseAllSubmenus()
+        {
+            if (specialSubmenuRoot != null) specialSubmenuRoot.SetActive(false);
+            if (itemSubmenuRoot != null) itemSubmenuRoot.SetActive(false);
+        }
+
+        public bool IsSubmenuOpen => (specialSubmenuRoot != null && specialSubmenuRoot.activeSelf) || (itemSubmenuRoot != null && itemSubmenuRoot.activeSelf);
+
+        private void OnSpecialBackClicked()
+        {
+            SoundManager3D.Instance?.PlayButtonClick();
+            if (specialSubmenuRoot != null) specialSubmenuRoot.SetActive(false);
+        }
+
+        private void OnItemBackClicked()
+        {
+            SoundManager3D.Instance?.PlayButtonClick();
+            if (itemSubmenuRoot != null) itemSubmenuRoot.SetActive(false);
         }
 
         private void OnCmdWaitClicked()
@@ -2059,6 +2456,7 @@ namespace ElementalHexTactics3D.UI
             {
                 sel.HasActedThisTurn = true;
                 sel.HasMovedThisTurn = true;
+                CloseAllSubmenus();
                 interaction.ClearUnitSelection();
                 interaction.SetActionMode(UnitActionMode.None);
             }
@@ -2067,6 +2465,12 @@ namespace ElementalHexTactics3D.UI
         private void OnCmdCancelClicked()
         {
             SoundManager3D.Instance?.PlayButtonClick();
+            if (IsSubmenuOpen)
+            {
+                CloseAllSubmenus();
+                return;
+            }
+
             HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
             if (interaction == null) return;
 
@@ -2091,20 +2495,19 @@ namespace ElementalHexTactics3D.UI
             Button targetBtn = null;
             if (activeTutorialButtonKey == "Move") targetBtn = btnCmdMove;
             else if (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike") targetBtn = btnCmdAttack;
-            else if (activeTutorialButtonKey == "Fireball") targetBtn = btnCmdSkill;
+            else if (activeTutorialButtonKey == "Fireball" || activeTutorialButtonKey == "WaterSurge" || activeTutorialButtonKey == "EarthPillar" || activeTutorialButtonKey == "Skill" || activeTutorialButtonKey == "Cataclysm") targetBtn = btnCmdSpecial;
             else if (activeTutorialButtonKey == "Push") targetBtn = btnCmdPush;
-            else if (activeTutorialButtonKey == "HarvestCore" || activeTutorialButtonKey == "Siphon") targetBtn = btnCmdSiphon;
-            else if (activeTutorialButtonKey == "Cataclysm") targetBtn = btnCmdCataclysm;
+            else if (activeTutorialButtonKey == "HarvestCore" || activeTutorialButtonKey == "Siphon" || activeTutorialButtonKey == "Absorb") targetBtn = btnCmdAbsorb;
 
             Button[] menuButtons = new Button[]
             {
-                btnCmdMove, btnCmdAttack, btnCmdSkill, btnCmdPush,
-                btnCmdSiphon, btnCmdCataclysm, btnCmdRecall, btnCmdWait, btnCmdCancel
+                btnCmdMove, btnCmdAttack, btnCmdSpecial, btnCmdDefend, btnCmdPush,
+                btnCmdAbsorb, btnCmdItem, btnCmdWait, btnCmdCancel
             };
 
             bool isPushOrStrike = (activeTutorialButtonKey == "PushOrStrike");
             bool isStrikeOrMove = (activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "StrikeOrMove");
-            bool isStrikeOrSkill = (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Fireball" || activeTutorialButtonKey == "Skill");
+            bool isStrikeOrSkill = (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Fireball" || activeTutorialButtonKey == "Skill" || activeTutorialButtonKey == "Cataclysm");
 
             foreach (var btn in menuButtons)
             {
@@ -2112,7 +2515,7 @@ namespace ElementalHexTactics3D.UI
                 bool isAllowed = (btn == targetBtn) ||
                                  (isPushOrStrike && (btn == btnCmdPush || btn == btnCmdAttack)) ||
                                  (isStrikeOrMove && (btn == btnCmdAttack || btn == btnCmdMove)) ||
-                                 (isStrikeOrSkill && (btn == btnCmdAttack || btn == btnCmdSkill)) ||
+                                 (isStrikeOrSkill && (btn == btnCmdAttack || btn == btnCmdSpecial)) ||
                                  (btn == btnCmdMove) ||
                                  (btn == btnCmdCancel) ||
                                  (btn == btnCmdAttack && (activeTutorialButtonKey == "Strike" || activeTutorialButtonKey == "TitanStrike" || activeTutorialButtonKey == "Move" || activeTutorialButtonKey == "Push"));
@@ -2120,7 +2523,7 @@ namespace ElementalHexTactics3D.UI
                 if (isAllowed)
                 {
                     btn.interactable = true;
-                    if (btn == targetBtn || (isStrikeOrSkill && (btn == btnCmdAttack || btn == btnCmdSkill)))
+                    if (btn == targetBtn || (isStrikeOrSkill && (btn == btnCmdAttack || btn == btnCmdSpecial)))
                     {
                         float pulse = (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f;
                         Color goldPulse = Color.Lerp(Color.white, new Color(1.0f, 0.85f, 0.2f, 1f), pulse);
@@ -2219,10 +2622,19 @@ namespace ElementalHexTactics3D.UI
                     if (sel.IsMoving || interaction.CurrentActionMode != UnitActionMode.None)
                     {
                         commandMenuRoot.SetActive(false);
+                        CloseAllSubmenus();
                     }
                     else
                     {
                         UpdateDisgaeaCommandMenuPosition(sel);
+                        if (specialSubmenuRoot != null && specialSubmenuRoot.activeSelf)
+                        {
+                            UpdateSubmenuPosition(specialSubmenuRoot);
+                        }
+                        if (itemSubmenuRoot != null && itemSubmenuRoot.activeSelf)
+                        {
+                            UpdateSubmenuPosition(itemSubmenuRoot);
+                        }
                     }
                 }
             }

@@ -32,8 +32,8 @@ namespace ElementalHexTactics3D.Combat
 
         [Header("Audio Settings")]
         [SerializeField] private bool isMuted = false;
-        [SerializeField] [Range(0f, 1f)] private float sfxVolume = 0.80f;
-        [SerializeField] [Range(0f, 1f)] private float bgmVolume = 0.45f;
+        [SerializeField] [Range(0f, 1f)] private float sfxVolume = 0.60f;
+        [SerializeField] [Range(0f, 1f)] private float bgmVolume = 0.25f;
 
         [Header("Spell Audio (MP3 & OGG)")]
         [SerializeField] private AudioClip[] fireballClips;
@@ -82,7 +82,7 @@ namespace ElementalHexTactics3D.Combat
             get => isMuted;
             set
             {
-                isMuted = value;
+                isMuted = value; SaveAudioPrefs();
                 if (sfxSource != null) sfxSource.mute = isMuted;
                 if (bgmSource != null) bgmSource.mute = isMuted;
             }
@@ -94,7 +94,7 @@ namespace ElementalHexTactics3D.Combat
             set
             {
                 sfxVolume = Mathf.Clamp01(value);
-                if (sfxSource != null) sfxSource.volume = sfxVolume;
+                SaveAudioPrefs();
             }
         }
 
@@ -105,6 +105,7 @@ namespace ElementalHexTactics3D.Combat
             {
                 bgmVolume = Mathf.Clamp01(value);
                 if (bgmSource != null && bgmFadeCoroutine == null) bgmSource.volume = bgmVolume;
+                SaveAudioPrefs();
             }
         }
 
@@ -122,9 +123,27 @@ namespace ElementalHexTactics3D.Combat
                 return;
             }
 
-            SetupAudioSources();
+            LoadAudioPrefs(); SetupAudioSources();
             GenerateProceduralAudioClips();
             LoadAudioClips();
+        }
+
+        private const string PrefSfx = "Audio_SfxVolume_v2";
+        private const string PrefBgm = "Audio_BgmVolume_v2";
+        private const string PrefMute = "Audio_Muted_v2";
+
+        private void LoadAudioPrefs()
+        {
+            sfxVolume = PlayerPrefs.GetFloat(PrefSfx, 0.60f);
+            bgmVolume = PlayerPrefs.GetFloat(PrefBgm, 0.25f);
+            isMuted = PlayerPrefs.GetInt(PrefMute, isMuted ? 1 : 0) == 1;
+        }
+
+        private void SaveAudioPrefs()
+        {
+            PlayerPrefs.SetFloat(PrefSfx, sfxVolume);
+            PlayerPrefs.SetFloat(PrefBgm, bgmVolume);
+            PlayerPrefs.SetInt(PrefMute, isMuted ? 1 : 0);
         }
 
         private void OnValidate()
@@ -138,7 +157,7 @@ namespace ElementalHexTactics3D.Combat
             {
                 sfxSource = gameObject.AddComponent<AudioSource>();
                 sfxSource.playOnAwake = false;
-                sfxSource.volume = sfxVolume;
+                sfxSource.volume = 1f;
                 sfxSource.mute = isMuted;
             }
 
@@ -295,23 +314,24 @@ namespace ElementalHexTactics3D.Combat
         public void PlayEarthSpire() => PlayRandomClip(earthmagicClips, impactThudClip, 1.0f);
         public void PlayKineticPush() => PlaySingleClip(airblastClip, fireWhooshClip, 1.0f);
         public void PlayTailShove() => PlaySingleClip(tailwhipClip != null ? tailwhipClip : airblastClip, fireWhooshClip, 1.0f);
-        public void PlayCoreAbsorb() => PlaySingleClip(coreAbsorbClip, siphonChimeClip, 1.1f);
+        public void PlayCoreAbsorb() => PlaySingleClip(coreAbsorbClip, siphonChimeClip, 1.0f);
         public void PlayConsumeLand() => PlayCoreAbsorb();
-        public void PlayCataclysm() => PlaySingleClip(magmaBlastClip, cataclysmBoomClip, 1.3f);
-        public void PlayTitanStrike() => PlayRandomClip(monsterAttackClips, impactThudClip, 1.15f);
+        public void PlayCataclysm() => PlaySingleClip(magmaBlastClip, cataclysmBoomClip, 1.0f);
+        public void PlayTitanStrike() => PlayRandomClip(monsterAttackClips, impactThudClip, 1.0f);
         public void PlayMonsterAttack() => PlayRandomClip(monsterAttackClips, impactThudClip, 1.0f);
-        public void PlayRiftOpen() => PlaySingleClip(riftOpenClip, waterSplashClip, 1.15f);
-        public void PlayVanguardEmergence() => PlaySingleClip(vanguardEmergenceClip, siphonChimeClip, 1.1f);
-        public void PlayRiftDevour() => PlaySingleClip(riftSacrificeClip, cataclysmBoomClip, 1.25f);
+        public void PlayRiftOpen() => PlaySingleClip(riftOpenClip, waterSplashClip, 1.0f);
+        public void PlayVanguardEmergence() => PlaySingleClip(vanguardEmergenceClip, siphonChimeClip, 1.0f);
+        public void PlayRiftDevour() => PlaySingleClip(riftSacrificeClip, cataclysmBoomClip, 0.85f);
         public void PlayWallSlam(float volumeScale = 1.0f) => PlaySingleClip(wallSlamClip, impactThudClip, volumeScale);
         public void PlayMudTrap() => PlaySingleClip(mudTrapClip, waterSplashClip, 1.0f);
         public void PlayGetHit() => PlaySingleClip(getHitClip, impactThudClip, 0.95f);
-        public void PlayVictory() => PlaySingleClip(victoryClip, siphonChimeClip, 1.2f);
-        public void PlayDefeat() => PlaySingleClip(defeatClip, cataclysmBoomClip, 1.2f);
-        public void PlayRadiantSmite(float volumeScale = 1.0f) => PlaySingleClip(radiantSmiteClip, siphonChimeClip, 1.3f * volumeScale);
-        public void PlayHellfireBlast(float volumeScale = 1.0f) => PlaySingleClip(hellfireBlastClip, cataclysmBoomClip, 1.3f * volumeScale);
-        public void PlayImpSpit(float volumeScale = 1.0f) => PlaySingleClip(impSpitClip, fireWhooshClip, 1.05f * volumeScale);
-        public void PlayChainBlast(float volumeScale = 1.0f) => PlaySingleClip(chainBlastClip, cataclysmBoomClip, 1.25f * volumeScale);
+        public void PlayVictory() => PlaySingleClip(victoryClip, siphonChimeClip, 1.0f);
+        public void PlayDefeat() => PlaySingleClip(defeatClip, cataclysmBoomClip, 1.0f);
+        public void PlayGuard(float volumeScale = 1.0f) => PlaySingleClip(siphonChimeClip, impactThudClip, 0.9f * volumeScale);
+        public void PlayRadiantSmite(float volumeScale = 1.0f) => PlaySingleClip(radiantSmiteClip, siphonChimeClip, 0.9f * volumeScale);
+        public void PlayHellfireBlast(float volumeScale = 1.0f) => PlaySingleClip(hellfireBlastClip, cataclysmBoomClip, 0.9f * volumeScale);
+        public void PlayImpSpit(float volumeScale = 1.0f) => PlaySingleClip(impSpitClip, fireWhooshClip, 0.8f * volumeScale);
+        public void PlayChainBlast(float volumeScale = 1.0f) => PlaySingleClip(chainBlastClip, cataclysmBoomClip, 0.85f * volumeScale);
 
         public void PlaySpellCast(ElementType element)
         {

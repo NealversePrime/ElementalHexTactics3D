@@ -49,11 +49,13 @@ namespace ElementalHexTactics3D.Units
         [SerializeField] private int currentHealth = 10;
         [SerializeField] private int moveRange = 3;
         [SerializeField] private int baseAttackDamage = 3;
+        [SerializeField] private int attackRange = 1;
 
         [Header("Turn Action Economy")]
         [SerializeField] private bool hasMovedThisTurn = false;
         [SerializeField] private bool hasActedThisTurn = false;
         [SerializeField] private bool hasSiphonedThisTurn = false;
+        [SerializeField] private bool isDefending = false;
 
         [Header("Grid Positioning")]
         [SerializeField] private HexCoordinates coordinates;
@@ -145,6 +147,23 @@ namespace ElementalHexTactics3D.Units
 
         public int MoveRange => moveRange;
         public int BaseAttackDamage => baseAttackDamage;
+        public bool IsDefending { get => isDefending; set => isDefending = value; }
+
+        public int AttackRange
+        {
+            get
+            {
+                if (attackRange > 0) return attackRange;
+                string lower = unitName.ToLowerInvariant();
+                if (lower.Contains("archer") || lower.Contains("ranger") || lower.Contains("bow")) return 3;
+                if (lower.Contains("mage") || lower.Contains("wizard") || lower.Contains("sorcerer")) return 2;
+                if (archetype == UnitArchetype.Titan || lower.Contains("dragon")) return 2;
+                return 1;
+            }
+            set => attackRange = value;
+        }
+
+        public bool IsRangedAttack => AttackRange > 1;
 
         // Attunement Properties (FFT Geomancer System)
         public string CurrentAttunementName { get; private set; } = "None";
@@ -229,6 +248,7 @@ namespace ElementalHexTactics3D.Units
             hasMovedThisTurn = false;
             hasActedThisTurn = false;
             hasSiphonedThisTurn = false;
+            isDefending = false;
             UpdateAttunement();
             UpdateBaseRingVisuals();
         }
@@ -567,6 +587,11 @@ namespace ElementalHexTactics3D.Units
                 CurrentAttunementName += " | 🦶 CRIPPLED (Move 1)";
             }
 
+            if (isDefending)
+            {
+                CurrentAttunementName += " | 🛡️ DEFENDING (-50% DMG)";
+            }
+
             UpdateBaseRingVisuals();
         }
 
@@ -578,6 +603,12 @@ namespace ElementalHexTactics3D.Units
                 {
                     baseRingRenderer.color = SelectedColor;
                     baseRing.transform.localScale = Vector3.one * 1.25f;
+                }
+                else if (isDefending)
+                {
+                    // Guarding stance: protective cyan shield base ring!
+                    baseRingRenderer.color = new Color(0.35f, 0.75f, 1.0f, 0.95f);
+                    baseRing.transform.localScale = Vector3.one * 1.15f;
                 }
                 else if (faction == UnitFaction.Player && IsExhausted)
                 {
@@ -796,6 +827,18 @@ namespace ElementalHexTactics3D.Units
 
         public void TakeDamage(int amount, string customLabel = null)
         {
+            // 0. Defensive Guard Stance mitigation (-50% damage reduction)
+            if (isDefending && amount > 0)
+            {
+                int originalDmg = amount;
+                amount = Mathf.Max(1, Mathf.RoundToInt(amount * 0.5f));
+                Debug.Log($"<color=#64B5F6><b>[Guard Block]</b></color> {unitName} guarded! Damage mitigated from {originalDmg} to {amount}.");
+                if (string.IsNullOrEmpty(customLabel))
+                {
+                    customLabel = $"🛡️ GUARD! -{amount}";
+                }
+            }
+
             // 1. Magma Hazard Immunity check via Flame Attunement
             if (IsMagmaImmune && !string.IsNullOrEmpty(customLabel) && customLabel.IndexOf("Magma", System.StringComparison.OrdinalIgnoreCase) >= 0)
             {
@@ -871,6 +914,24 @@ namespace ElementalHexTactics3D.Units
             string label = !string.IsNullOrEmpty(customLabel) ? customLabel : $"+{healed} HP";
             CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, label, new Color(0.3f, 0.95f, 0.4f));
             CombatVFXManager.Instance?.PlayHitSparks(transform.position + Vector3.up * 0.75f, new Color(0.4f, 1f, 0.6f));
+        }
+
+        /// <summary>
+        /// Puts the unit into a defensive guard stance, reducing all incoming damage by 50% until next turn.
+        /// Concludes the unit's actions for this turn.
+        /// </summary>
+        public void ExecuteDefend()
+        {
+            isDefending = true;
+            hasMovedThisTurn = true;
+            hasActedThisTurn = true;
+            UpdateAttunement();
+            UpdateBaseRingVisuals();
+
+            Debug.Log($"<color=#42A5F5><b>[Defend Action]</b></color> {unitName} assumes a defensive guard stance (-50% incoming damage)!");
+            CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "🛡️ DEFENDING (-50% DMG)", new Color(0.35f, 0.75f, 1.0f), 1.6f);
+            CombatVFXManager.Instance?.PlayHitSparks(transform.position + Vector3.up * 0.75f, new Color(0.35f, 0.75f, 1.0f));
+            SoundManager3D.Instance?.PlayGuard();
         }
 
         private void Die()

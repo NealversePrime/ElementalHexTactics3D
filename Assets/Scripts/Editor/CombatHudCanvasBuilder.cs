@@ -14,9 +14,9 @@ namespace ElementalHexTactics3D.Editor
     /// </summary>
     public static class CombatHudCanvasBuilder
     {
-        private const string BtnNormalPath = "Assets/Sprites/UI/UI_Button_Normal.png";
-        private const string BtnHighlightPath = "Assets/Sprites/UI/UI_Button_Highlight.png";
-        private const string PanelFramePath = "Assets/Sprites/UI/UI_Panel_Frame.png";
+        private const string BtnNormalPath = "Assets/Sprites/UI/UI_Button_Holy.png";
+        private const string BtnHighlightPath = "Assets/Sprites/UI/UI_Button_Holy.png";
+        private const string PanelFramePath = "Assets/Sprites/UI/UI_Box_Holy_9Slice.png";
         private const string FontBoldPath = "Assets/Fonts/Font_Bold.ttf";
         private const string FontRegularPath = "Assets/Fonts/Font_Regular.ttf";
 

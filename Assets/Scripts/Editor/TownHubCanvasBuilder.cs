@@ -28,8 +28,8 @@ namespace ElementalHexTactics3D.Editor
         private const string MineFarmPath = HubDir + "minefarm.png";
         private const string DemonStatuePath = HubDir + "demonstatue.png";
 
-        private const string BtnNormalPath = "Assets/Sprites/UI/UI_Button_Normal.png";
-        private const string PanelFramePath = "Assets/Sprites/UI/UI_Panel_Frame.png";
+        private const string BtnNormalPath = "Assets/Sprites/UI/UI_Button_Demon.png";
+        private const string PanelFramePath = "Assets/Sprites/UI/UI_Box_Demon_9Slice.png";
         private const string FontBoldPath = "Assets/Fonts/Font_Bold.ttf";
         private const string FontRegularPath = "Assets/Fonts/Font_Regular.ttf";
 
@@ -550,11 +550,24 @@ namespace ElementalHexTactics3D.Editor
             GameObject modalRoot = CreateUIObject(name, parent);
             SetStretchAll(modalRoot.GetComponent<RectTransform>());
 
-            // Backdrop dimmer
+            // Backdrop dimmer (Deep 85% opacity overlay)
             GameObject backdrop = CreateUIObject("Backdrop", modalRoot.transform);
             SetStretchAll(backdrop.GetComponent<RectTransform>());
             Image bdImg = backdrop.AddComponent<Image>();
-            bdImg.color = new Color(0f, 0f, 0f, 0.75f);
+            bdImg.color = new Color(0.02f, 0.03f, 0.05f, 0.85f);
+            bdImg.raycastTarget = true;
+
+            // Solid opaque card background (demon theme basalt, rendered right behind CardFrame)
+            GameObject solidBg = CreateUIObject("CardFrame_SolidBg", modalRoot.transform);
+            RectTransform solidRect = solidBg.GetComponent<RectTransform>();
+            solidRect.anchorMin = new Vector2(0.5f, 0.5f);
+            solidRect.anchorMax = new Vector2(0.5f, 0.5f);
+            solidRect.pivot = new Vector2(0.5f, 0.5f);
+            solidRect.sizeDelta = new Vector2(560f, 380f);
+            solidRect.anchoredPosition = Vector2.zero;
+            Image solidImg = solidBg.AddComponent<Image>();
+            solidImg.color = new Color(0.06f, 0.05f, 0.09f, 1.0f); // Solid Obsidian Basalt
+            solidImg.raycastTarget = true;
 
             // Modal Card
             GameObject cardObj = CreateUIObject("CardFrame", modalRoot.transform);
@@ -570,6 +583,7 @@ namespace ElementalHexTactics3D.Editor
             {
                 cardImg.sprite = panelFrame;
                 cardImg.color = Color.white;
+                cardImg.type = (panelFrame.border != Vector4.zero) ? Image.Type.Sliced : Image.Type.Simple;
             }
             else
             {
@@ -627,6 +641,7 @@ namespace ElementalHexTactics3D.Editor
             {
                 img.sprite = bgSprite;
                 img.color = Color.white;
+                img.type = (bgSprite.border != Vector4.zero) ? Image.Type.Sliced : Image.Type.Simple;
             }
             else
             {

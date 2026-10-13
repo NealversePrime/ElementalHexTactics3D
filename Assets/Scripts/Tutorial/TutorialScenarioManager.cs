@@ -140,6 +140,9 @@ namespace ElementalHexTactics3D.Tutorial
         public TacticalUnit3D EarthGolemPlayer => MagmaDragonPlayer;
 
         private bool isStage1Ending = false;
+        private float stage1IdleTimer = 0f;
+        private bool stage1MoveHintShown = false;
+        private bool stage1PushHintShown = false;
 
         private HexTile3D currentHighlightedTile = null;
         public HexTile3D CurrentHighlightedTile => currentHighlightedTile;
@@ -184,7 +187,7 @@ namespace ElementalHexTactics3D.Tutorial
             HexGridInteraction3D interaction = HexGridInteraction3D.Instance;
             TurnManager3D turn = TurnManager3D.Instance;
 
-            // ================= STAGE 1 STEP EVALUATION ================= //
+            // ================= STAGE 1: GUIDED PLAY & SOFT HINT EVALUATION ================= //
             if (CurrentStage == TutorialStage.Stage1_HolyCrusade)
             {
                 // Instant Victory Check: If Demon Lord Boss falls at any point, trigger Glitch & Victory!
@@ -195,72 +198,61 @@ namespace ElementalHexTactics3D.Tutorial
                     return;
                 }
 
-                switch (CurrentStep)
+                // Guided Play Heuristic: Detect user activity to reset idle timer and dismiss hints
+                bool playerIsActive = false;
+                if (interaction != null && interaction.SelectedUnit != null)
                 {
-                    case TutorialStep.Stage1_SelectPaladin:
-                        if (interaction != null && interaction.SelectedUnit == PaladinUnit)
-                        {
-                            SetStep(TutorialStep.Stage1_MovePaladin);
-                        }
-                        else if (PaladinUnit != null && (PaladinUnit.HasMovedThisTurn || PaladinUnit.HasActedThisTurn))
-                        {
-                            SetStep(TutorialStep.Stage1_SelectHolyShielder);
-                        }
-                        break;
+                    playerIsActive = true;
+                }
+                if (UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.anyKey.wasPressedThisFrame)
+                {
+                    playerIsActive = true;
+                }
+                if (UnityEngine.InputSystem.Mouse.current != null && (UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame || UnityEngine.InputSystem.Mouse.current.rightButton.wasPressedThisFrame || UnityEngine.InputSystem.Mouse.current.delta.ReadValue().sqrMagnitude > 4f))
+                {
+                    playerIsActive = true;
+                }
 
-                    case TutorialStep.Stage1_MovePaladin:
-                        if (PaladinUnit != null && PaladinUnit.HasActedThisTurn)
-                        {
-                            SetStep(TutorialStep.Stage1_SelectHolyShielder);
-                        }
-                        else if (PaladinUnit != null && PaladinUnit.HasMovedThisTurn)
-                        {
-                            SetStep(TutorialStep.Stage1_HolyStrikeDemonLord);
-                        }
-                        break;
+                if (playerIsActive)
+                {
+                    stage1IdleTimer = 0f;
+                    // Auto-hide soft hint as soon as the player interacts
+                    TutorialGuidanceBannerUI.SafeHideGuidance();
+                }
+                else if (turn != null && turn.IsPlayerTurn)
+                {
+                    stage1IdleTimer += Time.deltaTime;
 
-                    case TutorialStep.Stage1_HolyStrikeDemonLord:
-                        if (PaladinUnit != null && PaladinUnit.HasActedThisTurn)
+                    // Soft Hint 1: If idle > 15s at start and Paladin hasn't moved/acted yet
+                    if (!stage1MoveHintShown && stage1IdleTimer >= 15f)
+                    {
+                        if (PaladinUnit != null && !PaladinUnit.HasMovedThisTurn && !PaladinUnit.HasActedThisTurn)
                         {
-                            SetStep(TutorialStep.Stage1_SelectHolyShielder);
+                            stage1MoveHintShown = true;
+                            TutorialGuidanceBannerUI banner = TutorialGuidanceBannerUI.EnsureInstance();
+                            banner?.ShowGuidance(
+                                "✦ TACTICAL INSIGHT",
+                                "The demon vanguard blocks the sanctuary path. Advance forward and strike!",
+                                "Select your Paladin, step forward, and strike the demonic frontline!",
+                                new Color(1f, 0.88f, 0.35f)
+                            );
                         }
-                        break;
-
-                    case TutorialStep.Stage1_SelectHolyShielder:
-                        if (interaction != null && interaction.SelectedUnit == HolyShielderUnit)
+                    }
+                    // Soft Hint 2: If idle > 18s and Holy Shielder hasn't acted yet
+                    else if (!stage1PushHintShown && stage1IdleTimer >= 18f)
+                    {
+                        if (HolyShielderUnit != null && !HolyShielderUnit.HasActedThisTurn)
                         {
-                            SetStep(TutorialStep.Stage1_ShieldShoveSlime);
+                            stage1PushHintShown = true;
+                            TutorialGuidanceBannerUI banner = TutorialGuidanceBannerUI.EnsureInstance();
+                            banner?.ShowGuidance(
+                                "✦ KINETIC COMBAT",
+                                "That stone pillar behind the minion... one heavy shove will crush it!",
+                                "Select Holy Shielder and push the minion into the pillar for Wall Slam bonus damage!",
+                                new Color(0.85f, 0.65f, 0.35f)
+                            );
                         }
-                        else if (HolyShielderUnit != null && HolyShielderUnit.HasActedThisTurn)
-                        {
-                            SetStep(TutorialStep.Stage1_MoveShielderOrEndTurn);
-                        }
-                        break;
-
-                    case TutorialStep.Stage1_ShieldShoveSlime:
-                        if (HolyShielderUnit != null && HolyShielderUnit.HasActedThisTurn)
-                        {
-                            SetStep(TutorialStep.Stage1_MoveShielderOrEndTurn);
-                        }
-                        break;
-
-                    case TutorialStep.Stage1_MoveShielderOrEndTurn:
-                        if (turn != null && !turn.IsPlayerTurn)
-                        {
-                            SetStep(TutorialStep.Stage1_EnemyTurnReaction);
-                        }
-                        break;
-
-                    case TutorialStep.Stage1_EnemyTurnReaction:
-                        if (turn != null && turn.IsPlayerTurn && turn.CurrentRound >= 2)
-                        {
-                            SetStep(TutorialStep.Stage1_FinishDemonLord);
-                        }
-                        break;
-
-                    case TutorialStep.Stage1_FinishDemonLord:
-                        // Demon Lord defeat checked at top of block
-                        break;
+                    }
                 }
             }
             // ================= STAGE 2 STEP EVALUATION ================= //
@@ -764,9 +756,12 @@ namespace ElementalHexTactics3D.Tutorial
         public void StartStage1HolyCrusade()
         {
             CurrentStage = TutorialStage.Stage1_HolyCrusade;
-            CurrentStep = TutorialStep.Stage1_SelectPaladin;
+            CurrentStep = TutorialStep.Stage1_FinishDemonLord;
             isStage1Ending = false;
-            Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Starting Stage 1: The Holy Crusade...");
+            stage1IdleTimer = 0f;
+            stage1MoveHintShown = false;
+            stage1PushHintShown = false;
+            Debug.Log("<color=#FFD54F><b>[Tutorial Scenario]</b></color> Starting Stage 1: The Holy Crusade (Guided Play & Soft Hint)...");
 
             // 1. Enter in-game combat HUD view
             if (TitleMenuCanvasUI.Instance != null)
@@ -911,10 +906,13 @@ namespace ElementalHexTactics3D.Tutorial
                 );
             }
 
-            // 10. Trigger in-battle banter dialogue, then initialize step 1 guidance
+            // 10. Trigger in-battle banter dialogue, then initialize Guided Play with 100% agency
             StartCoroutine(PlayDialogueDelayed(StorySequenceId.HolyRaidIntro, 0.8f, () =>
             {
-                SetStep(TutorialStep.Stage1_SelectPaladin);
+                ClearTutorialHighlightedTile();
+                CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
+                TutorialGuidanceBannerUI.SafeHideGuidance();
+                Debug.Log("<color=#FFD54F><b>[Guided Play]</b></color> Stage 1 active with 100% agency: Full player control enabled!");
             }));
         }
 

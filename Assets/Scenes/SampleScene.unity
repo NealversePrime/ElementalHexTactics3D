@@ -1297,9 +1297,11 @@ MonoBehaviour:
   currentHealth: 8
   moveRange: 2
   baseAttackDamage: 2
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: 1
     r: 1
@@ -4449,9 +4451,11 @@ MonoBehaviour:
   currentHealth: 10
   moveRange: 3
   baseAttackDamage: 3
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: 0
     r: -2
@@ -5785,9 +5789,11 @@ MonoBehaviour:
   currentHealth: 14
   moveRange: 2
   baseAttackDamage: 4
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: -1
     r: -1
@@ -6052,9 +6058,11 @@ MonoBehaviour:
   currentHealth: 14
   moveRange: 2
   baseAttackDamage: 4
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: -1
     r: -1
@@ -11526,7 +11534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.14, b: 0.19, a: 0.92}
+  m_Color: {r: 0.08, g: 0.09, b: 0.14, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -11612,9 +11620,11 @@ MonoBehaviour:
   currentHealth: 12
   moveRange: 3
   baseAttackDamage: 3
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: 0
     r: 2
@@ -12299,9 +12309,11 @@ MonoBehaviour:
   currentHealth: 14
   moveRange: 2
   baseAttackDamage: 4
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: -1
     r: -1
@@ -19416,18 +19428,26 @@ MonoBehaviour:
   txtCmdMove: {fileID: 0}
   btnCmdAttack: {fileID: 0}
   txtCmdAttack: {fileID: 0}
-  btnCmdSkill: {fileID: 0}
-  txtCmdSkill: {fileID: 0}
+  btnCmdSpecial: {fileID: 0}
+  txtCmdSpecial: {fileID: 0}
+  btnCmdDefend: {fileID: 0}
+  txtCmdDefend: {fileID: 0}
   btnCmdPush: {fileID: 0}
   txtCmdPush: {fileID: 0}
-  btnCmdSiphon: {fileID: 0}
-  txtCmdSiphon: {fileID: 0}
-  btnCmdCataclysm: {fileID: 0}
-  txtCmdCataclysm: {fileID: 0}
-  btnCmdRecall: {fileID: 0}
-  txtCmdRecall: {fileID: 0}
+  btnCmdAbsorb: {fileID: 0}
+  txtCmdAbsorb: {fileID: 0}
+  btnCmdItem: {fileID: 0}
+  txtCmdItem: {fileID: 0}
   btnCmdWait: {fileID: 0}
   btnCmdCancel: {fileID: 0}
+  specialSubmenuRoot: {fileID: 0}
+  specialSubmenuContent: {fileID: 0}
+  txtSpecialHeader: {fileID: 0}
+  btnSpecialBack: {fileID: 0}
+  itemSubmenuRoot: {fileID: 0}
+  itemSubmenuContent: {fileID: 0}
+  txtItemHeader: {fileID: 0}
+  btnItemBack: {fileID: 0}
   colHpFull: {r: 0.3, g: 0.78, b: 0.35, a: 1}
   colHpMid: {r: 1, g: 0.65, b: 0.15, a: 1}
   colHpLow: {r: 0.95, g: 0.25, b: 0.2, a: 1}
@@ -22225,7 +22245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14, g: 0.17, b: 0.25, a: 0.96}
+  m_Color: {r: 0.12, g: 0.14, b: 0.2, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -23310,9 +23330,11 @@ MonoBehaviour:
   currentHealth: 10
   moveRange: 3
   baseAttackDamage: 3
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: 0
     r: -2
@@ -25554,9 +25576,11 @@ MonoBehaviour:
   currentHealth: 14
   moveRange: 2
   baseAttackDamage: 4
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: -1
     r: -1
@@ -33596,9 +33620,11 @@ MonoBehaviour:
   currentHealth: 10
   moveRange: 3
   baseAttackDamage: 3
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: 0
     r: -2
@@ -35129,9 +35155,11 @@ MonoBehaviour:
   currentHealth: 10
   moveRange: 3
   baseAttackDamage: 3
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: 0
     r: -2
@@ -35222,9 +35250,11 @@ MonoBehaviour:
   currentHealth: 14
   moveRange: 2
   baseAttackDamage: 4
+  attackRange: 1
   hasMovedThisTurn: 0
   hasActedThisTurn: 0
   hasSiphonedThisTurn: 0
+  isDefending: 0
   coordinates:
     q: -1
     r: -1

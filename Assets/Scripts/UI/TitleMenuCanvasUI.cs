@@ -106,6 +106,7 @@ namespace ElementalHexTactics3D.UI
         public bool IsInTownHub => isInTownHub;
         public bool IsPaused => isPaused || activeModal != null;
         public bool IsOnTitleScreen => !isInGame && !isInTownHub && activeModal == null;
+        public TitleThemeMode CurrentThemeMode => currentThemeMode;
 
         private void Awake()
         {
@@ -162,14 +163,16 @@ namespace ElementalHexTactics3D.UI
         /// </summary>
         private void AdjustModalLayouts()
         {
-            // 1. Pause Modal
+            // 1. Pause Modal (Card 520x490)
             if (pauseModal != null)
             {
+                EnsureModalBackdrop(pauseModal, ResumeGame);
                 Transform card = pauseModal.transform.Find("CardFrame");
                 if (card != null)
                 {
+                    EnsureSolidCardBackground(card, currentThemeMode == TitleThemeMode.DemonLordRebellion);
                     RectTransform cRect = card.GetComponent<RectTransform>();
-                    if (cRect != null) cRect.sizeDelta = new Vector2(480f, 450f);
+                    if (cRect != null) cRect.sizeDelta = new Vector2(520f, 490f);
 
                     Transform tTrans = card.Find("Text_ModalTitle");
                     if (tTrans != null)
@@ -177,48 +180,62 @@ namespace ElementalHexTactics3D.UI
                         RectTransform tRect = tTrans.GetComponent<RectTransform>();
                         if (tRect != null)
                         {
-                            tRect.anchoredPosition = new Vector2(0f, 126f);
-                            tRect.sizeDelta = new Vector2(420f, 34f);
+                            tRect.anchoredPosition = new Vector2(0f, 180f);
+                            tRect.sizeDelta = new Vector2(420f, 36f);
                         }
                         Text t = tTrans.GetComponent<Text>();
                         if (t != null)
                         {
                             t.text = "✦ BATTLE PAUSED ✦";
-                            t.color = new Color(1f, 0.88f, 0.38f);
+                            t.fontSize = 20;
+                            t.fontStyle = FontStyle.Bold;
+                        }
+                    }
+
+                    Transform divTrans = card.Find("Divider");
+                    if (divTrans != null)
+                    {
+                        RectTransform dRect = divTrans.GetComponent<RectTransform>();
+                        if (dRect != null)
+                        {
+                            dRect.anchoredPosition = new Vector2(0f, 150f);
+                            dRect.sizeDelta = new Vector2(380f, 2f);
                         }
                     }
 
                     if (btnResume != null)
                     {
                         RectTransform r = btnResume.GetComponent<RectTransform>();
-                        if (r != null) { r.anchoredPosition = new Vector2(0f, 60f); r.sizeDelta = new Vector2(360f, 48f); }
+                        if (r != null) { r.anchoredPosition = new Vector2(0f, 85f); r.sizeDelta = new Vector2(380f, 50f); }
                     }
                     if (btnPauseOptions != null)
                     {
                         RectTransform r = btnPauseOptions.GetComponent<RectTransform>();
-                        if (r != null) { r.anchoredPosition = new Vector2(0f, 4f); r.sizeDelta = new Vector2(360f, 48f); }
+                        if (r != null) { r.anchoredPosition = new Vector2(0f, 25f); r.sizeDelta = new Vector2(380f, 50f); }
                     }
                     if (btnRestart != null)
                     {
                         RectTransform r = btnRestart.GetComponent<RectTransform>();
-                        if (r != null) { r.anchoredPosition = new Vector2(0f, -52f); r.sizeDelta = new Vector2(360f, 48f); }
+                        if (r != null) { r.anchoredPosition = new Vector2(0f, -35f); r.sizeDelta = new Vector2(380f, 50f); }
                     }
                     if (btnReturnTitle != null)
                     {
                         RectTransform r = btnReturnTitle.GetComponent<RectTransform>();
-                        if (r != null) { r.anchoredPosition = new Vector2(0f, -108f); r.sizeDelta = new Vector2(360f, 48f); }
+                        if (r != null) { r.anchoredPosition = new Vector2(0f, -95f); r.sizeDelta = new Vector2(380f, 50f); }
                     }
                 }
             }
 
-            // 2. Options Modal
+            // 2. Options Modal (Card 640x560)
             if (optionsModal != null)
             {
+                EnsureModalBackdrop(optionsModal, CloseActiveModal);
                 Transform card = optionsModal.transform.Find("CardFrame");
                 if (card != null)
                 {
+                    EnsureSolidCardBackground(card, currentThemeMode == TitleThemeMode.DemonLordRebellion);
                     RectTransform cRect = card.GetComponent<RectTransform>();
-                    if (cRect != null) cRect.sizeDelta = new Vector2(600f, 520f);
+                    if (cRect != null) cRect.sizeDelta = new Vector2(640f, 560f);
 
                     Transform tTrans = card.Find("Text_ModalTitle");
                     if (tTrans != null)
@@ -226,38 +243,112 @@ namespace ElementalHexTactics3D.UI
                         RectTransform tRect = tTrans.GetComponent<RectTransform>();
                         if (tRect != null)
                         {
-                            tRect.anchoredPosition = new Vector2(0f, 145f);
-                            tRect.sizeDelta = new Vector2(520f, 36f);
-                        }
-                    }
-                }
-            }
-
-            // 3. Story Modal
-            if (storyModal != null)
-            {
-                Transform card = storyModal.transform.Find("CardFrame");
-                if (card != null)
-                {
-                    RectTransform cRect = card.GetComponent<RectTransform>();
-                    if (cRect != null) cRect.sizeDelta = new Vector2(860f, 560f);
-
-                    Transform tTrans = card.Find("Text_ModalTitle");
-                    if (tTrans != null)
-                    {
-                        RectTransform tRect = tTrans.GetComponent<RectTransform>();
-                        if (tRect != null)
-                        {
-                            tRect.anchoredPosition = new Vector2(0f, 140f);
-                            tRect.sizeDelta = new Vector2(740f, 38f);
+                            tRect.anchoredPosition = new Vector2(0f, 215f);
+                            tRect.sizeDelta = new Vector2(540f, 36f);
                         }
                         Text t = tTrans.GetComponent<Text>();
                         if (t != null)
                         {
-                            t.fontSize = 22;
+                            t.fontSize = 20;
+                            t.fontStyle = FontStyle.Bold;
+                        }
+                    }
+
+                    Transform divTrans = card.Find("Divider");
+                    if (divTrans != null)
+                    {
+                        RectTransform dRect = divTrans.GetComponent<RectTransform>();
+                        if (dRect != null)
+                        {
+                            dRect.anchoredPosition = new Vector2(0f, 185f);
+                            dRect.sizeDelta = new Vector2(520f, 2f);
+                        }
+                    }
+
+                    if (btnAudioToggle != null)
+                    {
+                        RectTransform r = btnAudioToggle.GetComponent<RectTransform>();
+                        if (r != null) { r.anchoredPosition = new Vector2(0f, 120f); r.sizeDelta = new Vector2(420f, 50f); }
+                    }
+                    if (btnAiToggle != null)
+                    {
+                        RectTransform r = btnAiToggle.GetComponent<RectTransform>();
+                        if (r != null) { r.anchoredPosition = new Vector2(0f, 60f); r.sizeDelta = new Vector2(420f, 50f); }
+                    }
+                    if (btnDisplayToggle != null)
+                    {
+                        RectTransform r = btnDisplayToggle.GetComponent<RectTransform>();
+                        if (r != null) { r.anchoredPosition = new Vector2(0f, 0f); r.sizeDelta = new Vector2(420f, 50f); }
+                    }
+                    if (btnThemeModeToggle != null)
+                    {
+                        RectTransform r = btnThemeModeToggle.GetComponent<RectTransform>();
+                        if (r != null) { r.anchoredPosition = new Vector2(0f, -60f); r.sizeDelta = new Vector2(420f, 50f); }
+                    }
+
+                    Transform tipTrans = card.Find("Text_AiTip");
+                    if (tipTrans != null)
+                    {
+                        RectTransform tipRect = tipTrans.GetComponent<RectTransform>();
+                        if (tipRect != null)
+                        {
+                            tipRect.anchoredPosition = new Vector2(0f, -125f);
+                            tipRect.sizeDelta = new Vector2(520f, 26f);
+                        }
+                    }
+
+                    Transform backTrans = card.Find("Btn_BackOptions");
+                    if (backTrans != null)
+                    {
+                        RectTransform backRect = backTrans.GetComponent<RectTransform>();
+                        if (backRect != null)
+                        {
+                            backRect.anchoredPosition = new Vector2(0f, -205f);
+                            backRect.sizeDelta = new Vector2(260f, 50f);
+                        }
+                    }
+                }
+            }
+
+            // 3. Story Modal (Card 900x650)
+            if (storyModal != null)
+            {
+                EnsureModalBackdrop(storyModal, CloseActiveModal);
+                Transform card = storyModal.transform.Find("CardFrame");
+                if (card != null)
+                {
+                    EnsureSolidCardBackground(card, currentThemeMode == TitleThemeMode.DemonLordRebellion);
+                    RectTransform cRect = card.GetComponent<RectTransform>();
+                    if (cRect != null) cRect.sizeDelta = new Vector2(900f, 650f);
+
+                    Transform tTrans = card.Find("Text_ModalTitle");
+                    if (tTrans != null)
+                    {
+                        RectTransform tRect = tTrans.GetComponent<RectTransform>();
+                        if (tRect != null)
+                        {
+                            tRect.anchoredPosition = new Vector2(0f, 240f);
+                            tRect.sizeDelta = new Vector2(700f, 38f);
+                        }
+                        Text t = tTrans.GetComponent<Text>();
+                        if (t != null)
+                        {
+                            t.fontSize = 21;
                             t.fontStyle = FontStyle.Bold;
                             t.alignment = TextAnchor.MiddleCenter;
-                            t.color = new Color(1f, 0.88f, 0.38f);
+                            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+                            t.verticalOverflow = VerticalWrapMode.Truncate;
+                        }
+                    }
+
+                    Transform divTrans = card.Find("Divider");
+                    if (divTrans != null)
+                    {
+                        RectTransform dRect = divTrans.GetComponent<RectTransform>();
+                        if (dRect != null)
+                        {
+                            dRect.anchoredPosition = new Vector2(0f, 210f);
+                            dRect.sizeDelta = new Vector2(700f, 2f);
                         }
                     }
 
@@ -267,15 +358,17 @@ namespace ElementalHexTactics3D.UI
                         RectTransform bRect = bTrans.GetComponent<RectTransform>();
                         if (bRect != null)
                         {
-                            bRect.anchoredPosition = new Vector2(0f, -15f);
-                            bRect.sizeDelta = new Vector2(740f, 260f);
+                            bRect.anchoredPosition = new Vector2(0f, -10f);
+                            bRect.sizeDelta = new Vector2(700f, 360f);
                         }
                         Text b = bTrans.GetComponent<Text>();
                         if (b != null)
                         {
-                            b.fontSize = 17;
-                            b.lineSpacing = 1.35f;
+                            b.fontSize = 15;
+                            b.lineSpacing = 1.3f;
                             b.alignment = TextAnchor.UpperLeft;
+                            b.horizontalOverflow = HorizontalWrapMode.Wrap;
+                            b.verticalOverflow = VerticalWrapMode.Truncate;
                         }
                     }
 
@@ -285,21 +378,23 @@ namespace ElementalHexTactics3D.UI
                         RectTransform backRect = backTrans.GetComponent<RectTransform>();
                         if (backRect != null)
                         {
-                            backRect.anchoredPosition = new Vector2(0f, -205f);
-                            backRect.sizeDelta = new Vector2(280f, 48f);
+                            backRect.anchoredPosition = new Vector2(0f, -250f);
+                            backRect.sizeDelta = new Vector2(260f, 48f);
                         }
                     }
                 }
             }
 
-            // 4. How To Play Modal
+            // 4. How To Play Modal (Card 900x650)
             if (howToPlayModal != null)
             {
+                EnsureModalBackdrop(howToPlayModal, CloseActiveModal);
                 Transform card = howToPlayModal.transform.Find("CardFrame");
                 if (card != null)
                 {
+                    EnsureSolidCardBackground(card, currentThemeMode == TitleThemeMode.DemonLordRebellion);
                     RectTransform cRect = card.GetComponent<RectTransform>();
-                    if (cRect != null) cRect.sizeDelta = new Vector2(860f, 580f);
+                    if (cRect != null) cRect.sizeDelta = new Vector2(900f, 650f);
 
                     Transform tTrans = card.Find("Text_ModalTitle");
                     if (tTrans != null)
@@ -307,16 +402,28 @@ namespace ElementalHexTactics3D.UI
                         RectTransform tRect = tTrans.GetComponent<RectTransform>();
                         if (tRect != null)
                         {
-                            tRect.anchoredPosition = new Vector2(0f, 150f);
-                            tRect.sizeDelta = new Vector2(740f, 38f);
+                            tRect.anchoredPosition = new Vector2(0f, 240f);
+                            tRect.sizeDelta = new Vector2(700f, 38f);
                         }
                         Text t = tTrans.GetComponent<Text>();
                         if (t != null)
                         {
-                            t.fontSize = 22;
+                            t.fontSize = 21;
                             t.fontStyle = FontStyle.Bold;
                             t.alignment = TextAnchor.MiddleCenter;
-                            t.color = new Color(1f, 0.88f, 0.38f);
+                            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+                            t.verticalOverflow = VerticalWrapMode.Truncate;
+                        }
+                    }
+
+                    Transform divTrans = card.Find("Divider");
+                    if (divTrans != null)
+                    {
+                        RectTransform dRect = divTrans.GetComponent<RectTransform>();
+                        if (dRect != null)
+                        {
+                            dRect.anchoredPosition = new Vector2(0f, 210f);
+                            dRect.sizeDelta = new Vector2(700f, 2f);
                         }
                     }
 
@@ -326,15 +433,17 @@ namespace ElementalHexTactics3D.UI
                         RectTransform bRect = bTrans.GetComponent<RectTransform>();
                         if (bRect != null)
                         {
-                            bRect.anchoredPosition = new Vector2(0f, -15f);
-                            bRect.sizeDelta = new Vector2(740f, 275f);
+                            bRect.anchoredPosition = new Vector2(0f, -10f);
+                            bRect.sizeDelta = new Vector2(700f, 360f);
                         }
                         Text b = bTrans.GetComponent<Text>();
                         if (b != null)
                         {
-                            b.fontSize = 17;
-                            b.lineSpacing = 1.35f;
+                            b.fontSize = 15;
+                            b.lineSpacing = 1.3f;
                             b.alignment = TextAnchor.UpperLeft;
+                            b.horizontalOverflow = HorizontalWrapMode.Wrap;
+                            b.verticalOverflow = VerticalWrapMode.Truncate;
                         }
                     }
 
@@ -344,12 +453,15 @@ namespace ElementalHexTactics3D.UI
                         RectTransform backRect = backTrans.GetComponent<RectTransform>();
                         if (backRect != null)
                         {
-                            backRect.anchoredPosition = new Vector2(0f, -215f);
-                            backRect.sizeDelta = new Vector2(280f, 48f);
+                            backRect.anchoredPosition = new Vector2(0f, -250f);
+                            backRect.sizeDelta = new Vector2(260f, 48f);
                         }
                     }
                 }
             }
+
+            // Apply RPG Maker Windowskin & Button theme skin across all modals
+            ApplyRpgMakerSkinToAllModals(currentThemeMode);
         }
 
         /// <summary>
@@ -729,6 +841,8 @@ namespace ElementalHexTactics3D.UI
                 if (txtStoryTitle != null) txtStoryTitle.text = "📖 SACRED SCRIPTURES: THE RADIANT SYNOD";
                 if (txtStoryBody != null)
                 {
+                    txtStoryBody.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    txtStoryBody.verticalOverflow = VerticalWrapMode.Truncate;
                     txtStoryBody.text =
                         "<b><color=#FBBF24>[ The Radiant Mandate ]</color></b>\n" +
                         "Under the sacred light of the Holy Empire, the Chosen Hero—the Paladin of Radiance—marches with the consecrated vanguard into the fractured underworld to eradicate all demonic existence.\n\n" +
@@ -741,6 +855,8 @@ namespace ElementalHexTactics3D.UI
                 if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 HOLY TACTICS: BASIC COMMANDS";
                 if (txtHowToPlayBody != null)
                 {
+                    txtHowToPlayBody.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    txtHowToPlayBody.verticalOverflow = VerticalWrapMode.Truncate;
                     txtHowToPlayBody.text =
                         "<b><color=#38BDF8>✦ Camera Controls:</color></b> <b>Q / E</b> Rotate 60°  •  <b>WASD</b> Pan  •  <b>Scroll</b> Zoom in/out\n\n" +
                         "<b><color=#FBBF24>✦ Movement & Positioning:</color></b>\n" +
@@ -789,6 +905,8 @@ namespace ElementalHexTactics3D.UI
                 if (txtStoryTitle != null) txtStoryTitle.text = "📖 MEMOIRS OF THE OUTCAST SANCTUARY";
                 if (txtStoryBody != null)
                 {
+                    txtStoryBody.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    txtStoryBody.verticalOverflow = VerticalWrapMode.Truncate;
                     txtStoryBody.text =
                         "<b><color=#F97316>[ The Transmigrated Sovereign ]</color></b>\n" +
                         "A former grandmaster strategist awakens within the frail body of the fallen Demon Lord. The Radiant Synod preaches holy benevolence while enslaving beastkin and burning peaceful monster villages.\n\n" +
@@ -801,6 +919,8 @@ namespace ElementalHexTactics3D.UI
                 if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 CITADEL COMMAND: TACTICAL FIELD GUIDE";
                 if (txtHowToPlayBody != null)
                 {
+                    txtHowToPlayBody.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    txtHowToPlayBody.verticalOverflow = VerticalWrapMode.Truncate;
                     txtHowToPlayBody.text =
                         "<b><color=#38BDF8>✦ Battlefield Navigation:</color></b> <b>Q / E</b> Rotate 60°  •  <b>WASD</b> Pan  •  <b>Scroll</b> Zoom  •  <b>Right-Click</b> Cancel\n\n" +
                         "<b><color=#F97316>✦ Elemental Terraforming:</color></b>\n" +
@@ -812,53 +932,8 @@ namespace ElementalHexTactics3D.UI
                 }
             }
 
-            // 4. Update Menu Buttons with Holy/Demon Fantasy UI button frames
-            Sprite buttonSprite = (mode == TitleThemeMode.PaladinHolyland)
-                ? LoadButtonSprite("UI_Button_Holy")
-                : LoadButtonSprite("UI_Button_Demon");
-
-            Button[] menuBtns = new Button[] { btnPlay, btnStory, btnHowToPlay, btnOptions, btnExit };
-
-            foreach (var b in menuBtns)
-            {
-                if (b == null) continue;
-                if (buttonSprite != null)
-                {
-                    Image bImg = b.GetComponent<Image>();
-                    if (bImg != null)
-                    {
-                        bImg.sprite = buttonSprite;
-                        bImg.type = (buttonSprite.border != Vector4.zero) ? Image.Type.Sliced : Image.Type.Simple;
-                        bImg.preserveAspect = false;
-                        bImg.color = Color.white;
-                    }
-                }
-
-                Text bTxt = b.GetComponentInChildren<Text>();
-                if (bTxt != null)
-                {
-                    bTxt.color = (mode == TitleThemeMode.PaladinHolyland)
-                        ? new Color(1f, 0.94f, 0.75f)
-                        : new Color(1f, 0.90f, 0.85f);
-                    bTxt.fontSize = 19;
-                    bTxt.fontStyle = FontStyle.Bold;
-                    bTxt.alignment = TextAnchor.MiddleCenter;
-                    bTxt.alignByGeometry = true;
-
-                    // Optical vertical centering: anchor to vertical centerline with fixed height,
-                    // precisely tuned for Holy (+1f) and Demon (+2f) button cavity geometry.
-                    RectTransform tRect = bTxt.rectTransform;
-                    if (tRect != null)
-                    {
-                        tRect.anchorMin = new Vector2(0f, 0.5f);
-                        tRect.anchorMax = new Vector2(1f, 0.5f);
-                        tRect.pivot = new Vector2(0.5f, 0.5f);
-                        tRect.sizeDelta = new Vector2(0f, 28f);
-                        float textOffsetY = (mode == TitleThemeMode.PaladinHolyland) ? 1.0f : 2.0f;
-                        tRect.anchoredPosition = new Vector2(0f, textOffsetY);
-                    }
-                }
-            }
+            // 4. Update all UI Modals, Dialogs & Buttons with Holy/Demon RPG Maker fantasy frames
+            ApplyRpgMakerSkinToAllModals(mode);
 
             if (btnOptions != null)
             {
@@ -971,6 +1046,7 @@ namespace ElementalHexTactics3D.UI
             if (townHubPanel != null) townHubPanel.SetActive(false);
             if (inGameHudPanel != null) inGameHudPanel.SetActive(false);
             CloseAllModals();
+            SetMainMenuButtonsVisible(true);
 
             UpdatePlayButtonLabel();
             Combat.SoundManager3D.Instance?.PlayHubBGM();
@@ -1120,7 +1196,12 @@ namespace ElementalHexTactics3D.UI
             PlaySoundClick();
             CloseAllModals();
             activeModal = modal;
-            if (activeModal != null) activeModal.SetActive(true);
+            if (activeModal != null)
+            {
+                SetMainMenuButtonsVisible(false);
+                ApplyRpgMakerSkinToAllModals(currentThemeMode);
+                activeModal.SetActive(true);
+            }
         }
 
         public void CloseActiveModal()
@@ -1137,6 +1218,10 @@ namespace ElementalHexTactics3D.UI
                 returnToPauseFromOptions = false;
                 OpenPauseMenu();
             }
+            else if (IsOnTitleScreen)
+            {
+                SetMainMenuButtonsVisible(true);
+            }
         }
 
         private void CloseAllModals()
@@ -1146,10 +1231,19 @@ namespace ElementalHexTactics3D.UI
             if (optionsModal != null) optionsModal.SetActive(false);
             if (pauseModal != null) pauseModal.SetActive(false);
             activeModal = null;
+            if (IsOnTitleScreen)
+            {
+                SetMainMenuButtonsVisible(true);
+            }
         }
 
         public void HandleEscapeKey()
         {
+            if (AudioSettingsPanelUI.IsOpen)
+            {
+                AudioSettingsPanelUI.Close();
+                return;
+            }
             if (activeModal != null)
             {
                 CloseActiveModal();
@@ -1205,12 +1299,8 @@ namespace ElementalHexTactics3D.UI
 
         private void ToggleAudio()
         {
-            if (SoundManager3D.Instance != null)
-            {
-                SoundManager3D.Instance.IsMuted = !SoundManager3D.Instance.IsMuted;
-            }
             PlaySoundClick();
-            UpdateOptionsDisplay();
+            AudioSettingsPanelUI.Open();
         }
 
         private void ToggleAI()
@@ -1235,7 +1325,7 @@ namespace ElementalHexTactics3D.UI
             if (txtAudioStatus != null)
             {
                 bool isMuted = SoundManager3D.Instance != null && SoundManager3D.Instance.IsMuted;
-                txtAudioStatus.text = isMuted ? "Sound: MUTED" : "Sound: ON";
+                txtAudioStatus.text = isMuted ? "Audio: MUTED (click for volume)" : "Audio: Volume Settings";
             }
 
             if (txtAiStatus != null)
@@ -1452,6 +1542,392 @@ namespace ElementalHexTactics3D.UI
             }
 
             return null;
+        }
+
+        private static readonly Dictionary<string, Sprite> s_boxSpriteCache = new Dictionary<string, Sprite>();
+
+        /// <summary>
+        /// Robustly loads a custom 9-slice UI window box sprite (Windowskin) from Resources,
+        /// AssetDatabase (in editor), or raw PNG file bytes on disk, ensuring 60px borders are preserved.
+        /// </summary>
+        public static Sprite LoadBoxSprite(string baseName)
+        {
+            if (string.IsNullOrEmpty(baseName)) return null;
+            if (baseName.EndsWith(".png", System.StringComparison.OrdinalIgnoreCase))
+            {
+                baseName = Path.GetFileNameWithoutExtension(baseName);
+            }
+
+            if (s_boxSpriteCache.TryGetValue(baseName, out Sprite cached) && cached != null)
+            {
+                return cached;
+            }
+
+            // 1. Try Resources.Load<Sprite>
+            Sprite sp = Resources.Load<Sprite>($"UI/{baseName}");
+            if (sp == null)
+            {
+                Texture2D resTex = Resources.Load<Texture2D>($"UI/{baseName}");
+                if (resTex != null)
+                {
+                    Vector4 border = new Vector4(60f, 60f, 60f, 60f);
+                    sp = Sprite.Create(resTex, new Rect(0, 0, resTex.width, resTex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+                    sp.name = baseName;
+                }
+            }
+            if (sp != null)
+            {
+                s_boxSpriteCache[baseName] = sp;
+                return sp;
+            }
+
+#if UNITY_EDITOR
+            // 2. Editor AssetDatabase lookup
+            string[] searchPaths = new string[]
+            {
+                $"Assets/Resources/UI/{baseName}.png",
+                $"Assets/Sprites/UI/{baseName}.png",
+                $"Assets/UI/{baseName}.png"
+            };
+
+            foreach (string p in searchPaths)
+            {
+                Sprite edSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(p);
+                if (edSprite != null)
+                {
+                    s_boxSpriteCache[baseName] = edSprite;
+                    return edSprite;
+                }
+                Texture2D edTex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+                if (edTex != null)
+                {
+                    Vector4 border = new Vector4(60f, 60f, 60f, 60f);
+                    sp = Sprite.Create(edTex, new Rect(0, 0, edTex.width, edTex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+                    sp.name = baseName;
+                    s_boxSpriteCache[baseName] = sp;
+                    return sp;
+                }
+            }
+#endif
+
+            // 3. Fallback: try ModularUIFrame.LoadSprite
+            sp = ModularUIFrame.LoadSprite(baseName);
+            if (sp != null)
+            {
+                s_boxSpriteCache[baseName] = sp;
+                return sp;
+            }
+
+            // 4. Direct disk file fallback
+            string[] diskPaths = new string[]
+            {
+                Path.Combine(Application.dataPath, "Resources", "UI", $"{baseName}.png"),
+                Path.Combine(Application.dataPath, "Sprites", "UI", $"{baseName}.png")
+            };
+
+            foreach (string diskPath in diskPaths)
+            {
+                if (File.Exists(diskPath))
+                {
+                    try
+                    {
+                        byte[] bytes = File.ReadAllBytes(diskPath);
+                        Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                        if (tex.LoadImage(bytes))
+                        {
+                            tex.name = baseName;
+                            Vector4 border = new Vector4(60f, 60f, 60f, 60f);
+                            sp = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+                            s_boxSpriteCache[baseName] = sp;
+                            return sp;
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogWarning($"[TitleMenuCanvasUI] Failed to load box sprite from {diskPath}: {ex.Message}");
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Applies RPG Maker-style Windowskin 9-slice frames to all modals and custom fantasy
+        /// button borders to every button, matching Holy or Demon themes dynamically.
+        /// </summary>
+        public void ApplyRpgMakerSkinToAllModals(TitleThemeMode mode)
+        {
+            Sprite boxSprite = (mode == TitleThemeMode.PaladinHolyland)
+                ? LoadBoxSprite("UI_Box_Holy_9Slice")
+                : LoadBoxSprite("UI_Box_Demon_9Slice");
+
+            Sprite buttonSprite = (mode == TitleThemeMode.PaladinHolyland)
+                ? LoadButtonSprite("UI_Button_Holy")
+                : LoadButtonSprite("UI_Button_Demon");
+
+            Color titleColor = (mode == TitleThemeMode.PaladinHolyland)
+                ? new Color(1f, 0.88f, 0.38f)
+                : new Color(1f, 0.78f, 0.25f);
+
+            Color dividerColor = (mode == TitleThemeMode.PaladinHolyland)
+                ? new Color(0.85f, 0.72f, 0.38f, 0.6f)
+                : new Color(0.95f, 0.45f, 0.25f, 0.6f);
+
+            Color btnTextColor = (mode == TitleThemeMode.PaladinHolyland)
+                ? new Color(1f, 0.94f, 0.75f)
+                : new Color(1f, 0.90f, 0.85f);
+
+            float textOffsetY = (mode == TitleThemeMode.PaladinHolyland) ? 1.0f : 2.0f;
+
+            // 1. Skin all modal card frames
+            bool isDemon = (mode == TitleThemeMode.DemonLordRebellion);
+            GameObject[] modals = new GameObject[] { howToPlayModal, storyModal, optionsModal, pauseModal };
+            foreach (var m in modals)
+            {
+                if (m == null) continue;
+                Transform card = m.transform.Find("CardFrame");
+                if (card == null) continue;
+
+                EnsureSolidCardBackground(card, isDemon);
+
+                Image cImg = card.GetComponent<Image>();
+                if (cImg != null && boxSprite != null)
+                {
+                    cImg.sprite = boxSprite;
+                    cImg.type = Image.Type.Sliced;
+                    cImg.preserveAspect = false;
+                    cImg.color = Color.white;
+                }
+
+                Transform div = card.Find("Divider");
+                if (div != null)
+                {
+                    Image dImg = div.GetComponent<Image>();
+                    if (dImg != null) dImg.color = dividerColor;
+                }
+
+                Transform tTrans = card.Find("Text_ModalTitle");
+                if (tTrans != null)
+                {
+                    Text t = tTrans.GetComponent<Text>();
+                    if (t != null)
+                    {
+                        t.color = titleColor;
+                        Shadow s = t.GetComponent<Shadow>();
+                        if (s == null) s = t.gameObject.AddComponent<Shadow>();
+                        s.effectColor = new Color(0f, 0f, 0f, 0.95f);
+                        s.effectDistance = new Vector2(1.5f, -1.5f);
+                    }
+                }
+            }
+
+            // 2. Skin all primary menu & modal buttons
+            Button[] allButtons = new Button[]
+            {
+                btnPlay, btnStory, btnHowToPlay, btnOptions, btnExit,
+                btnBackHowToPlay, btnBackStory, btnBackOptions,
+                btnAudioToggle, btnAiToggle, btnDisplayToggle, btnThemeModeToggle,
+                btnResume, btnPauseOptions, btnRestart, btnReturnTitle,
+                btnInGameMenu
+            };
+
+            foreach (var b in allButtons)
+            {
+                if (b == null) continue;
+                SkinFantasyButton(b, buttonSprite, btnTextColor, textOffsetY);
+            }
+
+            // 3. Guarantee all modal full-screen Backdrops stay pure dark dimmer overlays (NEVER sliced with button borders!)
+            foreach (var m in modals)
+            {
+                if (m == null) continue;
+                Transform bd = m.transform.Find("Backdrop");
+                if (bd != null)
+                {
+                    Image bdImg = bd.GetComponent<Image>();
+                    if (bdImg != null)
+                    {
+                        bdImg.sprite = null;
+                        bdImg.type = Image.Type.Simple;
+                        bdImg.color = new Color(0.02f, 0.03f, 0.05f, 0.85f);
+                    }
+                }
+            }
+
+            // 4. Fallback: also ensure any child Button strictly INSIDE the modal CardFrame gets styled (never Backdrop)
+            foreach (var m in modals)
+            {
+                if (m == null) continue;
+                Transform card = m.transform.Find("CardFrame");
+                if (card != null)
+                {
+                    Button[] childBtns = card.GetComponentsInChildren<Button>(true);
+                    foreach (var b in childBtns)
+                    {
+                        if (b != null && b.name != "Backdrop") SkinFantasyButton(b, buttonSprite, btnTextColor, textOffsetY);
+                    }
+                }
+            }
+        }
+
+        private void SkinFantasyButton(Button b, Sprite buttonSprite, Color textColor, float textOffsetY)
+        {
+            if (b == null) return;
+            // Prevent skinning modal backdrop dimmers!
+            if (b.name == "Backdrop" || b.name.Contains("Backdrop")) return;
+
+            if (buttonSprite != null)
+            {
+                Image bImg = b.GetComponent<Image>();
+                if (bImg != null)
+                {
+                    bImg.sprite = buttonSprite;
+                    bImg.type = (buttonSprite.border != Vector4.zero) ? Image.Type.Sliced : Image.Type.Simple;
+                    bImg.preserveAspect = false;
+                    bImg.color = Color.white;
+                }
+            }
+
+            Text bTxt = b.GetComponentInChildren<Text>();
+            if (bTxt != null)
+            {
+                bTxt.color = textColor;
+                bTxt.fontStyle = FontStyle.Bold;
+                bTxt.alignment = TextAnchor.MiddleCenter;
+                bTxt.alignByGeometry = true;
+
+                Shadow s = bTxt.GetComponent<Shadow>();
+                if (s == null) s = bTxt.gameObject.AddComponent<Shadow>();
+                s.effectColor = new Color(0f, 0f, 0f, 0.95f);
+                s.effectDistance = new Vector2(1.5f, -1.5f);
+
+                RectTransform tRect = bTxt.rectTransform;
+                if (tRect != null)
+                {
+                    tRect.anchorMin = new Vector2(0f, 0.5f);
+                    tRect.anchorMax = new Vector2(1f, 0.5f);
+                    tRect.pivot = new Vector2(0.5f, 0.5f);
+                    tRect.sizeDelta = new Vector2(0f, 28f);
+                    tRect.anchoredPosition = new Vector2(0f, textOffsetY);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Toggles visibility of title menu buttons so they never render behind active modals.
+        /// </summary>
+        public void SetMainMenuButtonsVisible(bool visible)
+        {
+            if (titlePanel == null) return;
+            Transform menuButtons = titlePanel.transform.Find("Panel_MenuButtons");
+            if (menuButtons != null)
+            {
+                menuButtons.gameObject.SetActive(visible);
+            }
+        }
+
+        /// <summary>
+        /// Guarantees that the modal CardFrame has an exact matching solid opaque background fill (alpha = 1.0f)
+        /// rendered directly behind the 9-slice ornate frame, preventing any see-through or background stacking.
+        /// </summary>
+        public static void EnsureSolidCardBackground(Transform cardTransform, bool isDemonTheme)
+        {
+            if (cardTransform == null) return;
+            Transform parent = cardTransform.parent;
+            if (parent == null) return;
+
+            Transform bgTrans = parent.Find(cardTransform.name + "_SolidBg") ?? parent.Find("CardBackground_Solid");
+            if (bgTrans == null)
+            {
+                GameObject bgObj = new GameObject(cardTransform.name + "_SolidBg", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                bgObj.transform.SetParent(parent, false);
+                bgTrans = bgObj.transform;
+            }
+
+            // Position it immediately before cardTransform in sibling order so it renders directly behind CardFrame
+            int cardIndex = cardTransform.GetSiblingIndex();
+            bgTrans.SetSiblingIndex(Mathf.Max(0, cardIndex > 0 ? cardIndex : 0));
+            if (cardTransform.GetSiblingIndex() <= bgTrans.GetSiblingIndex())
+            {
+                cardTransform.SetSiblingIndex(bgTrans.GetSiblingIndex() + 1);
+            }
+
+            RectTransform cardRect = cardTransform.GetComponent<RectTransform>();
+            RectTransform bgRect = bgTrans.GetComponent<RectTransform>();
+            if (cardRect != null && bgRect != null)
+            {
+                bgRect.anchorMin = cardRect.anchorMin;
+                bgRect.anchorMax = cardRect.anchorMax;
+                bgRect.pivot = cardRect.pivot;
+                bgRect.sizeDelta = cardRect.sizeDelta;
+                bgRect.anchoredPosition = cardRect.anchoredPosition;
+            }
+
+            Image bgImg = bgTrans.GetComponent<Image>();
+            if (bgImg != null)
+            {
+                // Pure 100% solid opaque color (alpha = 1.0f)
+                // Holy: Midnight Slate (#12141F)
+                // Demon: Obsidian Basalt (#0F0D17)
+                bgImg.color = isDemonTheme
+                    ? new Color(0.06f, 0.05f, 0.09f, 1.0f)
+                    : new Color(0.07f, 0.08f, 0.12f, 1.0f);
+                bgImg.raycastTarget = true;
+            }
+
+            // Remove any legacy child solid bg if present inside card
+            Transform legacyChild = cardTransform.Find("CardBackground_Solid");
+            if (legacyChild != null && legacyChild != bgTrans)
+            {
+                if (Application.isPlaying) Destroy(legacyChild.gameObject);
+                else DestroyImmediate(legacyChild.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Guarantees that each modal has a full-screen dark dimmer backdrop (85% opacity)
+        /// that blocks raycasts and allows clicking outside to dismiss the modal.
+        /// </summary>
+        private void EnsureModalBackdrop(GameObject modalRoot, System.Action onClickOutside)
+        {
+            if (modalRoot == null) return;
+            Transform bdTrans = modalRoot.transform.Find("Backdrop");
+            if (bdTrans == null)
+            {
+                GameObject bdObj = new GameObject("Backdrop", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                bdObj.transform.SetParent(modalRoot.transform, false);
+                bdTrans = bdObj.transform;
+            }
+
+            bdTrans.SetAsFirstSibling();
+
+            RectTransform bdRect = bdTrans.GetComponent<RectTransform>();
+            if (bdRect != null)
+            {
+                bdRect.anchorMin = Vector2.zero;
+                bdRect.anchorMax = Vector2.one;
+                bdRect.sizeDelta = Vector2.zero;
+                bdRect.anchoredPosition = Vector2.zero;
+            }
+
+            Image bdImg = bdTrans.GetComponent<Image>();
+            if (bdImg != null)
+            {
+                bdImg.sprite = null;
+                bdImg.type = Image.Type.Simple;
+                bdImg.color = new Color(0.02f, 0.03f, 0.05f, 0.85f);
+                bdImg.raycastTarget = true;
+            }
+
+            Button bdBtn = bdTrans.GetComponent<Button>();
+            if (bdBtn == null) bdBtn = bdTrans.gameObject.AddComponent<Button>();
+            bdBtn.transition = Selectable.Transition.None;
+            bdBtn.onClick.RemoveAllListeners();
+            if (onClickOutside != null)
+            {
+                bdBtn.onClick.AddListener(() => onClickOutside());
+            }
         }
 
         private void PlaySoundClick()

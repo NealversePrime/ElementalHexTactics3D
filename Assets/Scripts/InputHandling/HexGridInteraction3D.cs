@@ -331,7 +331,11 @@ namespace ElementalHexTactics3D.InputHandling
             {
                 Combat.SoundManager3D.Instance?.PlayButtonClick();
 
-                // Disgaea TRPG Cancel Flow:
+                // 0. If Disgaea sub-menu is open, close sub-menu and return to main command menu
+                if (UI.CombatHudCanvasUI.Instance != null && UI.CombatHudCanvasUI.Instance.IsSubmenuOpen)
+                {
+                    UI.CombatHudCanvasUI.Instance.CloseAllSubmenus();
+                }
                 // 1. If currently in targeting mode (Move, Attack, Skill, Push, Siphon, etc.):
                 //    Cancel the action mode, refocus camera on the selected character,
                 //    and reopen the Disgaea Command Menu!
@@ -457,8 +461,7 @@ namespace ElementalHexTactics3D.InputHandling
                     break;
 
                 case UnitActionMode.TitanStrike:
-                    int strikeRange = (currentSelectedUnit != null && 
-                        (currentSelectedUnit.Archetype == UnitArchetype.Titan || currentSelectedUnit.UnitName.Contains("Dragon"))) ? 2 : 1;
+                    int strikeRange = (currentSelectedUnit != null) ? currentSelectedUnit.AttackRange : 1;
                     var strikeTiles = HexGrid3D.Instance.GetTilesInRange(currentSelectedUnit.Coordinates, strikeRange);
                     foreach (var tile in strikeTiles)
                     {
@@ -944,13 +947,41 @@ namespace ElementalHexTactics3D.InputHandling
         {
             if (currentSelectedUnit != null)
             {
-                yield return currentSelectedUnit.PlayAttackLunge(targetEnemy.transform.position, 0.22f);
-                TacticalCameraController.Instance?.Shake(0.25f, 0.25f);
-                SoundManager3D.Instance?.PlayTitanStrike();
-                if (currentSelectedUnit.Affinity == ElementalAffinity.Fire || currentSelectedUnit.UnitName.Contains("Dragon"))
+                if (currentSelectedUnit.IsRangedAttack)
                 {
-                    CombatVFXManager.Instance?.PlayFireBurst(targetEnemy.transform.position + Vector3.up * 0.5f);
+                    // Basic Ranged Weapon Attack (Archer bow / Magic bullet / Titan reach)
+                    yield return currentSelectedUnit.PlayAttackLunge(targetEnemy.transform.position, 0.16f);
+                    TacticalCameraController.Instance?.Shake(0.18f, 0.20f);
+
+                    string lower = currentSelectedUnit.UnitName.ToLowerInvariant();
+                    if (lower.Contains("archer") || lower.Contains("bow") || lower.Contains("ranger"))
+                    {
+                        SoundManager3D.Instance?.PlayKineticPush();
+                        CombatVFXManager.Instance?.PlayHitSparks(targetEnemy.transform.position + Vector3.up * 0.75f, new Color(1f, 0.85f, 0.3f));
+                    }
+                    else if (lower.Contains("mage") || lower.Contains("wizard") || lower.Contains("sorcerer"))
+                    {
+                        SoundManager3D.Instance?.PlayFireball();
+                        CombatVFXManager.Instance?.PlayHitSparks(targetEnemy.transform.position + Vector3.up * 0.75f, new Color(0.4f, 0.8f, 1f));
+                    }
+                    else
+                    {
+                        SoundManager3D.Instance?.PlayTitanStrike();
+                        CombatVFXManager.Instance?.PlayHitSparks(targetEnemy.transform.position + Vector3.up * 0.75f, new Color(1f, 0.5f, 0.2f));
+                    }
                 }
+                else
+                {
+                    // Basic Melee Weapon Attack (1 Hex adjacent)
+                    yield return currentSelectedUnit.PlayAttackLunge(targetEnemy.transform.position, 0.22f);
+                    TacticalCameraController.Instance?.Shake(0.25f, 0.25f);
+                    SoundManager3D.Instance?.PlayTitanStrike();
+                    if (currentSelectedUnit.Affinity == ElementalAffinity.Fire || currentSelectedUnit.UnitName.Contains("Dragon"))
+                    {
+                        CombatVFXManager.Instance?.PlayFireBurst(targetEnemy.transform.position + Vector3.up * 0.5f);
+                    }
+                }
+
                 int totalDmg = currentSelectedUnit.EffectiveAttackDamage;
                 string label = (currentSelectedUnit.BonusAttackDamage > 0)
                     ? $"-{totalDmg} CRIT!"

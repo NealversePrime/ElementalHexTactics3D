@@ -379,11 +379,11 @@ namespace ElementalHexTactics3D.UI
                     Sprite frameSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png");
                     Sprite pauseIcon = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_PauseIcon_RPG.png");
 
-                    // 1. Back Section: Solid rich dark slate grey background fill (92% opacity, highly readable)
+                    // 1. Back Section: Solid rich dark slate grey background fill (100% solid opaque, non-transparent)
                     Image dbImg = dialogueBoxRect.GetComponent<Image>() ?? dialogueBoxRect.gameObject.AddComponent<Image>();
                     dbImg.sprite = null;
                     dbImg.type = Image.Type.Simple;
-                    dbImg.color = new Color(0.12f, 0.14f, 0.19f, 0.92f);
+                    dbImg.color = new Color(0.08f, 0.09f, 0.14f, 1.0f);
                     dbImg.raycastTarget = true;
 
                     // 2. Frame Section: child overlay with hollow 9-sliced frame
@@ -427,7 +427,7 @@ namespace ElementalHexTactics3D.UI
                         Image npImg = nameplateTrans.GetComponent<Image>() ?? nameplateTrans.gameObject.AddComponent<Image>();
                         npImg.sprite = null;
                         npImg.type = Image.Type.Simple;
-                        npImg.color = new Color(0.14f, 0.17f, 0.25f, 0.96f); // Solid dark slate/navy fill
+                        npImg.color = new Color(0.12f, 0.14f, 0.20f, 1.0f); // Solid dark slate/navy fill (100% opaque)
 
                         Transform npFrameTrans = nameplateTrans.Find("Frame_Overlay");
                         GameObject npFrameObj = npFrameTrans != null ? npFrameTrans.gameObject : null;

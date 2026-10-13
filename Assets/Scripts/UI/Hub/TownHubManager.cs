@@ -233,6 +233,12 @@ namespace ElementalHexTactics3D.UI.Hub
         {
             if (modal == null) return;
 
+            Transform cardTrans = modal.transform.Find("CardFrame");
+            if (cardTrans != null)
+            {
+                TitleMenuCanvasUI.EnsureSolidCardBackground(cardTrans, true);
+            }
+
             // 1. Close Button
             Transform btnCloseTrans = modal.transform.Find("CardFrame/Btn_Close");
             if (btnCloseTrans != null)
@@ -476,6 +482,11 @@ namespace ElementalHexTactics3D.UI.Hub
 
             CloseAllModals();
             activeModal = modal;
+            Transform cardTrans = activeModal.transform.Find("CardFrame");
+            if (cardTrans != null)
+            {
+                TitleMenuCanvasUI.EnsureSolidCardBackground(cardTrans, true);
+            }
             activeModal.SetActive(true);
             PlaySound(sfxOpenModal, 0.9f);
         }
