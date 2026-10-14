@@ -138,11 +138,17 @@ namespace ElementalHexTactics3D.Tutorial
         public TacticalUnit3D BasaltVanguardPlayer { get; private set; }
         public TacticalUnit3D MagmaDragonPlayer { get; private set; }
         public TacticalUnit3D EarthGolemPlayer => MagmaDragonPlayer;
+        public TacticalUnit3D ScoutDefenderEnemy { get; private set; }
+        public TacticalUnit3D ScoutArcherEnemy { get; private set; }
 
         private bool isStage1Ending = false;
         private float stage1IdleTimer = 0f;
         private bool stage1MoveHintShown = false;
         private bool stage1PushHintShown = false;
+
+        private float stage2IdleTimer = 0f;
+        private bool stage2MagmaIgnited = false;
+        private bool stage2HazardPushCompleted = false;
 
         private HexTile3D currentHighlightedTile = null;
         public HexTile3D CurrentHighlightedTile => currentHighlightedTile;
@@ -255,11 +261,10 @@ namespace ElementalHexTactics3D.Tutorial
                     }
                 }
             }
-            // ================= STAGE 2 STEP EVALUATION ================= //
+            // ================= STAGE 2: GUIDED PLAY & DIRECTIVES EVALUATION ================= //
             else if (CurrentStage == TutorialStage.Stage2_FrontierHazards)
             {
-                // Free Tactical Sandbox: 100% agency, no forced steps or input locks!
-                // Victory triggers when all enemy scouts are eliminated.
+                // Instant Victory Check: When all enemy scouts are eliminated
                 bool anyScoutAlive = false;
                 TacticalUnit3D[] allUnits = UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
                 foreach (var u in allUnits)
@@ -273,6 +278,72 @@ namespace ElementalHexTactics3D.Tutorial
                 if (!anyScoutAlive && allUnits.Length > 0)
                 {
                     OnStage2Victory();
+                    return;
+                }
+
+                HexGrid3D grid = HexGrid3D.Instance;
+                HexTile3D centerTile = grid != null ? grid.GetTile(new HexCoordinates(0, 0)) : null;
+
+                // 1. Detect Directive 1: Elemental Alchemy (Scorched -> Magma)
+                if (!stage2MagmaIgnited)
+                {
+                    if (centerTile != null && centerTile.State == TileState.Magma)
+                    {
+                        stage2MagmaIgnited = true;
+                        Debug.Log("<color=#FF7043><b>[Stage 2]</b></color> Elemental Reaction Triggered: Scorched -> Molten Magma!");
+
+                        CombatFeedbackManager.Instance?.ShowBanner(
+                            "🔥 ELEMENTAL ALCHEMY: MOLTEN MAGMA! 🔥",
+                            "Scorched earth erupted into molten Magma! Units shoved into this hazard suffer 3 Burn damage!",
+                            3.0f,
+                            new Color(1.00f, 0.44f, 0.26f)
+                        );
+                        SoundManager3D.Instance?.PlayFireball();
+                        TacticalCameraController.Instance?.Shake(0.32f, 0.35f);
+
+                        if (!stage2HazardPushCompleted)
+                        {
+                            SetStep(TutorialStep.Stage2_PushEnemyIntoHazard);
+                        }
+                        else
+                        {
+                            SetStep(TutorialStep.Stage2_VanquishScouts);
+                        }
+                    }
+                }
+
+                // 2. Detect Directive 2: Kinetic Hazard Shove
+                if (!stage2HazardPushCompleted)
+                {
+                    bool defenderDisplaced = ScoutDefenderEnemy != null && (ScoutDefenderEnemy.CurrentTile == null || 
+                        ScoutDefenderEnemy.CurrentTile.Coordinates != new HexCoordinates(0, -1));
+                    bool defenderHitHazard = ScoutDefenderEnemy != null && ScoutDefenderEnemy.CurrentTile != null && 
+                        (ScoutDefenderEnemy.CurrentTile.State == TileState.Magma || ScoutDefenderEnemy.CurrentTile.State == TileState.Scorched);
+
+                    if (defenderDisplaced || defenderHitHazard)
+                    {
+                        stage2HazardPushCompleted = true;
+                        Debug.Log("<color=#FFD54F><b>[Stage 2]</b></color> Kinetic Shove Triggered: Scout Defender shoved!");
+
+                        string hazardTitle = stage2MagmaIgnited ? "💥 KINETIC HAZARD: TACTICAL SHOVE! 💥" : "💥 KINETIC SHOVE: ENEMY DISPLACED! 💥";
+                        string hazardDesc = stage2MagmaIgnited ? 
+                            "Brutal impact into the magma hazard! Environmental collision damage executed!" : 
+                            "Scout Defender was shoved onto Scorched Earth! Cast Fireball on it to breach into Magma!";
+
+                        CombatFeedbackManager.Instance?.ShowBanner(hazardTitle, hazardDesc, 3.0f, new Color(1.00f, 0.84f, 0.31f));
+                        TacticalCameraController.Instance?.Shake(0.38f, 0.42f);
+
+                        if (stage2MagmaIgnited)
+                        {
+                            SetStep(TutorialStep.Stage2_VanquishScouts);
+                        }
+                    }
+                }
+
+                // 3. Both Directives Done -> Transition to Free Combat Sandbox
+                if (stage2MagmaIgnited && stage2HazardPushCompleted && CurrentStep != TutorialStep.Stage2_VanquishScouts)
+                {
+                    SetStep(TutorialStep.Stage2_VanquishScouts);
                 }
             }
             // ================= STAGE 3 STEP EVALUATION ================= //
@@ -533,26 +604,19 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(scorchedTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 3/5] IGNITE MAGMA FROM SCORCHED EARTH",
-                        "The center tile at (0, 0) is already smoldering Scorched Earth (Tier 1). Hitting it with Fireball triggers a thermal breach directly into Molten Magma (Tier 2)!",
-                        "Click [Fireball] on the action bar, then target the Scorched tile at (0, 0) to ignite Magma!",
-                        new Color(1f, 0.45f, 0.15f)
+                        "🔥 [TACTICAL DIRECTIVE 1/2] ELEMENTAL ALCHEMY",
+                        "My vessel is Level 1, but primal flame resonates with this scorched soil... Cast Fireball on (0, 0) to ignite Molten Magma!",
+                        "Select Demon Lord, choose [Special ➔ Fireball], and target the Scorched Earth at (0, 0)!",
+                        new Color(1.00f, 0.44f, 0.26f)
                     );
                     break;
 
                 case TutorialStep.Stage2_CastFireballMagma:
-                    SetStep(TutorialStep.Stage2_SelectBasaltVanguard);
+                    SetStep(TutorialStep.Stage2_PushEnemyIntoHazard);
                     break;
 
                 case TutorialStep.Stage2_SelectBasaltVanguard:
-                    if (BasaltVanguardPlayer != null) SetTutorialHighlightedTile(BasaltVanguardPlayer.CurrentTile);
-                    CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
-                    banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 4/5] SELECT BASALT VANGUARD",
-                        "Molten Magma (Tier 2) is active! Any unit pushed into Magma suffers 3 Burn damage. Time for Basalt Vanguard to strike!",
-                        "Click Basalt Vanguard at (0, -2)!",
-                        new Color(0.85f, 0.65f, 0.35f)
-                    );
+                    SetStep(TutorialStep.Stage2_PushEnemyIntoHazard);
                     break;
 
                 case TutorialStep.Stage2_PushEnemyIntoHazard:
@@ -561,10 +625,10 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(shielderTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
                     banner?.ShowGuidance(
-                        "[STAGE 2 - STEP 5/5] KINETIC SHOVE: HAZARD SLAM",
-                        "Basalt Vanguard's Golem Slam displaces targets 1 hex. Shove that Scout Defender straight forward into the molten Magma!",
-                        "Click [Push / Golem Slam], then shove the Scout Defender at (0, -1) into the Magma pit!",
-                        new Color(0.85f, 0.65f, 0.35f)
+                        "💥 [TACTICAL DIRECTIVE 2/2] KINETIC HAZARD SHOVE",
+                        "Scout Defender stands on the precipice of our magma pit! Basalt Vanguard, crush their stance and shove them into the inferno!",
+                        "Select Basalt Vanguard, click [Push / Golem Slam], and shove the Scout Defender at (0, -1) into the Magma!",
+                        new Color(1.00f, 0.84f, 0.31f)
                     );
                     break;
 
@@ -572,10 +636,10 @@ namespace ElementalHexTactics3D.Tutorial
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "🔥 [TACTICAL CRISIS] DEFEND THE FRONTIER",
-                        "Your demonic body is Level 1 with frail stats, but you have the mind of a Rank 1 Tactician! Use Fireball to reshape the battlefield or command Basalt Vanguard to shove scouts into the molten Magma for lethal damage!",
-                        "Total Freedom of Combat: Move, strike, cast spells, and shove freely without any restrictions!",
-                        new Color(1f, 0.55f, 0.15f)
+                        "⚔️ [FREE COMBAT] CRUSH SYNOD SCOUTS",
+                        "Both elemental alchemy and kinetic shove are mastered! Flank the Scout Archer or use [Defend] to absorb oncoming fire!",
+                        "Total Tactical Freedom: Move, strike, use Defend stance, or cast spells freely to finish the battle!",
+                        new Color(0.40f, 0.85f, 0.45f)
                     );
                     break;
 
@@ -641,7 +705,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 2/7] DEPLOY DEMON LORD",
                         "The rift is open! Now deploy my Demon Lord through the gateway onto the frontline.",
-                        "Click [Deploy Demon Lord], then place him at (0, -1) in front of the Rift!",
+                        "Click the Rift, then click [Dispatch Vanguard] to deploy him at (0, -1) in front of the Rift!",
                         new Color(0.95f, 0.45f, 0.35f)
                     );
                     break;
@@ -654,7 +718,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 3/7] SIPHON ELEMENTAL CORE",
                         "Summoning a Titan requires an Elemental Core. As Demon Lord, I can siphon elemental energy from the land!",
-                        "Select Demon Lord, click [Harvest Core / Siphon], and siphon from the adjacent tile!",
+                        "Select Demon Lord, choose [⚡ Absorb], then target the adjacent scorched earth at (0, 0)!",
                         new Color(0.35f, 0.85f, 1.0f)
                     );
                     break;
@@ -667,7 +731,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 4/7] SUMMON MAGMA DRAGON TITAN",
                         "An Elemental Core is forged! Now channel the Abyssal Rift to summon our awakened Titan: The Magma Dragon!",
-                        "Click [Summon Magma Dragon], then deploy the colossal Titan at (0, 0)!",
+                        "Click the Rift, then click [Dispatch Titan] to summon him at (0, 0)!",
                         new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;
@@ -680,7 +744,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 5/7] TITAN FEAST: ABSORB THE LAND",
                         "Titans feast upon elemental land to charge their world-shattering abilities! Siphon the adjacent Scorched Earth to forge an Elemental Core!",
-                        "Select Magma Dragon, click [⚡ Siphon / Harvest Core], and absorb the adjacent Scorched Earth at (1, -1)!",
+                        "Select Magma Dragon, choose [⚡ Absorb], and consume the adjacent Scorched Earth at (1, -1)!",
                         new Color(1f, 0.85f, 0.2f)
                     );
                     break;
@@ -704,7 +768,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 6/7] UNLEASH TITAN CATACLYSM",
                         "An Elemental Core is primed! The Magma Dragon can now rupture the crust with subterranean magma and obliterate their vanguard!",
-                        "Click [🌋 Cataclysm], then target the crusader cluster at (0, 2) to unleash molten fury!",
+                        "Select Magma Dragon, open [✨ Special] ➔ [🌋 Magma Cataclysm], then target the crusaders at (0, 2)!",
                         new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;
@@ -714,7 +778,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 7/7] OBLITERATE THE CRUSADE",
                         "Their divine barrier is shattered! Wipe out the remaining crusade invaders to claim our first Primordial Core!",
-                        "Eliminate all remaining holy invaders to claim victory!",
+                        "Total Tactical Freedom: Crush all remaining crusade invaders with attacks, push, or spells to claim victory!",
                         new Color(0.35f, 0.95f, 0.45f)
                     );
                     break;
@@ -1012,7 +1076,12 @@ namespace ElementalHexTactics3D.Tutorial
                     CampaignSaveManager.SetTransmigrated(true);
                     CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: false);
                     TitleMenuCanvasUI.Instance?.ApplyTitleThemeMode(TitleMenuCanvasUI.TitleThemeMode.DemonLordRebellion);
-                    StartHubCitadelAwakening();
+
+                    // Chain seamlessly into Demon Lord Awakening dialogue, then directly enter Stage 2 combat!
+                    StoryDialogueUI.Instance.PlayPrebuiltSequence(StorySequenceId.HubAwakeningDemonLord, () =>
+                    {
+                        StartStage2FrontierHazards();
+                    });
                 });
             }
             else
@@ -1020,7 +1089,7 @@ namespace ElementalHexTactics3D.Tutorial
                 CampaignSaveManager.SetTransmigrated(true);
                 CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: false);
                 TitleMenuCanvasUI.Instance?.ApplyTitleThemeMode(TitleMenuCanvasUI.TitleThemeMode.DemonLordRebellion);
-                StartHubCitadelAwakening();
+                StartStage2FrontierHazards();
             }
         }
 
@@ -1071,8 +1140,11 @@ namespace ElementalHexTactics3D.Tutorial
         public void StartStage2FrontierHazards()
         {
             CurrentStage = TutorialStage.Stage2_FrontierHazards;
-            CurrentStep = TutorialStep.Stage2_TearOpenRift;
-            Debug.Log("<color=#FF7043><b>[Tutorial Scenario]</b></color> Starting Stage 2: Frontier Hazards (No Titans)...");
+            CurrentStep = TutorialStep.Stage2_CastFireballScorched;
+            stage2IdleTimer = 0f;
+            stage2MagmaIgnited = false;
+            stage2HazardPushCompleted = false;
+            Debug.Log("<color=#FF7043><b>[Tutorial Scenario]</b></color> Starting Stage 2: Frontier Hazards (Elemental Alchemy & Kinetic Shove)...");
 
             if (TitleMenuCanvasUI.Instance != null)
             {
@@ -1116,18 +1188,12 @@ namespace ElementalHexTactics3D.Tutorial
                 0.80f
             );
 
-            // Anchor the Abyssal Rift Conduit at (0, -2) as visual entry point
-            if (grid != null && basaltTile != null)
-            {
-                Combat.AbyssalRiftConduit3D.OpenRiftAt(basaltTile);
-            }
-
             if (grid != null)
             {
-                // Spawn Radiant Synod Scouts: Defender at (0, -1) right in front of Basalt Vanguard and Magma pit!
+                // Spawn Radiant Synod Scouts: Defender at (0, -1) right in front of Basalt Vanguard and Scorched tile at (0, 0)!
                 HexTile3D shielderTile = grid.GetTile(new HexCoordinates(0, -1));
                 Sprite shielderSprite = TacticalUnitSpawner.LoadBattlerSprite("holyshielder.png");
-                TacticalUnitSpawner.SpawnUnitStandee(
+                ScoutDefenderEnemy = TacticalUnitSpawner.SpawnUnitStandee(
                     "Scout Defender",
                     UnitFaction.Enemy,
                     shielderSprite,
@@ -1141,7 +1207,7 @@ namespace ElementalHexTactics3D.Tutorial
 
                 HexTile3D archerTile = grid.GetTile(new HexCoordinates(-1, 2));
                 Sprite archerSprite = TacticalUnitSpawner.LoadBattlerSprite("holyarcher.png");
-                TacticalUnitSpawner.SpawnUnitStandee(
+                ScoutArcherEnemy = TacticalUnitSpawner.SpawnUnitStandee(
                     "Scout Archer",
                     UnitFaction.Enemy,
                     archerSprite,
@@ -1168,7 +1234,7 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "🌲 STAGE 2: FRONTIER SKIRMISH 🌲",
-                    "Level 1 Underdog Survival: Master Fireball & Golem Slam to push scouts into the molten Magma!",
+                    "Underdog Tactics: Ignite Scorched Earth into Magma and shove scouts into the hazard!",
                     3.5f,
                     new Color(0.95f, 0.55f, 0.15f)
                 );
@@ -1176,7 +1242,7 @@ namespace ElementalHexTactics3D.Tutorial
 
             StartCoroutine(PlayDialogueDelayed(StorySequenceId.Stage2FrontierIntro, 0.8f, () =>
             {
-                SetStep(TutorialStep.Stage2_VanquishScouts);
+                SetStep(TutorialStep.Stage2_CastFireballScorched);
             }));
         }
 
@@ -1210,11 +1276,12 @@ namespace ElementalHexTactics3D.Tutorial
                         TierLevel = 1
                     };
 
-                    // Active Molten Magma Pit at (0, 0): Direct hazard for shove kills!
+                    // Center tile at (0, 0): Smoldering Scorched Earth (Tier 1)!
+                    // Primed to be ignited by Demon Lord's Fireball into Molten Magma (Tier 2)!
                     if (q == 0 && r == 0)
                     {
-                        spec.State = TileState.Magma;
-                        spec.TierLevel = 2;
+                        spec.State = TileState.Scorched;
+                        spec.TierLevel = 1;
                     }
                     // Water tiles on left flank (slow or quench)
                     else if ((q == -1 && r == 0) || (q == -2 && r == 0))
@@ -1248,6 +1315,8 @@ namespace ElementalHexTactics3D.Tutorial
             ClearTutorialHighlightedTile();
             CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
             TutorialGuidanceBannerUI.SafeHideGuidance();
+
+            CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: true);
 
             if (StoryDialogueUI.Instance != null)
             {

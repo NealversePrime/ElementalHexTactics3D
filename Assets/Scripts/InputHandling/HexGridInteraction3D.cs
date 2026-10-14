@@ -992,22 +992,27 @@ namespace ElementalHexTactics3D.InputHandling
 
         private IEnumerator ExecutePlayerSpell(HexTile3D targetTile, ElementType element, int dmg, Color projColor)
         {
-            if (currentSelectedUnit != null)
+            TacticalUnit3D caster = currentSelectedUnit;
+            if (caster == null || targetTile == null) yield break;
+
+            yield return caster.PlayAttackLunge(targetTile.transform.position, 0.22f);
+            if (caster == null || targetTile == null) yield break;
+
+            Vector3 casterPos = caster.transform.position + Vector3.up * 0.8f;
+            Vector3 targetPos = targetTile.GetTopCenterPosition() + Vector3.up * 0.4f;
+
+            if (CombatFeedbackManager.Instance != null)
             {
-                yield return currentSelectedUnit.PlayAttackLunge(targetTile.transform.position, 0.22f);
-                Vector3 casterPos = currentSelectedUnit.transform.position + Vector3.up * 0.8f;
-                Vector3 targetPos = targetTile.GetTopCenterPosition() + Vector3.up * 0.4f;
+                yield return CombatFeedbackManager.Instance.SpawnSpellProjectile(casterPos, targetPos, projColor, 0.26f);
+            }
 
-                if (CombatFeedbackManager.Instance != null)
-                {
-                    yield return CombatFeedbackManager.Instance.SpawnSpellProjectile(casterPos, targetPos, projColor, 0.26f);
-                }
-
-                if (currentSelectedUnit.UnitName.ToLower().Contains("paladin"))
+            if (caster != null)
+            {
+                if (caster.UnitName.ToLower().Contains("paladin"))
                 {
                     SpellVFXManager3D.Instance?.PlayRadiantSmiteVFX(targetPos, casterPos);
                 }
-                else if (currentSelectedUnit.UnitName.ToLower().Contains("demon") || currentSelectedUnit.UnitName.ToLower().Contains("malakor"))
+                else if (caster.UnitName.ToLower().Contains("demon") || caster.UnitName.ToLower().Contains("malakor"))
                 {
                     SpellVFXManager3D.Instance?.PlayHellfireBlastVFX(targetPos);
                 }

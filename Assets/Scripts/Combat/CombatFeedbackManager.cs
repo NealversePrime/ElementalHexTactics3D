@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using ElementalHexTactics3D.Units;
 using ElementalHexTactics3D.Turn;
 using ElementalHexTactics3D.UI;
@@ -272,8 +273,34 @@ namespace ElementalHexTactics3D.Combat
             GUI.Label(subRect, bannerSubtitle, subStyle);
         }
 
+        private static readonly List<RaycastResult> s_UiRaycastResults = new List<RaycastResult>();
+
+        private static bool IsScreenPointOverUI(Vector2 screenPos)
+        {
+            if (EventSystem.current == null) return false;
+            var pointerData = new PointerEventData(EventSystem.current)
+            {
+                position = screenPos
+            };
+            s_UiRaycastResults.Clear();
+            EventSystem.current.RaycastAll(pointerData, s_UiRaycastResults);
+            for (int i = 0; i < s_UiRaycastResults.Count; i++)
+            {
+                var go = s_UiRaycastResults[i].gameObject;
+                if (go != null && go.activeInHierarchy)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private void DrawOverheadHealthBars()
         {
+            // Completely suppress overhead health bars if the Citadel Rift Squad Dispatch modal is open
+            if (CombatHudCanvasUI.Instance != null && CombatHudCanvasUI.Instance.IsDispatchModalActive)
+                return;
+
             TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
             if (units == null || units.Length == 0) return;
 
@@ -289,6 +316,19 @@ namespace ElementalHexTactics3D.Combat
 
                 // Ignore if behind camera
                 if (screenPos.z <= 0f) continue;
+
+                // Suppress if occluded by Combat HUD panels (Command Menu, Character Card, etc.)
+                if (CombatHudCanvasUI.Instance != null && CombatHudCanvasUI.Instance.IsScreenPointOccludedByHud(screenPos))
+                    continue;
+
+                // Suppress if occluded by Tutorial Guidance Banner
+                if (ElementalHexTactics3D.Tutorial.TutorialGuidanceBannerUI.Instance != null &&
+                    ElementalHexTactics3D.Tutorial.TutorialGuidanceBannerUI.Instance.IsScreenPointOccluded(screenPos))
+                    continue;
+
+                // Suppress if occluded by any active UI element in EventSystem
+                if (IsScreenPointOverUI(screenPos))
+                    continue;
 
                 float screenY = Screen.height - screenPos.y;
                 Rect barRect = new Rect(screenPos.x - barWidth * 0.5f, screenY, barWidth, barHeight);
@@ -328,6 +368,9 @@ namespace ElementalHexTactics3D.Combat
 
         private void DrawFloatingTexts()
         {
+            if (CombatHudCanvasUI.Instance != null && CombatHudCanvasUI.Instance.IsDispatchModalActive)
+                return;
+
             GUIStyle textStyle = new GUIStyle(GUI.skin.label)
             {
                 alignment = TextAnchor.MiddleCenter,
@@ -339,6 +382,16 @@ namespace ElementalHexTactics3D.Combat
             {
                 Vector3 screenPos = mainCamera.WorldToScreenPoint(item.WorldPosition + Vector3.up * item.VerticalOffset);
                 if (screenPos.z <= 0f) continue;
+
+                if (CombatHudCanvasUI.Instance != null && CombatHudCanvasUI.Instance.IsScreenPointOccludedByHud(screenPos))
+                    continue;
+
+                if (ElementalHexTactics3D.Tutorial.TutorialGuidanceBannerUI.Instance != null &&
+                    ElementalHexTactics3D.Tutorial.TutorialGuidanceBannerUI.Instance.IsScreenPointOccluded(screenPos))
+                    continue;
+
+                if (IsScreenPointOverUI(screenPos))
+                    continue;
 
                 float screenY = Screen.height - screenPos.y;
                 float progress = item.Elapsed / item.Duration;

@@ -453,9 +453,75 @@ namespace ElementalHexTactics3D.UI
                         RectTransform backRect = backTrans.GetComponent<RectTransform>();
                         if (backRect != null)
                         {
-                            backRect.anchoredPosition = new Vector2(0f, -250f);
-                            backRect.sizeDelta = new Vector2(260f, 48f);
+                            backRect.anchoredPosition = new Vector2(-260f, -250f);
+                            backRect.sizeDelta = new Vector2(180f, 48f);
                         }
+                    }
+
+                    // Direct Stage 1 launcher button
+                    Transform replay1Trans = card.Find("Btn_ReplayStage1");
+                    if (replay1Trans == null)
+                    {
+                        GameObject rObj = new GameObject("Btn_ReplayStage1", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                        rObj.transform.SetParent(card, false);
+                        replay1Trans = rObj.transform;
+
+                        GameObject tObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                        tObj.transform.SetParent(rObj.transform, false);
+                        Text t = tObj.GetComponent<Text>();
+                        t.text = "⚔️ PLAY STAGE 1 (HOLY)";
+                        t.alignment = TextAnchor.MiddleCenter;
+                        t.fontSize = 12;
+                        t.fontStyle = FontStyle.Bold;
+                        t.color = Color.white;
+                        RectTransform tr = tObj.GetComponent<RectTransform>();
+                        tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.sizeDelta = Vector2.zero;
+
+                        Button btn = rObj.GetComponent<Button>();
+                        btn.onClick.AddListener(() =>
+                        {
+                            CloseActiveModal();
+                            StartHolyPrologueQuest();
+                        });
+                    }
+                    if (replay1Trans != null)
+                    {
+                        RectTransform rr = replay1Trans.GetComponent<RectTransform>();
+                        rr.anchoredPosition = new Vector2(0f, -250f);
+                        rr.sizeDelta = new Vector2(230f, 48f);
+                    }
+
+                    // Direct Stage 2 launcher button
+                    Transform replay2Trans = card.Find("Btn_ReplayStage2");
+                    if (replay2Trans == null)
+                    {
+                        GameObject rObj = new GameObject("Btn_ReplayStage2", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                        rObj.transform.SetParent(card, false);
+                        replay2Trans = rObj.transform;
+
+                        GameObject tObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                        tObj.transform.SetParent(rObj.transform, false);
+                        Text t = tObj.GetComponent<Text>();
+                        t.text = "🔥 PLAY STAGE 2 (DEMON)";
+                        t.alignment = TextAnchor.MiddleCenter;
+                        t.fontSize = 12;
+                        t.fontStyle = FontStyle.Bold;
+                        t.color = Color.white;
+                        RectTransform tr = tObj.GetComponent<RectTransform>();
+                        tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one; tr.sizeDelta = Vector2.zero;
+
+                        Button btn = rObj.GetComponent<Button>();
+                        btn.onClick.AddListener(() =>
+                        {
+                            CloseActiveModal();
+                            Tutorial.TutorialScenarioManager.EnsureInstance().StartStage2FrontierHazards();
+                        });
+                    }
+                    if (replay2Trans != null)
+                    {
+                        RectTransform rr = replay2Trans.GetComponent<RectTransform>();
+                        rr.anchoredPosition = new Vector2(260f, -250f);
+                        rr.sizeDelta = new Vector2(230f, 48f);
                     }
                 }
             }
@@ -955,11 +1021,6 @@ namespace ElementalHexTactics3D.UI
                 ? TitleThemeMode.DemonLordRebellion
                 : TitleThemeMode.PaladinHolyland;
 
-            bool enableSkip = (newMode == TitleThemeMode.DemonLordRebellion);
-            skipTutorialToHub = enableSkip;
-            PlayerPrefs.SetInt(PREF_SKIP_TUTORIAL, enableSkip ? 1 : 0);
-            PlayerPrefs.Save();
-
             ApplyTitleThemeMode(newMode, true);
             PlaySoundClick();
         }
@@ -1061,7 +1122,15 @@ namespace ElementalHexTactics3D.UI
             bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 0) == 1;
             if (currentThemeMode == TitleThemeMode.PaladinHolyland && !isSkipActive)
             {
-                playTxt.text = "START HOLY QUEST";
+                playTxt.text = "START PROLOGUE (HOLY RAID)";
+                return;
+            }
+
+            // In Demon Lord mode, check if Stage 2 (Frontier Skirmish) is done
+            bool isStage2Done = ElementalHexTactics3D.Campaign.CampaignSaveManager.IsStage2Completed();
+            if (!isStage2Done && !isSkipActive)
+            {
+                playTxt.text = "CONTINUE PROLOGUE (STAGE 2)";
                 return;
             }
 
@@ -1105,14 +1174,27 @@ namespace ElementalHexTactics3D.UI
         {
             PlaySoundClick();
             bool isSkipActive = skipTutorialToHub || PlayerPrefs.GetInt(PREF_SKIP_TUTORIAL, 0) == 1;
-            if (isSkipActive || currentThemeMode == TitleThemeMode.DemonLordRebellion)
+            if (isSkipActive)
             {
                 ShowTownHub(true);
+                return;
             }
-            else
+
+            if (currentThemeMode == TitleThemeMode.PaladinHolyland)
             {
                 StartHolyPrologueQuest();
+                return;
             }
+
+            // Demon Lord Rebellion Mode: Check if Stage 2 is done
+            bool isStage2Done = ElementalHexTactics3D.Campaign.CampaignSaveManager.IsStage2Completed();
+            if (!isStage2Done)
+            {
+                Tutorial.TutorialScenarioManager.EnsureInstance().StartStage2FrontierHazards();
+                return;
+            }
+
+            ShowTownHub(false);
         }
 
         public void StartHolyPrologueQuest()

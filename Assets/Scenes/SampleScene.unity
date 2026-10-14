@@ -19368,11 +19368,19 @@ MonoBehaviour:
   portraitImage: {fileID: 2126962168}
   unitNameText: {fileID: 608460119}
   unitArchetypeText: {fileID: 1596555802}
+  turnStatusText: {fileID: 2066903256}
   hpSlider: {fileID: 553604339}
   hpFillImage: {fileID: 1294128782}
   hpValueText: {fileID: 1756865428}
+  spSlider: {fileID: 0}
+  spFillImage: {fileID: 0}
+  spValueText: {fileID: 0}
+  statMatrixCol1: {fileID: 0}
+  statMatrixCol2: {fileID: 0}
+  equipStanceText: {fileID: 0}
+  bottomTacticalText: {fileID: 0}
+  bottomResistText: {fileID: 0}
   statsText: {fileID: 864298986}
-  turnStatusText: {fileID: 2066903256}
   attunementBadgeText: {fileID: 326555846}
   attunementBadgeBg: {fileID: 1510872517}
   elementalCoresText: {fileID: 658475760}
@@ -19387,6 +19395,8 @@ MonoBehaviour:
   btnTearRift: {fileID: 1845055734}
   txtTearRift: {fileID: 1641998932}
   btnRandomizeMap: {fileID: 277035023}
+  btnOpenRiftDispatch: {fileID: 0}
+  txtOpenRiftDispatch: {fileID: 0}
   btnDeployCommander: {fileID: 1060987793}
   txtDeployCommander: {fileID: 1457576127}
   btnSummonTitanRift: {fileID: 985013846}
@@ -19412,6 +19422,7 @@ MonoBehaviour:
   btnRecall: {fileID: 881127999}
   txtRecall: {fileID: 1916290118}
   btnEndTurn: {fileID: 677236181}
+  txtEndTurn: {fileID: 0}
   dispatchModalRoot: {fileID: 0}
   dispatchPreviewPortrait: {fileID: 0}
   dispatchPreviewName: {fileID: 0}

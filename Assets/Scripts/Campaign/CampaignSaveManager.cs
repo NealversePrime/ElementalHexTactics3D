@@ -229,6 +229,24 @@ namespace ElementalHexTactics3D.Campaign
         }
 
         /// <summary>
+        /// Returns true if Stage 1 (Holy Crusade / Throne Room) has been beaten.
+        /// </summary>
+        public static bool IsStage1Completed()
+        {
+            CampaignSaveData data = LoadSaveData();
+            return data != null && data.hasCompletedTutorialStage1;
+        }
+
+        /// <summary>
+        /// Returns true if Stage 2 (Frontier Skirmish / Demon Lord) has been beaten.
+        /// </summary>
+        public static bool IsStage2Completed()
+        {
+            CampaignSaveData data = LoadSaveData();
+            return data != null && data.hasCompletedTutorialStage2;
+        }
+
+        /// <summary>
         /// Directly persists a CampaignSaveData object to disk.
         /// </summary>
         private static bool SaveRawData(CampaignSaveData data)

@@ -55,6 +55,14 @@ namespace ElementalHexTactics3D.Tutorial
             }
         }
 
+        public bool IsScreenPointOccluded(Vector2 screenPos)
+        {
+            if (rootBanner == null || !rootBanner.activeInHierarchy) return false;
+            if (bannerCanvasGroup != null && bannerCanvasGroup.alpha <= 0.01f) return false;
+            RectTransform rt = rootBanner.GetComponent<RectTransform>();
+            return rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos);
+        }
+
         public static void SafeHideGuidance()
         {
             if (Instance != null)
@@ -213,7 +221,7 @@ namespace ElementalHexTactics3D.Tutorial
             rect.anchorMax = new Vector2(0.5f, 1f);
             rect.pivot = new Vector2(0.5f, 1f);
             rect.anchoredPosition = new Vector2(0f, -76f);
-            rect.sizeDelta = new Vector2(720f, 96f);
+            rect.sizeDelta = new Vector2(1040f, 136f); // Generous, highly legible dimensions (upgraded from 720x96)
 
             rootBanner = gameObject;
 
@@ -222,10 +230,14 @@ namespace ElementalHexTactics3D.Tutorial
             bannerBackground.color = new Color(0.06f, 0.08f, 0.12f, 0.96f); // Deep solid slate
             bannerBackground.raycastTarget = false;
 
-            // Glowing border
+            // Glowing border & Drop Shadow
             bannerOutline = gameObject.GetComponent<Outline>() ?? gameObject.AddComponent<Outline>();
             bannerOutline.effectColor = new Color(1.0f, 0.82f, 0.25f, 0.85f); // Gold border
             bannerOutline.effectDistance = new Vector2(2f, -2f);
+
+            Shadow bannerShadow = gameObject.GetComponent<Shadow>() ?? gameObject.AddComponent<Shadow>();
+            bannerShadow.effectColor = new Color(0f, 0f, 0f, 0.65f);
+            bannerShadow.effectDistance = new Vector2(3f, -3f);
 
             // Left Avatar Box (Icon + Speaker Tag)
             GameObject avatarBox = CreateUI("Box_Avatar", transform);
@@ -233,8 +245,8 @@ namespace ElementalHexTactics3D.Tutorial
             avRect.anchorMin = new Vector2(0f, 0f);
             avRect.anchorMax = new Vector2(0f, 1f);
             avRect.pivot = new Vector2(0f, 0.5f);
-            avRect.anchoredPosition = new Vector2(10f, 0f);
-            avRect.sizeDelta = new Vector2(85f, -12f);
+            avRect.anchoredPosition = new Vector2(12f, 0f);
+            avRect.sizeDelta = new Vector2(110f, -16f);
 
             Image avBg = avatarBox.AddComponent<Image>();
             avBg.color = new Color(0.10f, 0.14f, 0.22f, 0.95f);
@@ -242,12 +254,12 @@ namespace ElementalHexTactics3D.Tutorial
 
             Outline avOutline = avatarBox.AddComponent<Outline>();
             avOutline.effectColor = new Color(0.35f, 0.85f, 1.0f, 0.7f);
-            avOutline.effectDistance = new Vector2(1f, -1f);
+            avOutline.effectDistance = new Vector2(1.5f, -1.5f);
 
             // Avatar Portrait Image
             GameObject imgObj = CreateUI("Img_AvatarPortrait", avatarBox.transform);
             RectTransform imgRect = imgObj.GetComponent<RectTransform>();
-            imgRect.anchorMin = new Vector2(0.06f, 0.35f);
+            imgRect.anchorMin = new Vector2(0.06f, 0.32f);
             imgRect.anchorMax = new Vector2(0.94f, 0.98f);
             imgRect.anchoredPosition = Vector2.zero;
             imgRect.sizeDelta = Vector2.zero;
@@ -269,14 +281,14 @@ namespace ElementalHexTactics3D.Tutorial
             // Avatar Icon / Emoji (fallback)
             GameObject iconObj = CreateUI("Txt_AvatarIcon", avatarBox.transform);
             RectTransform iconRect = iconObj.GetComponent<RectTransform>();
-            iconRect.anchorMin = new Vector2(0f, 0.35f);
+            iconRect.anchorMin = new Vector2(0f, 0.32f);
             iconRect.anchorMax = new Vector2(1f, 1f);
             iconRect.anchoredPosition = Vector2.zero;
             iconRect.sizeDelta = Vector2.zero;
 
             txtAvatarIcon = iconObj.AddComponent<Text>();
             txtAvatarIcon.font = font;
-            txtAvatarIcon.fontSize = 24;
+            txtAvatarIcon.fontSize = 28;
             txtAvatarIcon.alignment = TextAnchor.MiddleCenter;
             txtAvatarIcon.text = mcPort != null ? "" : "✦";
             txtAvatarIcon.color = Color.white;
@@ -286,13 +298,13 @@ namespace ElementalHexTactics3D.Tutorial
             GameObject tagObj = CreateUI("Txt_SpeakerTag", avatarBox.transform);
             RectTransform tagRect = tagObj.GetComponent<RectTransform>();
             tagRect.anchorMin = new Vector2(0f, 0f);
-            tagRect.anchorMax = new Vector2(1f, 0.38f);
+            tagRect.anchorMax = new Vector2(1f, 0.30f);
             tagRect.anchoredPosition = Vector2.zero;
             tagRect.sizeDelta = Vector2.zero;
 
             txtSpeakerTag = tagObj.AddComponent<Text>();
             txtSpeakerTag.font = font;
-            txtSpeakerTag.fontSize = 11;
+            txtSpeakerTag.fontSize = 12;
             txtSpeakerTag.fontStyle = FontStyle.Bold;
             txtSpeakerTag.alignment = TextAnchor.MiddleCenter;
             txtSpeakerTag.text = "MC (TACTICAL THOUGHT)";
@@ -305,40 +317,40 @@ namespace ElementalHexTactics3D.Tutorial
             contRect.anchorMin = new Vector2(0f, 0f);
             contRect.anchorMax = new Vector2(1f, 1f);
             contRect.pivot = new Vector2(0f, 0.5f);
-            contRect.anchoredPosition = new Vector2(105f, 0f);
-            contRect.sizeDelta = new Vector2(-115f, -10f);
+            contRect.anchoredPosition = new Vector2(136f, 0f);
+            contRect.sizeDelta = new Vector2(-152f, -14f);
 
-            // Slot 1: Step Badge (Top: Height 22px)
+            // Slot 1: Step Badge (Top: Height 26px)
             GameObject stepObj = CreateUI("Txt_StepBadge", contentBox.transform);
             RectTransform stepRect = stepObj.GetComponent<RectTransform>();
             stepRect.anchorMin = new Vector2(0f, 1f);
             stepRect.anchorMax = new Vector2(1f, 1f);
             stepRect.pivot = new Vector2(0f, 1f);
             stepRect.anchoredPosition = new Vector2(0f, 0f);
-            stepRect.sizeDelta = new Vector2(0f, 22f);
+            stepRect.sizeDelta = new Vector2(0f, 26f);
 
             txtStepBadge = stepObj.AddComponent<Text>();
             txtStepBadge.font = font;
-            txtStepBadge.fontSize = 13;
+            txtStepBadge.fontSize = 16; // Upgraded from 13 -> 16
             txtStepBadge.fontStyle = FontStyle.Bold;
             txtStepBadge.alignment = TextAnchor.MiddleLeft;
             txtStepBadge.text = "";
             txtStepBadge.color = new Color(1.0f, 0.88f, 0.35f); // Gold
             txtStepBadge.raycastTarget = false;
 
-            // Slot 2: Monologue Body (Middle: Y from -24px, Height 42px, wraps cleanly)
+            // Slot 2: Monologue Body (Middle: Y from -28px, Height 54px, wraps cleanly)
             GameObject monoObj = CreateUI("Txt_Monologue", contentBox.transform);
             RectTransform monoRect = monoObj.GetComponent<RectTransform>();
             monoRect.anchorMin = new Vector2(0f, 1f);
             monoRect.anchorMax = new Vector2(1f, 1f);
             monoRect.pivot = new Vector2(0f, 1f);
-            monoRect.anchoredPosition = new Vector2(0f, -23f);
-            monoRect.sizeDelta = new Vector2(0f, 42f);
+            monoRect.anchoredPosition = new Vector2(0f, -28f);
+            monoRect.sizeDelta = new Vector2(0f, 54f);
 
             txtMonologue = monoObj.AddComponent<Text>();
             txtMonologue.font = font;
-            txtMonologue.fontSize = 12;
-            txtMonologue.lineSpacing = 1.15f;
+            txtMonologue.fontSize = 15; // Upgraded from 12 -> 15
+            txtMonologue.lineSpacing = 1.20f;
             txtMonologue.fontStyle = FontStyle.Normal;
             txtMonologue.alignment = TextAnchor.UpperLeft;
             txtMonologue.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -347,28 +359,102 @@ namespace ElementalHexTactics3D.Tutorial
             txtMonologue.color = Color.white;
             txtMonologue.raycastTarget = false;
 
-            // Slot 3: Hint Footer (Bottom: Height 20px)
+            // Slot 3: Hint Footer (Bottom: Height 26px)
             GameObject hintObj = CreateUI("Txt_Hint", contentBox.transform);
             RectTransform hintRect = hintObj.GetComponent<RectTransform>();
             hintRect.anchorMin = new Vector2(0f, 0f);
             hintRect.anchorMax = new Vector2(1f, 0f);
             hintRect.pivot = new Vector2(0f, 0f);
             hintRect.anchoredPosition = new Vector2(0f, 2f);
-            hintRect.sizeDelta = new Vector2(0f, 20f);
+            hintRect.sizeDelta = new Vector2(0f, 26f);
 
             txtHint = hintObj.AddComponent<Text>();
             txtHint.font = font;
-            txtHint.fontSize = 11;
-            txtHint.fontStyle = FontStyle.Italic;
+            txtHint.fontSize = 14; // Upgraded from 11 -> 14
+            txtHint.fontStyle = FontStyle.Bold;
             txtHint.alignment = TextAnchor.MiddleLeft;
             txtHint.horizontalOverflow = HorizontalWrapMode.Wrap;
             txtHint.verticalOverflow = VerticalWrapMode.Truncate;
             txtHint.text = "";
-            txtHint.color = new Color(0.45f, 0.95f, 0.65f); // Mint green
+            txtHint.color = new Color(0.40f, 0.95f, 0.65f); // Mint green
             txtHint.raycastTarget = false;
 
             isBuilt = true;
             gameObject.SetActive(false);
+        }
+
+        public void ApplyLayoutSizing()
+        {
+            RectTransform rect = GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                rect.anchorMin = new Vector2(0.5f, 1f);
+                rect.anchorMax = new Vector2(0.5f, 1f);
+                rect.pivot = new Vector2(0.5f, 1f);
+                rect.anchoredPosition = new Vector2(0f, -76f);
+                rect.sizeDelta = new Vector2(1040f, 136f);
+            }
+
+            Transform avBox = transform.Find("Box_Avatar");
+            if (avBox != null)
+            {
+                RectTransform avRect = avBox.GetComponent<RectTransform>();
+                if (avRect != null)
+                {
+                    avRect.sizeDelta = new Vector2(110f, -16f);
+                    avRect.anchoredPosition = new Vector2(12f, 0f);
+                }
+            }
+
+            if (txtSpeakerTag != null)
+            {
+                txtSpeakerTag.fontSize = 12;
+            }
+
+            Transform contBox = transform.Find("Box_Content");
+            if (contBox != null)
+            {
+                RectTransform contRect = contBox.GetComponent<RectTransform>();
+                if (contRect != null)
+                {
+                    contRect.anchoredPosition = new Vector2(136f, 0f);
+                    contRect.sizeDelta = new Vector2(-152f, -14f);
+                }
+            }
+
+            if (txtStepBadge != null)
+            {
+                RectTransform stepRect = txtStepBadge.GetComponent<RectTransform>();
+                if (stepRect != null)
+                {
+                    stepRect.sizeDelta = new Vector2(0f, 26f);
+                }
+                txtStepBadge.fontSize = 16;
+            }
+
+            if (txtMonologue != null)
+            {
+                RectTransform monoRect = txtMonologue.GetComponent<RectTransform>();
+                if (monoRect != null)
+                {
+                    monoRect.anchoredPosition = new Vector2(0f, -28f);
+                    monoRect.sizeDelta = new Vector2(0f, 54f);
+                }
+                txtMonologue.fontSize = 15;
+                txtMonologue.lineSpacing = 1.20f;
+            }
+
+            if (txtHint != null)
+            {
+                RectTransform hintRect = txtHint.GetComponent<RectTransform>();
+                if (hintRect != null)
+                {
+                    hintRect.anchoredPosition = new Vector2(0f, 2f);
+                    hintRect.sizeDelta = new Vector2(0f, 26f);
+                }
+                txtHint.fontSize = 14;
+                txtHint.fontStyle = FontStyle.Bold;
+            }
         }
 
         /// <summary>
@@ -381,6 +467,8 @@ namespace ElementalHexTactics3D.Tutorial
                 Canvas canvas = GetComponentInParent<Canvas>() ?? FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
                 if (canvas != null) BuildUIHierarchy(canvas);
             }
+
+            ApplyLayoutSizing();
 
             gameObject.SetActive(true);
             transform.SetAsLastSibling();
