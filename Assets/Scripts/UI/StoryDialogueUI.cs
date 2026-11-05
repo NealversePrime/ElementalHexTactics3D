@@ -12,6 +12,7 @@ namespace ElementalHexTactics3D.UI
     {
         RealWorldPrologue,      // MC at midnight desk playing Omniterra
         HolyRaidIntro,          // Battle 1 Paladin taunting Demon Lord
+        HolyRaidDeathbed,       // In-battle deathbed last words when Demon Lord drops to 1 HP
         HolyRaidVictoryGlitch,  // Post-battle glitch & Developer/God transmigration
         HubAwakeningDemonLord,  // Waking up in Citadel Town Hub with Basalt Vanguard general
         Stage2FrontierIntro,    // Battle 2 Demon Lord & Basalt Vanguard teaching terrain alchemy & hazards
@@ -551,11 +552,17 @@ namespace ElementalHexTactics3D.UI
             onSequenceCompleteCallback = onComplete;
             IsPlayingDialogue = true;
 
-            // Pre-populate portraits if both left and right speakers exist in the sequence
+            // Always reset both portraits first so no stale portrait lingers across sequences
+            if (portraitLeft != null) portraitLeft.gameObject.SetActive(false);
+            if (portraitRight != null) portraitRight.gameObject.SetActive(false);
+
+            // Pre-populate portraits if both left and right speakers exist in the opening scene
             Sprite firstLeftSprite = null;
             Sprite firstRightSprite = null;
+            Sprite openingBg = (lines.Count > 0) ? lines[0].backgroundArt : null;
             foreach (var l in lines)
             {
+                if (l.backgroundArt != openingBg) break;
                 if (l.isLeftSpeaker && firstLeftSprite == null && l.speakerPortrait != null) firstLeftSprite = l.speakerPortrait;
                 if (!l.isLeftSpeaker && firstRightSprite == null && l.speakerPortrait != null) firstRightSprite = l.speakerPortrait;
             }
@@ -672,10 +679,19 @@ namespace ElementalHexTactics3D.UI
                         SetGroupAlpha(portraitLeftGroup, 1f);
                         portraitLeft.transform.localScale = Vector3.one * 1.05f;
                     }
-                    if (portraitRight != null && portraitRight.gameObject.activeSelf)
+                    bool isSoloRealWorldScene = (line.speakerName != null && line.speakerName.Contains("MC")) ||
+                                                (line.backgroundArt != null && (line.backgroundArt == bgMcRoom || line.backgroundArt == bgMcLivingRoom));
+                    if (portraitRight != null)
                     {
-                        SetGroupAlpha(portraitRightGroup, 0.45f);
-                        portraitRight.transform.localScale = Vector3.one * 0.525f; // Twice as reduced size (half scale of 1.05)
+                        if (isSoloRealWorldScene)
+                        {
+                            portraitRight.gameObject.SetActive(false);
+                        }
+                        else if (portraitRight.gameObject.activeSelf)
+                        {
+                            SetGroupAlpha(portraitRightGroup, 0.45f);
+                            portraitRight.transform.localScale = Vector3.one * 0.525f;
+                        }
                     }
                     SetNameplatePosition(true);
                 }
@@ -762,25 +778,21 @@ namespace ElementalHexTactics3D.UI
 
         private IEnumerator TriggerGlitchFX()
         {
-            if (glitchOverlayImage == null) yield break;
+            URPGlitchEffect glitch = GetComponent<URPGlitchEffect>() ?? gameObject.AddComponent<URPGlitchEffect>();
+            bool isClimaxLine = currentTargetText != null &&
+                                (currentTargetText.Contains("AAAAAAAGH") || currentTargetText.Contains("chessboard is inverted"));
+            float duration = isClimaxLine ? 1.35f : 0.78f;
+            float intensity = isClimaxLine ? 1.0f : 0.82f;
 
-            glitchOverlayImage.gameObject.SetActive(true);
-            Color baseColor = new Color(0.95f, 0.2f, 0.2f, 0.45f);
-
-            Vector3 origPos = dialogueBoxRect != null ? dialogueBoxRect.anchoredPosition : Vector3.zero;
-
-            for (int i = 0; i < 6; i++)
-            {
-                glitchOverlayImage.color = (i % 2 == 0) ? baseColor : new Color(0.1f, 0.8f, 1f, 0.35f);
-                if (dialogueBoxRect != null)
-                {
-                    dialogueBoxRect.anchoredPosition = (Vector2)origPos + new Vector2(UnityEngine.Random.Range(-12f, 12f), UnityEngine.Random.Range(-8f, 8f));
-                }
-                yield return new WaitForSecondsRealtime(0.06f);
-            }
-
-            if (dialogueBoxRect != null) dialogueBoxRect.anchoredPosition = origPos;
-            glitchOverlayImage.gameObject.SetActive(false);
+            glitch.TriggerBurst(
+                backgroundArtImage,
+                portraitLeft,
+                portraitRight,
+                glitchOverlayImage,
+                dialogueBoxRect,
+                duration,
+                intensity);
+            yield return new WaitForSecondsRealtime(duration);
         }
 
         public void SkipSequence()
@@ -886,16 +898,43 @@ namespace ElementalHexTactics3D.UI
                     ));
                     break;
 
+                case StorySequenceId.HolyRaidDeathbed:
+                    // Rendered directly over the 3D Throne Room while Demon Lord Malakor is alive at 1 HP on his throne!
+                    lines.Add(new DialogueLine(
+                        "Paladin (Chosen Hero)",
+                        "You are brought to your knees, Malakor—one final strike from oblivion! Before my blade ends your reign... I grant you one last breath. Speak your final words.",
+                        paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
+                    ));
+
+                    lines.Add(new DialogueLine(
+                        "Demon Lord Malakor (1 HP - Dying)",
+                        "Last words...? *Cough*... Look past my horns, golden puppet. Listen to the trembling beneath these floorboards... Those aren't monsters hiding in the lower vaults—they're the orphans your 'Holy Crusade' burned out of the borderlands.",
+                        demonLordPortrait, false, null, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+
+                    lines.Add(new DialogueLine(
+                        "Demon Lord Malakor (1 HP - Dying)",
+                        "I was never the plague upon this world... I was the last shield holding your blinding light back. When my heart stops... who will protect them from YOU?!",
+                        demonLordPortrait, false, null, new Color(0.95f, 0.4f, 0.4f)
+                    ));
+
+                    lines.Add(new DialogueLine(
+                        "Paladin (Chosen Hero)",
+                        "Heresy to the last! Raise your weapons—deliver the final blow and purge this shadow in the name of the Radiant Synod!",
+                        paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
+                    ));
+                    break;
+
                 case StorySequenceId.HolyRaidVictoryGlitch:
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "Victory for the Radiant Synod! The lord of shadows has been cleansed from Omniterra!",
+                        "It is finished. The Demon Lord is no more! Glory to the Radiant Synod!",
                         paladinPortrait, true, bgDemonLordThrone, new Color(1f, 0.85f, 0.25f)
                     ));
 
                     lines.Add(new DialogueLine(
                         "MC (Real World)",
-                        "Phew... solo raid clear. Server's #1 solo ranker, locked in. Why does my chest feel this tight though...",
+                        "Phew... damn, the writers went hard on the boss's last words before the final blow. Still—solo raid clear! Server's #1 solo ranker, locked in. Why does my chest feel this tight though...",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
 
@@ -915,7 +954,7 @@ namespace ElementalHexTactics3D.UI
                     lines.Add(new DialogueLine(
                         "The Architect (System Creator)",
                         "You cheered for 'divine righteousness' while the Radiant Synod burned the villages of those they called monsters.",
-                        null, true, bgCrusadeAtrocity, new Color(0.2f, 0.95f, 0.6f)
+                        null, true, bgCrusadeAtrocity, new Color(0.2f, 0.95f, 0.6f), true
                     ));
 
                     lines.Add(new DialogueLine(

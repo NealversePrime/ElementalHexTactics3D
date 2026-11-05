@@ -86,8 +86,10 @@ namespace ElementalHexTactics3D.Combat
                 }
             }
 
-            // Update banner timer
-            if (bannerTimer > 0f)
+            // Update banner timer (pause countdown while story dialogue cutscenes are playing)
+            bool isDialogueActive = ElementalHexTactics3D.UI.StoryDialogueUI.Instance != null &&
+                                    ElementalHexTactics3D.UI.StoryDialogueUI.Instance.IsPlayingDialogue;
+            if (bannerTimer > 0f && !isDialogueActive)
             {
                 bannerTimer -= Time.deltaTime;
             }
@@ -232,44 +234,44 @@ namespace ElementalHexTactics3D.Combat
             if (bannerTimer <= 0f) return;
 
             float alpha = Mathf.Clamp01(bannerTimer / 0.3f);
-            float bannerW = 440f;
-            float bannerH = 64f;
 
-            // Ensure banner is horizontally centered on wide displays,
-            // but pushed safely to the right of the top-left HUD panel (width 400 + 16 margin) on compact displays!
-            float centerX = (Screen.width - bannerW) * 0.5f;
-            float minX = 430f;
-            float x = (Screen.width > minX + bannerW + 20f) ? Mathf.Max(minX, centerX) : centerX;
-            float y = 18f;
-
-            Rect bannerRect = new Rect(x, y, bannerW, bannerH);
-
-            // Draw solid slate panel with glowing border
-            DrawSolidRect(bannerRect, new Color(0.08f, 0.10f, 0.14f, 0.95f * alpha));
-            DrawOutline(bannerRect, new Color(bannerColor.r, bannerColor.g, bannerColor.b, 0.9f * alpha), 2);
-
-            // Header title
             GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
             {
                 alignment = TextAnchor.MiddleCenter,
                 fontSize = 17,
-                fontStyle = FontStyle.Bold
+                fontStyle = FontStyle.Bold,
+                wordWrap = false
             };
             titleStyle.normal.textColor = new Color(bannerColor.r, bannerColor.g, bannerColor.b, alpha);
 
-            Rect titleRect = new Rect(bannerRect.x, bannerRect.y + 8, bannerRect.width, 26);
-            GUI.Label(titleRect, bannerTitle, titleStyle);
-
-            // Subtitle description
             GUIStyle subStyle = new GUIStyle(GUI.skin.label)
             {
                 alignment = TextAnchor.MiddleCenter,
-                fontSize = 12,
-                fontStyle = FontStyle.Normal
+                fontSize = 13,
+                fontStyle = FontStyle.Normal,
+                wordWrap = true
             };
             subStyle.normal.textColor = new Color(0.9f, 0.92f, 0.95f, alpha);
 
-            Rect subRect = new Rect(bannerRect.x, bannerRect.y + 34, bannerRect.width, 24);
+            float titleW = titleStyle.CalcSize(new GUIContent(bannerTitle ?? "")).x;
+            float subW = subStyle.CalcSize(new GUIContent(bannerSubtitle ?? "")).x;
+            float bannerW = Mathf.Clamp(Mathf.Max(600f, Mathf.Max(titleW, subW) + 56f), 600f, Screen.width - 80f);
+            float bannerH = 74f;
+
+            // Center horizontally below the Top-Center Turn Phase Ribbon (which ends around y = 68)
+            float x = (Screen.width - bannerW) * 0.5f;
+            float y = 78f;
+
+            Rect bannerRect = new Rect(x, y, bannerW, bannerH);
+
+            // Draw solid slate panel with glowing border
+            DrawSolidRect(bannerRect, new Color(0.08f, 0.10f, 0.14f, 0.96f * alpha));
+            DrawOutline(bannerRect, new Color(bannerColor.r, bannerColor.g, bannerColor.b, 0.9f * alpha), 2);
+
+            Rect titleRect = new Rect(bannerRect.x + 16f, bannerRect.y + 8f, bannerRect.width - 32f, 28f);
+            GUI.Label(titleRect, bannerTitle, titleStyle);
+
+            Rect subRect = new Rect(bannerRect.x + 16f, bannerRect.y + 36f, bannerRect.width - 32f, 30f);
             GUI.Label(subRect, bannerSubtitle, subStyle);
         }
 
@@ -301,7 +303,7 @@ namespace ElementalHexTactics3D.Combat
             if (CombatHudCanvasUI.Instance != null && CombatHudCanvasUI.Instance.IsDispatchModalActive)
                 return;
 
-            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>();
             if (units == null || units.Length == 0) return;
 
             float barWidth = 74f;
@@ -487,7 +489,7 @@ namespace ElementalHexTactics3D.Combat
             int squadHp = 0;
             int squadMaxHp = 0;
             int aliveCount = 0;
-            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>();
             foreach (var u in units)
             {
                 if (u != null && u.Faction == UnitFaction.Player)

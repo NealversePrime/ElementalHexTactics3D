@@ -78,7 +78,7 @@ namespace ElementalHexTactics3D.UI
 
         private static void EnsureEventSystem()
         {
-            if (FindFirstObjectByType<EventSystem>() != null) return;
+            if (FindAnyObjectByType<EventSystem>() != null) return;
             var es = new GameObject("EventSystem");
             es.AddComponent<EventSystem>();
             es.AddComponent<InputSystemUIInputModule>();
@@ -196,7 +196,7 @@ namespace ElementalHexTactics3D.UI
             }
 
             Sprite boxSprite = isDemon
-                ? TitleMenuCanvasUI.LoadBoxSprite("UI_Box_Demon_9Slice")
+                ? TitleMenuCanvasUI.LoadBoxSprite("UI_WindowFrame_RPG")
                 : TitleMenuCanvasUI.LoadBoxSprite("UI_Box_Holy_9Slice");
 
             Sprite btnSprite = isDemon

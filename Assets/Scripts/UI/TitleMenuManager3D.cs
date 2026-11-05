@@ -33,7 +33,7 @@ namespace ElementalHexTactics3D.UI
             {
                 if (instance == null)
                 {
-                    instance = Object.FindFirstObjectByType<TitleMenuManager3D>();
+                    instance = Object.FindAnyObjectByType<TitleMenuManager3D>();
                     if (instance == null)
                     {
                         GameObject go = new GameObject("TitleMenuManager3D");
@@ -63,6 +63,9 @@ namespace ElementalHexTactics3D.UI
         // Public Accessors
         public bool IsInGame => currentState == TitleMenuState.InGame;
         public bool IsOnTitleScreen => currentState == TitleMenuState.TitleScreen;
+        public float TitleOrbitSpeed => titleOrbitSpeed;
+        public float SfxVolume => sfxVolume;
+        public float CameraSpeed => cameraSpeed;
         public bool IsPaused => currentState == TitleMenuState.InGamePauseModal || 
                                 currentState == TitleMenuState.OptionsModal && previousState == TitleMenuState.InGamePauseModal;
 

@@ -1240,12 +1240,13 @@ namespace ElementalHexTactics3D.UI
                 TacticalCameraController.Instance.ResetToTacticalView();
             }
 
-            if (CombatFeedbackManager.Instance != null)
+            bool isTut = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsTutorialActive;
+            if (CombatFeedbackManager.Instance != null && !isTut)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
                     "✦ EXPEDITION LAUNCHED ✦", 
                     "Demon Lord vanguard marches through the Abyssal Rift! Crush the holy invaders!", 
-                    1.8f, 
+                    2.5f, 
                     new Color(0.3f, 0.85f, 1.0f)
                 );
             }
@@ -1742,7 +1743,7 @@ namespace ElementalHexTactics3D.UI
         {
             Sprite boxSprite = (mode == TitleThemeMode.PaladinHolyland)
                 ? LoadBoxSprite("UI_Box_Holy_9Slice")
-                : LoadBoxSprite("UI_Box_Demon_9Slice");
+                : LoadBoxSprite("UI_WindowFrame_RPG");
 
             Sprite buttonSprite = (mode == TitleThemeMode.PaladinHolyland)
                 ? LoadButtonSprite("UI_Button_Holy")

@@ -368,7 +368,7 @@ namespace ElementalHexTactics3D.Editor
             StoryDialogueCanvasBuilder.BuildStoryDialogueCanvas();
 
             // 14. Ensure TutorialScenarioManager exists in scene
-            if (Object.FindFirstObjectByType<ElementalHexTactics3D.Tutorial.TutorialScenarioManager>() == null)
+            if (Object.FindAnyObjectByType<ElementalHexTactics3D.Tutorial.TutorialScenarioManager>() == null)
             {
                 GameObject tutObj = new GameObject("TutorialScenarioManager");
                 tutObj.AddComponent<ElementalHexTactics3D.Tutorial.TutorialScenarioManager>();
@@ -421,7 +421,7 @@ namespace ElementalHexTactics3D.Editor
 
         private static void EnsureEventSystem()
         {
-            EventSystem es = Object.FindFirstObjectByType<EventSystem>();
+            EventSystem es = Object.FindAnyObjectByType<EventSystem>();
             if (es == null)
             {
                 GameObject esObj = new GameObject("EventSystem");

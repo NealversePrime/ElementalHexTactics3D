@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using ElementalHexTactics3D.InputHandling;
 using ElementalHexTactics3D.Units;
 using ElementalHexTactics3D.Turn;
@@ -85,6 +86,8 @@ namespace ElementalHexTactics3D.UI
         // Unanchored Section (When Rift is not yet opened)
         [SerializeField] private Button btnTearRift;
         [SerializeField] private Text txtTearRift;
+        [SerializeField] private Text txtUnanchoredHeader;
+        [SerializeField] private Text txtRiftHeader;
         [SerializeField] private Button btnRandomizeMap;
 
         // Rift / Base Panel Buttons
@@ -165,6 +168,14 @@ namespace ElementalHexTactics3D.UI
         [SerializeField] private Text txtItemHeader;
         [SerializeField] private Button btnItemBack;
 
+        [Header("Bottom Skill Description Window")]
+        [SerializeField] private GameObject skillInfoWindowRoot;
+        [SerializeField] private Text txtSkillInfoTitle;
+        [SerializeField] private Text txtSkillInfoBadges;
+        [SerializeField] private Text txtSkillInfoEffect;
+        [SerializeField] private Text txtSkillInfoDesc;
+        private string activeHoverSkillTitle = null;
+
         [Header("Theme Colors")]
         [SerializeField] private Color colHpFull = new Color(0.30f, 0.78f, 0.35f, 1f);
         [SerializeField] private Color colHpMid = new Color(1.0f, 0.65f, 0.15f, 1f);
@@ -224,6 +235,13 @@ namespace ElementalHexTactics3D.UI
             if (itemSubmenuRoot != null && itemSubmenuRoot.activeInHierarchy)
             {
                 RectTransform rt = itemSubmenuRoot.GetComponent<RectTransform>();
+                if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos))
+                    return true;
+            }
+
+            if (skillInfoWindowRoot != null && skillInfoWindowRoot.activeInHierarchy)
+            {
+                RectTransform rt = skillInfoWindowRoot.GetComponent<RectTransform>();
                 if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos))
                     return true;
             }
@@ -341,37 +359,19 @@ namespace ElementalHexTactics3D.UI
             if (commandMenuRoot != null && !commandMenuRoot.activeSelf) commandMenuRoot.SetActive(false);
             if (specialSubmenuRoot != null && !specialSubmenuRoot.activeSelf) specialSubmenuRoot.SetActive(false);
             if (itemSubmenuRoot != null && !itemSubmenuRoot.activeSelf) itemSubmenuRoot.SetActive(false);
+            if (actionBarRoot != null) actionBarRoot.SetActive(false);
 
-            // Clean Disgaea TRPG UX: Ensure riftPanelSection uses single unified Base Panel trigger button
-            if (riftPanelSection != null)
+            ConfigureActionBarRightDock(actionBarRoot);
+
+            // Clean Disgaea TRPG UX: Ensure single unified Squad Dispatch trigger button is wired
+            if (btnOpenRiftDispatch == null && actionBarRoot != null)
             {
-                Transform oldDeploy = riftPanelSection.transform.Find("Btn_DeployCommander");
-                Transform oldTitan = riftPanelSection.transform.Find("Btn_SummonTitanRift");
-                Transform oldHeader = riftPanelSection.transform.Find("Txt_RiftHeader");
-                if (oldDeploy != null || oldTitan != null || oldHeader != null)
-                {
-                    if (oldDeploy != null) DestroyImmediate(oldDeploy.gameObject);
-                    if (oldTitan != null) DestroyImmediate(oldTitan.gameObject);
-                    if (oldHeader != null) DestroyImmediate(oldHeader.gameObject);
-                }
-
-                Transform foundOpen = riftPanelSection.transform.Find("Btn_OpenRiftDispatch");
-                if (foundOpen == null)
-                {
-                    btnOpenRiftDispatch = CreateBtn("Btn_OpenRiftDispatch", riftPanelSection.transform, "🌀 <b>CITADEL RIFT (Base Panel)</b>\n<size=11>[Click to Open Squad Dispatch]</size>", f, 12, bn, new Color(0.40f, 0.15f, 0.65f, 1f), 320f, 50f);
-                    txtOpenRiftDispatch = btnOpenRiftDispatch.GetComponentInChildren<Text>();
-                }
-                else
-                {
-                    btnOpenRiftDispatch = foundOpen.GetComponent<Button>();
-                    txtOpenRiftDispatch = foundOpen.GetComponentInChildren<Text>();
-                }
-
-                if (btnOpenRiftDispatch != null)
-                {
-                    btnOpenRiftDispatch.onClick.RemoveAllListeners();
-                    btnOpenRiftDispatch.onClick.AddListener(OnOpenRiftDispatchClicked);
-                }
+                btnOpenRiftDispatch = actionBarRoot.transform.Find("Btn_OpenRiftDispatch")?.GetComponent<Button>();
+            }
+            if (btnOpenRiftDispatch != null)
+            {
+                btnOpenRiftDispatch.onClick.RemoveAllListeners();
+                btnOpenRiftDispatch.onClick.AddListener(OnOpenRiftDispatchClicked);
             }
 
             // Dedicated Bottom-Right End Turn Button (Decoupled from bottom action bar)
@@ -402,11 +402,35 @@ namespace ElementalHexTactics3D.UI
                 btnEndTurn.onClick.AddListener(OnEndTurnClicked);
             }
 
+            Transform skillInfoTrans = container.Find("Panel_SkillDescription");
+            if (skillInfoTrans != null)
+            {
+                if (skillInfoTrans.Find("Txt_SkillInfoEffect") == null || skillInfoTrans.Find("Divider_Line") != null)
+                {
+                    Destroy(skillInfoTrans.gameObject);
+                    skillInfoWindowRoot = null;
+                }
+                else
+                {
+                    skillInfoWindowRoot = skillInfoTrans.gameObject;
+                    txtSkillInfoTitle = skillInfoTrans.Find("Txt_SkillInfoTitle")?.GetComponent<Text>();
+                    txtSkillInfoBadges = skillInfoTrans.Find("Txt_SkillInfoBadges")?.GetComponent<Text>();
+                    txtSkillInfoEffect = skillInfoTrans.Find("Txt_SkillInfoEffect")?.GetComponent<Text>();
+                    txtSkillInfoDesc = skillInfoTrans.Find("Txt_SkillInfoDesc")?.GetComponent<Text>();
+                }
+            }
+            if (skillInfoWindowRoot == null)
+            {
+                Font skillFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                BuildSkillDescriptionWindow(container, skillFont);
+            }
+
             ApplyRpgMakerWindowStyle(unitCardRoot, new Color(0.08f, 0.07f, 0.14f, 0.95f));
             ApplyRpgMakerWindowStyle(dispatchModalRoot, new Color(0.08f, 0.07f, 0.14f, 1.0f));
             ApplyRpgMakerWindowStyle(commandMenuRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
             ApplyRpgMakerWindowStyle(specialSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
             ApplyRpgMakerWindowStyle(itemSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
+            ApplyRpgMakerWindowStyle(skillInfoWindowRoot, new Color(0.06f, 0.07f, 0.14f, 0.96f));
         }
 
         private void HookExistingContainer(Transform container)
@@ -491,6 +515,7 @@ namespace ElementalHexTactics3D.UI
                     txtTearRift = btnTearRift?.GetComponentInChildren<Text>();
                     btnRandomizeMap = unanchoredSection.transform.Find("Btn_RandomizeMap")?.GetComponent<Button>();
                 }
+                ConfigureActionBarRightDock(actionBarRoot);
 
                 if (riftPanelSection != null)
                 {
@@ -583,6 +608,7 @@ namespace ElementalHexTactics3D.UI
 
             commandMenuRoot = cmd.gameObject;
             txtCmdHeader = cmd.Find("Txt_CmdHeader")?.GetComponent<Text>();
+            if (txtCmdHeader != null) txtCmdHeader.rectTransform.sizeDelta = new Vector2(154f, 24f);
             btnCmdMove = cmd.Find("Btn_CmdMove")?.GetComponent<Button>();
             txtCmdMove = btnCmdMove?.GetComponentInChildren<Text>();
             btnCmdAttack = cmd.Find("Btn_CmdAttack")?.GetComponent<Button>();
@@ -616,6 +642,7 @@ namespace ElementalHexTactics3D.UI
                 specialSubmenuRoot = specialSub.gameObject;
                 specialSubmenuContent = specialSub.Find("Special_Content");
                 txtSpecialHeader = specialSub.Find("Txt_SpecialHeader")?.GetComponent<Text>();
+                if (txtSpecialHeader != null) txtSpecialHeader.rectTransform.sizeDelta = new Vector2(164f, 24f);
                 btnSpecialBack = specialSub.Find("Btn_SpecialBack")?.GetComponent<Button>();
                 if (btnSpecialBack != null) { btnSpecialBack.onClick.RemoveAllListeners(); btnSpecialBack.onClick.AddListener(OnSpecialBackClicked); }
             }
@@ -625,8 +652,255 @@ namespace ElementalHexTactics3D.UI
                 itemSubmenuRoot = itemSub.gameObject;
                 itemSubmenuContent = itemSub.Find("Item_Content");
                 txtItemHeader = itemSub.Find("Txt_ItemHeader")?.GetComponent<Text>();
+                if (txtItemHeader != null) txtItemHeader.rectTransform.sizeDelta = new Vector2(164f, 24f);
                 btnItemBack = itemSub.Find("Btn_ItemBack")?.GetComponent<Button>();
                 if (btnItemBack != null) { btnItemBack.onClick.RemoveAllListeners(); btnItemBack.onClick.AddListener(OnItemBackClicked); }
+            }
+        }
+
+        private void ConfigureActionBarRightDock(GameObject barObj)
+        {
+            if (barObj == null) return;
+
+            // 1. Locate all buttons and headers wherever they currently reside under barObj
+            if (btnTearRift == null)
+            {
+                Button[] allBtns = barObj.GetComponentsInChildren<Button>(true);
+                foreach (var b in allBtns)
+                {
+                    if (b != null && b.name == "Btn_TearRift") { btnTearRift = b; break; }
+                }
+            }
+            if (btnRandomizeMap == null)
+            {
+                Button[] allBtns = barObj.GetComponentsInChildren<Button>(true);
+                foreach (var b in allBtns)
+                {
+                    if (b != null && b.name == "Btn_RandomizeMap") { btnRandomizeMap = b; break; }
+                }
+            }
+
+            // Eliminate any duplicate Btn_OpenRiftDispatch buttons
+            List<Button> dispatchBtns = new List<Button>();
+            Button[] allBarBtns = barObj.GetComponentsInChildren<Button>(true);
+            foreach (var b in allBarBtns)
+            {
+                if (b != null && b.name == "Btn_OpenRiftDispatch") dispatchBtns.Add(b);
+            }
+            if (dispatchBtns.Count > 0)
+            {
+                btnOpenRiftDispatch = dispatchBtns[0];
+                for (int i = 1; i < dispatchBtns.Count; i++)
+                {
+                    if (dispatchBtns[i] != null) DestroyImmediate(dispatchBtns[i].gameObject);
+                }
+            }
+
+            if (txtUnanchoredHeader == null)
+            {
+                Text[] allTexts = barObj.GetComponentsInChildren<Text>(true);
+                foreach (var t in allTexts)
+                {
+                    if (t != null && t.name == "Txt_UnanchoredHeader") { txtUnanchoredHeader = t; break; }
+                }
+            }
+            if (txtRiftHeader == null)
+            {
+                Text[] allTexts = barObj.GetComponentsInChildren<Text>(true);
+                foreach (var t in allTexts)
+                {
+                    if (t != null && t.name == "Txt_RiftHeader") { txtRiftHeader = t; break; }
+                }
+            }
+
+            // 2. Remove legacy intermediate containers (Section_Unanchored, Section_RiftPanel, Section_UnitAbilities)
+            //    Move buttons directly into barObj so VerticalLayoutGroup + ContentSizeFitter wrap them perfectly!
+            if (txtUnanchoredHeader != null && txtUnanchoredHeader.transform.parent != barObj.transform)
+            {
+                txtUnanchoredHeader.transform.SetParent(barObj.transform, false);
+            }
+            if (btnTearRift != null && btnTearRift.transform.parent != barObj.transform)
+            {
+                btnTearRift.transform.SetParent(barObj.transform, false);
+            }
+            if (btnRandomizeMap != null && btnRandomizeMap.transform.parent != barObj.transform)
+            {
+                btnRandomizeMap.transform.SetParent(barObj.transform, false);
+            }
+            if (txtRiftHeader != null && txtRiftHeader.transform.parent != barObj.transform)
+            {
+                txtRiftHeader.transform.SetParent(barObj.transform, false);
+            }
+            if (btnOpenRiftDispatch != null && btnOpenRiftDispatch.transform.parent != barObj.transform)
+            {
+                btnOpenRiftDispatch.transform.SetParent(barObj.transform, false);
+            }
+
+            if (unanchoredSection != null && unanchoredSection != barObj)
+            {
+                DestroyImmediate(unanchoredSection);
+                unanchoredSection = null;
+            }
+            if (riftPanelSection != null && riftPanelSection != barObj)
+            {
+                DestroyImmediate(riftPanelSection);
+                riftPanelSection = null;
+            }
+            if (unitAbilitiesSection != null && unitAbilitiesSection != barObj)
+            {
+                DestroyImmediate(unitAbilitiesSection);
+                unitAbilitiesSection = null;
+            }
+
+            // 3. Dock barObj on the Right side (matching Menu_DisgaeaCommand at -20, -72, width 175)
+            RectTransform rt = barObj.GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                SetRect(rt,
+                    new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                    new Vector2(-20f, -72f), new Vector2(175f, 120f));
+            }
+
+            // Apply modern Disgaea / RPG window styling with sleek basalt background & window frame
+            ApplyRpgMakerWindowStyle(barObj, new Color(0.07f, 0.06f, 0.12f, 0.96f));
+
+            // Clean up any horizontal layout group from legacy HUD
+            HorizontalLayoutGroup oldHlg = barObj.GetComponent<HorizontalLayoutGroup>();
+            if (oldHlg != null) DestroyImmediate(oldHlg);
+
+            // 4. Format Headers cleanly
+            if (txtUnanchoredHeader != null)
+            {
+                txtUnanchoredHeader.text = "🌀 <b>CITADEL GATEWAY</b>";
+                txtUnanchoredHeader.fontSize = 11;
+                txtUnanchoredHeader.fontStyle = FontStyle.Bold;
+                txtUnanchoredHeader.color = new Color(0.85f, 0.65f, 1.0f, 1f);
+                txtUnanchoredHeader.alignment = TextAnchor.MiddleCenter;
+                RectTransform hr = txtUnanchoredHeader.rectTransform;
+                hr.sizeDelta = new Vector2(155f, 22f);
+                LayoutElement le = txtUnanchoredHeader.GetComponent<LayoutElement>() ?? txtUnanchoredHeader.gameObject.AddComponent<LayoutElement>();
+                le.preferredHeight = 22f;
+                le.minWidth = 155f;
+            }
+
+            if (txtRiftHeader != null)
+            {
+                txtRiftHeader.text = "🌀 <b>CITADEL RIFT</b>";
+                txtRiftHeader.fontSize = 11;
+                txtRiftHeader.fontStyle = FontStyle.Bold;
+                txtRiftHeader.color = new Color(0.85f, 0.65f, 1.0f, 1f);
+                txtRiftHeader.alignment = TextAnchor.MiddleCenter;
+                RectTransform hr = txtRiftHeader.rectTransform;
+                hr.sizeDelta = new Vector2(155f, 22f);
+                LayoutElement le = txtRiftHeader.GetComponent<LayoutElement>() ?? txtRiftHeader.gameObject.AddComponent<LayoutElement>();
+                le.preferredHeight = 22f;
+                le.minWidth = 155f;
+            }
+
+            // 5. Format Action Buttons to exact Disgaea menu proportions (width 155, height 32-34)
+            Sprite btnSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
+
+            if (btnTearRift != null)
+            {
+                RectTransform btRt = btnTearRift.GetComponent<RectTransform>();
+                btRt.sizeDelta = new Vector2(155f, 34f);
+                LayoutElement le = btnTearRift.GetComponent<LayoutElement>() ?? btnTearRift.gameObject.AddComponent<LayoutElement>();
+                le.preferredHeight = 34f;
+                le.minHeight = 34f;
+                le.preferredWidth = 155f;
+                le.minWidth = 0f;
+                le.flexibleWidth = 0f;
+
+                Image img = btnTearRift.GetComponent<Image>();
+                if (img != null)
+                {
+                    if (btnSprite != null) img.sprite = btnSprite;
+                    img.color = new Color(0.42f, 0.16f, 0.65f, 1f);
+                }
+
+                if (txtTearRift == null) txtTearRift = btnTearRift.GetComponentInChildren<Text>();
+                if (txtTearRift != null)
+                {
+                    txtTearRift.fontSize = 11;
+                    txtTearRift.fontStyle = FontStyle.Bold;
+                    txtTearRift.alignment = TextAnchor.MiddleCenter;
+                    txtTearRift.text = "🌀 <b>Tear Open Rift</b>";
+                }
+            }
+
+            if (btnRandomizeMap != null)
+            {
+                RectTransform brRt = btnRandomizeMap.GetComponent<RectTransform>();
+                brRt.sizeDelta = new Vector2(155f, 30f);
+                LayoutElement le = btnRandomizeMap.GetComponent<LayoutElement>() ?? btnRandomizeMap.gameObject.AddComponent<LayoutElement>();
+                le.preferredHeight = 30f;
+                le.minHeight = 30f;
+                le.preferredWidth = 155f;
+                le.minWidth = 0f;
+                le.flexibleWidth = 0f;
+
+                Image img = btnRandomizeMap.GetComponent<Image>();
+                if (img != null)
+                {
+                    if (btnSprite != null) img.sprite = btnSprite;
+                    img.color = new Color(0.20f, 0.28f, 0.40f, 1f);
+                }
+
+                Text txt = btnRandomizeMap.GetComponentInChildren<Text>();
+                if (txt != null)
+                {
+                    txt.fontSize = 10;
+                    txt.fontStyle = FontStyle.Bold;
+                    txt.text = "🎲 <b>Roll Map [R]</b>";
+                    txt.alignment = TextAnchor.MiddleCenter;
+                }
+            }
+
+            if (btnOpenRiftDispatch != null)
+            {
+                RectTransform boRt = btnOpenRiftDispatch.GetComponent<RectTransform>();
+                boRt.sizeDelta = new Vector2(155f, 34f);
+                LayoutElement le = btnOpenRiftDispatch.GetComponent<LayoutElement>() ?? btnOpenRiftDispatch.gameObject.AddComponent<LayoutElement>();
+                le.preferredHeight = 34f;
+                le.minHeight = 34f;
+                le.preferredWidth = 155f;
+                le.minWidth = 0f;
+                le.flexibleWidth = 0f;
+
+                Image img = btnOpenRiftDispatch.GetComponent<Image>();
+                if (img != null)
+                {
+                    if (btnSprite != null) img.sprite = btnSprite;
+                    img.color = new Color(0.40f, 0.15f, 0.65f, 1f);
+                }
+
+                Text txt = btnOpenRiftDispatch.GetComponentInChildren<Text>();
+                if (txt != null)
+                {
+                    txt.fontSize = 11;
+                    txt.fontStyle = FontStyle.Bold;
+                    txt.text = "📦 <b>Squad Dispatch</b>";
+                    txt.alignment = TextAnchor.MiddleCenter;
+                }
+            }
+
+            // 6. Vertical layout on barObj so the frame wraps around the contents with 8px margin
+            VerticalLayoutGroup vl = barObj.GetComponent<VerticalLayoutGroup>() ?? barObj.AddComponent<VerticalLayoutGroup>();
+            vl.padding = new RectOffset(8, 8, 8, 8);
+            vl.spacing = 4f;
+            vl.childAlignment = TextAnchor.UpperCenter;
+            vl.childControlWidth = true;
+            vl.childControlHeight = false;
+            vl.childForceExpandWidth = true;
+            vl.childForceExpandHeight = false;
+
+            ContentSizeFitter csf = barObj.GetComponent<ContentSizeFitter>() ?? barObj.AddComponent<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            csf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            if (rt != null)
+            {
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
             }
         }
 
@@ -842,81 +1116,64 @@ namespace ElementalHexTactics3D.UI
             phaseStatusText = CreateTxt("Txt_Phase", turnRibbonRoot.transform, "⚔️ PLAYER PHASE", font, 16, Color.white, TextAnchor.LowerCenter);
             SetRect(phaseStatusText.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 6f), new Vector2(0f, 24f));
 
-            // ================= 3. BOTTOM ACTION BAR (Bottom-Center) ================= //
+            // ================= 3. CITADEL GATEWAY & RIFT PANEL (Right-Side Command Dock) ================= //
             actionBarRoot = CreateUI("Bar_CombatActions", container.transform);
-            SetRect(actionBarRoot.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 20f), new Vector2(1090f, 72f));
-            Image actBg = actionBarRoot.AddComponent<Image>();
-            actBg.sprite = panelFrame;
-            actBg.type = Image.Type.Sliced;
-            actBg.color = new Color(0.08f, 0.08f, 0.12f, 0.94f);
+            RectTransform actionRt = actionBarRoot.GetComponent<RectTransform>();
+            SetRect(actionRt, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-20f, -72f), new Vector2(175f, 120f));
+            ApplyRpgMakerWindowStyle(actionBarRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
 
-            // Section: Unanchored Rift
-            unanchoredSection = CreateUI("Section_Unanchored", actionBarRoot.transform);
-            SetRect(unanchoredSection.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(-60f, 0f), new Vector2(-140f, 0f));
-            HorizontalLayoutGroup unanchoredHlg = unanchoredSection.AddComponent<HorizontalLayoutGroup>();
-            unanchoredHlg.childAlignment = TextAnchor.MiddleCenter;
-            unanchoredHlg.spacing = 16f;
-            unanchoredHlg.childForceExpandWidth = false;
-            unanchoredHlg.childForceExpandHeight = false;
+            VerticalLayoutGroup actVl = actionBarRoot.AddComponent<VerticalLayoutGroup>();
+            actVl.padding = new RectOffset(8, 8, 8, 8);
+            actVl.spacing = 4f;
+            actVl.childAlignment = TextAnchor.UpperCenter;
+            actVl.childControlWidth = true;
+            actVl.childControlHeight = false;
+            actVl.childForceExpandWidth = true;
+            actVl.childForceExpandHeight = false;
 
-            Text txtUnanchoredHeader = CreateTxt("Txt_UnanchoredHeader", unanchoredSection.transform, "🌀 CITADEL GATEWAY\n<size=10>(Rift Unanchored)</size>", font, 12, new Color(0.85f, 0.55f, 0.95f, 1f), TextAnchor.MiddleCenter);
-            txtUnanchoredHeader.gameObject.AddComponent<LayoutElement>().minWidth = 150f;
+            ContentSizeFitter actCsf = actionBarRoot.AddComponent<ContentSizeFitter>();
+            actCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            actCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
-            btnTearRift = CreateBtn("Btn_TearRift", unanchoredSection.transform, "🌀 Tear Open Abyssal Rift\n<size=11>(Choose Landing Hex)</size>", font, 12, btnNormal, new Color(0.45f, 0.15f, 0.70f, 1f), 280f, 50f);
+            // Direct Children in Right-Side Command Dock
+            txtUnanchoredHeader = CreateTxt("Txt_UnanchoredHeader", actionBarRoot.transform, "🌀 <b>CITADEL GATEWAY</b>", font, 11, new Color(0.85f, 0.65f, 1.0f, 1f), TextAnchor.MiddleCenter);
+            txtUnanchoredHeader.fontStyle = FontStyle.Bold;
+            LayoutElement leH1 = txtUnanchoredHeader.gameObject.AddComponent<LayoutElement>();
+            leH1.preferredHeight = 22f;
+            leH1.minWidth = 155f;
+
+            btnTearRift = CreateBtn("Btn_TearRift", actionBarRoot.transform, "🌀 <b>Tear Open Rift</b>", font, 11, btnNormal, new Color(0.42f, 0.16f, 0.65f, 1f), 155f, 34f);
             txtTearRift = btnTearRift.GetComponentInChildren<Text>();
+            LayoutElement leTR = btnTearRift.GetComponent<LayoutElement>() ?? btnTearRift.gameObject.AddComponent<LayoutElement>();
+            leTR.preferredHeight = 34f;
+            leTR.minHeight = 34f;
+            leTR.preferredWidth = 155f;
+            leTR.minWidth = 0f;
 
-            btnRandomizeMap = CreateBtn("Btn_RandomizeMap", unanchoredSection.transform, "🎲 Randomize Map [R]\n<size=11>(Roll Incursion)</size>", font, 12, btnNormal, new Color(0.18f, 0.28f, 0.40f, 1f), 220f, 50f);
+            btnRandomizeMap = CreateBtn("Btn_RandomizeMap", actionBarRoot.transform, "🎲 <b>Roll Map [R]</b>", font, 10, btnNormal, new Color(0.20f, 0.28f, 0.40f, 1f), 155f, 30f);
+            LayoutElement leRM = btnRandomizeMap.GetComponent<LayoutElement>() ?? btnRandomizeMap.gameObject.AddComponent<LayoutElement>();
+            leRM.preferredHeight = 30f;
+            leRM.minHeight = 30f;
+            leRM.preferredWidth = 155f;
+            leRM.minWidth = 0f;
 
-            // Section: Rift Panel (Single unified Base Panel trigger button)
-            riftPanelSection = CreateUI("Section_RiftPanel", actionBarRoot.transform);
-            SetRect(riftPanelSection.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(-60f, 0f), new Vector2(-140f, 0f));
-            HorizontalLayoutGroup riftHlg = riftPanelSection.AddComponent<HorizontalLayoutGroup>();
-            riftHlg.childAlignment = TextAnchor.MiddleCenter;
-            riftHlg.spacing = 16f;
-            riftHlg.childForceExpandWidth = false;
-            riftHlg.childForceExpandHeight = false;
+            txtRiftHeader = CreateTxt("Txt_RiftHeader", actionBarRoot.transform, "🌀 <b>CITADEL RIFT</b>", font, 11, new Color(0.85f, 0.65f, 1.0f, 1f), TextAnchor.MiddleCenter);
+            txtRiftHeader.fontStyle = FontStyle.Bold;
+            LayoutElement leH2 = txtRiftHeader.gameObject.AddComponent<LayoutElement>();
+            leH2.preferredHeight = 22f;
+            leH2.minWidth = 155f;
 
-            btnOpenRiftDispatch = CreateBtn("Btn_OpenRiftDispatch", riftPanelSection.transform, "🌀 <b>CITADEL RIFT (Base Panel)</b>\n<size=11>[Click to Open Squad Dispatch]</size>", font, 12, btnNormal, new Color(0.40f, 0.15f, 0.65f, 1f), 320f, 50f);
+            btnOpenRiftDispatch = CreateBtn("Btn_OpenRiftDispatch", actionBarRoot.transform, "📦 <b>Squad Dispatch</b>", font, 11, btnNormal, new Color(0.40f, 0.15f, 0.65f, 1f), 155f, 34f);
             txtOpenRiftDispatch = btnOpenRiftDispatch.GetComponentInChildren<Text>();
+            LayoutElement leRD = btnOpenRiftDispatch.GetComponent<LayoutElement>() ?? btnOpenRiftDispatch.gameObject.AddComponent<LayoutElement>();
+            leRD.preferredHeight = 34f;
+            leRD.minHeight = 34f;
+            leRD.preferredWidth = 155f;
+            leRD.minWidth = 0f;
 
-            // Section: Unit Abilities
-            unitAbilitiesSection = CreateUI("Section_UnitAbilities", actionBarRoot.transform);
-            SetRect(unitAbilitiesSection.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f), new Vector2(-60f, 0f), new Vector2(-140f, 0f));
-            HorizontalLayoutGroup unitHlg = unitAbilitiesSection.AddComponent<HorizontalLayoutGroup>();
-            unitHlg.childAlignment = TextAnchor.MiddleCenter;
-            unitHlg.spacing = 6f;
-            unitHlg.childForceExpandWidth = false;
-            unitHlg.childForceExpandHeight = false;
-
-            btnMove = CreateBtn("Btn_Move", unitAbilitiesSection.transform, "🚶 Move\n<size=10>(Tactical)</size>", font, 11, btnNormal, new Color(0.18f, 0.35f, 0.58f, 1f), 85f, 50f);
-            txtMove = btnMove.GetComponentInChildren<Text>();
-
-            btnFireball = CreateBtn("Btn_Fireball", unitAbilitiesSection.transform, "🔥 Fireball\n<size=10>(3 Dmg)</size>", font, 11, btnNormal, new Color(0.65f, 0.22f, 0.10f, 1f), 92f, 50f);
-            txtFireball = btnFireball.GetComponentInChildren<Text>();
-
-            btnWaterSurge = CreateBtn("Btn_WaterSurge", unitAbilitiesSection.transform, "💧 Water\n<size=10>(2 Dmg)</size>", font, 11, btnNormal, new Color(0.10f, 0.42f, 0.68f, 1f), 90f, 50f);
-            txtWaterSurge = btnWaterSurge.GetComponentInChildren<Text>();
-
-            btnEarthPillar = CreateBtn("Btn_EarthPillar", unitAbilitiesSection.transform, "⛰️ Earth\n<size=10>(Pillar/Mud)</size>", font, 11, btnNormal, new Color(0.48f, 0.32f, 0.18f, 1f), 94f, 50f);
-            txtEarthPillar = btnEarthPillar.GetComponentInChildren<Text>();
-
-            btnPush = CreateBtn("Btn_Push", unitAbilitiesSection.transform, "💨 Push\n<size=10>(Shove 1)</size>", font, 11, btnNormal, new Color(0.38f, 0.18f, 0.52f, 1f), 85f, 50f);
-            txtPush = btnPush.GetComponentInChildren<Text>();
-
-            btnHarvestCore = CreateBtn("Btn_HarvestCore", unitAbilitiesSection.transform, "⚡ Siphon\n<size=10>(+1 Core)</size>", font, 11, btnNormal, new Color(0.65f, 0.55f, 0.12f, 1f), 88f, 50f);
-            txtHarvestCore = btnHarvestCore.GetComponentInChildren<Text>();
-
-            btnTitanStrike = CreateBtn("Btn_TitanStrike", unitAbilitiesSection.transform, "🐾 Strike\n<size=10>(Crit)</size>", font, 11, btnNormal, new Color(0.55f, 0.20f, 0.15f, 1f), 86f, 50f);
-            txtTitanStrike = btnTitanStrike.GetComponentInChildren<Text>();
-
-            btnMagmaCataclysm = CreateBtn("Btn_Cataclysm", unitAbilitiesSection.transform, "🌋 Cataclysm\n<size=10>(1 Core Ult)</size>", font, 11, btnNormal, new Color(0.72f, 0.22f, 0.08f, 1f), 98f, 50f);
-            txtMagmaCataclysm = btnMagmaCataclysm.GetComponentInChildren<Text>();
-
-            btnSummonTitanAbility = CreateBtn("Btn_SummonTitanAbility", unitAbilitiesSection.transform, "🌋 Titan\n<size=10>(1 Core)</size>", font, 11, btnNormal, new Color(0.65f, 0.25f, 0.12f, 1f), 94f, 50f);
-            txtSummonTitanAbility = btnSummonTitanAbility.GetComponentInChildren<Text>();
-
-            btnRecall = CreateBtn("Btn_Recall", unitAbilitiesSection.transform, "🌀 Recall\n<size=10>(Citadel)</size>", font, 11, btnNormal, new Color(0.42f, 0.18f, 0.58f, 1f), 82f, 50f);
-            txtRecall = btnRecall.GetComponentInChildren<Text>();
+            unanchoredSection = null;
+            riftPanelSection = null;
+            unitAbilitiesSection = null;
 
             // Universal End Turn Button (Dedicated Bottom-Right Widget)
             btnEndTurn = CreateBtn("Btn_EndTurn", container.transform, "<b>⏳ END TURN</b>\n<size=11><color=#CFD8DC>[Space / Click]</color></size>", font, 13, btnNormal, new Color(0.72f, 0.20f, 0.16f, 0.95f), 180f, 56f);
@@ -1228,7 +1485,7 @@ namespace ElementalHexTactics3D.UI
             // Check if all living active player units on field have acted
             bool allUnitsActed = true;
             int activePlayerCount = 0;
-            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>();
             for (int i = 0; i < units.Length; i++)
             {
                 TacticalUnit3D u = units[i];
@@ -1356,20 +1613,27 @@ namespace ElementalHexTactics3D.UI
                 else hpFillImage.color = colHpLow;
             }
 
-            // SP / Cores Bar
-            int maxCores = 3;
-            int curCores = selected.ElementalCores;
-            float coreRatio = Mathf.Clamp01((float)curCores / maxCores);
-            if (spSlider != null) spSlider.value = coreRatio;
-            if (spValueText != null)
+            // SP / Mana & Cores Bar
+            if (selected.MaxHealth >= 500)
             {
-                if (selected.Archetype == UnitArchetype.Commander)
+                int maxMp = Mathf.Max(1, selected.MaxMana);
+                int curMp = selected.CurrentMana;
+                float mpRatio = Mathf.Clamp01((float)curMp / maxMp);
+                if (spSlider != null) spSlider.value = mpRatio;
+                if (spFillImage != null) spFillImage.color = new Color(0.20f, 0.65f, 0.95f, 1f);
+                if (spValueText != null) spValueText.text = $"💧 {curMp} / {maxMp} MP";
+            }
+            else
+            {
+                int maxCores = 3;
+                int curCores = selected.ElementalCores;
+                int maxMp = Mathf.Max(1, selected.MaxMana);
+                int curMp = selected.CurrentMana;
+                float ratio = curCores > 0 ? Mathf.Clamp01((float)curCores / maxCores) : Mathf.Clamp01((float)curMp / maxMp);
+                if (spSlider != null) spSlider.value = ratio;
+                if (spValueText != null)
                 {
-                    spValueText.text = $"✦ {curCores} / {maxCores} Cores";
-                }
-                else
-                {
-                    spValueText.text = curCores > 0 ? $"✦ {curCores} Cores" : "✦ 0 / 3 Cores";
+                    spValueText.text = $"💧 {curMp}/{maxMp} MP  •  ✦ {curCores}/{maxCores} Cores";
                 }
             }
 
@@ -1395,7 +1659,7 @@ namespace ElementalHexTactics3D.UI
             // Tactical Equipment / Stance Slot
             if (equipStanceText != null)
             {
-                string weaponStr = selected.IsRangedAttack ? "🏹 Sacred Volley" : (selected.Archetype == UnitArchetype.Commander ? "⚔️ Abyssal Cleave" : "⚔️ Blade Strike");
+                string weaponStr = selected.IsRangedAttack ? "Sacred Volley" : (selected.UnitName.Contains("Paladin") ? "Excalibur Strike" : (selected.UnitName.Contains("Shielder") ? "Sacred Aegis" : (selected.Archetype == UnitArchetype.Commander ? "Abyssal Cleave" : "Blade Strike")));
                 string stanceStr = selected.IsDefending ? "<color=#69F0AE>🛡️ Guard Stance</color>" : "<color=#B0BEC5>⚔️ Standard Stance</color>";
 
                 string attuneStr;
@@ -1423,7 +1687,8 @@ namespace ElementalHexTactics3D.UI
             if (bottomTacticalText != null)
             {
                 string elemStr = selected.Affinity == ElementalAffinity.Fire ? "🔥 FIRE" : (selected.Affinity == ElementalAffinity.Water ? "💧 WATER" : "⛰️ EARTH");
-                bottomTacticalText.text = $"<b>LV 1</b>  |  <b>AFFINITY:</b> {elemStr}";
+                string lvStr = selected.MaxHealth >= 500 ? "<color=#FFD54F>LV 99</color>" : "LV 1";
+                bottomTacticalText.text = $"<b>{lvStr}</b>  |  <b>AFFINITY:</b> {elemStr}";
             }
 
             if (bottomResistText != null)
@@ -1548,35 +1813,41 @@ namespace ElementalHexTactics3D.UI
             }
             else
             {
-                // No unit selected: Close Disgaea Command Menu and show bottom bar for Map & Rift commands
+                // No unit selected: Close Disgaea Command Menu and show Hex Tile & Coordinate Inspector at bottom!
                 if (commandMenuRoot != null && commandMenuRoot.activeSelf) commandMenuRoot.SetActive(false);
                 CloseAllSubmenus();
-
-                if (actionBarRoot != null && !actionBarRoot.activeSelf) actionBarRoot.SetActive(true);
+                ShowHexTileInspector(interaction);
 
                 if (isNoRiftStage)
                 {
                     // Stage 1 & Stage 2: All units deployed on field, no rift mechanics needed
-                    if (unanchoredSection != null) unanchoredSection.SetActive(false);
-                    if (riftPanelSection != null) riftPanelSection.SetActive(false);
+                    if (actionBarRoot != null && actionBarRoot.activeSelf) actionBarRoot.SetActive(false);
+                    if (txtUnanchoredHeader != null) txtUnanchoredHeader.gameObject.SetActive(false);
+                    if (btnTearRift != null) btnTearRift.gameObject.SetActive(false);
+                    if (btnRandomizeMap != null) btnRandomizeMap.gameObject.SetActive(false);
+                    if (txtRiftHeader != null) txtRiftHeader.gameObject.SetActive(false);
+                    if (btnOpenRiftDispatch != null) btnOpenRiftDispatch.gameObject.SetActive(false);
                     if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
                 }
                 else if (!riftExists)
                 {
-                    // Incursion / Rift mission before placing rift: Show Tear Open Rift
-                    if (unanchoredSection != null) unanchoredSection.SetActive(true);
-                    if (riftPanelSection != null) riftPanelSection.SetActive(false);
+                    // Incursion / Rift mission before placing rift: Show Tear Open Rift on the Right Dock
+                    if (actionBarRoot != null && !actionBarRoot.activeSelf) actionBarRoot.SetActive(true);
+                    if (txtUnanchoredHeader != null) txtUnanchoredHeader.gameObject.SetActive(true);
+                    if (txtRiftHeader != null) txtRiftHeader.gameObject.SetActive(false);
+                    if (btnOpenRiftDispatch != null) btnOpenRiftDispatch.gameObject.SetActive(false);
                     if (dispatchModalRoot != null) dispatchModalRoot.SetActive(false);
 
                     if (btnTearRift != null)
                     {
+                        btnTearRift.gameObject.SetActive(true);
                         btnTearRift.interactable = isPlayerTurn;
                         SetButtonActiveHighlight(btnTearRift, currentMode == UnitActionMode.TearRift);
                         if (txtTearRift != null)
                         {
                             txtTearRift.text = (currentMode == UnitActionMode.TearRift)
-                                ? "<b>[Targeting Entry...]</b>\n<size=11>(Click Open Hex)</size>"
-                                : "🌀 Tear Open Abyssal Rift\n<size=11>(Choose Landing Hex)</size>";
+                                ? "<b>[Targeting Entry]</b>\n<size=9><color=#FFD54F>(Click Hex / Cancel)</color></size>"
+                                : "🌀 <b>Tear Open Rift</b>";
                         }
                     }
                     if (btnRandomizeMap != null)
@@ -1585,33 +1856,40 @@ namespace ElementalHexTactics3D.UI
                         btnRandomizeMap.gameObject.SetActive(!isTut);
                         btnRandomizeMap.interactable = isPlayerTurn && !isTut;
                     }
+
+                    if (actionBarRoot != null)
+                    {
+                        UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(actionBarRoot.GetComponent<RectTransform>());
+                    }
                 }
                 else
                 {
-                    // Rift is placed on the battlefield: Show Rift Base Panel (Deploy / Summon)
-                    if (unanchoredSection != null) unanchoredSection.SetActive(false);
-                    if (riftPanelSection != null) riftPanelSection.SetActive(true);
-                    UpdateRiftPanelButtons(interaction, isPlayerTurn, noActiveUnits, currentMode);
+                    // Rift is placed on the battlefield: Show Rift Base Panel on Right Dock
+                    if (txtUnanchoredHeader != null) txtUnanchoredHeader.gameObject.SetActive(false);
+                    if (btnTearRift != null) btnTearRift.gameObject.SetActive(false);
+                    if (btnRandomizeMap != null) btnRandomizeMap.gameObject.SetActive(false);
 
                     bool isRiftDispatchActive = (isRiftSelected && !isDeployMode);
                     if (isRiftDispatchActive)
                     {
                         UpdateDisgaeaDispatchModal(interaction);
-                        // Clean Disgaea TRPG UX: Hide redundant bottom action bar while Squad Dispatch modal is showing
+                        // Clean Disgaea TRPG UX: Hide redundant right dock while Squad Dispatch modal is showing
                         if (actionBarRoot != null && actionBarRoot.activeSelf) actionBarRoot.SetActive(false);
                     }
-                    else if (dispatchModalRoot != null && dispatchModalRoot.activeSelf && !isDeployMode)
+                    else
                     {
-                        dispatchModalRoot.SetActive(false);
+                        if (dispatchModalRoot != null && dispatchModalRoot.activeSelf && !isDeployMode)
+                        {
+                            dispatchModalRoot.SetActive(false);
+                        }
+                        if (actionBarRoot != null && !actionBarRoot.activeSelf) actionBarRoot.SetActive(true);
+                        if (txtRiftHeader != null) txtRiftHeader.gameObject.SetActive(true);
+                        if (btnOpenRiftDispatch != null)
+                        {
+                            btnOpenRiftDispatch.gameObject.SetActive(true);
+                            btnOpenRiftDispatch.interactable = isPlayerTurn;
+                        }
                     }
-                }
-
-                // Clean background styling: Only draw the dark background frame if there are center buttons (Rift)
-                Image actBg = actionBarRoot.GetComponent<Image>();
-                if (actBg != null)
-                {
-                    actBg.enabled = (unanchoredSection != null && unanchoredSection.activeSelf) ||
-                                    (riftPanelSection != null && riftPanelSection.activeSelf);
                 }
 
                 // End Turn Button
@@ -2092,8 +2370,8 @@ namespace ElementalHexTactics3D.UI
             commandMenuRoot = CreateUI("Menu_DisgaeaCommand", parent);
             RectTransform menuRt = commandMenuRoot.GetComponent<RectTransform>();
             SetRect(menuRt,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 1f),
-                new Vector2(0f, 0f), new Vector2(175f, 320f));
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(-20f, -72f), new Vector2(175f, 320f));
 
             ApplyRpgMakerWindowStyle(commandMenuRoot, new Color(0.07f, 0.06f, 0.12f, 0.96f));
 
@@ -2113,8 +2391,9 @@ namespace ElementalHexTactics3D.UI
             // Header
             txtCmdHeader = CreateTxt("Txt_CmdHeader", commandMenuRoot.transform, "COMMAND", font, 12, new Color(1.0f, 0.88f, 0.40f), TextAnchor.MiddleCenter);
             txtCmdHeader.fontStyle = FontStyle.Bold;
+            txtCmdHeader.rectTransform.sizeDelta = new Vector2(154f, 24f);
             LayoutElement leH = txtCmdHeader.gameObject.AddComponent<LayoutElement>();
-            leH.preferredHeight = 22f;
+            leH.preferredHeight = 24f;
 
             // 1. Move
             btnCmdMove = CreateBtn("Btn_CmdMove", commandMenuRoot.transform, "👣 Move", font, 12, btnSprite, new Color(0.18f, 0.35f, 0.55f, 1f), 154f, 32f);
@@ -2174,6 +2453,411 @@ namespace ElementalHexTactics3D.UI
             // Build Submenus alongside Main Menu
             BuildDisgaeaSpecialSubmenu(parent, font, frameSprite, btnSprite);
             BuildDisgaeaItemSubmenu(parent, font, frameSprite, btnSprite);
+            if (skillInfoWindowRoot == null)
+            {
+                BuildSkillDescriptionWindow(parent, font);
+            }
+        }
+
+        private struct SkillInfoEntry
+        {
+            public Button Button;
+            public string Title;
+            public string Cost;
+            public string Dmg;
+            public string Effect;
+            public string Desc;
+        }
+
+        private readonly List<SkillInfoEntry> activeSubmenuSkillEntries = new List<SkillInfoEntry>();
+        private readonly List<SkillInfoEntry> activeMainCmdSkillEntries = new List<SkillInfoEntry>();
+
+        private static string CleanUnsupportedGlyphs(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return "";
+            // Remove surrogate pair emojis & symbols that LegacyRuntime.ttf renders as [X] boxes
+            string[] strip = new string[]
+            {
+                "☀️ ", "☀️", "⚡ ", "⚡", "⛰️ ", "⛰️", "🌊 ", "🌊", "⚜️ ", "⚜️",
+                "🛡️ ", "🛡️", "✨ ", "✨", "🔥 ", "🔥", "💧 ", "💧", "💥 ", "💥",
+                "🌋 ", "🌋", "🐊 ", "🐊", "🧪 ", "🧪", "👣 ", "👣", "⚔️ ", "⚔️",
+                "🏹 ", "🏹", "💨 ", "💨", "🎒 ", "🎒", "🎯 ", "🎯"
+            };
+            string res = input;
+            for (int i = 0; i < strip.Length; i++)
+            {
+                res = res.Replace(strip[i], "");
+            }
+            return res.Trim();
+        }
+
+        private void BuildSkillDescriptionWindow(Transform parent, Font font)
+        {
+            skillInfoWindowRoot = CreateUI("Panel_SkillDescription", parent);
+            RectTransform rt = skillInfoWindowRoot.GetComponent<RectTransform>();
+            SetRect(rt,
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
+                new Vector2(0f, 18f), new Vector2(760f, 114f));
+
+            ApplyRpgMakerWindowStyle(skillInfoWindowRoot, new Color(0.06f, 0.07f, 0.14f, 0.96f));
+
+            // Row 1 Left: Skill Name (Top-Left, generous width, never collides with right badges)
+            txtSkillInfoTitle = CreateTxt("Txt_SkillInfoTitle", skillInfoWindowRoot.transform, "RADIANT SMITE", font, 15, new Color(1.0f, 0.88f, 0.40f, 1f), TextAnchor.MiddleLeft);
+            txtSkillInfoTitle.fontStyle = FontStyle.Bold;
+            txtSkillInfoTitle.horizontalOverflow = HorizontalWrapMode.Wrap;
+            SetRect(txtSkillInfoTitle.rectTransform,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(22f, -12f), new Vector2(360f, 22f));
+
+            // Row 1 Right: Mana Cost & Damage ONLY (Top-Right, compact so it never overlaps Title)
+            txtSkillInfoBadges = CreateTxt("Txt_SkillInfoBadges", skillInfoWindowRoot.transform,
+                "<color=#80D8FF><b>COST:</b> 25 MP</color>    |    <color=#FF8A80><b>DMG:</b> 780</color>",
+                font, 13, Color.white, TextAnchor.MiddleRight);
+            txtSkillInfoBadges.horizontalOverflow = HorizontalWrapMode.Wrap;
+            SetRect(txtSkillInfoBadges.rectTransform,
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(-22f, -12f), new Vector2(340f, 22f));
+
+            // Row 2: Dedicated Tactical / Terrain Effect Line (Full width, clear spacing below Row 1)
+            txtSkillInfoEffect = CreateTxt("Txt_SkillInfoEffect", skillInfoWindowRoot.transform,
+                "<color=#FFD54F><b>EFFECT:</b> Scorches Tile (Fire)  •  Range: 1-3</color>",
+                font, 12, new Color(1.0f, 0.84f, 0.35f, 1f), TextAnchor.MiddleLeft);
+            txtSkillInfoEffect.horizontalOverflow = HorizontalWrapMode.Wrap;
+            SetRect(txtSkillInfoEffect.rectTransform,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(22f, -38f), new Vector2(716f, 20f));
+
+            // Row 3: Full Skill Description Text (Bottom area, 2 spacious lines, no divider line!)
+            txtSkillInfoDesc = CreateTxt("Txt_SkillInfoDesc", skillInfoWindowRoot.transform,
+                "Calls down a pillar of solar judgment. Deals 780 Holy Fire damage and ignites the target hex into Scorched Earth.",
+                font, 12, new Color(0.90f, 0.94f, 0.98f, 1f), TextAnchor.UpperLeft);
+            txtSkillInfoDesc.lineSpacing = 1.15f;
+            txtSkillInfoDesc.horizontalOverflow = HorizontalWrapMode.Wrap;
+            txtSkillInfoDesc.verticalOverflow = VerticalWrapMode.Overflow;
+            SetRect(txtSkillInfoDesc.rectTransform,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(22f, -62f), new Vector2(716f, 40f));
+
+            skillInfoWindowRoot.transform.SetAsLastSibling();
+            skillInfoWindowRoot.SetActive(false);
+        }
+
+        public void ShowSkillDescriptionWindow(string title, string cost, string dmg, string effect, string desc)
+        {
+            if (skillInfoWindowRoot == null) return;
+            string cleanTitle = CleanUnsupportedGlyphs(title);
+            string cleanCost = CleanUnsupportedGlyphs(cost);
+            string cleanDmg = CleanUnsupportedGlyphs(dmg);
+            string cleanEffect = CleanUnsupportedGlyphs(effect);
+            string cleanDesc = CleanUnsupportedGlyphs(desc);
+
+            activeHoverSkillTitle = cleanTitle;
+            if (!skillInfoWindowRoot.activeSelf)
+            {
+                skillInfoWindowRoot.SetActive(true);
+            }
+            skillInfoWindowRoot.transform.SetAsLastSibling();
+
+            if (txtSkillInfoTitle != null)
+            {
+                txtSkillInfoTitle.text = $"<b>✦ {cleanTitle}</b>";
+            }
+            if (txtSkillInfoBadges != null)
+            {
+                txtSkillInfoBadges.text = $"<color=#80D8FF><b>COST:</b> {cleanCost}</color>    |    <color=#FF8A80><b>DMG:</b> {cleanDmg}</color>";
+            }
+            if (txtSkillInfoEffect != null)
+            {
+                txtSkillInfoEffect.text = $"<color=#FFD54F><b>EFFECT:</b> {cleanEffect}</color>";
+            }
+            if (txtSkillInfoDesc != null)
+            {
+                txtSkillInfoDesc.text = cleanDesc;
+            }
+        }
+
+        public void HideSkillDescriptionWindow()
+        {
+            activeHoverSkillTitle = null;
+            if (skillInfoWindowRoot != null && skillInfoWindowRoot.activeSelf)
+            {
+                skillInfoWindowRoot.SetActive(false);
+            }
+        }
+
+        private void BindSkillHoverPreview(Button btn, string title, string cost, string dmg, string effect, string desc)
+        {
+            if (btn == null) return;
+            SkillInfoEntry entry = new SkillInfoEntry
+            {
+                Button = btn,
+                Title = title,
+                Cost = cost,
+                Dmg = dmg,
+                Effect = effect,
+                Desc = desc
+            };
+
+            if (btn.transform.parent == specialSubmenuContent || btn.transform.parent == itemSubmenuContent)
+            {
+                activeSubmenuSkillEntries.Add(entry);
+            }
+            else
+            {
+                activeMainCmdSkillEntries.Add(entry);
+            }
+        }
+
+        private void EvaluateHoveredSkillDescription()
+        {
+            Vector2 mousePos = Vector2.zero;
+            if (UnityEngine.InputSystem.Mouse.current != null)
+            {
+                mousePos = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
+            }
+            else
+            {
+                mousePos = Input.mousePosition;
+            }
+
+            // 1. Check active Submenu buttons first (Special Skills or Inventory Items)
+            if (IsSubmenuOpen)
+            {
+                for (int i = 0; i < activeSubmenuSkillEntries.Count; i++)
+                {
+                    var entry = activeSubmenuSkillEntries[i];
+                    if (entry.Button != null && entry.Button.gameObject.activeInHierarchy)
+                    {
+                        RectTransform rt = entry.Button.GetComponent<RectTransform>();
+                        if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, mousePos, null))
+                        {
+                            ShowSkillDescriptionWindow(entry.Title, entry.Cost, entry.Dmg, entry.Effect, entry.Desc);
+                            return;
+                        }
+                    }
+                }
+                // If submenu is open and mouse is not over a specific button yet, show the first submenu entry
+                if (activeSubmenuSkillEntries.Count > 0)
+                {
+                    var first = activeSubmenuSkillEntries[0];
+                    ShowSkillDescriptionWindow(first.Title, first.Cost, first.Dmg, first.Effect, first.Desc);
+                }
+                return;
+            }
+
+            // 2. Otherwise check Main Command Menu buttons when hovered
+            if (commandMenuRoot != null && commandMenuRoot.activeInHierarchy)
+            {
+                for (int i = 0; i < activeMainCmdSkillEntries.Count; i++)
+                {
+                    var entry = activeMainCmdSkillEntries[i];
+                    if (entry.Button != null && entry.Button.gameObject.activeInHierarchy)
+                    {
+                        RectTransform rt = entry.Button.GetComponent<RectTransform>();
+                        if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, mousePos, null))
+                        {
+                            ShowSkillDescriptionWindow(entry.Title, entry.Cost, entry.Dmg, entry.Effect, entry.Desc);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // 2.5 Check Gateway / Rift panel buttons on Right Dock when hovered
+            if (actionBarRoot != null && actionBarRoot.activeInHierarchy)
+            {
+                if (btnTearRift != null && btnTearRift.gameObject.activeInHierarchy)
+                {
+                    RectTransform rt = btnTearRift.GetComponent<RectTransform>();
+                    if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, mousePos, null))
+                    {
+                        ShowSkillDescriptionWindow(
+                            "TEAR OPEN ABYSSAL RIFT",
+                            "FREE (0 MP)",
+                            "SPATIAL INVASION",
+                            "Deploy Vanguard",
+                            "Channels Citadel ley-lines to anchor an Abyssal Rift conduit onto the battlefield. Once anchored, you can summon commanders, vanguard knights, and primordial titans directly into combat."
+                        );
+                        return;
+                    }
+                }
+                if (btnRandomizeMap != null && btnRandomizeMap.gameObject.activeInHierarchy)
+                {
+                    RectTransform rt = btnRandomizeMap.GetComponent<RectTransform>();
+                    if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, mousePos, null))
+                    {
+                        ShowSkillDescriptionWindow(
+                            "RANDOMIZE MAP",
+                            "KEY: [R]",
+                            "INCURSION TOPOLOGY",
+                            "Re-roll Terrain",
+                            "Rolls a new randomized battlefield topology with procedural elevation steps, magma reservoirs, flooded waters, and tactical choke points."
+                        );
+                        return;
+                    }
+                }
+                if (btnOpenRiftDispatch != null && btnOpenRiftDispatch.gameObject.activeInHierarchy)
+                {
+                    RectTransform rt = btnOpenRiftDispatch.GetComponent<RectTransform>();
+                    if (rt != null && RectTransformUtility.RectangleContainsScreenPoint(rt, mousePos, null))
+                    {
+                        ShowSkillDescriptionWindow(
+                            "CITADEL SQUAD DISPATCH",
+                            "FREE",
+                            "BASE PANEL",
+                            "Summon Reserve Forces",
+                            "Opens the Citadel Rift Deployment Menu to dispatch your chosen hero, vanguard defenders, and summoned titans onto the battlefield."
+                        );
+                        return;
+                    }
+                }
+            }
+
+            // 3. Not hovering over any command button and no submenu open -> show Hovered / Selected Hex Tile & Coordinate Inspector!
+            ShowHexTileInspector(HexGridInteraction3D.Instance);
+        }
+
+        public void ShowTileDescriptionWindow(string tileTitle, string elevStr, string occupantStr, string effectStr, string descStr)
+        {
+            if (skillInfoWindowRoot == null) return;
+            if (dispatchModalRoot != null && dispatchModalRoot.activeInHierarchy)
+            {
+                HideSkillDescriptionWindow();
+                return;
+            }
+
+            string cleanTitle = CleanUnsupportedGlyphs(tileTitle);
+            string cleanElev = CleanUnsupportedGlyphs(elevStr);
+            string cleanOcc = CleanUnsupportedGlyphs(occupantStr);
+            string cleanEffect = CleanUnsupportedGlyphs(effectStr);
+            string cleanDesc = CleanUnsupportedGlyphs(descStr);
+
+            activeHoverSkillTitle = cleanTitle;
+            if (!skillInfoWindowRoot.activeSelf)
+            {
+                skillInfoWindowRoot.SetActive(true);
+            }
+            skillInfoWindowRoot.transform.SetAsLastSibling();
+
+            if (txtSkillInfoTitle != null)
+            {
+                txtSkillInfoTitle.text = $"<b>✦ {cleanTitle}</b>";
+            }
+            if (txtSkillInfoBadges != null)
+            {
+                txtSkillInfoBadges.text = $"<color=#80D8FF><b>ELEVATION:</b> {cleanElev}</color>    |    <color=#69F0AE><b>UNIT:</b> {cleanOcc}</color>";
+            }
+            if (txtSkillInfoEffect != null)
+            {
+                txtSkillInfoEffect.text = $"<color=#FFD54F><b>TERRAIN:</b> {cleanEffect}</color>";
+            }
+            if (txtSkillInfoDesc != null)
+            {
+                txtSkillInfoDesc.text = cleanDesc;
+            }
+        }
+
+        private static string GetReadableTileStateName(Grid.HexTile3D tile)
+        {
+            if (tile == null) return "UNKNOWN TILE";
+            switch (tile.State)
+            {
+                case Grid.TileState.Scorched: return "SCORCHED EARTH";
+                case Grid.TileState.Magma: return "MOLTEN MAGMA";
+                case Grid.TileState.Water: return tile.TierLevel >= 2 ? "DEEP WATER" : "FLOODED WATER";
+                case Grid.TileState.Steam: return "STEAM MIST";
+                case Grid.TileState.StonePillar: return "STONE PILLAR";
+                case Grid.TileState.Mud: return "STICKY MUD";
+                default: return "BARREN GROUND";
+            }
+        }
+
+        private void ShowHexTileInspector(HexGridInteraction3D interaction)
+        {
+            if (interaction == null)
+            {
+                HideSkillDescriptionWindow();
+                return;
+            }
+
+            if (dispatchModalRoot != null && dispatchModalRoot.activeInHierarchy)
+            {
+                HideSkillDescriptionWindow();
+                return;
+            }
+
+            Grid.HexTile3D tile = interaction.CurrentHoveredTile ?? interaction.CurrentSelectedTile;
+            if (tile == null && interaction.CurrentSelectedUnit != null)
+            {
+                tile = interaction.CurrentSelectedUnit.CurrentTile;
+            }
+
+            if (tile == null)
+            {
+                HideSkillDescriptionWindow();
+                return;
+            }
+
+            int q = tile.Coordinates.Q;
+            int r = tile.Coordinates.R;
+            string stateName = GetReadableTileStateName(tile);
+            string title = $"{stateName}  •  HEX ({q}, {r})";
+            string elevStr = $"Tier {tile.Elevation}";
+
+            TacticalUnit3D occ = tile.GetOccupant();
+            string occStr = (occ != null && occ.CurrentHealth > 0)
+                ? $"{occ.UnitName} ({occ.CurrentHealth}/{occ.MaxHealth} HP)"
+                : "Empty";
+
+            string effectStr;
+            string descStr;
+
+            switch (tile.State)
+            {
+                case Grid.TileState.Scorched:
+                    effectStr = "Fire Attuned (+1 ATK to Fire)  •  Hit with Fire -> Ignites into Molten Magma!";
+                    descStr = $"Hex ({q}, {r}) is sizzling Scorched Earth. Casting a Fire spell on this tile triggers Elemental Alchemy and erupts it into Molten Magma!";
+                    break;
+                case Grid.TileState.Magma:
+                    effectStr = "Molten Hazard (Burn DMG on Entry & Turn Start)  •  Fire & Titan Units Immune";
+                    descStr = $"Hex ({q}, {r}) is active Molten Magma! Shoving or moving non-immune units onto this tile inflicts heavy Burn damage.";
+                    break;
+                case Grid.TileState.Water:
+                    effectStr = "Wave Attuned (+1 ATK to Water, -1 MOV to Others)  •  Hit with Fire -> Steam Mist";
+                    descStr = $"Hex ({q}, {r}) is flooded with water, slowing non-aquatic movement. Hitting it with Fire vaporizes it into a protective Steam shroud.";
+                    break;
+                case Grid.TileState.Steam:
+                    effectStr = "Vapor Shroud (Reduces Incoming Damage by 1)  •  Dissipates Over Time";
+                    descStr = $"Hex ({q}, {r}) is blanketed in dense Steam mist, shrouding any unit standing here and mitigating incoming attack damage.";
+                    break;
+                case Grid.TileState.StonePillar:
+                    effectStr = "Impassable Monolith Obstacle  •  Push Foe Into Pillar -> Heavy Wall Slam Damage!";
+                    descStr = $"Hex ({q}, {r}) is blocked by a solid 3D Stone Pillar. Shoving an enemy into this obstacle triggers devastating Wall Slam collision damage!";
+                    break;
+                case Grid.TileState.Mud:
+                    effectStr = "Sticky Quagmire (Immobilizes / Cripples Movement on Entry)";
+                    descStr = $"Hex ({q}, {r}) is a boggy Mud trap that arrests unit movement when stepped or shoved onto.";
+                    break;
+                default:
+                    effectStr = "Standard Tactical Ground  •  Fire -> Scorched  |  Water -> Flooded  |  Earth -> Pillar";
+                    descStr = $"Hex ({q}, {r}) is solid Barren Ground at Elevation Tier {tile.Elevation}. Can be transformed by Elemental Spells.";
+                    break;
+            }
+
+            if (Tutorial.TutorialScenarioManager.Instance != null &&
+                Tutorial.TutorialScenarioManager.Instance.IsStage2Active &&
+                q == 0 && r == 0 && tile.State == Grid.TileState.Scorched)
+            {
+                descStr = $"[DIRECTIVE TARGET HEX (0, 0)] Select Demon Lord, open [Special -> Hellfire Blast], and click this Scorched Earth at (0, 0) to ignite Molten Magma!";
+            }
+
+            if (occ != null && occ.CurrentHealth > 0)
+            {
+                string fac = occ.Faction == UnitFaction.Player ? "Allied" : "Enemy";
+                descStr += $"  |  Occupied by {fac} {occ.UnitName} (ATK {occ.EffectiveAttackDamage}, MOV {occ.EffectiveMoveRange}).";
+            }
+
+            ShowTileDescriptionWindow(title, elevStr, occStr, effectStr, descStr);
         }
 
         private void BuildDisgaeaSpecialSubmenu(Transform parent, Font font, Sprite frameSprite, Sprite btnSprite)
@@ -2181,8 +2865,8 @@ namespace ElementalHexTactics3D.UI
             specialSubmenuRoot = CreateUI("Menu_DisgaeaSpecialSubmenu", parent);
             RectTransform menuRt = specialSubmenuRoot.GetComponent<RectTransform>();
             SetRect(menuRt,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 1f),
-                new Vector2(0f, 0f), new Vector2(185f, 220f));
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(-203f, -72f), new Vector2(185f, 220f));
 
             ApplyRpgMakerWindowStyle(specialSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
 
@@ -2202,8 +2886,9 @@ namespace ElementalHexTactics3D.UI
             // Header
             txtSpecialHeader = CreateTxt("Txt_SpecialHeader", specialSubmenuRoot.transform, "✨ SPECIAL SKILLS", font, 11, new Color(1.0f, 0.88f, 0.40f), TextAnchor.MiddleCenter);
             txtSpecialHeader.fontStyle = FontStyle.Bold;
+            txtSpecialHeader.rectTransform.sizeDelta = new Vector2(164f, 24f);
             LayoutElement leH = txtSpecialHeader.gameObject.AddComponent<LayoutElement>();
-            leH.preferredHeight = 22f;
+            leH.preferredHeight = 24f;
 
             // Dynamic Container
             GameObject contentObj = CreateUI("Special_Content", specialSubmenuRoot.transform);
@@ -2234,8 +2919,8 @@ namespace ElementalHexTactics3D.UI
             itemSubmenuRoot = CreateUI("Menu_DisgaeaItemSubmenu", parent);
             RectTransform menuRt = itemSubmenuRoot.GetComponent<RectTransform>();
             SetRect(menuRt,
-                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 1f),
-                new Vector2(0f, 0f), new Vector2(185f, 180f));
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(1f, 1f),
+                new Vector2(-203f, -72f), new Vector2(185f, 180f));
 
             ApplyRpgMakerWindowStyle(itemSubmenuRoot, new Color(0.06f, 0.08f, 0.14f, 0.96f));
 
@@ -2255,8 +2940,9 @@ namespace ElementalHexTactics3D.UI
             // Header
             txtItemHeader = CreateTxt("Txt_ItemHeader", itemSubmenuRoot.transform, "🎒 INVENTORY", font, 11, new Color(1.0f, 0.88f, 0.40f), TextAnchor.MiddleCenter);
             txtItemHeader.fontStyle = FontStyle.Bold;
+            txtItemHeader.rectTransform.sizeDelta = new Vector2(164f, 24f);
             LayoutElement leH = txtItemHeader.gameObject.AddComponent<LayoutElement>();
-            leH.preferredHeight = 22f;
+            leH.preferredHeight = 24f;
 
             // Dynamic Container
             GameObject contentObj = CreateUI("Item_Content", itemSubmenuRoot.transform);
@@ -2289,7 +2975,7 @@ namespace ElementalHexTactics3D.UI
 
             if (dispatchListContent == null) return;
 
-            TacticalUnit3D[] all = UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            TacticalUnit3D[] all = UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include);
             List<TacticalUnit3D> roster = new List<TacticalUnit3D>();
             foreach (var u in all)
             {
@@ -2477,14 +3163,18 @@ namespace ElementalHexTactics3D.UI
             {
                 commandMenuRoot.SetActive(false);
                 CloseAllSubmenus();
+                HideSkillDescriptionWindow();
                 return;
             }
 
-            // 2. Disgaea TRPG UX: While player is in targeting mode, hide command menu immediately
+            // 2. Disgaea TRPG UX: While player is in targeting mode, hide command menu immediately,
+            //    but keep the Bottom Skill Description Window open so the player sees the active skill's cost, damage & effect!
             if (currentMode != UnitActionMode.None)
             {
                 commandMenuRoot.SetActive(false);
-                CloseAllSubmenus();
+                if (specialSubmenuRoot != null) specialSubmenuRoot.SetActive(false);
+                if (itemSubmenuRoot != null) itemSubmenuRoot.SetActive(false);
+                ShowTargetingModeSkillDescription(unit, interaction, currentMode);
                 return;
             }
 
@@ -2494,6 +3184,7 @@ namespace ElementalHexTactics3D.UI
             {
                 commandMenuRoot.SetActive(false);
                 CloseAllSubmenus();
+                HideSkillDescriptionWindow();
                 return;
             }
 
@@ -2595,7 +3286,122 @@ namespace ElementalHexTactics3D.UI
                 btnCmdCancel.interactable = true;
             }
 
+            // Populate main command hover metadata and evaluate exact button under mouse cursor
+            activeMainCmdSkillEntries.Clear();
+            bool isLv99 = unit.MaxHealth >= 500;
+            int pushBaseDmg = isLv99 ? (unit.UnitName.Contains("Paladin") ? 230 : 215) : 1;
+            int slamBonusDmg = isLv99 ? 550 : 2;
+            BindSkillHoverPreview(btnCmdMove, "MOVE", "0 MP", "None", $"Traverse up to {unit.EffectiveMoveRange} Hexes",
+                $"Move {unit.UnitName} across reachable tiles. Elevation steps of 1 tier can be climbed.");
+            BindSkillHoverPreview(btnCmdAttack, unit.IsRangedAttack ? "RANGED ATTACK" : "BASIC ATTACK", "0 MP", $"{unit.EffectiveAttackDamage} DMG", $"Weapon Strike  •  Range: {unit.AttackRange} Hex",
+                $"Deliver a direct weapon strike dealing {unit.EffectiveAttackDamage} physical damage with no Mana cost.");
+            BindSkillHoverPreview(btnCmdSpecial, "SPECIAL SKILLS", "10-40 MP", "Varies", "Sacred & Elemental Arts",
+                "Open this unit's Special Skills menu to cast high-impact elemental spells, stone pillars, and knockback arts.");
+            BindSkillHoverPreview(btnCmdDefend, "DEFEND (GUARD STANCE)", "0 MP", "Self Buff", "Reduces Incoming Damage by 50%",
+                "Assume a fortified guard stance until next turn, reducing all incoming physical and elemental damage by 50%.");
+            BindSkillHoverPreview(btnCmdPush, isTitan ? "TAIL SHOVE" : "KINETIC PUSH", "0 MP", $"{pushBaseDmg} (+{slamBonusDmg} Slam)", "Knockback 1 Hex + Wall Slam  •  Range: 1",
+                $"Shove an adjacent unit backward 1 hex ({pushBaseDmg} DMG). If they slam into a Stone Pillar or obstacle, inflicts +{slamBonusDmg} Wall Slam damage!");
+            if (btnCmdAbsorb != null && btnCmdAbsorb.gameObject.activeSelf)
+            {
+                BindSkillHoverPreview(btnCmdAbsorb, "ABSORB ELEMENTAL CORE", "0 MP", "+1 Core", "Siphon Terrain  •  Range: 1",
+                    "Siphon elemental energy from an adjacent Scorched, Flooded, or Pillar tile to gain +1 Elemental Core.");
+            }
+            BindSkillHoverPreview(btnCmdItem, "INVENTORY ITEMS", "1 Item", "Restore HP / MP", "Consumables  •  Self",
+                "Open the tactical inventory to use Healing Elixirs or Mana Ethers.");
+
+            EvaluateHoveredSkillDescription();
             ApplyDisgaeaTutorialPulse();
+        }
+
+        private void ShowTargetingModeSkillDescription(TacticalUnit3D unit, HexGridInteraction3D interaction, UnitActionMode mode)
+        {
+            if (unit == null) return;
+            bool isLv99 = unit.MaxHealth >= 500;
+            string skillId = interaction != null ? interaction.PendingSkillId : null;
+            int customDmg = (interaction != null && interaction.PendingSkillDamage > 0) ? interaction.PendingSkillDamage : -1;
+            int manaCost = (interaction != null && interaction.PendingSkillManaCost > 0) ? interaction.PendingSkillManaCost : 0;
+            string costStr = manaCost > 0 ? $"{manaCost} MP" : "0 MP";
+
+            Grid.HexTile3D hovered = interaction != null ? interaction.CurrentHoveredTile : null;
+            string hoverCoordTag = hovered != null
+                ? $"  ->  HEX ({hovered.Coordinates.Q}, {hovered.Coordinates.R}) [{GetReadableTileStateName(hovered)}]"
+                : "";
+
+            if (mode == UnitActionMode.Move)
+            {
+                ShowSkillDescriptionWindow("MOVE" + hoverCoordTag, "0 MP", "None",
+                    $"Reachable Range: {unit.EffectiveMoveRange} Hexes" + (hovered != null ? $"  •  Elevation: Tier {hovered.Elevation}" : ""),
+                    hovered != null
+                        ? $"Click HEX ({hovered.Coordinates.Q}, {hovered.Coordinates.R}) to move {unit.UnitName} to that tile (Right-Click to Cancel)."
+                        : $"Click a highlighted blue hex within {unit.EffectiveMoveRange} tiles to move {unit.UnitName} (Right-Click to Cancel).");
+                return;
+            }
+
+            if (skillId == "JudgmentBeam")
+            {
+                ShowSkillDescriptionWindow("⚡ JUDGMENT BEAM", costStr, "999 DMG", "Orbital Piercing Beam • Rng 1-3",
+                    "🎯 [TARGETING] Click a highlighted hex within 3 tiles to call down an orbital satellite beam (999 DMG + Scorches Tile). Right-Click to cancel.");
+                return;
+            }
+            if (skillId == "HeavensPillar")
+            {
+                ShowSkillDescriptionWindow("⛰️ HEAVEN'S PILLAR", costStr, "640 (+550 Slam)", "Stone Pillar + Launch • Rng 1-3",
+                    "🎯 [TARGETING] Click a target hex to erupt a sacred Stone Pillar (640 DMG), launching any occupant 1 hex (+550 Wall Slam if blocked)!");
+                return;
+            }
+            if (skillId == "SacredBulwark")
+            {
+                ShowSkillDescriptionWindow("⛰️ SACRED BULWARK", costStr, "590 (+550 Slam)", "Stone Pillar + Launch • Rng 1-3",
+                    "🎯 [TARGETING] Click a target hex to raise a consecrated Stone Pillar (590 DMG), displacing the foe and creating a Wall Slam obstacle!");
+                return;
+            }
+            if (skillId == "CleansingFlood" || skillId == "SanctifyingWave")
+            {
+                int wDmg = customDmg > 0 ? customDmg : (isLv99 ? 520 : 2);
+                string wTitle = skillId == "CleansingFlood" ? "🌊 CLEANSING FLOOD" : "🌊 SANCTIFYING WAVE";
+                ShowSkillDescriptionWindow(wTitle, costStr, $"{wDmg} DMG", "Floods Tile / Steam Mist • Rng 1-3",
+                    $"🎯 [TARGETING] Click a target hex to unleash a holy deluge ({wDmg} DMG) that floods the tile or vaporizes fire into Steam.");
+                return;
+            }
+
+            switch (mode)
+            {
+                case UnitActionMode.Fireball:
+                    int fDmg = customDmg > 0 ? customDmg : (isLv99 ? 780 : 3);
+                    string fTitle = (unit.UnitName.Contains("Paladin") ? "RADIANT SMITE" : "HELLFIRE BLAST") + hoverCoordTag;
+                    string fReaction = (hovered != null && hovered.State == Grid.TileState.Scorched)
+                        ? $"HEX ({hovered.Coordinates.Q}, {hovered.Coordinates.R}) [SCORCHED] -> ERUPTS INTO MOLTEN MAGMA!"
+                        : "Scorches Tile (Fire)  •  Range: 1-3";
+                    ShowSkillDescriptionWindow(fTitle, manaCost > 0 ? costStr : (isLv99 ? "25 MP" : "15 MP"), $"{fDmg} DMG", fReaction,
+                        $"Click a highlighted hex within 3 tiles to deal {fDmg} Fire damage and ignite the terrain (Scorched Earth erupts into Molten Magma!).");
+                    break;
+                case UnitActionMode.WaterSurge:
+                    int wDmg = customDmg > 0 ? customDmg : (isLv99 ? 460 : 2);
+                    ShowSkillDescriptionWindow("💧 WATER SURGE", manaCost > 0 ? costStr : "15 MP", $"{wDmg} DMG", "Floods Tile (Water) • Rng 1-3",
+                        $"🎯 [TARGETING] Click a highlighted hex within 3 tiles to deal {wDmg} Water damage and flood the tile (or quench Fire into Steam).");
+                    break;
+                case UnitActionMode.EarthSpire:
+                    int eDmg = customDmg > 0 ? customDmg : (isLv99 ? 590 : 2);
+                    int eSlam = isLv99 ? 550 : 2;
+                    ShowSkillDescriptionWindow("⛰️ EARTH PILLAR", manaCost > 0 ? costStr : "15 MP", $"{eDmg} (+{eSlam} Slam)", "Stone Pillar + Launch • Rng 1-3",
+                        $"🎯 [TARGETING] Click a highlighted hex to erupt a 3D Stone Pillar ({eDmg} DMG) and launch any occupant 1 hex.");
+                    break;
+                case UnitActionMode.KineticPush:
+                    int pDmg = customDmg > 0 ? customDmg : (isLv99 ? (unit.UnitName.Contains("Paladin") ? 230 : 215) : 1);
+                    int pSlam = isLv99 ? 550 : 2;
+                    string pTitle = unit.UnitName.Contains("Paladin") ? "⚜️ HOLY REPEL" : (unit.UnitName.Contains("Shielder") ? "🛡️ SHIELD SHOVE" : "💨 KINETIC PUSH");
+                    ShowSkillDescriptionWindow(pTitle, costStr, $"{pDmg} (+{pSlam} Slam)", "Push 1 Hex + Wall Slam • Rng 1",
+                        $"🎯 [TARGETING] Click an adjacent unit to shove them 1 hex ({pDmg} DMG). Slams into pillars or obstacles for +{pSlam} bonus damage!");
+                    break;
+                case UnitActionMode.TitanStrike:
+                    ShowSkillDescriptionWindow("⚔️ BASIC ATTACK", "0 MP", $"{unit.EffectiveAttackDamage} DMG", $"Weapon Strike • Rng {unit.AttackRange}",
+                        $"🎯 [TARGETING] Click an enemy within {unit.AttackRange} hex(es) to strike for {unit.EffectiveAttackDamage} damage.");
+                    break;
+                case UnitActionMode.MagmaCataclysm:
+                    ShowSkillDescriptionWindow("🌋 MAGMA CATACLYSM", "1 Core", "4 AoE DMG", "3x3 Volcanic Eruption • Rng 1-2",
+                        "🎯 [TARGETING] Click a center hex to unleash a 3x3 volcanic cataclysm dealing 4 AoE damage and igniting tiles into Magma!");
+                    break;
+            }
         }
 
         private void OnCmdSpecialClicked()
@@ -2669,6 +3475,7 @@ namespace ElementalHexTactics3D.UI
         private void PopulateSpecialSkills(TacticalUnit3D unit)
         {
             if (specialSubmenuContent == null) return;
+            activeSubmenuSkillEntries.Clear();
 
             for (int i = specialSubmenuContent.childCount - 1; i >= 0; i--)
             {
@@ -2683,81 +3490,298 @@ namespace ElementalHexTactics3D.UI
             bool isCommander = (unit.Archetype == UnitArchetype.Commander);
             bool isTitan = (unit.Archetype == UnitArchetype.Titan);
             bool isPaladin = unit.UnitName.Contains("Paladin");
+            bool isShielder = unit.UnitName.Contains("Shielder") || unit.UnitName.Contains("Holy Shielder");
             bool isTutorial1 = Tutorial.TutorialScenarioManager.Instance != null && Tutorial.TutorialScenarioManager.Instance.IsStage1Active;
+            bool isLv99 = unit.MaxHealth >= 500;
 
             int skillCount = 0;
 
-            // 1. Holy Paladin Skills
+            // =========================================================================
+            // 1. CHOSEN HERO (PALADIN, LV 99) — 5 SACRED CRUSADE SKILLS
+            // =========================================================================
             if (isPaladin)
             {
+                // Skill 1: Radiant Smite (25 MP, 780 DMG, Scorches Tile)
                 skillCount++;
-                Button btnSmite = CreateBtn("Btn_Skill_Smite", specialSubmenuContent, "☀️ Radiant Smite (Dmg 3)", font, 11, btnSprite, new Color(0.75f, 0.55f, 0.15f, 1f), 164f, 32f);
-                btnSmite.interactable = canCombat;
+                int smiteDmg = isLv99 ? 780 : 3;
+                int smiteMp = 25;
+                Button btnSmite = CreateBtn("Btn_Skill_Fireball_Smite", specialSubmenuContent, $"☀️ Radiant Smite ({smiteMp} MP)", font, 11, btnSprite, new Color(0.78f, 0.54f, 0.14f, 1f), 164f, 32f);
+                btnSmite.interactable = canCombat && unit.CurrentMana >= smiteMp;
+                string sTitle = "☀️ RADIANT SMITE";
+                string sCost = $"{smiteMp} MP";
+                string sDmg = $"{smiteDmg} DMG";
+                string sEff = "Scorches Tile (Fire) • Rng 1-3";
+                string sDesc = $"Calls down a pillar of solar judgment. Deals {smiteDmg} Holy Fire damage and ignites the target hex into Scorched Earth.";
+                BindSkillHoverPreview(btnSmite, sTitle, sCost, sDmg, sEff, sDesc);
+                ShowSkillDescriptionWindow(sTitle, sCost, sDmg, sEff, sDesc); // Default preview on open
                 btnSmite.onClick.AddListener(() =>
                 {
                     CloseAllSubmenus();
-                    OnActionClicked(UnitActionMode.Fireball);
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.Fireball, "RadiantSmite", smiteDmg, smiteMp);
                 });
 
+                // Skill 2: Judgment Beam (40 MP, 999 DMG Ultimate, Orbital Satellite Ray)
                 skillCount++;
-                Button btnRepel = CreateBtn("Btn_Skill_Repel", specialSubmenuContent, "⚜️ Holy Repel (Push 1)", font, 11, btnSprite, new Color(0.40f, 0.55f, 0.70f, 1f), 164f, 32f);
-                btnRepel.interactable = canCombat;
+                int beamDmg = isLv99 ? 999 : 4;
+                int beamMp = 40;
+                Button btnBeam = CreateBtn("Btn_Skill_JudgmentBeam", specialSubmenuContent, $"⚡ Judgment Beam ({beamMp} MP)", font, 11, btnSprite, new Color(0.82f, 0.64f, 0.16f, 1f), 164f, 32f);
+                btnBeam.interactable = canCombat && unit.CurrentMana >= beamMp;
+                BindSkillHoverPreview(btnBeam,
+                    "⚡ JUDGMENT BEAM", $"{beamMp} MP", $"{beamDmg} DMG (MAX)", "Orbital Piercing Beam • Rng 1-3",
+                    $"Ultimate Sacred Art: Channels an orbital satellite beam of pure divinity that hits the {beamDmg} damage cap and scorches the earth.");
+                btnBeam.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.Fireball, "JudgmentBeam", beamDmg, beamMp);
+                });
+
+                // Skill 3: Heaven's Pillar (20 MP, 640 DMG + 550 Slam, Stone Pillar Eruption)
+                skillCount++;
+                int pillarDmg = isLv99 ? 640 : 2;
+                int pillarSlam = isLv99 ? 550 : 2;
+                int pillarMp = 20;
+                Button btnPillar = CreateBtn("Btn_Skill_HeavensPillar", specialSubmenuContent, $"⛰️ Heaven's Pillar ({pillarMp} MP)", font, 11, btnSprite, new Color(0.55f, 0.40f, 0.18f, 1f), 164f, 32f);
+                btnPillar.interactable = canCombat && unit.CurrentMana >= pillarMp;
+                BindSkillHoverPreview(btnPillar,
+                    "⛰️ HEAVEN'S PILLAR", $"{pillarMp} MP", $"{pillarDmg} (+{pillarSlam} Slam)", "Stone Pillar + Launch • Rng 1-3",
+                    $"Erupts a sacred monolith beneath the foe, dealing {pillarDmg} damage, launching them 1 hex, and raising a Stone Pillar obstacle.");
+                btnPillar.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.EarthSpire, "HeavensPillar", pillarDmg, pillarMp);
+                });
+
+                // Skill 4: Cleansing Flood (15 MP, 520 DMG, Floods Tile / Steam Mist)
+                skillCount++;
+                int floodDmg = isLv99 ? 520 : 2;
+                int floodMp = 15;
+                Button btnFlood = CreateBtn("Btn_Skill_CleansingFlood", specialSubmenuContent, $"🌊 Cleansing Flood ({floodMp} MP)", font, 11, btnSprite, new Color(0.16f, 0.48f, 0.72f, 1f), 164f, 32f);
+                btnFlood.interactable = canCombat && unit.CurrentMana >= floodMp;
+                BindSkillHoverPreview(btnFlood,
+                    "🌊 CLEANSING FLOOD", $"{floodMp} MP", $"{floodDmg} DMG", "Floods Tile (Water) / Steam • Rng 1-3",
+                    $"Summons a consecrated deluge that deals {floodDmg} Water damage and floods the tile, or vaporizes Scorched Earth into Steam mist.");
+                btnFlood.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.WaterSurge, "CleansingFlood", floodDmg, floodMp);
+                });
+
+                // Skill 5: Holy Repel (10 MP, 230 DMG + 550 Wall Slam, Knockback 1 Hex)
+                skillCount++;
+                int repelDmg = isLv99 ? 230 : 1;
+                int repelSlam = isLv99 ? 550 : 2;
+                int repelMp = 10;
+                Button btnRepel = CreateBtn("Btn_Skill_Repel", specialSubmenuContent, $"⚜️ Holy Repel ({repelMp} MP)", font, 11, btnSprite, new Color(0.38f, 0.52f, 0.68f, 1f), 164f, 32f);
+                btnRepel.interactable = canCombat && unit.CurrentMana >= repelMp;
+                BindSkillHoverPreview(btnRepel,
+                    "⚜️ HOLY REPEL", $"{repelMp} MP", $"{repelDmg} (+{repelSlam} Slam)", "Knockback 1 Hex + Wall Slam • Rng 1",
+                    $"Blasts an adjacent enemy backward 1 hex with a radiant shockwave ({repelDmg} DMG). Slams into pillars or obstacles for +{repelSlam} bonus damage!");
                 btnRepel.onClick.AddListener(() =>
                 {
                     CloseAllSubmenus();
-                    OnActionClicked(UnitActionMode.KineticPush);
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.KineticPush, "HolyRepel", repelDmg, repelMp);
                 });
             }
-            // 2. Demon Lord / Fire Commander Skills
+            // =========================================================================
+            // 2. HOLY SHIELDER (LV 99) — 4 FORTRESS VANGUARD SKILLS
+            // =========================================================================
+            else if (isShielder)
+            {
+                // Skill 1: Shield Shove (10 MP, 215 DMG + 550 Wall Slam)
+                skillCount++;
+                int shoveDmg = isLv99 ? 215 : 1;
+                int shoveSlam = isLv99 ? 550 : 2;
+                int shoveMp = 10;
+                Button btnShove = CreateBtn("Btn_Skill_ShieldShove", specialSubmenuContent, $"🛡️ Shield Shove ({shoveMp} MP)", font, 11, btnSprite, new Color(0.45f, 0.25f, 0.65f, 1f), 164f, 32f);
+                btnShove.interactable = canCombat && unit.CurrentMana >= shoveMp;
+                string shTitle = "🛡️ SHIELD SHOVE";
+                string shCost = $"{shoveMp} MP";
+                string shDmg = $"{shoveDmg} (+{shoveSlam} Slam)";
+                string shEff = "Knockback 1 Hex + Wall Slam • Rng 1";
+                string shDesc = $"Rams an adjacent enemy with a consecrated tower shield ({shoveDmg} DMG), shoving them 1 hex. Inflicts +{shoveSlam} bonus damage on Wall Slam!";
+                BindSkillHoverPreview(btnShove, shTitle, shCost, shDmg, shEff, shDesc);
+                ShowSkillDescriptionWindow(shTitle, shCost, shDmg, shEff, shDesc); // Default preview on open
+                btnShove.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.KineticPush, "ShieldShove", shoveDmg, shoveMp);
+                });
+
+                // Skill 2: Sacred Bulwark (20 MP, 590 DMG + 550 Slam, Erects Stone Pillar)
+                skillCount++;
+                int bulwarkDmg = isLv99 ? 590 : 2;
+                int bulwarkSlam = isLv99 ? 550 : 2;
+                int bulwarkMp = 20;
+                Button btnBulwark = CreateBtn("Btn_Skill_SacredBulwark", specialSubmenuContent, $"⛰️ Sacred Bulwark ({bulwarkMp} MP)", font, 11, btnSprite, new Color(0.55f, 0.40f, 0.18f, 1f), 164f, 32f);
+                btnBulwark.interactable = canCombat && unit.CurrentMana >= bulwarkMp;
+                BindSkillHoverPreview(btnBulwark,
+                    "⛰️ SACRED BULWARK", $"{bulwarkMp} MP", $"{bulwarkDmg} (+{bulwarkSlam} Slam)", "Stone Pillar + Launch • Rng 1-3",
+                    $"Raises a consecrated stone monolith from the ground. Deals {bulwarkDmg} damage, displaces the target 1 hex, and creates a Wall Slam pillar!");
+                btnBulwark.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.EarthSpire, "SacredBulwark", bulwarkDmg, bulwarkMp);
+                });
+
+                // Skill 3: Sanctifying Wave (15 MP, 460 DMG, Floods Tile / Steam)
+                skillCount++;
+                int waveDmg = isLv99 ? 460 : 2;
+                int waveMp = 15;
+                Button btnWave = CreateBtn("Btn_Skill_SanctifyingWave", specialSubmenuContent, $"🌊 Sanctifying Wave ({waveMp} MP)", font, 11, btnSprite, new Color(0.16f, 0.48f, 0.72f, 1f), 164f, 32f);
+                btnWave.interactable = canCombat && unit.CurrentMana >= waveMp;
+                BindSkillHoverPreview(btnWave,
+                    "🌊 SANCTIFYING WAVE", $"{waveMp} MP", $"{waveDmg} DMG", "Floods Tile (Water) / Steam • Rng 1-3",
+                    $"Unleashes a tidal surge of holy water that deals {waveDmg} damage and floods the hex, or vaporizes fire into protective Steam mist.");
+                btnWave.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.WaterSurge, "SanctifyingWave", waveDmg, waveMp);
+                });
+
+                // Skill 4: Aegis Bastion (15 MP, Self Heal +350 HP & Guard Stance -50% DMG)
+                skillCount++;
+                int aegisMp = 15;
+                int aegisHeal = isLv99 ? 350 : 4;
+                Button btnAegis = CreateBtn("Btn_Skill_AegisBastion", specialSubmenuContent, $"✨ Aegis Bastion ({aegisMp} MP)", font, 11, btnSprite, new Color(0.22f, 0.58f, 0.52f, 1f), 164f, 32f);
+                btnAegis.interactable = canCombat && unit.CurrentMana >= aegisMp;
+                BindSkillHoverPreview(btnAegis,
+                    "✨ AEGIS BASTION", $"{aegisMp} MP", $"+{aegisHeal} HP + Guard", "Guard (-50% DMG) + Heal • Self",
+                    $"Channels an impenetrable golden phalanx barrier, restoring {aegisHeal} HP immediately and halving all incoming damage until next turn.");
+                btnAegis.onClick.AddListener(() =>
+                {
+                    unit.ConsumeMana(aegisMp);
+                    SpellVFXManager3D.Instance?.PlayAegisBastionVFX(unit.transform.position);
+                    unit.Heal(aegisHeal, $"+{aegisHeal} HP");
+                    unit.ExecuteDefend();
+                    CloseAllSubmenus();
+                    HideSkillDescriptionWindow();
+                    if (commandMenuRoot != null) commandMenuRoot.SetActive(false);
+                    HexGridInteraction3D.Instance?.ClearUnitSelection();
+                    HexGridInteraction3D.Instance?.SetActionMode(UnitActionMode.None);
+                });
+            }
+            // =========================================================================
+            // 3. DEMON LORD / COMMANDER & ELEMENTAL VANGUARD SKILLS
+            // =========================================================================
             else if (isCommander || unit.Affinity == ElementalAffinity.Fire)
             {
                 if (!isTitan)
                 {
                     skillCount++;
-                    Button btnFire = CreateBtn("Btn_Skill_Fireball", specialSubmenuContent, "🔥 Fireball (Dmg 3)", font, 11, btnSprite, new Color(0.72f, 0.35f, 0.12f, 1f), 164f, 32f);
-                    btnFire.interactable = canCombat;
+                    int fbMp = 15;
+                    Button btnFire = CreateBtn("Btn_Skill_Fireball", specialSubmenuContent, $"🔥 Hellfire Blast ({fbMp} MP)", font, 11, btnSprite, new Color(0.72f, 0.35f, 0.12f, 1f), 164f, 32f);
+                    btnFire.interactable = canCombat && unit.CurrentMana >= fbMp;
+                    string fTitle = "🔥 HELLFIRE BLAST (FIREBALL)";
+                    string fCost = $"{fbMp} MP";
+                    string fDmg = "3 DMG";
+                    string fEff = "Scorches Tile / Magma • Rng 1-3";
+                    string fDesc = "Hurls a volatile orb of abyssal hellfire. Deals 3 Fire damage and scorches the tile (or erupts Scorched Earth into Molten Magma!).";
+                    BindSkillHoverPreview(btnFire, fTitle, fCost, fDmg, fEff, fDesc);
+                    ShowSkillDescriptionWindow(fTitle, fCost, fDmg, fEff, fDesc);
                     btnFire.onClick.AddListener(() =>
                     {
                         CloseAllSubmenus();
-                        OnActionClicked(UnitActionMode.Fireball);
+                        SoundManager3D.Instance?.PlayButtonClick();
+                        HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.Fireball, "HellfireBlast", 3, fbMp);
+                    });
+
+                    skillCount++;
+                    int spMp = 15;
+                    Button btnObsidian = CreateBtn("Btn_Skill_ObsidianSpire", specialSubmenuContent, $"⛰️ Obsidian Spire ({spMp} MP)", font, 11, btnSprite, new Color(0.45f, 0.32f, 0.18f, 1f), 164f, 32f);
+                    btnObsidian.interactable = canCombat && unit.CurrentMana >= spMp;
+                    BindSkillHoverPreview(btnObsidian,
+                        "⛰️ OBSIDIAN SPIRE", $"{spMp} MP", "2 (+2 Slam)", "Stone Pillar + Launch • Rng 1-3",
+                        "Erupts a jagged obsidian pillar beneath the target, dealing 2 damage, displacing them 1 hex, and raising a Wall Slam obstacle.");
+                    btnObsidian.onClick.AddListener(() =>
+                    {
+                        CloseAllSubmenus();
+                        SoundManager3D.Instance?.PlayButtonClick();
+                        HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.EarthSpire, "ObsidianSpire", 2, spMp);
                     });
                 }
             }
 
-            // 3. Water Affinity Skills
-            if (!isPaladin && !isCommander && unit.Affinity == ElementalAffinity.Water && !isTutorial1)
+            // 4. Water Affinity Skills (Stage 2/3)
+            if (!isPaladin && !isShielder && !isCommander && unit.Affinity == ElementalAffinity.Water && !isTutorial1)
             {
                 skillCount++;
-                Button btnWater = CreateBtn("Btn_Skill_WaterSurge", specialSubmenuContent, "💧 Water Surge", font, 11, btnSprite, new Color(0.15f, 0.45f, 0.70f, 1f), 164f, 32f);
-                btnWater.interactable = canCombat;
+                int wMp = 12;
+                Button btnWater = CreateBtn("Btn_Skill_WaterSurge", specialSubmenuContent, $"💧 Water Surge ({wMp} MP)", font, 11, btnSprite, new Color(0.15f, 0.45f, 0.70f, 1f), 164f, 32f);
+                btnWater.interactable = canCombat && unit.CurrentMana >= wMp;
+                string wTitle = "💧 WATER SURGE";
+                string wCost = $"{wMp} MP";
+                string wDmg = "2 DMG";
+                string wEff = "Floods Tile / Steam • Rng 1-3";
+                string wDesc = "Unleashes a pressurized torrent dealing 2 Water damage. Floods the tile (-1 MOV) or vaporizes Fire into obscuring Steam mist.";
+                BindSkillHoverPreview(btnWater, wTitle, wCost, wDmg, wEff, wDesc);
+                ShowSkillDescriptionWindow(wTitle, wCost, wDmg, wEff, wDesc);
                 btnWater.onClick.AddListener(() =>
                 {
                     CloseAllSubmenus();
-                    OnActionClicked(UnitActionMode.WaterSurge);
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.WaterSurge, "WaterSurge", 2, wMp);
                 });
             }
 
-            // 4. Earth Affinity Skills
-            if (!isPaladin && !isCommander && unit.Affinity == ElementalAffinity.Earth && !isTutorial1)
+            // 5. Earth Affinity Skills (Stage 2/3, e.g. Basalt Vanguard)
+            if (!isPaladin && !isShielder && !isCommander && unit.Affinity == ElementalAffinity.Earth && !isTutorial1)
             {
                 skillCount++;
-                Button btnEarth = CreateBtn("Btn_Skill_EarthSpire", specialSubmenuContent, "⛰️ Earth Pillar", font, 11, btnSprite, new Color(0.45f, 0.32f, 0.18f, 1f), 164f, 32f);
-                btnEarth.interactable = canCombat;
+                int eMp = 15;
+                Button btnEarth = CreateBtn("Btn_Skill_EarthSpire", specialSubmenuContent, $"⛰️ Earth Pillar ({eMp} MP)", font, 11, btnSprite, new Color(0.45f, 0.32f, 0.18f, 1f), 164f, 32f);
+                btnEarth.interactable = canCombat && unit.CurrentMana >= eMp;
+                string eTitle = "⛰️ EARTH PILLAR";
+                string eCost = $"{eMp} MP";
+                string eDmg = "2 (+2 Slam)";
+                string eEff = "Stone Pillar + Launch • Rng 1-3";
+                string eDesc = "Raises a solid Stone Pillar at the target tile (2 DMG), launching any occupant 1 hex and creating a permanent Wall Slam obstacle.";
+                BindSkillHoverPreview(btnEarth, eTitle, eCost, eDmg, eEff, eDesc);
+                ShowSkillDescriptionWindow(eTitle, eCost, eDmg, eEff, eDesc);
                 btnEarth.onClick.AddListener(() =>
                 {
                     CloseAllSubmenus();
-                    OnActionClicked(UnitActionMode.EarthSpire);
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.EarthSpire, "EarthSpire", 2, eMp);
+                });
+
+                skillCount++;
+                int gMp = 10;
+                Button btnSlam = CreateBtn("Btn_Skill_GolemSlam", specialSubmenuContent, $"💥 Seismic Shove ({gMp} MP)", font, 11, btnSprite, new Color(0.48f, 0.25f, 0.62f, 1f), 164f, 32f);
+                btnSlam.interactable = canCombat && unit.CurrentMana >= gMp;
+                BindSkillHoverPreview(btnSlam,
+                    "💥 SEISMIC SHOVE", $"{gMp} MP", "1 (+2 Wall Slam)", "Knockback 1 Hex + Slam • Rng 1",
+                    "Delivers a crushing tectonic shove that knocks an adjacent enemy backward 1 hex into hazards or pillars (+2 Wall Slam damage).");
+                btnSlam.onClick.AddListener(() =>
+                {
+                    CloseAllSubmenus();
+                    SoundManager3D.Instance?.PlayButtonClick();
+                    HexGridInteraction3D.Instance?.SetActionModeWithSkill(UnitActionMode.KineticPush, "SeismicShove", 1, gMp);
                 });
             }
 
-            // 5. Titan Colossal Skills
+            // 6. Titan Colossal Skills
             if (isTitan && !isTutorial1)
             {
                 skillCount++;
                 bool canCataclysm = canCombat && unit.ElementalCores >= 1;
-                string cataLabel = (unit.ElementalCores >= 1) ? "🌋 Magma Cataclysm" : "🌋 Cataclysm (Req 1 Core)";
+                string cataLabel = (unit.ElementalCores >= 1) ? "🌋 Magma Cataclysm" : "🌋 Cataclysm (1 Core)";
                 Button btnCata = CreateBtn("Btn_Skill_Cataclysm", specialSubmenuContent, cataLabel, font, 11, btnSprite, new Color(0.85f, 0.22f, 0.10f, 1f), 164f, 32f);
                 btnCata.interactable = canCataclysm;
+                string cTitle = "🌋 MAGMA CATACLYSM";
+                string cCost = "1 Elemental Core";
+                string cDmg = "4 AoE DMG";
+                string cEff = "3x3 Volcanic Eruption • Rng 1-2";
+                string cDesc = "Consumes 1 Elemental Core to detonate a 3x3 volcanic cataclysm, dealing 4 Fire damage to all foes in range and creating Molten Magma!";
+                BindSkillHoverPreview(btnCata, cTitle, cCost, cDmg, cEff, cDesc);
+                ShowSkillDescriptionWindow(cTitle, cCost, cDmg, cEff, cDesc);
                 btnCata.onClick.AddListener(() =>
                 {
                     CloseAllSubmenus();
@@ -2765,16 +3789,17 @@ namespace ElementalHexTactics3D.UI
                 });
 
                 skillCount++;
-                Button btnTail = CreateBtn("Btn_Skill_TailShove", specialSubmenuContent, "🐊 Tail Shove", font, 11, btnSprite, new Color(0.50f, 0.25f, 0.65f, 1f), 164f, 32f);
+                Button btnTail = CreateBtn("Btn_Skill_TailShove", specialSubmenuContent, "🐊 Tail Shove (0 MP)", font, 11, btnSprite, new Color(0.50f, 0.25f, 0.65f, 1f), 164f, 32f);
                 btnTail.interactable = canCombat;
+                BindSkillHoverPreview(btnTail,
+                    "🐊 COLOSSAL TAIL SHOVE", "0 MP", "1 (+2 Wall Slam)", "Knockback 1 Hex + Slam • Rng 1",
+                    "Sweeps an adjacent enemy backward 1 hex with colossal force. Slams into obstacles or Magma hazards for massive bonus damage!");
                 btnTail.onClick.AddListener(() =>
                 {
                     CloseAllSubmenus();
                     OnActionClicked(UnitActionMode.KineticPush);
                 });
             }
-
-
 
             if (skillCount == 0)
             {
@@ -2798,6 +3823,7 @@ namespace ElementalHexTactics3D.UI
         private void PopulateItems(TacticalUnit3D unit)
         {
             if (itemSubmenuContent == null) return;
+            activeSubmenuSkillEntries.Clear();
 
             for (int i = itemSubmenuContent.childCount - 1; i >= 0; i--)
             {
@@ -2808,17 +3834,48 @@ namespace ElementalHexTactics3D.UI
             Sprite btnSprite = TacticalUnitSpawner.LoadUISprite("UI_Button_Normal.png");
 
             bool isPlayerTurn = TurnManager3D.Instance != null && TurnManager3D.Instance.CurrentPhase == TurnPhase.PlayerTurn;
-            bool canUseItem = isPlayerTurn && !unit.HasActedThisTurn && unit.CurrentHealth < unit.MaxHealth;
+            bool isLv99 = unit.MaxHealth >= 500;
+            int healAmt = isLv99 ? 500 : 5;
+            bool canUseHpPot = isPlayerTurn && !unit.HasActedThisTurn && unit.CurrentHealth < unit.MaxHealth;
 
-            string potLabel = (unit.CurrentHealth >= unit.MaxHealth) ? "🧪 Potion (HP Full)" : "🧪 Health Potion (+5 HP)";
+            string potLabel = (unit.CurrentHealth >= unit.MaxHealth) ? "🧪 Elixir (HP Full)" : $"🧪 Healing Elixir (+{healAmt} HP)";
             Button btnPot = CreateBtn("Btn_Item_Potion", itemSubmenuContent, potLabel, font, 11, btnSprite, new Color(0.18f, 0.55f, 0.30f, 1f), 164f, 32f);
-            btnPot.interactable = canUseItem;
+            btnPot.interactable = canUseHpPot;
+            string pTitle = "🧪 HEALING ELIXIR";
+            string pCost = "1 Consumable";
+            string pDmg = $"+{healAmt} HP";
+            string pEff = "Instant Vitality Restore • Self";
+            string pDesc = $"Drinks a concentrated alchemical draught that immediately restores {healAmt} HP to {unit.UnitName}.";
+            BindSkillHoverPreview(btnPot, pTitle, pCost, pDmg, pEff, pDesc);
+            ShowSkillDescriptionWindow(pTitle, pCost, pDmg, pEff, pDesc);
             btnPot.onClick.AddListener(() =>
             {
                 SoundManager3D.Instance?.PlayCoreAbsorb();
-                unit.Heal(5, "🧪 +5 HP (Potion)");
+                unit.Heal(healAmt, $"+{healAmt} HP");
                 unit.HasActedThisTurn = true;
                 CloseAllSubmenus();
+                HideSkillDescriptionWindow();
+                if (unit.IsExhausted)
+                {
+                    HexGridInteraction3D.Instance?.ClearUnitSelection();
+                }
+            });
+
+            int mpAmt = isLv99 ? 50 : 25;
+            bool canUseMpPot = isPlayerTurn && !unit.HasActedThisTurn && unit.CurrentMana < unit.MaxMana;
+            string etherLabel = (unit.CurrentMana >= unit.MaxMana) ? "💧 Mana Ether (MP Full)" : $"💧 Mana Ether (+{mpAmt} MP)";
+            Button btnEther = CreateBtn("Btn_Item_Ether", itemSubmenuContent, etherLabel, font, 11, btnSprite, new Color(0.16f, 0.42f, 0.68f, 1f), 164f, 32f);
+            btnEther.interactable = canUseMpPot;
+            BindSkillHoverPreview(btnEther,
+                "💧 MANA ETHER", "1 Consumable", $"+{mpAmt} MP", "Instant Mana Restore • Self",
+                $"Restores {mpAmt} Mana Points (MP) immediately, allowing {unit.UnitName} to continue casting high-cost Special Skills.");
+            btnEther.onClick.AddListener(() =>
+            {
+                SoundManager3D.Instance?.PlayCoreAbsorb();
+                unit.RestoreMana(mpAmt, $"+{mpAmt} MP");
+                unit.HasActedThisTurn = true;
+                CloseAllSubmenus();
+                HideSkillDescriptionWindow();
                 if (unit.IsExhausted)
                 {
                     HexGridInteraction3D.Instance?.ClearUnitSelection();
@@ -2832,27 +3889,18 @@ namespace ElementalHexTactics3D.UI
 
             RectTransform cmdRect = commandMenuRoot.GetComponent<RectTransform>();
             RectTransform subRect = subMenuRoot.GetComponent<RectTransform>();
-            RectTransform parentRect = cmdRect.parent as RectTransform;
-            if (parentRect == null) parentRect = GetComponent<RectTransform>();
 
-            subRect.anchorMin = cmdRect.anchorMin;
-            subRect.anchorMax = cmdRect.anchorMax;
-            subRect.pivot = new Vector2(0f, 1f);
+            subRect.anchorMin = new Vector2(1f, 1f);
+            subRect.anchorMax = new Vector2(1f, 1f);
+            subRect.pivot = new Vector2(1f, 1f);
 
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(cmdRect);
             UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(subRect);
 
             float menuWidth = cmdRect.rect.width > 0 ? cmdRect.rect.width : 175f;
-            float subWidth = subRect.rect.width > 0 ? subRect.rect.width : 185f;
-            float edgeMargin = 20f;
 
-            // Cascading sub-menu: try right side first
-            float targetX = cmdRect.anchoredPosition.x + menuWidth + 6f;
-            if (targetX + subWidth > parentRect.rect.xMax - edgeMargin)
-            {
-                // Cascade to left if right edge exceeded
-                targetX = cmdRect.anchoredPosition.x - subWidth - 6f;
-            }
-
+            // Expand sub-menu cleanly to the left of the right-docked Command Menu
+            float targetX = cmdRect.anchoredPosition.x - menuWidth - 8f;
             subRect.anchoredPosition = new Vector2(targetX, cmdRect.anchoredPosition.y);
         }
 
@@ -2979,67 +4027,24 @@ namespace ElementalHexTactics3D.UI
         public void UpdateDisgaeaCommandMenuPosition(TacticalUnit3D unit)
         {
             if (commandMenuRoot == null || unit == null) return;
-            Camera cam = Camera.main;
-            if (cam == null) return;
 
-            // Project world point above standee chest/head level (1.5m) to screen space
-            Vector3 worldPos = unit.transform.position + Vector3.up * 1.5f;
-            Vector3 screenPos = cam.WorldToScreenPoint(worldPos);
-
-            // Hide if behind camera frustum
-            if (screenPos.z <= 0)
+            if (txtCmdHeader != null && txtCmdHeader.rectTransform.sizeDelta.y > 30f)
             {
-                commandMenuRoot.SetActive(false);
-                return;
+                txtCmdHeader.rectTransform.sizeDelta = new Vector2(154f, 24f);
             }
 
-            Canvas canvas = GetComponentInParent<Canvas>();
-            Camera uiCamera = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? canvas.worldCamera : null;
+            RectTransform menuRect = commandMenuRoot.GetComponent<RectTransform>();
+            menuRect.anchorMin = new Vector2(1f, 1f);
+            menuRect.anchorMax = new Vector2(1f, 1f);
+            menuRect.pivot = new Vector2(1f, 1f); // Top-right pivot
 
-            RectTransform parentRect = commandMenuRoot.transform.parent as RectTransform;
-            if (parentRect == null) parentRect = GetComponent<RectTransform>();
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(menuRect);
 
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPos, uiCamera, out Vector2 localPoint))
-            {
-                RectTransform menuRect = commandMenuRoot.GetComponent<RectTransform>();
-                menuRect.anchorMin = new Vector2(0.5f, 0.5f);
-                menuRect.anchorMax = new Vector2(0.5f, 0.5f);
-                menuRect.pivot = new Vector2(0f, 1f); // Top-left pivot
+            // Dock fixed on the Right side directly underneath the Top-Right 'Menu (Esc)' button (-20, -20, height 42)
+            float targetX = -20f;
+            float targetY = -72f;
 
-                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(menuRect);
-
-                float menuWidth = menuRect.rect.width > 0 ? menuRect.rect.width : 175f;
-                float menuHeight = menuRect.rect.height > 0 ? menuRect.rect.height : 260f;
-
-                float edgeMargin = 20f;
-                float xMin = parentRect.rect.xMin + edgeMargin;
-                float xMax = parentRect.rect.xMax - edgeMargin - menuWidth;
-                float yMin = parentRect.rect.yMin + edgeMargin + menuHeight;
-                float yMax = parentRect.rect.yMax - edgeMargin;
-
-                float offsetX = 55f;
-                float offsetY = 20f;
-
-                // Disgaea TRPG Smart Flip:
-                // Default: display to the right of the unit
-                // If overflowing the right screen edge, flip to the left of the unit
-                float targetX;
-                if (localPoint.x + offsetX + menuWidth <= parentRect.rect.xMax - edgeMargin)
-                {
-                    targetX = localPoint.x + offsetX;
-                }
-                else if (localPoint.x - offsetX - menuWidth >= xMin)
-                {
-                    targetX = localPoint.x - offsetX - menuWidth;
-                }
-                else
-                {
-                    targetX = Mathf.Clamp(localPoint.x + offsetX, xMin, xMax);
-                }
-
-                float targetY = Mathf.Clamp(localPoint.y + offsetY, yMin, yMax);
-                menuRect.anchoredPosition = new Vector2(targetX, targetY);
-            }
+            menuRect.anchoredPosition = new Vector2(targetX, targetY);
         }
 
         private void LateUpdate()

@@ -32,7 +32,7 @@ namespace ElementalHexTactics3D.Campaign
             {
                 if (instance == null)
                 {
-                    instance = FindFirstObjectByType<CampaignManager>();
+                    instance = FindAnyObjectByType<CampaignManager>();
                     if (instance == null)
                     {
                         GameObject go = new GameObject("CampaignManager");

@@ -19,7 +19,7 @@ namespace ElementalHexTactics3D.Combat
             {
                 if (instance == null)
                 {
-                    instance = Object.FindFirstObjectByType<SoundManager3D>();
+                    instance = Object.FindAnyObjectByType<SoundManager3D>();
                     if (instance == null)
                     {
                         GameObject go = new GameObject("SoundManager3D");

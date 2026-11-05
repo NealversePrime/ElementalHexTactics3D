@@ -63,7 +63,7 @@ namespace ElementalHexTactics3D.Grid
             }
 
             // Proximity fallback: find any active living unit standing directly on this tile's top position
-            TacticalUnit3D[] allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] allUnits = Object.FindObjectsByType<TacticalUnit3D>();
             Vector3 myPos = transform.position;
             foreach (var u in allUnits)
             {

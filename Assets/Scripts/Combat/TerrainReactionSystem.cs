@@ -294,8 +294,7 @@ namespace ElementalHexTactics3D.Combat
             if (occupant != null)
             {
                 occupant.UpdateAttunement();
-                string spellTag = (spell == ElementType.Fire) ? "🔥 FIREBALL!" : (spell == ElementType.Water ? "💧 WATER!" : "⛰️ EARTH SPIRE!");
-                occupant.TakeDamage(damage, $"{spellTag} -{damage}");
+                occupant.TakeDamage(damage);
                 Debug.Log($"<color=#FF5252><b>[Direct Hit!]</b></color> {spell} dealt <b>{damage}</b> damage to <b>{occupant.UnitName}</b>!");
             }
             else

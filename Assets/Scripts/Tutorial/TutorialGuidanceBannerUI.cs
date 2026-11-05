@@ -88,7 +88,7 @@ namespace ElementalHexTactics3D.Tutorial
                 return Instance;
             }
 
-            TutorialGuidanceBannerUI found = FindFirstObjectByType<TutorialGuidanceBannerUI>(FindObjectsInactive.Include);
+            TutorialGuidanceBannerUI found = FindAnyObjectByType<TutorialGuidanceBannerUI>(FindObjectsInactive.Include);
             if (found != null)
             {
                 if (found.GetComponent<RectTransform>() != null)
@@ -104,7 +104,7 @@ namespace ElementalHexTactics3D.Tutorial
                 }
             }
 
-            Canvas canvas = FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+            Canvas canvas = FindAnyObjectByType<Canvas>(FindObjectsInactive.Include);
             if (canvas == null)
             {
                 GameObject canvasObj = CreateUI("TutorialCanvas", null);
@@ -135,7 +135,7 @@ namespace ElementalHexTactics3D.Tutorial
 
             if (!isBuilt)
             {
-                Canvas canvas = GetComponentInParent<Canvas>() ?? FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+                Canvas canvas = GetComponentInParent<Canvas>() ?? FindAnyObjectByType<Canvas>(FindObjectsInactive.Include);
                 if (canvas != null)
                 {
                     BuildUIHierarchy(canvas);
@@ -225,10 +225,40 @@ namespace ElementalHexTactics3D.Tutorial
 
             rootBanner = gameObject;
 
-            // Background Frame
+            // Background Frame (Modern Sleek RPG Window Skin)
+            Sprite bgSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowBg_RPG.png");
+            Sprite frameSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png");
+
             bannerBackground = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
-            bannerBackground.color = new Color(0.06f, 0.08f, 0.12f, 0.96f); // Deep solid slate
+            if (bgSprite != null)
+            {
+                bannerBackground.sprite = bgSprite;
+                bannerBackground.type = Image.Type.Sliced;
+            }
+            bannerBackground.color = new Color(0.06f, 0.08f, 0.12f, 0.98f); // Deep solid slate
             bannerBackground.raycastTarget = false;
+
+            // Sleek Outer Frame Overlay
+            Transform frameTrans = transform.Find("Frame_Overlay");
+            GameObject frameObj = frameTrans != null ? frameTrans.gameObject : null;
+            if (frameObj == null)
+            {
+                frameObj = CreateUI("Frame_Overlay", transform);
+                frameObj.transform.SetAsFirstSibling();
+            }
+            RectTransform foRect = frameObj.GetComponent<RectTransform>();
+            foRect.anchorMin = Vector2.zero;
+            foRect.anchorMax = Vector2.one;
+            foRect.offsetMin = Vector2.zero;
+            foRect.offsetMax = Vector2.zero;
+            Image foImg = frameObj.GetComponent<Image>() ?? frameObj.AddComponent<Image>();
+            if (frameSprite != null)
+            {
+                foImg.sprite = frameSprite;
+                foImg.type = Image.Type.Sliced;
+                foImg.color = Color.white;
+                foImg.raycastTarget = false;
+            }
 
             // Glowing border & Drop Shadow
             bannerOutline = gameObject.GetComponent<Outline>() ?? gameObject.AddComponent<Outline>();
@@ -464,7 +494,7 @@ namespace ElementalHexTactics3D.Tutorial
         {
             if (!isBuilt || rootBanner == null || txtStepBadge == null)
             {
-                Canvas canvas = GetComponentInParent<Canvas>() ?? FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+                Canvas canvas = GetComponentInParent<Canvas>() ?? FindAnyObjectByType<Canvas>(FindObjectsInactive.Include);
                 if (canvas != null) BuildUIHierarchy(canvas);
             }
 

@@ -94,6 +94,9 @@ namespace ElementalHexTactics3D.Editor
             // 12. Setup HD-2D Post-Processing Volume (Bloom, Tilt-Shift DoF, Tonemapping)
             SetupPostProcessingVolume();
 
+            // 13. Tidy up hierarchy into clean category folders
+            SceneHierarchyOrganizer.OrganizeScene();
+
             // Mark scene dirty so user can save
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Debug.Log("<color=#4CAF50><b>[ElementalHex3D]</b></color> 3D Hex Battlefield, 2.5D Units & Combat Systems setup complete!");
@@ -118,7 +121,7 @@ namespace ElementalHexTactics3D.Editor
 
         private static void SetupSoundManager()
         {
-            SoundManager3D snd = Object.FindFirstObjectByType<SoundManager3D>();
+            SoundManager3D snd = Object.FindAnyObjectByType<SoundManager3D>();
             if (snd == null)
             {
                 GameObject sndObj = new GameObject("SoundManager3D");
@@ -130,7 +133,7 @@ namespace ElementalHexTactics3D.Editor
 
         private static void SetupCombatFeedback()
         {
-            CombatFeedbackManager feedback = Object.FindFirstObjectByType<CombatFeedbackManager>();
+            CombatFeedbackManager feedback = Object.FindAnyObjectByType<CombatFeedbackManager>();
             if (feedback == null)
             {
                 GameObject fbObj = new GameObject("CombatFeedbackManager");
@@ -140,7 +143,7 @@ namespace ElementalHexTactics3D.Editor
 
         private static void SetupTurnManager()
         {
-            TurnManager3D turnMgr = Object.FindFirstObjectByType<TurnManager3D>();
+            TurnManager3D turnMgr = Object.FindAnyObjectByType<TurnManager3D>();
             if (turnMgr == null)
             {
                 GameObject turnObj = new GameObject("TurnManager");
@@ -150,7 +153,7 @@ namespace ElementalHexTactics3D.Editor
 
         private static void SetupCombatVFX()
         {
-            CombatVFXManager vfx = Object.FindFirstObjectByType<CombatVFXManager>();
+            CombatVFXManager vfx = Object.FindAnyObjectByType<CombatVFXManager>();
             if (vfx == null)
             {
                 GameObject vfxObj = new GameObject("CombatVFXManager");
@@ -160,7 +163,7 @@ namespace ElementalHexTactics3D.Editor
 
         private static void SetupPostProcessingVolume()
         {
-            Volume volume = Object.FindFirstObjectByType<Volume>();
+            Volume volume = Object.FindAnyObjectByType<Volume>();
             if (volume == null)
             {
                 GameObject volObj = new GameObject("Global PostProcess Volume");
@@ -278,7 +281,7 @@ namespace ElementalHexTactics3D.Editor
 
         private static void SetupLighting()
         {
-            Light dirLight = Object.FindFirstObjectByType<Light>();
+            Light dirLight = Object.FindAnyObjectByType<Light>();
             GameObject lightObj;
 
             if (dirLight == null)
@@ -340,7 +343,7 @@ namespace ElementalHexTactics3D.Editor
             Material steamMat,
             Material sideCliffMat)
         {
-            HexGrid3D grid = Object.FindFirstObjectByType<HexGrid3D>();
+            HexGrid3D grid = Object.FindAnyObjectByType<HexGrid3D>();
             if (grid == null)
             {
                 GameObject gridObj = new GameObject("HexGrid3D");
@@ -373,7 +376,7 @@ namespace ElementalHexTactics3D.Editor
             if (grid == null) return;
 
             // Clean up any existing units to prevent duplicates (including inactive reserve units)
-            var existingUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var existingUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include);
             foreach (var u in existingUnits)
             {
                 if (u != null) Object.DestroyImmediate(u.gameObject);
@@ -576,7 +579,7 @@ namespace ElementalHexTactics3D.Editor
 
         private static void SetupInteraction()
         {
-            HexGridInteraction3D interaction = Object.FindFirstObjectByType<HexGridInteraction3D>();
+            HexGridInteraction3D interaction = Object.FindAnyObjectByType<HexGridInteraction3D>();
             if (interaction == null)
             {
                 GameObject interObj = new GameObject("HexGridInteraction");
@@ -587,7 +590,7 @@ namespace ElementalHexTactics3D.Editor
         [MenuItem("Elemental Hex 3D/Tutorial/Preview Stage 1 Throne Room Map", false, 55)]
         public static void PreviewStage1ThroneRoomMap()
         {
-            HexGrid3D grid = Object.FindFirstObjectByType<HexGrid3D>();
+            HexGrid3D grid = Object.FindAnyObjectByType<HexGrid3D>();
             if (grid == null)
             {
                 Debug.LogError("[Stage 1 Throne Room] No HexGrid3D found in scene!");

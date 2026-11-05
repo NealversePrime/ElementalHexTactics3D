@@ -29,7 +29,8 @@ namespace ElementalHexTactics3D.Editor
         private const string DemonStatuePath = HubDir + "demonstatue.png";
 
         private const string BtnNormalPath = "Assets/Sprites/UI/UI_Button_Demon.png";
-        private const string PanelFramePath = "Assets/Sprites/UI/UI_Box_Demon_9Slice.png";
+        private const string PanelFramePath = "Assets/Sprites/UI/UI_WindowFrame_RPG.png";
+        private const string PanelBgPath = "Assets/Sprites/UI/UI_WindowBg_RPG.png";
         private const string FontBoldPath = "Assets/Fonts/Font_Bold.ttf";
         private const string FontRegularPath = "Assets/Fonts/Font_Regular.ttf";
 
@@ -558,15 +559,21 @@ namespace ElementalHexTactics3D.Editor
             bdImg.raycastTarget = true;
 
             // Solid opaque card background (demon theme basalt, rendered right behind CardFrame)
+            Sprite panelBg = AssetDatabase.LoadAssetAtPath<Sprite>(PanelBgPath);
             GameObject solidBg = CreateUIObject("CardFrame_SolidBg", modalRoot.transform);
             RectTransform solidRect = solidBg.GetComponent<RectTransform>();
             solidRect.anchorMin = new Vector2(0.5f, 0.5f);
             solidRect.anchorMax = new Vector2(0.5f, 0.5f);
             solidRect.pivot = new Vector2(0.5f, 0.5f);
-            solidRect.sizeDelta = new Vector2(560f, 380f);
+            solidRect.sizeDelta = new Vector2(640f, 440f);
             solidRect.anchoredPosition = Vector2.zero;
             Image solidImg = solidBg.AddComponent<Image>();
-            solidImg.color = new Color(0.06f, 0.05f, 0.09f, 1.0f); // Solid Obsidian Basalt
+            if (panelBg != null)
+            {
+                solidImg.sprite = panelBg;
+                solidImg.type = Image.Type.Sliced;
+            }
+            solidImg.color = new Color(0.06f, 0.05f, 0.09f, 0.98f); // Solid Obsidian Basalt
             solidImg.raycastTarget = true;
 
             // Modal Card
@@ -575,7 +582,7 @@ namespace ElementalHexTactics3D.Editor
             cardRect.anchorMin = new Vector2(0.5f, 0.5f);
             cardRect.anchorMax = new Vector2(0.5f, 0.5f);
             cardRect.pivot = new Vector2(0.5f, 0.5f);
-            cardRect.sizeDelta = new Vector2(560f, 380f);
+            cardRect.sizeDelta = new Vector2(640f, 440f);
             cardRect.anchoredPosition = Vector2.zero;
 
             Image cardImg = cardObj.AddComponent<Image>();
@@ -675,7 +682,7 @@ namespace ElementalHexTactics3D.Editor
             text.color = color;
             text.raycastTarget = false;
             text.supportRichText = true;
-            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
 
             Shadow shadow = textObj.AddComponent<Shadow>();

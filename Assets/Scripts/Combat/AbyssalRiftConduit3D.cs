@@ -273,7 +273,7 @@ namespace ElementalHexTactics3D.Combat
             if (fallback != null && fallback.Faction == UnitFaction.Player && fallback.Archetype == UnitArchetype.Commander)
                 return fallback;
 
-            TacticalUnit3D[] all = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] all = FindObjectsByType<TacticalUnit3D>();
             foreach (var u in all)
             {
                 if (u.Faction == UnitFaction.Player && u.Archetype == UnitArchetype.Commander)

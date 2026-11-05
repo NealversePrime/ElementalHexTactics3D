@@ -427,6 +427,12 @@ namespace ElementalHexTactics3D.Units
         {
             string goName = $"Unit_{faction}_{unitName.Replace(" ", "")}";
             GameObject unitObj = new GameObject(goName);
+            GameObject unitsParent = GameObject.Find("=== UNITS ===");
+            if (unitsParent == null)
+            {
+                unitsParent = new GameObject("=== UNITS ===");
+            }
+            unitObj.transform.SetParent(unitsParent.transform, false);
             Vector3 pos = (tile != null) ? tile.GetTopCenterPosition() : Vector3.zero;
             unitObj.transform.position = pos;
 
@@ -466,7 +472,7 @@ namespace ElementalHexTactics3D.Units
 
         public static void ClearAllEnemies()
         {
-            TacticalUnit3D[] units = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            TacticalUnit3D[] units = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include);
             foreach (var u in units)
             {
                 if (u != null && u.Faction == UnitFaction.Enemy)
@@ -486,7 +492,7 @@ namespace ElementalHexTactics3D.Units
         /// </summary>
         public static void ResetPlayerReserveUnits()
         {
-            TacticalUnit3D[] units = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            TacticalUnit3D[] units = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include);
             TacticalUnit3D primaryCmdr = null;
             TacticalUnit3D primaryTitan = null;
             HashSet<string> seenMinionNames = new HashSet<string>();
@@ -615,7 +621,7 @@ namespace ElementalHexTactics3D.Units
 
         public static void EnsureAlliedRosterExists()
         {
-            var allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include);
             bool hasBasalt = false;
             bool hasSiren = false;
             bool hasMagma = false;

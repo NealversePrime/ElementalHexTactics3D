@@ -83,7 +83,7 @@ namespace ElementalHexTactics3D.Turn
             if (currentPhase != TurnPhase.PlayerTurn) return;
 
             // Faction turn end for all player units
-            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>();
             foreach (var u in units)
             {
                 if (u != null && u.Faction == UnitFaction.Player)
@@ -108,7 +108,7 @@ namespace ElementalHexTactics3D.Turn
             Debug.Log($"<color=#64B5F6><b>[Player Turn]</b></color> Round {currentRound} - Your turn, Commander!");
 
             // Reset action economy for all player units
-            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>();
             foreach (var u in units)
             {
                 if (u != null && u.Faction == UnitFaction.Player)
@@ -125,7 +125,7 @@ namespace ElementalHexTactics3D.Turn
 
         private IEnumerator ResolveFactionHazards(UnitFaction faction)
         {
-            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] units = FindObjectsByType<TacticalUnit3D>();
             foreach (var u in units)
             {
                 if (u == null || u.CurrentHealth <= 0 || u.Faction != faction) continue;
@@ -194,7 +194,7 @@ namespace ElementalHexTactics3D.Turn
         {
             if (result != BattleResult.InProgress) return;
 
-            TacticalUnit3D[] allUnits = FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            TacticalUnit3D[] allUnits = FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include);
             int activePlayers = 0;
             int reservePlayers = 0;
             int aliveEnemies = 0;
@@ -323,7 +323,7 @@ namespace ElementalHexTactics3D.Turn
             yield return ResolveFactionHazards(UnitFaction.Enemy);
             if (result != BattleResult.InProgress) yield break;
 
-            TacticalUnit3D[] allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+            TacticalUnit3D[] allUnits = Object.FindObjectsByType<TacticalUnit3D>();
             List<TacticalUnit3D> enemies = new List<TacticalUnit3D>();
             List<TacticalUnit3D> players = new List<TacticalUnit3D>();
 
@@ -445,7 +445,7 @@ namespace ElementalHexTactics3D.Turn
             {
                 // Check for wounded enemy allies within range 3
                 TacticalUnit3D woundedAlly = null;
-                var allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+                var allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Exclude);
                 foreach (var u in allUnits)
                 {
                     if (u != null && u.Faction == UnitFaction.Enemy && u.CurrentHealth < u.MaxHealth && enemy.Coordinates.DistanceTo(u.Coordinates) <= 3)
@@ -574,7 +574,7 @@ namespace ElementalHexTactics3D.Turn
                     SpellVFXManager3D.Instance?.PlayCleaveVFX(targetPlayer.transform.position);
                     TacticalCameraController.Instance?.Shake(0.45f, 0.45f);
 
-                    targetPlayer.TakeDamage(3, customLabel: "💀 -3 CLEAVE");
+                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
                     yield return PushMechanic3D.ExecutePushRoutine(enemy, targetPlayer, HexGrid3D.Instance);
                     yield return new WaitForSeconds(0.6f);
                 }
@@ -600,7 +600,7 @@ namespace ElementalHexTactics3D.Turn
                     );
 
                     SpellVFXManager3D.Instance?.PlayHellfireBlastVFX(targetPlayer.transform.position);
-                    targetPlayer.TakeDamage(3, customLabel: "🔥 -3 HELLFIRE");
+                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
                     yield return new WaitForSeconds(0.7f);
                 }
                 else
@@ -630,7 +630,7 @@ namespace ElementalHexTactics3D.Turn
                     );
 
                     SpellVFXManager3D.Instance?.PlayImpSpitVFX(targetPlayer.transform.position);
-                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage, customLabel: "🔥 -2");
+                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
                     yield return new WaitForSeconds(0.5f);
                 }
                 else

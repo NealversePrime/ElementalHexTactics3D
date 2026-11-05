@@ -233,6 +233,7 @@ namespace ElementalHexTactics3D.UI.Hub
         {
             if (modal == null) return;
 
+            UpgradeAndFormatModalCard(modal, isTitanAltar: false);
             Transform cardTrans = modal.transform.Find("CardFrame");
             if (cardTrans != null)
             {
@@ -482,6 +483,7 @@ namespace ElementalHexTactics3D.UI.Hub
 
             CloseAllModals();
             activeModal = modal;
+            UpgradeAndFormatModalCard(activeModal, isTitanAltar: false);
             Transform cardTrans = activeModal.transform.Find("CardFrame");
             if (cardTrans != null)
             {
@@ -497,6 +499,12 @@ namespace ElementalHexTactics3D.UI.Hub
 
             CloseAllModals();
             activeModal = modalShrine;
+            UpgradeAndFormatModalCard(modalShrine, isTitanAltar: true);
+            Transform cardTrans = modalShrine.transform.Find("CardFrame");
+            if (cardTrans != null)
+            {
+                TitleMenuCanvasUI.EnsureSolidCardBackground(cardTrans, true);
+            }
             activeModal.SetActive(true);
             PlaySound(sfxOpenModal, 0.9f);
 
@@ -512,14 +520,28 @@ namespace ElementalHexTactics3D.UI.Hub
             if (loreTrans != null)
             {
                 Text l = loreTrans.GetComponent<Text>();
-                if (l != null) l.text = "The ancient cliffside altar resonates with the primordial ley-lines of Omniterra! The slumbering spirit of the blazing <b>Magma Dragon</b> answers your call. Awaken this colossal Flame Titan to crush the Holy Crusade's divine aegis barriers!";
+                if (l != null)
+                {
+                    l.text = "The ancient cliffside altar resonates with the primordial ley-lines of Omniterra! The slumbering spirit of the blazing <b>Magma Dragon</b> answers your call. Awaken this colossal Flame Titan to crush the Holy Crusade's divine aegis barriers!";
+                    l.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    l.verticalOverflow = VerticalWrapMode.Overflow;
+                }
             }
 
             Transform statsTrans = modalShrine.transform.Find("CardFrame/StatsBox/Text_Stats");
             if (statsTrans != null)
             {
                 Text s = statsTrans.GetComponent<Text>();
-                if (s != null) s.text = "✦ STARTER TITAN: MAGMA DRAGON (FLAME) ✦\n• HP: 24 | ATK: 3 | Range: 1-2 | Movement: 3\n• Skill: Dragon Strike & Titan Cataclysm\n• Cost: FREE (First Titan Awakening)";
+                if (s != null)
+                {
+                    s.text = "<b><color=#FFD54F>✦ S-RANK TITAN: MAGMA DRAGON</color></b> <size=11><color=#FF8A80>(FLAME)</color></size>\n" +
+                             "❤️ <b>HP:</b> 24    ⚔️ <b>ATK:</b> 3    🏃 <b>MOV:</b> 3    🎯 <b>RNG:</b> 1-2 Hex\n" +
+                             "🌋 <b>Skills:</b> Dragon Strike • Magma Cataclysm • Tail Shove\n" +
+                             "✨ <b>Passives:</b> Magma Immunity • Emergence Radial Knockback\n" +
+                             "💎 <b>Awakening:</b> <color=#69F0AE><b>FREE (Primordial Blessing)</b></color>";
+                    s.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    s.verticalOverflow = VerticalWrapMode.Overflow;
+                }
             }
 
             Transform btnActionTrans = modalShrine.transform.Find("CardFrame/Btn_Action");
@@ -538,6 +560,208 @@ namespace ElementalHexTactics3D.UI.Hub
             if (Tutorial.TutorialScenarioManager.Instance != null)
             {
                 Tutorial.TutorialScenarioManager.Instance.SetStep(Tutorial.TutorialStep.Hub_AwakenMagmaDragon);
+            }
+        }
+
+        private void UpgradeAndFormatModalCard(GameObject modal, bool isTitanAltar)
+        {
+            if (modal == null) return;
+            Transform cardTrans = modal.transform.Find("CardFrame");
+            if (cardTrans == null) return;
+
+            // 1. Enlarge modal card to spacious, modern dimensions (640 x 440) & Apply Modern RPG Window Skin
+            RectTransform cardRt = cardTrans.GetComponent<RectTransform>();
+            if (cardRt != null)
+            {
+                cardRt.sizeDelta = new Vector2(640f, 440f);
+            }
+
+            Sprite frameSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowFrame_RPG.png");
+            Sprite bgSprite = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadUISprite("UI_WindowBg_RPG.png");
+
+            Image cardImg = cardTrans.GetComponent<Image>();
+            if (cardImg != null && frameSprite != null)
+            {
+                cardImg.sprite = frameSprite;
+                cardImg.type = Image.Type.Sliced;
+                cardImg.color = Color.white;
+            }
+
+            Transform solidTrans = modal.transform.Find("CardFrame_SolidBg") ?? modal.transform.Find(cardTrans.name + "_SolidBg");
+            if (solidTrans != null)
+            {
+                RectTransform solidRt = solidTrans.GetComponent<RectTransform>();
+                if (solidRt != null) solidRt.sizeDelta = new Vector2(640f, 440f);
+
+                Image solidImg = solidTrans.GetComponent<Image>();
+                if (solidImg != null)
+                {
+                    if (bgSprite != null)
+                    {
+                        solidImg.sprite = bgSprite;
+                        solidImg.type = Image.Type.Sliced;
+                    }
+                    solidImg.color = new Color(0.06f, 0.05f, 0.09f, 0.98f);
+                    solidImg.raycastTarget = true;
+                }
+            }
+
+            // 2. Title Text: bold gold with proper margins
+            Transform titleTrans = cardTrans.Find("Text_Title");
+            if (titleTrans != null)
+            {
+                RectTransform tr = titleTrans.GetComponent<RectTransform>();
+                if (tr != null)
+                {
+                    tr.anchoredPosition = new Vector2(0f, 172f);
+                    tr.sizeDelta = new Vector2(580f, 38f);
+                }
+                Text t = titleTrans.GetComponent<Text>();
+                if (t != null)
+                {
+                    t.fontSize = 20;
+                    t.fontStyle = FontStyle.Bold;
+                    t.alignment = TextAnchor.MiddleCenter;
+                    t.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    t.color = new Color(1.0f, 0.88f, 0.40f, 1f);
+                }
+            }
+
+            // 3. Lore Text: CRITICAL FIX - MUST WRAP inside 560px width!
+            Transform loreTrans = cardTrans.Find("Text_Lore");
+            if (loreTrans != null)
+            {
+                RectTransform lr = loreTrans.GetComponent<RectTransform>();
+                if (lr != null)
+                {
+                    lr.anchoredPosition = new Vector2(0f, 114f);
+                    lr.sizeDelta = new Vector2(560f, 68f);
+                }
+                Text l = loreTrans.GetComponent<Text>();
+                if (l != null)
+                {
+                    l.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    l.verticalOverflow = VerticalWrapMode.Overflow;
+                    l.lineSpacing = 1.15f;
+                    l.fontSize = 13;
+                    l.color = new Color(0.92f, 0.94f, 0.98f, 1f);
+                    l.alignment = TextAnchor.MiddleCenter;
+                }
+            }
+
+            // 4. StatsBox: Enlarge & format with dark obsidian panel styling
+            Transform statsBoxTrans = cardTrans.Find("StatsBox");
+            if (statsBoxTrans != null)
+            {
+                RectTransform sr = statsBoxTrans.GetComponent<RectTransform>();
+                if (sr != null)
+                {
+                    sr.anchoredPosition = new Vector2(0f, -5f);
+                    sr.sizeDelta = new Vector2(560f, 142f);
+                }
+                Image sImg = statsBoxTrans.GetComponent<Image>();
+                if (sImg != null)
+                {
+                    if (bgSprite != null)
+                    {
+                        sImg.sprite = bgSprite;
+                        sImg.type = Image.Type.Sliced;
+                    }
+                    sImg.color = new Color(0.04f, 0.04f, 0.07f, 0.95f);
+                }
+                Outline so = statsBoxTrans.GetComponent<Outline>() ?? statsBoxTrans.gameObject.AddComponent<Outline>();
+                so.effectColor = new Color(0.40f, 0.50f, 0.70f, 0.35f);
+                so.effectDistance = new Vector2(1f, -1f);
+
+                // Add or update avatar portrait inside StatsBox if isTitanAltar
+                Transform avatarTrans = statsBoxTrans.Find("Img_TitanPortrait");
+                if (isTitanAltar)
+                {
+                    if (avatarTrans == null)
+                    {
+                        GameObject avObj = new GameObject("Img_TitanPortrait", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                        avObj.transform.SetParent(statsBoxTrans, false);
+                        avatarTrans = avObj.transform;
+                    }
+                    RectTransform avRt = avatarTrans.GetComponent<RectTransform>();
+                    avRt.anchorMin = new Vector2(0f, 0.5f);
+                    avRt.anchorMax = new Vector2(0f, 0.5f);
+                    avRt.pivot = new Vector2(0f, 0.5f);
+                    avRt.anchoredPosition = new Vector2(16f, 0f);
+                    avRt.sizeDelta = new Vector2(106f, 106f);
+
+                    Image avImg = avatarTrans.GetComponent<Image>();
+                    Sprite p = ElementalHexTactics3D.Units.TacticalUnitSpawner.LoadPortraitSprite("magmadragonportrait.png");
+                    if (p != null)
+                    {
+                        avImg.sprite = p;
+                        avImg.preserveAspect = true;
+                        avImg.color = Color.white;
+                    }
+                    avatarTrans.gameObject.SetActive(true);
+                }
+                else if (avatarTrans != null)
+                {
+                    avatarTrans.gameObject.SetActive(false);
+                }
+
+                // Format Text_Stats inside StatsBox
+                Transform txtStatsTrans = statsBoxTrans.Find("Text_Stats");
+                if (txtStatsTrans != null)
+                {
+                    RectTransform tr = txtStatsTrans.GetComponent<RectTransform>();
+                    if (tr != null)
+                    {
+                        if (isTitanAltar)
+                        {
+                            tr.anchorMin = new Vector2(0f, 0f);
+                            tr.anchorMax = new Vector2(1f, 1f);
+                            tr.pivot = new Vector2(0.5f, 0.5f);
+                            tr.offsetMin = new Vector2(136f, 8f);
+                            tr.offsetMax = new Vector2(-16f, -8f);
+                        }
+                        else
+                        {
+                            tr.anchorMin = Vector2.zero;
+                            tr.anchorMax = Vector2.one;
+                            tr.pivot = new Vector2(0.5f, 0.5f);
+                            tr.offsetMin = new Vector2(18f, 8f);
+                            tr.offsetMax = new Vector2(-18f, -8f);
+                        }
+                    }
+                    Text st = txtStatsTrans.GetComponent<Text>();
+                    if (st != null)
+                    {
+                        st.horizontalOverflow = HorizontalWrapMode.Wrap;
+                        st.verticalOverflow = VerticalWrapMode.Overflow;
+                        st.lineSpacing = 1.15f;
+                        st.fontSize = 12;
+                        st.alignment = TextAnchor.MiddleLeft;
+                    }
+                }
+            }
+
+            // 5. Action and Close Buttons: Polished positioning and dimensions
+            Transform btnActionTrans = cardTrans.Find("Btn_Action");
+            if (btnActionTrans != null)
+            {
+                RectTransform br = btnActionTrans.GetComponent<RectTransform>();
+                if (br != null)
+                {
+                    br.anchoredPosition = new Vector2(-125f, -155f);
+                    br.sizeDelta = new Vector2(250f, 48f);
+                }
+            }
+
+            Transform btnCloseTrans = cardTrans.Find("Btn_Close");
+            if (btnCloseTrans != null)
+            {
+                RectTransform cr = btnCloseTrans.GetComponent<RectTransform>();
+                if (cr != null)
+                {
+                    cr.anchoredPosition = new Vector2(150f, -155f);
+                    cr.sizeDelta = new Vector2(170f, 48f);
+                }
             }
         }
 
@@ -563,6 +787,8 @@ namespace ElementalHexTactics3D.UI.Hub
         private void RestoreNormalShrineModal()
         {
             if (modalShrine == null) return;
+            UpgradeAndFormatModalCard(modalShrine, isTitanAltar: false);
+
             Transform titleTrans = modalShrine.transform.Find("CardFrame/Text_Title");
             if (titleTrans != null)
             {
@@ -574,14 +800,24 @@ namespace ElementalHexTactics3D.UI.Hub
             if (loreTrans != null)
             {
                 Text l = loreTrans.GetComponent<Text>();
-                if (l != null) l.text = "Colossal horned idol on the cliff's edge. Offer soul embers in the sacrificial brazier for ancient beast summoning (Gacha)!";
+                if (l != null)
+                {
+                    l.text = "Colossal horned idol on the cliff's edge. Offer soul embers in the sacrificial brazier for ancient beast summoning (Gacha)!";
+                    l.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    l.verticalOverflow = VerticalWrapMode.Overflow;
+                }
             }
 
             Transform statsTrans = modalShrine.transform.Find("CardFrame/StatsBox/Text_Stats");
             if (statsTrans != null)
             {
                 Text s = statsTrans.GetComponent<Text>();
-                if (s != null) s.text = "✦ RITUAL SACRIFICE ✦\nCost: 80 Soul Embers\nPool: Legendary Beasts & Titans";
+                if (s != null)
+                {
+                    s.text = "✦ RITUAL SACRIFICE ✦\nCost: 80 Soul Embers\nPool: Legendary Beasts & Primordial Titans";
+                    s.horizontalOverflow = HorizontalWrapMode.Wrap;
+                    s.verticalOverflow = VerticalWrapMode.Overflow;
+                }
             }
 
             Transform btnActionTrans = modalShrine.transform.Find("CardFrame/Btn_Action");

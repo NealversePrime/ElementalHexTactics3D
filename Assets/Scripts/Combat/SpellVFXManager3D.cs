@@ -23,7 +23,7 @@ namespace ElementalHexTactics3D.Combat
             {
                 if (instance == null)
                 {
-                    instance = Object.FindFirstObjectByType<SpellVFXManager3D>();
+                    instance = Object.FindAnyObjectByType<SpellVFXManager3D>();
                     if (instance == null)
                     {
                         var prefab = Resources.Load<GameObject>("SpellVFXManager3D");
@@ -51,6 +51,9 @@ namespace ElementalHexTactics3D.Combat
         [SerializeField] private EffekseerEffectAsset chainBlastAsset;
         [SerializeField] private EffekseerEffectAsset wallSlamSmokeAsset;
         [SerializeField] private EffekseerEffectAsset decimatingBeamAsset;
+        [SerializeField] private EffekseerEffectAsset satelliteBeamAsset;
+        [SerializeField] private EffekseerEffectAsset formationBeamAsset;
+        [SerializeField] private EffekseerEffectAsset phalanxBeamAsset;
 
         private bool initialized = false;
 
@@ -87,6 +90,12 @@ namespace ElementalHexTactics3D.Combat
                 wallSlamSmokeAsset = Resources.Load<EffekseerEffectAsset>("VFX/EVFX_Blast/EVFX06_02_SmokeBlast");
             if (decimatingBeamAsset == null)
                 decimatingBeamAsset = Resources.Load<EffekseerEffectAsset>("VFX/EVFX_Blast/EVFX06_10_DecimatingBeam");
+            if (satelliteBeamAsset == null)
+                satelliteBeamAsset = Resources.Load<EffekseerEffectAsset>("VFX/EVFX_Blast/EVFX06_11_SatelliteBeam");
+            if (formationBeamAsset == null)
+                formationBeamAsset = Resources.Load<EffekseerEffectAsset>("VFX/EVFX_Blast/EVFX06_09_FormationBeam");
+            if (phalanxBeamAsset == null)
+                phalanxBeamAsset = Resources.Load<EffekseerEffectAsset>("VFX/EVFX_Blast/EVFX06_18_PhalanxDrone");
 
 #if UNITY_EDITOR
             if (radiantSmiteAsset == null)
@@ -101,6 +110,12 @@ namespace ElementalHexTactics3D.Combat
                 wallSlamSmokeAsset = LoadEffectAsset("Assets/Resources/VFX/EVFX_Blast/EVFX06_02_SmokeBlast.asset");
             if (decimatingBeamAsset == null)
                 decimatingBeamAsset = LoadEffectAsset("Assets/Resources/VFX/EVFX_Blast/EVFX06_10_DecimatingBeam.asset");
+            if (satelliteBeamAsset == null)
+                satelliteBeamAsset = LoadEffectAsset("Assets/Resources/VFX/EVFX_Blast/EVFX06_11_SatelliteBeam.asset");
+            if (formationBeamAsset == null)
+                formationBeamAsset = LoadEffectAsset("Assets/Resources/VFX/EVFX_Blast/EVFX06_09_FormationBeam.asset");
+            if (phalanxBeamAsset == null)
+                phalanxBeamAsset = LoadEffectAsset("Assets/Resources/VFX/EVFX_Blast/EVFX06_18_PhalanxDrone.asset");
 #endif
 
             RegisterAsset(radiantSmiteAsset);
@@ -109,6 +124,9 @@ namespace ElementalHexTactics3D.Combat
             RegisterAsset(chainBlastAsset);
             RegisterAsset(wallSlamSmokeAsset);
             RegisterAsset(decimatingBeamAsset);
+            RegisterAsset(satelliteBeamAsset);
+            RegisterAsset(formationBeamAsset);
+            RegisterAsset(phalanxBeamAsset);
         }
 
         private void RegisterAsset(EffekseerEffectAsset asset)
@@ -141,8 +159,89 @@ namespace ElementalHexTactics3D.Combat
             CombatVFXManager.Instance?.PlayHitSparks(spawnPos + Vector3.up * 0.5f, new Color(1.8f, 1.6f, 0.4f), 24);
 
             // 3. Audio & Camera Juice
+            CombatFeedbackManager.Instance?.SpawnShockwaveEffect(spawnPos, new Color(1.0f, 0.85f, 0.25f, 0.9f), 2.2f, 0.42f);
             SoundManager3D.Instance?.PlayRadiantSmite(1.2f);
             TacticalCameraController.Instance?.Shake(0.35f, 0.35f);
+        }
+
+        /// <summary>
+        /// Plays Paladin's Judgment Beam VFX (Orbital Satellite Beam + Decimating Beam + double golden shockwave).
+        /// </summary>
+        public void PlayJudgmentBeamVFX(Vector3 targetPos, Vector3? casterPos = null)
+        {
+            EnsureAssetsLoaded();
+            Vector3 spawnPos = targetPos + Vector3.up * 0.12f;
+
+            EffekseerEffectAsset primary = satelliteBeamAsset != null ? satelliteBeamAsset : decimatingBeamAsset;
+            PlayEffekseerEffect(primary, spawnPos, Quaternion.Euler(-90f, 0f, 0f), Vector3.one * 1.35f, speed: 1.15f, tint: new Color(1.0f, 0.92f, 0.45f, 1f));
+            if (decimatingBeamAsset != null)
+            {
+                PlayEffekseerEffect(decimatingBeamAsset, spawnPos, Quaternion.Euler(-90f, 0f, 0f), Vector3.one * 1.15f, speed: 1.25f, tint: new Color(1.0f, 0.80f, 0.25f, 1f));
+            }
+
+            CombatVFXManager.Instance?.PlayHitSparks(spawnPos + Vector3.up * 0.6f, new Color(2.0f, 1.8f, 0.5f), 32);
+            CombatFeedbackManager.Instance?.SpawnShockwaveEffect(spawnPos, new Color(1.0f, 0.92f, 0.35f, 0.95f), 2.8f, 0.48f);
+            SoundManager3D.Instance?.PlayRadiantSmite(1.4f);
+            SoundManager3D.Instance?.PlayHellfireBlast(1.1f);
+            TacticalCameraController.Instance?.Shake(0.48f, 0.45f);
+        }
+
+        /// <summary>
+        /// Plays Heaven's Pillar / Sacred Bulwark VFX (Sacred Formation Beam + Stone Eruption + Amber Shockwave).
+        /// </summary>
+        public void PlayHeavensPillarVFX(Vector3 targetPos)
+        {
+            EnsureAssetsLoaded();
+            Vector3 spawnPos = targetPos + Vector3.up * 0.15f;
+
+            EffekseerEffectAsset asset = formationBeamAsset != null ? formationBeamAsset : radiantSmiteAsset;
+            PlayEffekseerEffect(asset, spawnPos, Quaternion.Euler(-90f, 0f, 0f), Vector3.one * 1.15f, speed: 1.2f, tint: new Color(1.0f, 0.78f, 0.32f, 1f));
+
+            CombatVFXManager.Instance?.PlayWallSlam(spawnPos, Vector3.up);
+            CombatVFXManager.Instance?.PlayHitSparks(spawnPos + Vector3.up * 0.5f, new Color(1.6f, 1.25f, 0.45f), 24);
+            CombatFeedbackManager.Instance?.SpawnShockwaveEffect(spawnPos, new Color(0.95f, 0.75f, 0.30f, 0.9f), 2.4f, 0.42f);
+            SoundManager3D.Instance?.PlayEarthSpire();
+            SoundManager3D.Instance?.PlayRadiantSmite(1.0f);
+            TacticalCameraController.Instance?.Shake(0.42f, 0.40f);
+        }
+
+        /// <summary>
+        /// Plays Sanctifying Wave / Cleansing Flood VFX (Azure Chain Blast + Water Splash + Cyan Shockwave).
+        /// </summary>
+        public void PlaySanctifyingWaveVFX(Vector3 targetPos)
+        {
+            EnsureAssetsLoaded();
+            Vector3 spawnPos = targetPos + Vector3.up * 0.15f;
+
+            EffekseerEffectAsset asset = chainBlastAsset != null ? chainBlastAsset : impSpitAsset;
+            PlayEffekseerEffect(asset, spawnPos, Quaternion.identity, Vector3.one * 1.25f, speed: 1.2f, tint: new Color(0.25f, 0.85f, 1.0f, 1f));
+
+            CombatVFXManager.Instance?.PlayWaterSplash(spawnPos);
+            CombatVFXManager.Instance?.PlayHitSparks(spawnPos + Vector3.up * 0.4f, new Color(0.35f, 0.95f, 1.5f), 22);
+            CombatFeedbackManager.Instance?.SpawnShockwaveEffect(spawnPos, new Color(0.25f, 0.85f, 1.0f, 0.9f), 2.3f, 0.40f);
+            SoundManager3D.Instance?.PlayWaterSurge();
+            TacticalCameraController.Instance?.Shake(0.30f, 0.30f);
+        }
+
+        /// <summary>
+        /// Plays Holy Shielder's Aegis Bastion self-buff VFX (Golden Phalanx Formation + Sacred Barrier Ring).
+        /// </summary>
+        public void PlayAegisBastionVFX(Vector3 targetPos)
+        {
+            EnsureAssetsLoaded();
+            Vector3 spawnPos = targetPos + Vector3.up * 0.25f;
+
+            EffekseerEffectAsset asset = phalanxBeamAsset != null ? phalanxBeamAsset : formationBeamAsset;
+            if (asset != null)
+            {
+                PlayEffekseerEffect(asset, spawnPos, Quaternion.Euler(-90f, 0f, 0f), Vector3.one * 1.15f, speed: 1.15f, tint: new Color(1.0f, 0.88f, 0.35f, 1f));
+            }
+
+            CombatVFXManager.Instance?.PlayHitSparks(spawnPos + Vector3.up * 0.5f, new Color(1.5f, 1.35f, 0.45f), 26);
+            CombatFeedbackManager.Instance?.SpawnShockwaveEffect( targetPos + Vector3.up * 0.15f, new Color(0.4f, 0.9f, 1.0f, 0.9f), 2.0f, 0.45f);
+            SoundManager3D.Instance?.PlayGuard();
+            SoundManager3D.Instance?.PlayRadiantSmite(0.9f);
+            TacticalCameraController.Instance?.Shake(0.22f, 0.25f);
         }
 
         /// <summary>

@@ -31,8 +31,12 @@ namespace ElementalHexTactics3D.Combat
 
             Debug.Log($"<color=#7E57C2><b>[Kinetic Push]</b></color> {caster.UnitName} pushed {target.UnitName} towards {destCoords}!");
 
+            bool isHighLevelRaid = (caster.MaxHealth >= 500 || target.MaxHealth >= 500);
+            int pushDmg = isHighLevelRaid ? (caster.UnitName.Contains("Paladin") ? 230 : 215) : 1;
+            int slamDmg = isHighLevelRaid ? 550 : 3;
+
             // 1. Base push damage
-            target.TakeDamage(1, "💨 PUSH! -1");
+            target.TakeDamage(pushDmg);
             if (target == null || target.CurrentHealth <= 0) yield break;
 
             // Check if destination is the Abyssal Rift Conduit consuming an enemy sacrifice
@@ -59,7 +63,7 @@ namespace ElementalHexTactics3D.Combat
                 SpellVFXManager3D.Instance?.PlayWallSlamVFX(slamPos, Vector3.up);
                 if (target != null && target.CurrentHealth > 0)
                 {
-                    target.TakeDamage(3, "💥 WALL SLAM! -3");
+                    target.TakeDamage(slamDmg);
                 }
                 yield break;
             }
@@ -87,7 +91,7 @@ namespace ElementalHexTactics3D.Combat
                 TacticalCameraController.Instance?.Shake(0.38f, 0.40f);
                 SoundManager3D.Instance?.PlayFireball();
                 CombatVFXManager.Instance?.PlayFireBurst(destTile.GetTopCenterPosition());
-                target.TakeDamage(3, "🔥 MAGMA BURN! -3");
+                target.TakeDamage(isHighLevelRaid ? 400 : 3);
             }
             else if (destTile.State == TileState.Scorched)
             {
@@ -96,7 +100,7 @@ namespace ElementalHexTactics3D.Combat
                 TacticalCameraController.Instance?.Shake(0.28f, 0.30f);
                 SoundManager3D.Instance?.PlayFireball();
                 CombatVFXManager.Instance?.PlayFireBurst(destTile.GetTopCenterPosition());
-                target.TakeDamage(2, "🔥 SCORCHED BURN! -2");
+                target.TakeDamage(isHighLevelRaid ? 250 : 2);
             }
             else if (destTile.State == TileState.Water && destTile.TierLevel >= 2)
             {
@@ -105,7 +109,7 @@ namespace ElementalHexTactics3D.Combat
                 TacticalCameraController.Instance?.Shake(0.25f, 0.25f);
                 SoundManager3D.Instance?.PlayWaterSurge();
                 CombatVFXManager.Instance?.PlayWaterSplash(destTile.GetTopCenterPosition());
-                target.TakeDamage(1, "💧 WATER TRAP! -1");
+                target.TakeDamage(isHighLevelRaid ? 150 : 1);
             }
             else if (destTile.State == TileState.Mud)
             {

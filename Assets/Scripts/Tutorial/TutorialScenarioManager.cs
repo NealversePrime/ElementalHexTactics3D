@@ -142,11 +142,14 @@ namespace ElementalHexTactics3D.Tutorial
         public TacticalUnit3D ScoutArcherEnemy { get; private set; }
 
         private bool isStage1Ending = false;
+        private bool isStage1DeathbedPlaying = false;
+        public bool HasTriggeredStage1Deathbed { get; set; } = false;
         private float stage1IdleTimer = 0f;
         private bool stage1MoveHintShown = false;
         private bool stage1PushHintShown = false;
 
         private float stage2IdleTimer = 0f;
+        public float Stage2IdleTimer => stage2IdleTimer;
         private bool stage2MagmaIgnited = false;
         private bool stage2HazardPushCompleted = false;
 
@@ -156,7 +159,7 @@ namespace ElementalHexTactics3D.Tutorial
         public static TutorialScenarioManager EnsureInstance()
         {
             if (Instance != null) return Instance;
-            TutorialScenarioManager found = FindFirstObjectByType<TutorialScenarioManager>(FindObjectsInactive.Include);
+            TutorialScenarioManager found = FindAnyObjectByType<TutorialScenarioManager>(FindObjectsInactive.Include);
             if (found != null)
             {
                 Instance = found;
@@ -196,11 +199,20 @@ namespace ElementalHexTactics3D.Tutorial
             // ================= STAGE 1: GUIDED PLAY & SOFT HINT EVALUATION ================= //
             if (CurrentStage == TutorialStage.Stage1_HolyCrusade)
             {
-                // Instant Victory Check: If Demon Lord Boss falls at any point, trigger Glitch & Victory!
+                // 1. Final Blow Victory Check: Once Demon Lord Boss's 1 HP is finally depleted after his deathbed words
                 if (DemonLordBoss == null || DemonLordBoss.CurrentHealth <= 0)
                 {
                     TacticalUnitSpawner.ClearAllEnemies();
                     OnStage1Victory();
+                    return;
+                }
+
+                // 2. Deathbed Last Words Trigger: When Demon Lord Boss drops to <= 750 HP (clamped at 1 HP on his throne!)
+                if (!HasTriggeredStage1Deathbed && !isStage1DeathbedPlaying && DemonLordBoss.CurrentHealth <= 750)
+                {
+                    HasTriggeredStage1Deathbed = true;
+                    isStage1DeathbedPlaying = true;
+                    StartCoroutine(PlayStage1DeathbedSequenceRoutine());
                     return;
                 }
 
@@ -266,7 +278,7 @@ namespace ElementalHexTactics3D.Tutorial
             {
                 // Instant Victory Check: When all enemy scouts are eliminated
                 bool anyScoutAlive = false;
-                TacticalUnit3D[] allUnits = UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None);
+                TacticalUnit3D[] allUnits = UnityEngine.Object.FindObjectsByType<TacticalUnit3D>();
                 foreach (var u in allUnits)
                 {
                     if (u.Faction == UnitFaction.Enemy && u.CurrentHealth > 0)
@@ -287,6 +299,13 @@ namespace ElementalHexTactics3D.Tutorial
                 // 1. Detect Directive 1: Elemental Alchemy (Scorched -> Magma)
                 if (!stage2MagmaIgnited)
                 {
+                    if (centerTile != null && (interaction == null || interaction.CurrentActionMode == UnitActionMode.None))
+                    {
+                        if (currentHighlightedTile != centerTile)
+                        {
+                            SetTutorialHighlightedTile(centerTile);
+                        }
+                    }
                     if (centerTile != null && centerTile.State == TileState.Magma)
                     {
                         stage2MagmaIgnited = true;
@@ -391,7 +410,7 @@ namespace ElementalHexTactics3D.Tutorial
                         if (currentHighlightedTile == null || !currentHighlightedTile.IsOccupied || currentHighlightedTile.GetOccupant()?.Faction != UnitFaction.Enemy)
                         {
                             TacticalUnit3D livingEnemy = null;
-                            foreach (var u in UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
+                            foreach (var u in UnityEngine.Object.FindObjectsByType<TacticalUnit3D>())
                             {
                                 if (u.Faction == UnitFaction.Enemy && u.CurrentHealth > 0 && u.CurrentTile != null)
                                 {
@@ -752,7 +771,7 @@ namespace ElementalHexTactics3D.Tutorial
                 case TutorialStep.Stage3_MagmaDragonCataclysm:
                     HexGrid3D g3 = HexGrid3D.Instance;
                     TacticalUnit3D targetWarden = null;
-                    foreach (var u in UnityEngine.Object.FindObjectsByType<TacticalUnit3D>(FindObjectsSortMode.None))
+                    foreach (var u in UnityEngine.Object.FindObjectsByType<TacticalUnit3D>())
                     {
                         if (u.Faction == UnitFaction.Enemy && u.CurrentHealth > 0)
                         {
@@ -822,6 +841,8 @@ namespace ElementalHexTactics3D.Tutorial
             CurrentStage = TutorialStage.Stage1_HolyCrusade;
             CurrentStep = TutorialStep.Stage1_FinishDemonLord;
             isStage1Ending = false;
+            isStage1DeathbedPlaying = false;
+            HasTriggeredStage1Deathbed = false;
             stage1IdleTimer = 0f;
             stage1MoveHintShown = false;
             stage1PushHintShown = false;
@@ -849,7 +870,7 @@ namespace ElementalHexTactics3D.Tutorial
             HexGrid3D grid = HexGrid3D.Instance;
             if (grid != null)
             {
-                // Paladin starts at (0, -2), steps forward to (0, -1) in Step 2, and strikes Slime at (0, 0)
+                // Paladin starts at (0, -2): Lv. 99 Server #1 Solo Ranker (1,540 HP, 485 ATK, varied skill damages!)
                 HexTile3D paladinTile = grid.GetTile(new HexCoordinates(0, -2));
                 Sprite paladinSprite = TacticalUnitSpawner.LoadBattlerSprite("paladin.png");
                 PaladinUnit = TacticalUnitSpawner.SpawnUnitStandee(
@@ -857,14 +878,14 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Player,
                     paladinSprite,
                     paladinTile,
-                    14, 3, // 14 HP, 3 Atk: strong endgame raid protagonist stats
+                    1540, 3,
                     UnitArchetype.Commander,
-                    ElementalAffinity.Fire, // Grants Radiant Smite (Holy Fire)!
-                    3,
+                    ElementalAffinity.Fire,
+                    485,
                     0.80f
                 );
 
-                // Holy Shielder starts at (-1, 0) on the flank, ready to shove Slime at (0, 0) eastward into (1, 0) Stone Pillar
+                // Holy Shielder starts at (-1, 0): Lv. 99 Sacred Vanguard (1,820 HP, 365 ATK, 215 Push + 550 Wall Slam = 765 Dmg!)
                 HexTile3D shielderTile = grid.GetTile(new HexCoordinates(-1, 0));
                 Sprite shielderSprite = TacticalUnitSpawner.LoadBattlerSprite("holyshielder.png");
                 HolyShielderUnit = TacticalUnitSpawner.SpawnUnitStandee(
@@ -872,16 +893,16 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Player,
                     shielderSprite,
                     shielderTile,
-                    16, 2,
+                    1820, 2,
                     UnitArchetype.Minion,
                     ElementalAffinity.None,
-                    2,
+                    365,
                     0.75f
                 );
 
-                // 6. Spawn Enemy Forces (Demon Lord Malakor Raid Boss + Vanguard Minions)
+                // 6. Spawn Enemy Forces (Demon Lord Malakor Endgame Raid Boss + Vanguard Minions)
 
-                // Demon Lord Boss sits on his throne at (0, 2)
+                // Demon Lord Boss sits on his throne at (0, 2) (1,500 HP Raid Boss)
                 HexTile3D demonLordTile = grid.GetTile(new HexCoordinates(0, 2));
                 Sprite demonLordSprite = TacticalUnitSpawner.LoadBattlerSprite("DemonLord.png");
                 DemonLordBoss = TacticalUnitSpawner.SpawnUnitStandee(
@@ -889,14 +910,14 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Enemy,
                     demonLordSprite,
                     demonLordTile,
-                    10, 3, // 10 HP raid boss with Hellfire Eruption & Abyssal Cleave!
+                    1500, 3,
                     UnitArchetype.Commander,
                     ElementalAffinity.Fire,
-                    2,
+                    345,
                     0.90f
                 );
 
-                // Center Vanguard Demon Slime #1 at (0, 0)
+                // Center Vanguard Demon Slime #1 at (0, 0) (760 HP: 215 Push + 550 Wall Slam = 765 lethal, or 780 Radiant Smite!)
                 HexTile3D slimeTile = grid.GetTile(new HexCoordinates(0, 0));
                 Sprite slimeSprite = TacticalUnitSpawner.LoadBattlerSprite("Demon Slime.png");
                 DemonSlimeMinion = TacticalUnitSpawner.SpawnUnitStandee(
@@ -904,10 +925,10 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Enemy,
                     slimeSprite,
                     slimeTile,
-                    5, 1, // 5 HP: 3 Holy Strike + 3 Shield Shove Wall Slam = lethal!
+                    760, 1,
                     UnitArchetype.Minion,
                     ElementalAffinity.None,
-                    1,
+                    195,
                     0.65f
                 );
 
@@ -918,10 +939,10 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Enemy,
                     slimeSprite,
                     slimeTile2,
-                    4, 1,
+                    580, 1,
                     UnitArchetype.Minion,
                     ElementalAffinity.None,
-                    1,
+                    185,
                     0.65f
                 );
 
@@ -933,10 +954,10 @@ namespace ElementalHexTactics3D.Tutorial
                     UnitFaction.Enemy,
                     impSprite,
                     impTile,
-                    4, 2,
+                    620, 2,
                     UnitArchetype.Minion,
                     ElementalAffinity.Fire,
-                    2,
+                    245,
                     0.70f
                 );
             }
@@ -959,23 +980,21 @@ namespace ElementalHexTactics3D.Tutorial
                 TacticalCameraController.Instance.ResetToTacticalView();
             }
 
-            // 9. Display Mission Objective Banner
-            if (CombatFeedbackManager.Instance != null)
-            {
-                CombatFeedbackManager.Instance.ShowBanner(
-                    "⚜️ THE RADIANT CRUSADE: SLAY THE DEMON LORD ⚜️",
-                    "Unleash Holy Strikes, Radiant Smite & Kinetic Wall Slams against the Demon Lord!",
-                    3.5f,
-                    new Color(1f, 0.88f, 0.35f)
-                );
-            }
-
-            // 10. Trigger in-battle banter dialogue, then initialize Guided Play with 100% agency
-            StartCoroutine(PlayDialogueDelayed(StorySequenceId.HolyRaidIntro, 0.8f, () =>
+            // 9. Trigger pre-battle banter dialogue immediately, then show Mission Objective Banner once combat begins!
+            StartCoroutine(PlayDialogueDelayed(StorySequenceId.HolyRaidIntro, 0f, () =>
             {
                 ClearTutorialHighlightedTile();
                 CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                 TutorialGuidanceBannerUI.SafeHideGuidance();
+                if (CombatFeedbackManager.Instance != null)
+                {
+                    CombatFeedbackManager.Instance.ShowBanner(
+                        "⚜️ THE RADIANT CRUSADE: SLAY THE DEMON LORD ⚜️",
+                        "Unleash Holy Strikes, Radiant Smite & Kinetic Wall Slams against the Demon Lord!",
+                        4.5f,
+                        new Color(1f, 0.88f, 0.35f)
+                    );
+                }
                 Debug.Log("<color=#FFD54F><b>[Guided Play]</b></color> Stage 1 active with 100% agency: Full player control enabled!");
             }));
         }
@@ -1056,6 +1075,59 @@ namespace ElementalHexTactics3D.Tutorial
             }
 
             grid.BuildFromBattlefieldData(data);
+        }
+
+        private IEnumerator PlayStage1DeathbedSequenceRoutine()
+        {
+            // Brief pause so the player sees the damage impact and Malakor's HP bar drop to 1 / 1500 HP on his throne
+            yield return new WaitForSeconds(0.65f);
+
+            if (DemonLordBoss != null)
+            {
+                DemonLordBoss.CurrentHealth = 1;
+                TacticalCameraController.Instance?.FocusOnPosition(DemonLordBoss.transform.position);
+                CombatFeedbackManager.Instance?.SpawnDamageText(
+                    DemonLordBoss.transform.position + Vector3.up * 0.8f,
+                    "1 HP — MORTALLY WOUNDED!",
+                    new Color(1.0f, 0.35f, 0.25f),
+                    1.8f
+                );
+            }
+
+            yield return new WaitForSeconds(0.45f);
+
+            if (StoryDialogueUI.Instance != null)
+            {
+                StoryDialogueUI.Instance.PlayPrebuiltSequence(StorySequenceId.HolyRaidDeathbed, () =>
+                {
+                    isStage1DeathbedPlaying = false;
+                    // Refresh Crusaders so the player can immediately deliver the final coup de grâce this turn!
+                    if (PaladinUnit != null && PaladinUnit.CurrentHealth > 0)
+                    {
+                        PaladinUnit.HasActedThisTurn = false;
+                        PaladinUnit.HasMovedThisTurn = false;
+                    }
+                    if (HolyShielderUnit != null && HolyShielderUnit.CurrentHealth > 0)
+                    {
+                        HolyShielderUnit.HasActedThisTurn = false;
+                        HolyShielderUnit.HasMovedThisTurn = false;
+                    }
+                    if (DemonLordBoss != null && DemonLordBoss.CurrentTile != null)
+                    {
+                        SetTutorialHighlightedTile(DemonLordBoss.CurrentTile);
+                    }
+                    CombatFeedbackManager.Instance?.ShowBanner(
+                        "⚔️ COUP DE GRÂCE: DELIVER THE FINAL STRIKE (1 HP)! ⚔️",
+                        "Malakor is kneeling at 1 HP on his throne! Strike him once more to end the raid!",
+                        4.5f,
+                        new Color(1.0f, 0.88f, 0.35f)
+                    );
+                });
+            }
+            else
+            {
+                isStage1DeathbedPlaying = false;
+            }
         }
 
         private void OnStage1Victory()
@@ -1230,19 +1302,18 @@ namespace ElementalHexTactics3D.Tutorial
                 TacticalCameraController.Instance.ResetToTacticalView();
             }
 
-            if (CombatFeedbackManager.Instance != null)
-            {
-                CombatFeedbackManager.Instance.ShowBanner(
-                    "🌲 STAGE 2: FRONTIER SKIRMISH 🌲",
-                    "Underdog Tactics: Ignite Scorched Earth into Magma and shove scouts into the hazard!",
-                    3.5f,
-                    new Color(0.95f, 0.55f, 0.15f)
-                );
-            }
-
-            StartCoroutine(PlayDialogueDelayed(StorySequenceId.Stage2FrontierIntro, 0.8f, () =>
+            StartCoroutine(PlayDialogueDelayed(StorySequenceId.Stage2FrontierIntro, 0f, () =>
             {
                 SetStep(TutorialStep.Stage2_CastFireballScorched);
+                if (CombatFeedbackManager.Instance != null)
+                {
+                    CombatFeedbackManager.Instance.ShowBanner(
+                        "🌲 STAGE 2: FRONTIER SKIRMISH 🌲",
+                        "Underdog Tactics: Ignite Scorched Earth into Magma and shove scouts into the hazard!",
+                        4.5f,
+                        new Color(0.95f, 0.55f, 0.15f)
+                    );
+                }
             }));
         }
 
@@ -1483,19 +1554,18 @@ namespace ElementalHexTactics3D.Tutorial
                 TacticalCameraController.Instance.ResetToTacticalView();
             }
 
-            if (CombatFeedbackManager.Instance != null)
-            {
-                CombatFeedbackManager.Instance.ShowBanner(
-                    "👑 STAGE 3: THE TITAN AWAKENING 👑",
-                    "Tear open the Abyssal Rift, siphon an Elemental Core, and summon the Magma Dragon!",
-                    3.5f,
-                    new Color(1f, 0.45f, 0.15f)
-                );
-            }
-
-            StartCoroutine(PlayDialogueDelayed(StorySequenceId.Stage3TitanIntro, 0.8f, () =>
+            StartCoroutine(PlayDialogueDelayed(StorySequenceId.Stage3TitanIntro, 0f, () =>
             {
                 SetStep(TutorialStep.Stage3_TearOpenRift);
+                if (CombatFeedbackManager.Instance != null)
+                {
+                    CombatFeedbackManager.Instance.ShowBanner(
+                        "👑 STAGE 3: THE TITAN AWAKENING 👑",
+                        "Tear open the Abyssal Rift, siphon an Elemental Core, and summon the Magma Dragon!",
+                        4.5f,
+                        new Color(1f, 0.45f, 0.15f)
+                    );
+                }
             }));
         }
 
@@ -1679,7 +1749,10 @@ namespace ElementalHexTactics3D.Tutorial
 
         private IEnumerator PlayDialogueDelayed(StorySequenceId sequenceId, float delay, Action onFinish = null)
         {
-            yield return new WaitForSeconds(delay);
+            if (delay > 0f)
+            {
+                yield return new WaitForSeconds(delay);
+            }
             if (StoryDialogueUI.Instance != null)
             {
                 StoryDialogueUI.Instance.PlayPrebuiltSequence(sequenceId, onFinish);

@@ -47,6 +47,8 @@ namespace ElementalHexTactics3D.Units
         [Header("Stats")]
         [SerializeField] private int maxHealth = 10;
         [SerializeField] private int currentHealth = 10;
+        [SerializeField] private int maxMana = 60;
+        [SerializeField] private int currentMana = 60;
         [SerializeField] private int moveRange = 3;
         [SerializeField] private int baseAttackDamage = 3;
         [SerializeField] private int attackRange = 1;
@@ -139,9 +141,39 @@ namespace ElementalHexTactics3D.Units
             set => currentHealth = Mathf.Clamp(value, 0, maxHealth);
         }
 
+        public int MaxMana => maxMana;
+        public int CurrentMana
+        {
+            get => currentMana;
+            set => currentMana = Mathf.Clamp(value, 0, maxMana);
+        }
+
+        public bool ConsumeMana(int amount)
+        {
+            if (amount <= 0) return true;
+            if (currentMana >= amount)
+            {
+                currentMana -= amount;
+                return true;
+            }
+            return false;
+        }
+
+        public void RestoreMana(int amount, string customLabel = null)
+        {
+            if (currentHealth <= 0) return;
+            int prev = currentMana;
+            currentMana = Mathf.Min(maxMana, currentMana + amount);
+            int restored = currentMana - prev;
+            if (restored <= 0) return;
+            string label = !string.IsNullOrEmpty(customLabel) ? customLabel : $"+{restored} MP";
+            CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, label, new Color(0.35f, 0.85f, 1.0f));
+        }
+
         public void Revive(int hp = -1)
         {
             currentHealth = (hp > 0) ? Mathf.Min(hp, maxHealth) : maxHealth;
+            currentMana = maxMana;
             ClearMobilityDebuffs();
         }
 
@@ -417,6 +449,15 @@ namespace ElementalHexTactics3D.Units
             faction = unitFaction;
             maxHealth = hp;
             currentHealth = hp;
+            if (hp >= 500)
+            {
+                maxMana = (name != null && name.Contains("Paladin")) ? 120 : 90;
+            }
+            else
+            {
+                maxMana = (unitArchetype == UnitArchetype.Commander) ? 60 : 40;
+            }
+            currentMana = maxMana;
             moveRange = range;
             archetype = unitArchetype;
             affinity = unitAffinity;
@@ -496,7 +537,7 @@ namespace ElementalHexTactics3D.Units
 
         public void ReacquireCurrentTile()
         {
-            HexGrid3D grid = HexGrid3D.Instance ?? Object.FindFirstObjectByType<HexGrid3D>();
+            HexGrid3D grid = HexGrid3D.Instance ?? Object.FindAnyObjectByType<HexGrid3D>();
             if (grid != null)
             {
                 // 1. Try to find tile by exact coordinates
@@ -714,7 +755,7 @@ namespace ElementalHexTactics3D.Units
             if (tile.State == TileState.Magma && !IsMagmaImmune)
             {
                 Debug.Log($"<color=#FF3D00><b>[Hazard Burn!]</b></color> {unitName} stepped into molten Magma! Took 3 burn damage.");
-                TakeDamage(3, "🔥 MAGMA BURN! -3");
+                TakeDamage(maxHealth >= 500 ? 400 : 3);
                 TacticalCameraController.Instance?.Shake(0.32f, 0.35f);
                 SoundManager3D.Instance?.PlayFireball();
             }
@@ -835,7 +876,7 @@ namespace ElementalHexTactics3D.Units
                 Debug.Log($"<color=#64B5F6><b>[Guard Block]</b></color> {unitName} guarded! Damage mitigated from {originalDmg} to {amount}.");
                 if (string.IsNullOrEmpty(customLabel))
                 {
-                    customLabel = $"🛡️ GUARD! -{amount}";
+                    customLabel = $"-{amount}";
                 }
             }
 
@@ -873,7 +914,28 @@ namespace ElementalHexTactics3D.Units
                 }
             }
 
-            currentHealth = Mathf.Max(0, currentHealth - amount);
+            // 3.5. Stage 1 Raid Boss Deathbed Clamp:
+            // When Demon Lord Malakor is reduced to half health (<= 750 HP) or lethal damage for the first time,
+            // clamp him at 1 HP so he remains visibly alive on his throne for his deathbed last words and the player's final coup de grâce!
+            if (faction == UnitFaction.Enemy &&
+                ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance != null &&
+                ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance.IsStage1Active &&
+                ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance.DemonLordBoss == this &&
+                !ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance.HasTriggeredStage1Deathbed)
+            {
+                if (currentHealth - amount <= 750)
+                {
+                    currentHealth = 1;
+                }
+                else
+                {
+                    currentHealth = Mathf.Max(1, currentHealth - amount);
+                }
+            }
+            else
+            {
+                currentHealth = Mathf.Max(0, currentHealth - amount);
+            }
             Debug.Log($"<color=#EF5350><b>[Damage]</b></color> {unitName} took {amount} dmg! HP: {currentHealth}/{maxHealth}");
             SoundManager3D.Instance?.PlayGetHit();
 

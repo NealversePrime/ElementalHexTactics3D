@@ -18,7 +18,7 @@ namespace ElementalHexTactics3D.Combat
             {
                 if (instance == null)
                 {
-                    instance = Object.FindFirstObjectByType<CombatVFXManager>();
+                    instance = Object.FindAnyObjectByType<CombatVFXManager>();
                     if (instance == null)
                     {
                         GameObject go = new GameObject("CombatVFXManager");
