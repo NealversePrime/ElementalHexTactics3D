@@ -56,22 +56,22 @@ namespace ElementalHexTactics3D.Campaign
             switch (Archetype)
             {
                 case MissionArchetype.RescueRecruit:
-                    return "⛓️ Slave Convoy Ambush";
+                    return "Slave Convoy Ambush";
                 case MissionArchetype.ResourceScavenge:
-                    return "⛏️ Crystal Vein Raid";
+                    return "Crystal Vein Raid";
                 case MissionArchetype.VanguardSabotage:
-                    return "⏳ Vanguard Sabotage";
+                    return "Vanguard Sabotage";
                 case MissionArchetype.WildTitanHunt:
-                    return "🗿 Wild Titan Hunt";
+                    return "Wild Titan Hunt";
                 default:
-                    return "⚔️ Expedition Incursion";
+                    return "Expedition Incursion";
             }
         }
 
         public string GetThreatStars()
         {
             int filled = Mathf.Clamp(ThreatLevel, 1, 5);
-            return new string('★', filled) + new string('☆', 5 - filled);
+            return $"Threat {filled}/5";
         }
 
         public string GetModifierTag()
@@ -79,26 +79,26 @@ namespace ElementalHexTactics3D.Campaign
             switch (Modifier)
             {
                 case StageModifier.VolcanicSurge:
-                    return "🌋 Volcanic Surge (+50% Magma Hazards)";
+                    return "Volcanic Surge (+50% Magma Hazards)";
                 case StageModifier.HeavyDeluge:
-                    return "🌊 Heavy Deluge (Water Basins Expand)";
+                    return "Heavy Deluge (Water Basins Expand)";
                 case StageModifier.DenseMist:
-                    return "🌫️ Dense Mist (Max Range Capped)";
+                    return "Dense Mist (Max Range Capped)";
                 case StageModifier.StoneFortress:
-                    return "🏰 Stone Fortress (+Dense Cover Pillars)";
+                    return "Stone Fortress (+Dense Cover Pillars)";
                 default:
-                    return "✨ Normal Conditions";
+                    return "Normal Conditions";
             }
         }
 
         public string GetRewardsSummary()
         {
             string s = "";
-            if (RewardMana > 0) s += $"<color=#00E5FF>💎 +{RewardMana} Mana</color>  ";
-            if (RewardEmbers > 0) s += $"<color=#FF7043>🔥 +{RewardEmbers} Embers</color>  ";
-            if (RewardOutcasts > 0) s += $"<color=#81C784>👥 +{RewardOutcasts} Outcasts</color>  ";
-            if (RewardFood > 0) s += $"<color=#FFA726>🍖 +{RewardFood} Food</color>  ";
-            if (RewardDoomClockDays > 0) s += $"<color=#FFD54F>⏳ +{RewardDoomClockDays}d Crusade Delay</color>";
+            if (RewardMana > 0) s += $"<color=#00E5FF>+{RewardMana} Mana</color>  ";
+            if (RewardEmbers > 0) s += $"<color=#FF7043>+{RewardEmbers} Embers</color>  ";
+            if (RewardOutcasts > 0) s += $"<color=#81C784>+{RewardOutcasts} Outcasts</color>  ";
+            if (RewardFood > 0) s += $"<color=#FFA726>+{RewardFood} Food</color>  ";
+            if (RewardDoomClockDays > 0) s += $"<color=#FFD54F>+{RewardDoomClockDays}d Crusade Delay</color>";
             return s.Trim();
         }
     }

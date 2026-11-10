@@ -186,7 +186,7 @@ namespace ElementalHexTactics3D.UI
                         Text t = tTrans.GetComponent<Text>();
                         if (t != null)
                         {
-                            t.text = "✦ BATTLE PAUSED ✦";
+                            t.text = "BATTLE PAUSED ";
                             t.fontSize = 20;
                             t.fontStyle = FontStyle.Bold;
                         }
@@ -453,10 +453,12 @@ namespace ElementalHexTactics3D.UI
                         RectTransform backRect = backTrans.GetComponent<RectTransform>();
                         if (backRect != null)
                         {
-                            backRect.anchoredPosition = new Vector2(-260f, -250f);
-                            backRect.sizeDelta = new Vector2(180f, 48f);
+                            backRect.anchoredPosition = new Vector2(-270f, -250f);
+                            backRect.sizeDelta = new Vector2(230f, 48f);
                         }
                     }
+
+                    Font buttonFont = LoadTitleFont(true);
 
                     // Direct Stage 1 launcher button
                     Transform replay1Trans = card.Find("Btn_ReplayStage1");
@@ -469,9 +471,10 @@ namespace ElementalHexTactics3D.UI
                         GameObject tObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
                         tObj.transform.SetParent(rObj.transform, false);
                         Text t = tObj.GetComponent<Text>();
-                        t.text = "⚔️ PLAY STAGE 1 (HOLY)";
+                        t.font = buttonFont;
+                        t.text = "STAGE 1 (HOLY)";
                         t.alignment = TextAnchor.MiddleCenter;
-                        t.fontSize = 12;
+                        t.fontSize = 14;
                         t.fontStyle = FontStyle.Bold;
                         t.color = Color.white;
                         RectTransform tr = tObj.GetComponent<RectTransform>();
@@ -489,6 +492,13 @@ namespace ElementalHexTactics3D.UI
                         RectTransform rr = replay1Trans.GetComponent<RectTransform>();
                         rr.anchoredPosition = new Vector2(0f, -250f);
                         rr.sizeDelta = new Vector2(230f, 48f);
+                        Text t = replay1Trans.GetComponentInChildren<Text>();
+                        if (t != null)
+                        {
+                            if (t.font == null) t.font = buttonFont;
+                            t.text = "STAGE 1 (HOLY)";
+                            t.fontSize = 14;
+                        }
                     }
 
                     // Direct Stage 2 launcher button
@@ -502,9 +512,10 @@ namespace ElementalHexTactics3D.UI
                         GameObject tObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
                         tObj.transform.SetParent(rObj.transform, false);
                         Text t = tObj.GetComponent<Text>();
-                        t.text = "🔥 PLAY STAGE 2 (DEMON)";
+                        t.font = buttonFont;
+                        t.text = "STAGE 2 (DEMON)";
                         t.alignment = TextAnchor.MiddleCenter;
-                        t.fontSize = 12;
+                        t.fontSize = 14;
                         t.fontStyle = FontStyle.Bold;
                         t.color = Color.white;
                         RectTransform tr = tObj.GetComponent<RectTransform>();
@@ -520,8 +531,15 @@ namespace ElementalHexTactics3D.UI
                     if (replay2Trans != null)
                     {
                         RectTransform rr = replay2Trans.GetComponent<RectTransform>();
-                        rr.anchoredPosition = new Vector2(260f, -250f);
+                        rr.anchoredPosition = new Vector2(270f, -250f);
                         rr.sizeDelta = new Vector2(230f, 48f);
+                        Text t = replay2Trans.GetComponentInChildren<Text>();
+                        if (t != null)
+                        {
+                            if (t.font == null) t.font = buttonFont;
+                            t.text = "STAGE 2 (DEMON)";
+                            t.fontSize = 14;
+                        }
                     }
                 }
             }
@@ -884,7 +902,7 @@ namespace ElementalHexTactics3D.UI
                 }
                 if (txtSubtitle != null)
                 {
-                    txtSubtitle.text = "〜 The Righteous Crusade of the Radiant Synod 〜";
+                    txtSubtitle.text = "~ The Righteous Crusade of the Radiant Synod ~";
                     txtSubtitle.color = new Color(0.85f, 0.90f, 0.98f);
                 }
 
@@ -904,35 +922,35 @@ namespace ElementalHexTactics3D.UI
                     if (hTxt != null) hTxt.text = "HOLY TACTICS (Guide)";
                 }
 
-                if (txtStoryTitle != null) txtStoryTitle.text = "📖 SACRED SCRIPTURES: THE RADIANT SYNOD";
+                if (txtStoryTitle != null) txtStoryTitle.text = "SACRED SCRIPTURES: THE RADIANT SYNOD";
                 if (txtStoryBody != null)
                 {
                     txtStoryBody.horizontalOverflow = HorizontalWrapMode.Wrap;
                     txtStoryBody.verticalOverflow = VerticalWrapMode.Truncate;
                     txtStoryBody.text =
                         "<b><color=#FBBF24>[ The Radiant Mandate ]</color></b>\n" +
-                        "Under the sacred light of the Holy Empire, the Chosen Hero—the Paladin of Radiance—marches with the consecrated vanguard into the fractured underworld to eradicate all demonic existence.\n\n" +
+                        "Under the sacred light of the Holy Empire, the Chosen Hero-the Paladin of Radiance-marches with the consecrated vanguard into the fractured underworld to eradicate all demonic existence.\n\n" +
                         "<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\n" +
                         "Deep within the Ashen Bastion, the reviled Demon Lord cowers upon his blackened throne. Command your Holy Vanguard, smite the monstrous heretics, and cleanse the taint!\n\n" +
                         "<b><color=#34D399>[ The Synod's Promise ]</color></b>\n" +
                         "Purity through fire. Purge the dark underworld and claim immortal salvation in Omniterra!";
                 }
 
-                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 HOLY TACTICS: BASIC COMMANDS";
+                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "HOLY TACTICS: BASIC COMMANDS";
                 if (txtHowToPlayBody != null)
                 {
                     txtHowToPlayBody.horizontalOverflow = HorizontalWrapMode.Wrap;
                     txtHowToPlayBody.verticalOverflow = VerticalWrapMode.Truncate;
                     txtHowToPlayBody.text =
-                        "<b><color=#38BDF8>✦ Camera Controls:</color></b> <b>Q / E</b> Rotate 60°  •  <b>WASD</b> Pan  •  <b>Scroll</b> Zoom in/out\n\n" +
-                        "<b><color=#FBBF24>✦ Movement & Positioning:</color></b>\n" +
-                        "• Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n" +
-                        "• Click any highlighted hex to advance toward the demon lines.\n\n" +
-                        "<b><color=#EF5350>✦ Righteous Strike & Wall Slams:</color></b>\n" +
-                        "• When adjacent to an enemy (red highlights), click to unleash holy damage!\n" +
-                        "• Pushing enemies into walls or stone pillars inflicts bonus kinetic slam damage!\n\n" +
-                        "<b><color=#34D399>✦ Victory Objective:</color></b>\n" +
-                        "• Slay the Demon Lord to purge the underworld and complete the sacred crusade!";
+                        "<b><color=#38BDF8> Camera Controls:</color></b> <b>Q / E</b> Rotate 60 deg  -  <b>WASD</b> Pan  -  <b>Scroll</b> Zoom in/out\n\n" +
+                        "<b><color=#FBBF24> Movement & Positioning:</color></b>\n" +
+                        "- Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n" +
+                        "- Click any highlighted hex to advance toward the demon lines.\n\n" +
+                        "<b><color=#EF5350> Righteous Strike & Wall Slams:</color></b>\n" +
+                        "- When adjacent to an enemy (red highlights), click to unleash holy damage!\n" +
+                        "- Pushing enemies into walls or stone pillars inflicts bonus kinetic slam damage!\n\n" +
+                        "<b><color=#34D399> Victory Objective:</color></b>\n" +
+                        "- Slay the Demon Lord to purge the underworld and complete the sacred crusade!";
                 }
             }
             else // DemonLordRebellion
@@ -951,7 +969,7 @@ namespace ElementalHexTactics3D.UI
                 }
                 if (txtSubtitle != null)
                 {
-                    txtSubtitle.text = "〜 Reincarnated as the Demon Lord, Awakening Primordial Titans 〜";
+                    txtSubtitle.text = "~ Reincarnated as the Demon Lord, Awakening Primordial Titans ~";
                     txtSubtitle.color = new Color(0.88f, 0.85f, 0.78f);
                 }
 
@@ -968,7 +986,7 @@ namespace ElementalHexTactics3D.UI
                     if (hTxt != null) hTxt.text = "HOW TO PLAY (Tactics)";
                 }
 
-                if (txtStoryTitle != null) txtStoryTitle.text = "📖 MEMOIRS OF THE OUTCAST SANCTUARY";
+                if (txtStoryTitle != null) txtStoryTitle.text = "MEMOIRS OF THE OUTCAST SANCTUARY";
                 if (txtStoryBody != null)
                 {
                     txtStoryBody.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -982,19 +1000,19 @@ namespace ElementalHexTactics3D.UI
                         "Siphon elemental cores through the Abyssal Rift and awaken apocalyptic Primordial Titans to break the Holy Empire's chains!";
                 }
 
-                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "🎮 CITADEL COMMAND: TACTICAL FIELD GUIDE";
+                if (txtHowToPlayTitle != null) txtHowToPlayTitle.text = "CITADEL COMMAND: TACTICAL FIELD GUIDE";
                 if (txtHowToPlayBody != null)
                 {
                     txtHowToPlayBody.horizontalOverflow = HorizontalWrapMode.Wrap;
                     txtHowToPlayBody.verticalOverflow = VerticalWrapMode.Truncate;
                     txtHowToPlayBody.text =
-                        "<b><color=#38BDF8>✦ Battlefield Navigation:</color></b> <b>Q / E</b> Rotate 60°  •  <b>WASD</b> Pan  •  <b>Scroll</b> Zoom  •  <b>Right-Click</b> Cancel\n\n" +
-                        "<b><color=#F97316>✦ Elemental Terraforming:</color></b>\n" +
-                        "• 🔥 <b>Fireball:</b> Chars grass into <b>Scorched Earth</b>; cast again to erupt into molten <b>Magma</b>!\n" +
-                        "• 🪨 <b>Kinetic Shove:</b> Push enemies 1 hex away. Slamming foes into obstacles deals bonus damage!\n\n" +
-                        "<b><color=#A855F7>✦ Abyssal Rift & Titan Summoning:</color></b>\n" +
-                        "• Deploy reserve vanguard units directly onto the hex grid via the Abyssal Rift.\n" +
-                        "• Awaken Primordial Titans at the Citadel Shrine to unleash catastrophic Cataclysm powers!";
+                        "<b><color=#38BDF8> Battlefield Navigation:</color></b> <b>Q / E</b> Rotate 60 deg  -  <b>WASD</b> Pan  -  <b>Scroll</b> Zoom  -  <b>Right-Click</b> Cancel\n\n" +
+                        "<b><color=#F97316> Elemental Terraforming:</color></b>\n" +
+                        "-  <b>Fireball:</b> Chars grass into <b>Scorched Earth</b>; cast again to erupt into molten <b>Magma</b>!\n" +
+                        "-  <b>Kinetic Shove:</b> Push enemies 1 hex away. Slamming foes into obstacles deals bonus damage!\n\n" +
+                        "<b><color=#A855F7> Abyssal Rift & Titan Summoning:</color></b>\n" +
+                        "- Deploy reserve vanguard units directly onto the hex grid via the Abyssal Rift.\n" +
+                        "- Awaken Primordial Titans at the Citadel Shrine to unleash catastrophic Cataclysm powers!";
                 }
             }
 
@@ -1244,7 +1262,7 @@ namespace ElementalHexTactics3D.UI
             if (CombatFeedbackManager.Instance != null && !isTut)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "✦ EXPEDITION LAUNCHED ✦", 
+                    "EXPEDITION LAUNCHED ", 
                     "Demon Lord vanguard marches through the Abyssal Rift! Crush the holy invaders!", 
                     2.5f, 
                     new Color(0.3f, 0.85f, 1.0f)
@@ -1301,7 +1319,7 @@ namespace ElementalHexTactics3D.UI
                 returnToPauseFromOptions = false;
                 OpenPauseMenu();
             }
-            else if (IsOnTitleScreen)
+            else if (!isInGame && !isInTownHub)
             {
                 SetMainMenuButtonsVisible(true);
             }
@@ -1314,7 +1332,7 @@ namespace ElementalHexTactics3D.UI
             if (optionsModal != null) optionsModal.SetActive(false);
             if (pauseModal != null) pauseModal.SetActive(false);
             activeModal = null;
-            if (IsOnTitleScreen)
+            if (!isInGame && !isInTownHub)
             {
                 SetMainMenuButtonsVisible(true);
             }
@@ -1627,6 +1645,29 @@ namespace ElementalHexTactics3D.UI
             return null;
         }
 
+        public static Font LoadTitleFont(bool isBold)
+        {
+            Font font = null;
+#if UNITY_EDITOR
+            string fontPath = isBold ? "Assets/Fonts/Font_Bold.ttf" : "Assets/Fonts/Font_Regular.ttf";
+            font = UnityEditor.AssetDatabase.LoadAssetAtPath<Font>(fontPath);
+#endif
+            if (font == null)
+            {
+                string rName = isBold ? "Fonts/Font_Bold" : "Fonts/Font_Regular";
+                font = Resources.Load<Font>(rName);
+            }
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            }
+            if (font == null)
+            {
+                font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+            return font;
+        }
+
         private static readonly Dictionary<string, Sprite> s_boxSpriteCache = new Dictionary<string, Sprite>();
 
         /// <summary>
@@ -1875,6 +1916,10 @@ namespace ElementalHexTactics3D.UI
             Text bTxt = b.GetComponentInChildren<Text>();
             if (bTxt != null)
             {
+                if (bTxt.font == null)
+                {
+                    bTxt.font = LoadTitleFont(true);
+                }
                 bTxt.color = textColor;
                 bTxt.fontStyle = FontStyle.Bold;
                 bTxt.alignment = TextAnchor.MiddleCenter;

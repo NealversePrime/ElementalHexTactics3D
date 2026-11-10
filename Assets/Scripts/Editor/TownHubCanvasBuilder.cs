@@ -10,7 +10,7 @@ using ElementalHexTactics3D.UI.Hub;
 namespace ElementalHexTactics3D.Editor
 {
     /// <summary>
-    /// Automation builder to construct the Citadel Town Hub ("Edge of the World" sanctuary)
+    /// Automation builder to construct the Citadel Town Hub ("Edge of the World"sanctuary)
     /// inside Canvas_TitleMenu with user-generated custom sprites, clean hover overlays,
     /// dynamic tooltip banners, facility modals, and seamless 3D hex combat transitions.
     /// Menu item: "Elemental Hex 3D" -> "Build Town Hub Canvas"
@@ -187,9 +187,9 @@ namespace ElementalHexTactics3D.Editor
                 new Vector2(-753.3f, 122.8f),
                 new Vector2(735.0f, 735.0f),
                 HubFacilityType.DemonCastle,
-                "✦ DEMON LORD CITADEL ✦",
+                "DEMON LORD CITADEL ",
                 "Sanctum of the exiled sovereign. Unlock Demon Lord System perks, upgrade domain attributes, and issue decrees.",
-                "<color=#FFCC00>Rank I Citadel • 3 Perks Available</color>"
+                "<color=#FFCC00>Rank I Citadel - 3 Perks Available</color>"
             );
 
             // Facility 2: Emancipation Forge (Blacksmith - Pixel matched to full.png)
@@ -200,7 +200,7 @@ namespace ElementalHexTactics3D.Editor
                 new Vector2(-395.6f, -72.6f),
                 new Vector2(385.0f, 385.0f),
                 HubFacilityType.EmancipationForge,
-                "✦ EMANCIPATION FORGE ✦",
+                "EMANCIPATION FORGE ",
                 "The anvil of liberation. Shatter Cursed Slave Collars from rescued demi-humans and forge abyssal dark weaponry.",
                 "<color=#FF8844>Collars Pending: 2 Rescued</color>"
             );
@@ -213,9 +213,9 @@ namespace ElementalHexTactics3D.Editor
                 new Vector2(-26.5f, -53.5f),
                 new Vector2(427f, 427f),
                 HubFacilityType.AbyssalPortal,
-                "✦ ABYSSAL RIFT [ENTER BATTLE] ✦",
+                "ABYSSAL RIFT [ENTER BATTLE] ",
                 "Gateway across the sanctuary border. Deploy your vanguard forces onto the 3D Hex tactical battlefield!",
-                "<color=#44FF88>Rift Stable • Click to Embark</color>"
+                "<color=#44FF88>Rift Stable - Click to Embark</color>"
             );
 
             // Facility 4: Monster Barracks (Pixel matched to full.png)
@@ -226,7 +226,7 @@ namespace ElementalHexTactics3D.Editor
                 new Vector2(313.5f, -55.5f),
                 new Vector2(449f, 449f),
                 HubFacilityType.MonsterBarracks,
-                "✦ MONSTER BARRACKS & DEN ✦",
+                "MONSTER BARRACKS & DEN ",
                 "Warcamp built from leviathan rib bones. Inspect, arm, and recruit companion minions (Goblins, Kobolds, Slimes).",
                 "<color=#66CCFF>Squad: 2/4 Active</color>"
             );
@@ -239,7 +239,7 @@ namespace ElementalHexTactics3D.Editor
                 new Vector2(643.2f, -136.4f),
                 new Vector2(492.5f, 488.8f),
                 HubFacilityType.ManaMine,
-                "✦ MANA MINE & SPORE FARMS ✦",
+                "MANA MINE & SPORE FARMS ",
                 "Subterranean mana crystal veins and blighted dark soil plots. Assign freed outcasts to harvest passive resources.",
                 "<color=#AA88FF>Yield: +50 Mana / Expedition</color>"
             );
@@ -252,9 +252,9 @@ namespace ElementalHexTactics3D.Editor
                 new Vector2(786.0f, 174.0f),
                 new Vector2(348f, 348f),
                 HubFacilityType.AncientDeityShrine,
-                "✦ ANCIENT DEITY SHRINE ✦",
+                "ANCIENT DEITY SHRINE ",
                 "Colossal horned idol on the cliff's edge. Offer soul embers in the sacrificial brazier for ancient beast summoning (Gacha)!",
-                "<color=#FF55AA>Ritual Ready • 1x Summon Available</color>"
+                "<color=#FF55AA>Ritual Ready - 1x Summon Available</color>"
             );
 
             // 7. Layer 2: Top Domain Header & Resource Bar
@@ -284,7 +284,7 @@ namespace ElementalHexTactics3D.Editor
             Text txtDomainTitle = CreateUIText(
                 "Text_DomainTitle",
                 headerBar.transform,
-                "✦ CITADEL OF THE OUTCASTS — EDGE OF THE WORLD ✦",
+                "CITADEL OF THE OUTCASTS - EDGE OF THE WORLD ",
                 fontBold,
                 16,
                 FontStyle.Bold,
@@ -298,7 +298,7 @@ namespace ElementalHexTactics3D.Editor
             Text txtMana = CreateUIText(
                 "Text_ManaCrystals",
                 headerBar.transform,
-                "💎 450 Mana",
+                "450 Mana",
                 fontBold,
                 15,
                 FontStyle.Bold,
@@ -311,7 +311,7 @@ namespace ElementalHexTactics3D.Editor
             Text txtEmbers = CreateUIText(
                 "Text_SoulEmbers",
                 headerBar.transform,
-                "🔥 180 Embers",
+                "180 Embers",
                 fontBold,
                 15,
                 FontStyle.Bold,
@@ -324,7 +324,7 @@ namespace ElementalHexTactics3D.Editor
             Text txtOutcasts = CreateUIText(
                 "Text_FreedOutcasts",
                 headerBar.transform,
-                "🛡️ 16 Outcasts",
+                "16 Outcasts",
                 fontBold,
                 15,
                 FontStyle.Bold,
@@ -335,7 +335,7 @@ namespace ElementalHexTactics3D.Editor
             );
 
             // Return to Title Screen Button
-            Button btnReturnTitle = CreateSmallButton("Btn_ReturnTitle", headerBar.transform, "🏠 TITLE", fontBold, 13, btnNormal, Color.white, new Vector2(850f, 0f), new Vector2(130f, 36f));
+            Button btnReturnTitle = CreateSmallButton("Btn_ReturnTitle", headerBar.transform, "TITLE", fontBold, 13, btnNormal, Color.white, new Vector2(850f, 0f), new Vector2(130f, 36f));
 
             // 8. Layer 3: Dynamic Header Tooltip Banner (Glow banner showing hovered building info)
             GameObject tooltipBanner = CreateUIObject("Panel_TooltipBanner", hubRoot.transform);
@@ -361,7 +361,7 @@ namespace ElementalHexTactics3D.Editor
             Text txtTtTitle = CreateUIText(
                 "Text_TooltipTitle",
                 tooltipBanner.transform,
-                "✦ BUILDING TITLE ✦",
+                "BUILDING TITLE ",
                 fontBold,
                 16,
                 FontStyle.Bold,
@@ -397,38 +397,38 @@ namespace ElementalHexTactics3D.Editor
             tooltipBanner.SetActive(false);
 
             // 9. Layer 4: Facility Management Modals
-            GameObject modalCastle = CreateFacilityModal("Modal_DemonCastle", hubRoot.transform, "👑 DEMON LORD CITADEL", fontBold, fontRegular, panelFrame, btnNormal,
+            GameObject modalCastle = CreateFacilityModal("Modal_DemonCastle", hubRoot.transform, "DEMON LORD CITADEL", fontBold, fontRegular, panelFrame, btnNormal,
                 "The core sanctum of your sovereign authority. Here you manage the territory domain, unlock system perks, and spend soul embers to strengthen your vanguard forces.",
                 "Prowess: Tier I\nDomain Radius: Border Wastelands\nDecree: Protected Sanctuary",
-                "🔓 UNLOCK PERK (-50 Embers)",
+                "UNLOCK PERK (-50 Embers)",
                 () => hubMgr.ActionUnlockPerk()
             );
 
-            GameObject modalForge = CreateFacilityModal("Modal_EmancipationForge", hubRoot.transform, "⚒️ EMANCIPATION FORGE", fontBold, fontRegular, panelFrame, btnNormal,
+            GameObject modalForge = CreateFacilityModal("Modal_EmancipationForge", hubRoot.transform, "EMANCIPATION FORGE", fontBold, fontRegular, panelFrame, btnNormal,
                 "A holy blacksmith converted to a liberation workshop. Broken chains and slave collars from captured demi-humans are shattered here to release their repressed power.",
-                "Anvil Heat: 1,400°C\nSlave Collars In Queue: 2\nMetal Reserves: High",
-                "⛓️ SHATTER COLLAR (-30 Embers)",
+                "Anvil Heat: 1,400 degC\nSlave Collars In Queue: 2\nMetal Reserves: High",
+                "SHATTER COLLAR (-30 Embers)",
                 () => hubMgr.ActionShatterCollar()
             );
 
-            GameObject modalBarracks = CreateFacilityModal("Modal_MonsterBarracks", hubRoot.transform, "🐺 MONSTER DEN & BARRACKS", fontBold, fontRegular, panelFrame, btnNormal,
+            GameObject modalBarracks = CreateFacilityModal("Modal_MonsterBarracks", hubRoot.transform, "MONSTER DEN & BARRACKS", fontBold, fontRegular, panelFrame, btnNormal,
                 "Constructed from ancient leviathan rib bones, this encampment trains and equips small demi-human skirmishers (Goblins, Kobolds, Slimes) to fight alongside your champions.",
                 "Roster: 2/4 Vanguard Monsters\nMorale: Eager for battle\nDaily Rations: Full",
-                "🗡️ RECRUIT MINION (-60 Crystals)",
+                "RECRUIT MINION (-60 Crystals)",
                 () => hubMgr.ActionRecruitMinion()
             );
 
-            GameObject modalMine = CreateFacilityModal("Modal_ManaMine", hubRoot.transform, "⛏️ MANA MINE & SPORE FARMS", fontBold, fontRegular, panelFrame, btnNormal,
+            GameObject modalMine = CreateFacilityModal("Modal_ManaMine", hubRoot.transform, "MANA MINE & SPORE FARMS", fontBold, fontRegular, panelFrame, btnNormal,
                 "Deep fissures into obsidian rock yield raw glowing mana crystals, while dark soil terraces cultivate bioluminescent mushrooms for alchemy and magical sustains.",
                 "Minecart Status: Operating\nAssigned Miners: 4 Kobolds\nDaily Yield: +50 Crystals",
-                "👷 ASSIGN LABORER (-1 Outcast)",
+                "ASSIGN LABORER (-1 Outcast)",
                 () => hubMgr.ActionAssignMineWorker()
             );
 
-            GameObject modalShrine = CreateFacilityModal("Modal_AncientDeityShrine", hubRoot.transform, "🔮 ANCIENT HORNED DEITY SHRINE", fontBold, fontRegular, panelFrame, btnNormal,
+            GameObject modalShrine = CreateFacilityModal("Modal_AncientDeityShrine", hubRoot.transform, "ANCIENT HORNED DEITY SHRINE", fontBold, fontRegular, panelFrame, btnNormal,
                 "A monumental weathered stone idol of an elder horned god overlooking the abyss. Offer harvested soul embers into the sacrificial cauldron to summon ancient colossal beasts (Gacha).",
                 "Sacrificial Flame: Active\nNext Summon Guarantee: 8 Pulls\nAttunement: Abyssal Titan",
-                "🔥 SUMMON BEAST (-80 Embers)",
+                "SUMMON BEAST (-80 Embers)",
                 () => hubMgr.ActionPerformGachaSummon()
             );
 
@@ -621,7 +621,7 @@ namespace ElementalHexTactics3D.Editor
             if (onAction != null) btnAction.onClick.AddListener(onAction);
 
             // Close Button
-            Button btnClose = CreateSmallButton("Btn_Close", cardObj.transform, "✖ CLOSE", fontBold, 14, btnSprite, Color.white, new Vector2(130f, -125f), new Vector2(180f, 44f));
+            Button btnClose = CreateSmallButton("Btn_Close", cardObj.transform, "X CLOSE", fontBold, 14, btnSprite, Color.white, new Vector2(130f, -125f), new Vector2(180f, 44f));
             btnClose.onClick.AddListener(() =>
             {
                 if (TownHubManager.Instance != null)

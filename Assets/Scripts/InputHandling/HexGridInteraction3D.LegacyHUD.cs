@@ -159,7 +159,7 @@ namespace ElementalHexTactics3D.InputHandling
             GUILayout.Label($"<size=14><b>Incursion:</b></size>{missionInfo} | {roundText}");
             GUILayout.FlexibleSpace();
 
-            if (GUILayout.Button("🎲 New Map", GUILayout.Width(82), GUILayout.Height(20)))
+            if (GUILayout.Button("New Map", GUILayout.Width(82), GUILayout.Height(20)))
             {
                 DeselectAll();
                 HexGrid3D.Instance?.GenerateRandomizedBattlefield();
@@ -169,7 +169,7 @@ namespace ElementalHexTactics3D.InputHandling
             if (TurnManager3D.Instance != null)
             {
                 bool aiOff = TurnManager3D.Instance.DisableEnemyAI;
-                string aiLabel = aiOff ? "<color=#EF5350>🤖 AI: OFF</color>" : "<color=#81C784>🤖 AI: ON</color>";
+                string aiLabel = aiOff ? "<color=#EF5350> AI: OFF</color>" : "<color=#81C784> AI: ON</color>";
                 if (GUILayout.Button(aiLabel, GUILayout.Width(75), GUILayout.Height(20)))
                 {
                     TurnManager3D.Instance.DisableEnemyAI = !TurnManager3D.Instance.DisableEnemyAI;
@@ -178,7 +178,7 @@ namespace ElementalHexTactics3D.InputHandling
             }
 
             bool isMuted = (SoundManager3D.Instance != null && SoundManager3D.Instance.IsMuted);
-            string audioLabel = isMuted ? "🔇 Audio" : "🔊 Audio";
+            string audioLabel = isMuted ? "Audio" : "Audio";
             if (GUILayout.Button(audioLabel, GUILayout.Width(75), GUILayout.Height(20)))
             {
                 if (SoundManager3D.Instance != null)
@@ -194,14 +194,14 @@ namespace ElementalHexTactics3D.InputHandling
             string fColor = (currentSelectedUnit.Faction == UnitFaction.Player) ? "#64B5F6" : "#EF5350";
             string statusText = currentSelectedUnit.IsExhausted ? "<color=#B0BEC5>[Exhausted]</color>" : "<color=#81C784>[Ready]</color>";
             GUILayout.Label($"<color={fColor}><b>Selected:</b> {currentSelectedUnit.UnitName}</color> ({currentSelectedUnit.Archetype}) {statusText}");
-            GUILayout.Label($"<b>HP:</b> {currentSelectedUnit.CurrentHealth}/{currentSelectedUnit.MaxHealth} | <b>ATK:</b> {currentSelectedUnit.EffectiveAttackDamage} | <b>Move:</b> {currentSelectedUnit.EffectiveMoveRange} | <b>Moved:</b> {(currentSelectedUnit.HasMovedThisTurn ? "<color=#B0BEC5>✓</color>" : "<color=#81C784>✗</color>")} | <b>Acted:</b> {(currentSelectedUnit.HasActedThisTurn ? "<color=#B0BEC5>✓</color>" : "<color=#81C784>✗</color>")}");
+            GUILayout.Label($"<b>HP:</b> {currentSelectedUnit.CurrentHealth}/{currentSelectedUnit.MaxHealth} | <b>ATK:</b> {currentSelectedUnit.EffectiveAttackDamage} | <b>Move:</b> {currentSelectedUnit.EffectiveMoveRange} | <b>Moved:</b> {(currentSelectedUnit.HasMovedThisTurn ? "<color=#B0BEC5></color>" : "<color=#81C784>X</color>")} | <b>Acted:</b> {(currentSelectedUnit.HasActedThisTurn ? "<color=#B0BEC5></color>" : "<color=#81C784>X</color>")}");
 
             string attuneColor = (currentSelectedUnit.BonusAttackDamage > 0) ? "#FFA726" : (currentSelectedUnit.BonusMoveRange > 0 ? "#29B6F6" : "#CFD8DC");
-            GUILayout.Label($"<b>Attunement:</b> <color={attuneColor}>{currentSelectedUnit.CurrentAttunementName}</color> | <b>Cores:</b> <color=#FFD54F>★ {currentSelectedUnit.ElementalCores}</color>");
+            GUILayout.Label($"<b>Attunement:</b> <color={attuneColor}>{currentSelectedUnit.CurrentAttunementName}</color> | <b>Cores:</b> <color=#FFD54F>* {currentSelectedUnit.ElementalCores}</color>");
 
             if (currentHoveredTile != null && AbyssalRiftConduit3D.Instance != null && AbyssalRiftConduit3D.Instance.RiftTile == currentHoveredTile)
             {
-                GUILayout.Label("<color=#BA68C8>🌀 <b>Hovering Abyssal Rift Conduit</b> (Sacrifice Maw)</color>");
+                GUILayout.Label("<color=#BA68C8> <b>Hovering Abyssal Rift Conduit</b> (Sacrifice Maw)</color>");
             }
         }
 
@@ -209,7 +209,7 @@ namespace ElementalHexTactics3D.InputHandling
         {
             if (AbyssalRiftConduit3D.Instance != null && AbyssalRiftConduit3D.Instance.RiftTile == currentHoveredTile)
             {
-                GUILayout.Label("<color=#BA68C8><b>🌀 ABYSSAL RIFT CONDUIT</b></color> (Sanctuary Gateway)");
+                GUILayout.Label("<color=#BA68C8><b>ABYSSAL RIFT CONDUIT</b></color> (Sanctuary Gateway)");
                 GUILayout.Label($"<b>Coordinates:</b> {currentHoveredTile.Coordinates} | <b>Sacrifices:</b> {AbyssalRiftConduit3D.Instance.TotalSacrifices}");
                 GUILayout.Label("<i><color=#FFE082>Shove enemies here to sacrifice for +1 Core!</color></i>");
             }
@@ -293,7 +293,7 @@ namespace ElementalHexTactics3D.InputHandling
         {
             Rect enemyInspectRect = new Rect(curX, btnY, 440f, btnH);
             curX += 440f + spacing;
-            string enemyInfo = $"<color=#EF5350><b>👁️ ENEMY: {currentSelectedUnit.UnitName}</b></color> ({currentSelectedUnit.Archetype})\n" +
+            string enemyInfo = $"<color=#EF5350><b>ENEMY: {currentSelectedUnit.UnitName}</b></color> ({currentSelectedUnit.Archetype})\n" +
                                $"<size=11>HP: {currentSelectedUnit.CurrentHealth}/{currentSelectedUnit.MaxHealth} | ATK: {currentSelectedUnit.EffectiveAttackDamage} | Move: {currentSelectedUnit.EffectiveMoveRange} | Affinity: {currentSelectedUnit.Affinity}</size>";
             DrawSolidPanel(enemyInspectRect, new Color(0.18f, 0.08f, 0.08f, 0.95f), new Color(0.85f, 0.25f, 0.25f, 0.8f), 1);
             GUIStyle enemyStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, richText = true };
@@ -305,7 +305,7 @@ namespace ElementalHexTactics3D.InputHandling
                 Rect tearRect = new Rect(curX, btnY, 260f, btnH);
                 string tearLabel = (currentMode == UnitActionMode.TearRift)
                     ? "<b>[Targeting Entry...]</b>\n<size=10>(Click Any Open Hex)</size>"
-                    : "<b>🌀 Tear Open Abyssal Rift</b>\n<size=10>(Choose Landing Hex & Deploy)</size>";
+                    : "<b>Tear Open Abyssal Rift</b>\n<size=10>(Choose Landing Hex & Deploy)</size>";
 
                 if (DrawOpaqueButton(tearRect, tearLabel,
                     new Color(0.45f, 0.15f, 0.70f, 1f), new Color(0.75f, 0.25f, 1.0f, 1f),
@@ -323,7 +323,7 @@ namespace ElementalHexTactics3D.InputHandling
         {
             Rect titleRect = new Rect(curX, btnY, 190f, btnH);
             curX += 190f + spacing;
-            string titleText = "<color=#BA68C8><b>🌀 CITADEL GATEWAY</b></color>\n<size=10>(Rift Unanchored)</size>";
+            string titleText = "<color=#BA68C8><b>CITADEL GATEWAY</b></color>\n<size=10>(Rift Unanchored)</size>";
             DrawSolidPanel(titleRect, new Color(0.12f, 0.08f, 0.18f, 0.95f), new Color(0.65f, 0.25f, 0.95f, 0.8f), 1);
             GUIStyle titleStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, fontSize = 11 };
             GUI.Label(titleRect, titleText, titleStyle);
@@ -332,7 +332,7 @@ namespace ElementalHexTactics3D.InputHandling
             curX += 280f + spacing;
             string tearLabel = (currentMode == UnitActionMode.TearRift)
                 ? "<b>[Targeting Entry...]</b>\n<size=10>(Click Any Open Hex)</size>"
-                : "<b>🌀 Tear Open Abyssal Rift</b>\n<size=10>(Choose Landing Hex & Open Rift)</size>";
+                : "<b>Tear Open Abyssal Rift</b>\n<size=10>(Choose Landing Hex & Open Rift)</size>";
 
             if (DrawOpaqueButton(tearRect, tearLabel,
                 new Color(0.45f, 0.15f, 0.70f, 1f), new Color(0.75f, 0.25f, 1.0f, 1f),
@@ -342,7 +342,7 @@ namespace ElementalHexTactics3D.InputHandling
             }
 
             Rect randRect = new Rect(curX, btnY, 220f, btnH);
-            if (DrawOpaqueButton(randRect, "<b>🎲 Randomize Map [R]</b>\n<size=10>(Roll New Incursion)</size>",
+            if (DrawOpaqueButton(randRect, "<b>Randomize Map [R]</b>\n<size=10>(Roll New Incursion)</size>",
                 new Color(0.18f, 0.28f, 0.40f, 1f), new Color(0.35f, 0.65f, 0.95f, 1f),
                 false, isPlayerTurn))
             {
@@ -365,7 +365,7 @@ namespace ElementalHexTactics3D.InputHandling
 
             Rect titleRect = new Rect(curX, btnY, 180f, btnH);
             curX += 180f + spacing;
-            string titleText = "<color=#BA68C8><b>🌀 CITADEL RIFT</b></color>\n<size=10>(Base Panel Gateway)</size>";
+            string titleText = "<color=#BA68C8><b>CITADEL RIFT</b></color>\n<size=10>(Base Panel Gateway)</size>";
             DrawSolidPanel(titleRect, new Color(0.12f, 0.08f, 0.18f, 0.95f), new Color(0.65f, 0.25f, 0.95f, 0.8f), 1);
             GUIStyle titleStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, fontSize = 11 };
             GUI.Label(titleRect, titleText, titleStyle);
@@ -374,10 +374,10 @@ namespace ElementalHexTactics3D.InputHandling
             Rect cmdrRect = new Rect(curX, btnY, 175f, btnH);
             curX += 175f + spacing;
             string cmdrLabel = !cmdrInReserve
-                ? "👤 Commander\n<size=10>(On Field - Click to Pick)</size>"
+                ? "Commander\n<size=10>(On Field - Click to Pick)</size>"
                 : (currentMode == UnitActionMode.DeployCommander
                     ? "<b>[Deploying...]</b>\n<size=10>(Click Hex)</size>"
-                    : "👤 Deploy Commander\n<size=10>(Free Vanguard)</size>");
+                    : "Deploy Commander\n<size=10>(Free Vanguard)</size>");
 
             if (DrawOpaqueButton(cmdrRect, cmdrLabel,
                 new Color(0.40f, 0.15f, 0.65f, 1f), new Color(0.70f, 0.30f, 1.0f, 1f),
@@ -399,17 +399,17 @@ namespace ElementalHexTactics3D.InputHandling
             string titanLabel;
             if (!titanInReserve)
             {
-                titanLabel = "🌋 Titan\n<size=10>(On Field - Click to Pick)</size>";
+                titanLabel = "Titan\n<size=10>(On Field - Click to Pick)</size>";
             }
             else if (noActiveUnits)
             {
                 titanLabel = (currentMode == UnitActionMode.SummonTitan)
                     ? "<b>[Summoning...]</b>\n<size=10>(Click Hex)</size>"
-                    : "🌋 Deploy Titan\n<size=10>(Free Vanguard)</size>";
+                    : "Deploy Titan\n<size=10>(Free Vanguard)</size>";
             }
             else if (cmdr != null && cmdr.ElementalCores < 1)
             {
-                titanLabel = "<color=#90A4AE>🌋 Summon Titan\n<size=10>(Req 1 Core)</size></color>";
+                titanLabel = "<color=#90A4AE> Summon Titan\n<size=10>(Req 1 Core)</size></color>";
             }
             else if (currentMode == UnitActionMode.SummonTitan)
             {
@@ -417,7 +417,7 @@ namespace ElementalHexTactics3D.InputHandling
             }
             else
             {
-                titanLabel = "🌋 Summon Titan\n<size=10>(1 Core)</size>";
+                titanLabel = "Summon Titan\n<size=10>(1 Core)</size>";
             }
 
             if (DrawOpaqueButton(titanRect, titanLabel,
@@ -469,8 +469,8 @@ namespace ElementalHexTactics3D.InputHandling
             Rect strikeRect = new Rect(curX, btnY, 120f, btnH);
             curX += 120f + spacing;
             string strikeLabel = (currentSelectedUnit.HasActedThisTurn)
-                ? "<color=#90A4AE>⚔️ Titan Strike\n<size=10>(Acted)</size></color>"
-                : $"⚔️ Titan Strike\n<size=10>(Dmg {currentSelectedUnit.EffectiveAttackDamage})</size>";
+                ? "<color=#90A4AE> Titan Strike\n<size=10>(Acted)</size></color>"
+                : $"Titan Strike\n<size=10>(Dmg {currentSelectedUnit.EffectiveAttackDamage})</size>";
             if (DrawOpaqueButton(strikeRect, strikeLabel,
                 new Color(0.65f, 0.22f, 0.15f, 1f), new Color(0.95f, 0.35f, 0.15f, 1f),
                 currentMode == UnitActionMode.TitanStrike, canCombat))
@@ -482,8 +482,8 @@ namespace ElementalHexTactics3D.InputHandling
             Rect shoveRect = new Rect(curX, btnY, 105f, btnH);
             curX += 105f + spacing;
             string shoveLabel = (currentSelectedUnit.HasActedThisTurn)
-                ? "<color=#90A4AE>💨 Tail Shove\n<size=10>(Acted)</size></color>"
-                : "💨 Tail Shove\n<size=10>(Shove 1)</size>";
+                ? "<color=#90A4AE> Tail Shove\n<size=10>(Acted)</size></color>"
+                : "Tail Shove\n<size=10>(Shove 1)</size>";
             if (DrawOpaqueButton(shoveRect, shoveLabel,
                 new Color(0.38f, 0.18f, 0.52f, 1f), new Color(0.65f, 0.28f, 0.90f, 1f),
                 currentMode == UnitActionMode.KineticPush, canCombat))
@@ -496,8 +496,8 @@ namespace ElementalHexTactics3D.InputHandling
             Rect siphonRect = new Rect(curX, btnY, 120f, btnH);
             curX += 120f + spacing;
             string siphonLabel = (currentSelectedUnit.HasSiphonedThisTurn || currentSelectedUnit.HasActedThisTurn)
-                ? "<color=#90A4AE>⚡ Siphon Land\n<size=10>(Acted)</size></color>"
-                : "⚡ Siphon Land\n<size=10>(+1 Core)</size>";
+                ? "<color=#90A4AE> Siphon Land\n<size=10>(Acted)</size></color>"
+                : "Siphon Land\n<size=10>(+1 Core)</size>";
             if (DrawOpaqueButton(siphonRect, siphonLabel,
                 new Color(0.70f, 0.55f, 0.15f, 1f), new Color(1.0f, 0.82f, 0.20f, 1f),
                 currentMode == UnitActionMode.ConsumeLand, canSiphon))
@@ -510,10 +510,10 @@ namespace ElementalHexTactics3D.InputHandling
             Rect ultRect = new Rect(curX, btnY, 140f, btnH);
             curX += 140f + spacing;
             string ultLabel = (currentSelectedUnit.ElementalCores < 1)
-                ? "<color=#90A4AE>🌋 Cataclysm\n<size=10>(Req 1 Core)</size></color>"
+                ? "<color=#90A4AE> Cataclysm\n<size=10>(Req 1 Core)</size></color>"
                 : (currentSelectedUnit.HasActedThisTurn
-                    ? "<color=#90A4AE>🌋 Cataclysm\n<size=10>(Acted)</size></color>"
-                    : $"🌋 Cataclysm\n<size=10><b>(Core: {currentSelectedUnit.ElementalCores})</b></size>");
+                    ? "<color=#90A4AE> Cataclysm\n<size=10>(Acted)</size></color>"
+                    : $"Cataclysm\n<size=10><b>(Core: {currentSelectedUnit.ElementalCores})</b></size>");
             if (DrawOpaqueButton(ultRect, ultLabel,
                 new Color(0.80f, 0.15f, 0.12f, 1f), new Color(1.0f, 0.35f, 0.10f, 1f),
                 currentMode == UnitActionMode.MagmaCataclysm, canUlt))
@@ -523,7 +523,7 @@ namespace ElementalHexTactics3D.InputHandling
 
             // 5. Recall
             Rect recallRect = new Rect(curX, btnY, 110f, btnH);
-            if (DrawOpaqueButton(recallRect, "🌀 Recall\n<size=10>(To Reserve)</size>",
+            if (DrawOpaqueButton(recallRect, "Recall\n<size=10>(To Reserve)</size>",
                 new Color(0.35f, 0.15f, 0.55f, 1f), new Color(0.65f, 0.25f, 0.95f, 1f),
                 false, canAct))
             {
@@ -537,8 +537,8 @@ namespace ElementalHexTactics3D.InputHandling
             Rect fireRect = new Rect(curX, btnY, 90f, btnH);
             curX += 90f + spacing;
             string fireLabel = (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn)
-                ? "<color=#90A4AE>🔥 Fireball\n<size=10>(Acted)</size></color>"
-                : "🔥 Fireball\n<size=10>(Dmg 3)</size>";
+                ? "<color=#90A4AE> Fireball\n<size=10>(Acted)</size></color>"
+                : "Fireball\n<size=10>(Dmg 3)</size>";
             if (DrawOpaqueButton(fireRect, fireLabel,
                 new Color(0.55f, 0.20f, 0.12f, 1f), new Color(0.90f, 0.35f, 0.10f, 1f),
                 currentMode == UnitActionMode.Fireball, canCombat))
@@ -550,8 +550,8 @@ namespace ElementalHexTactics3D.InputHandling
             Rect waterRect = new Rect(curX, btnY, 90f, btnH);
             curX += 90f + spacing;
             string waterLabel = (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn)
-                ? "<color=#90A4AE>💧 Water\n<size=10>(Acted)</size></color>"
-                : "💧 Water\n<size=10>(Dmg 2)</size>";
+                ? "<color=#90A4AE> Water\n<size=10>(Acted)</size></color>"
+                : "Water\n<size=10>(Dmg 2)</size>";
             if (DrawOpaqueButton(waterRect, waterLabel,
                 new Color(0.12f, 0.38f, 0.60f, 1f), new Color(0.20f, 0.60f, 0.95f, 1f),
                 currentMode == UnitActionMode.WaterSurge, canCombat))
@@ -563,8 +563,8 @@ namespace ElementalHexTactics3D.InputHandling
             Rect earthRect = new Rect(curX, btnY, 105f, btnH);
             curX += 105f + spacing;
             string earthLabel = (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn)
-                ? "<color=#90A4AE>⛰️ Earth Pillar\n<size=10>(Acted)</size></color>"
-                : "⛰️ Earth Pillar\n<size=10>(Pillar/Mud)</size>";
+                ? "<color=#90A4AE> Earth Pillar\n<size=10>(Acted)</size></color>"
+                : "Earth Pillar\n<size=10>(Pillar/Mud)</size>";
             if (DrawOpaqueButton(earthRect, earthLabel,
                 new Color(0.40f, 0.28f, 0.18f, 1f), new Color(0.70f, 0.52f, 0.30f, 1f),
                 currentMode == UnitActionMode.EarthSpire, canCombat))
@@ -576,8 +576,8 @@ namespace ElementalHexTactics3D.InputHandling
             Rect pushRect = new Rect(curX, btnY, 90f, btnH);
             curX += 90f + spacing;
             string pushLabel = (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn)
-                ? "<color=#90A4AE>💨 Push\n<size=10>(Acted)</size></color>"
-                : "💨 Push\n<size=10>(Shove 1)</size>";
+                ? "<color=#90A4AE> Push\n<size=10>(Acted)</size></color>"
+                : "Push\n<size=10>(Shove 1)</size>";
             if (DrawOpaqueButton(pushRect, pushLabel,
                 new Color(0.38f, 0.18f, 0.52f, 1f), new Color(0.65f, 0.28f, 0.90f, 1f),
                 currentMode == UnitActionMode.KineticPush, canCombat))
@@ -590,8 +590,8 @@ namespace ElementalHexTactics3D.InputHandling
             Rect siphonRect = new Rect(curX, btnY, 110f, btnH);
             curX += 110f + spacing;
             string siphonLabel = (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn)
-                ? "<color=#90A4AE>⚡ Siphon\n<size=10>(Acted)</size></color>"
-                : "⚡ Siphon\n<size=10>(+1 Core)</size>";
+                ? "<color=#90A4AE> Siphon\n<size=10>(Acted)</size></color>"
+                : "Siphon\n<size=10>(+1 Core)</size>";
             if (DrawOpaqueButton(siphonRect, siphonLabel,
                 new Color(0.70f, 0.55f, 0.15f, 1f), new Color(1.0f, 0.82f, 0.20f, 1f),
                 currentMode == UnitActionMode.ConsumeLand, canSiphon))
@@ -614,13 +614,13 @@ namespace ElementalHexTactics3D.InputHandling
             curX += 120f + spacing;
             string summonLabel;
             if (currentSelectedUnit != null && currentSelectedUnit.ElementalCores < 1)
-                summonLabel = "<color=#90A4AE>🌀 Rift Titan\n<size=10>(Req 1 Core)</size></color>";
+                summonLabel = "<color=#90A4AE> Rift Titan\n<size=10>(Req 1 Core)</size></color>";
             else if (currentSelectedUnit != null && currentSelectedUnit.HasActedThisTurn && !titanInReserve)
-                summonLabel = "<color=#90A4AE>🌀 Rift Titan\n<size=10>(Acted)</size></color>";
+                summonLabel = "<color=#90A4AE> Rift Titan\n<size=10>(Acted)</size></color>";
             else if (titanOnField)
-                summonLabel = "🌀 Warp Titan\n<size=10>(Redeploy & Slam)</size>";
+                summonLabel = "Warp Titan\n<size=10>(Redeploy & Slam)</size>";
             else
-                summonLabel = "🌀 Summon Titan\n<size=10>(Call from Rift)</size>";
+                summonLabel = "Summon Titan\n<size=10>(Call from Rift)</size>";
 
             if (DrawOpaqueButton(summonRect, summonLabel,
                 new Color(0.45f, 0.15f, 0.70f, 1f), new Color(0.75f, 0.25f, 1.0f, 1f),
@@ -631,7 +631,7 @@ namespace ElementalHexTactics3D.InputHandling
 
             // 7. Recall
             Rect cmdrRecallRect = new Rect(curX, btnY, 100f, btnH);
-            if (DrawOpaqueButton(cmdrRecallRect, "🌀 Recall\n<size=10>(To Citadel)</size>",
+            if (DrawOpaqueButton(cmdrRecallRect, "Recall\n<size=10>(To Citadel)</size>",
                 new Color(0.35f, 0.15f, 0.55f, 1f), new Color(0.65f, 0.25f, 0.95f, 1f),
                 false, canAct))
             {
@@ -685,7 +685,7 @@ namespace ElementalHexTactics3D.InputHandling
             GUILayout.BeginArea(new Rect(ghostUIRect.x + 12, ghostUIRect.y + 10, ghostUIRect.width - 24, ghostUIRect.height - 20));
 
             string titleColor = preview.TriggeredReaction ? "#FFD54F" : "#81C784";
-            GUILayout.Label($"<size=13><color={titleColor}><b>⚡ GHOST UI: {preview.ReactionName}</b></color></size>");
+            GUILayout.Label($"<size=13><color={titleColor}><b>GHOST UI: {preview.ReactionName}</b></color></size>");
             GUILayout.Label($"<b>Target:</b> {currentHoveredTile.Coordinates} | Current: {currentHoveredTile.State} (Tier {currentHoveredTile.TierLevel})");
             GUILayout.Label($"<b>Output:</b> <color=#FFA726>{preview.ResultingState} (Tier {preview.ResultingTier})</color>");
             GUILayout.Label($"<color=#B0BEC5><i>{preview.Description}</i></color>");

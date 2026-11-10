@@ -594,7 +594,7 @@ namespace ElementalHexTactics3D.Units
                     if (titanSprite != null)
                     {
                         primaryTitan.SetStandeeSprite(titanSprite);
-                        primaryTitan.SetUnitName("Flame Titan");
+                        primaryTitan.SetUnitName("Magma Dragon");
                         Transform st = primaryTitan.transform.Find("Standee");
                         if (st != null) st.localScale = Vector3.one * 1.15f;
                     }
@@ -622,6 +622,8 @@ namespace ElementalHexTactics3D.Units
         public static void EnsureAlliedRosterExists()
         {
             var allUnits = Object.FindObjectsByType<TacticalUnit3D>(FindObjectsInactive.Include);
+            bool hasCommander = false;
+            bool hasTitan = false;
             bool hasBasalt = false;
             bool hasSiren = false;
             bool hasMagma = false;
@@ -629,9 +631,36 @@ namespace ElementalHexTactics3D.Units
             foreach (var u in allUnits)
             {
                 if (u == null || u.Faction != UnitFaction.Player) continue;
-                if (u.UnitName == "Earth Golem" || u.UnitName == "Basalt Vanguard") hasBasalt = true;
+                if (u.Archetype == UnitArchetype.Commander || u.UnitName == "Demon Lord") hasCommander = true;
+                if (u.Archetype == UnitArchetype.Titan || u.UnitName == "Magma Dragon" || u.UnitName == "Flame Titan") hasTitan = true;
+                if (u.UnitName == "Basalt Vanguard" || u.UnitName == "Earth Golem") hasBasalt = true;
                 if (u.UnitName == "Siren Sorceress") hasSiren = true;
                 if (u.UnitName == "Magma Imp") hasMagma = true;
+            }
+
+            if (!hasCommander)
+            {
+                Sprite dlSprite = LoadBattlerSprite("DemonLord.png");
+                if (dlSprite != null)
+                {
+                    TacticalUnit3D u = SpawnUnitStandee("Demon Lord", UnitFaction.Player, dlSprite, null, 18, 2, UnitArchetype.Commander, ElementalAffinity.Fire, 3, 0.85f);
+                    if (u != null) { u.gameObject.SetActive(false); }
+                }
+            }
+
+            if (!hasTitan)
+            {
+                Sprite mdSprite = LoadBattlerSprite("magmadragon.png");
+                if (mdSprite != null)
+                {
+                    TacticalUnit3D u = SpawnUnitStandee("Magma Dragon", UnitFaction.Player, mdSprite, null, 24, 3, UnitArchetype.Titan, ElementalAffinity.Fire, 3, 1.15f);
+                    if (u != null)
+                    {
+                        Sprite p = LoadPortraitSprite("magmadragonportrait.png");
+                        if (p != null) u.SetPortraitSprite(p);
+                        u.gameObject.SetActive(false);
+                    }
+                }
             }
 
             if (!hasBasalt)
@@ -639,7 +668,7 @@ namespace ElementalHexTactics3D.Units
                 Sprite sp = LoadBattlerSprite("BasaltVanguard.png");
                 if (sp != null)
                 {
-                    TacticalUnit3D u = SpawnUnitStandee("Earth Golem", UnitFaction.Player, sp, null, 16, 2, UnitArchetype.Titan, ElementalAffinity.Earth, 3, 0.85f);
+                    TacticalUnit3D u = SpawnUnitStandee("Basalt Vanguard", UnitFaction.Player, sp, null, 16, 2, UnitArchetype.Minion, ElementalAffinity.Earth, 2, 0.80f);
                     if (u != null) { u.gameObject.SetActive(false); }
                 }
             }

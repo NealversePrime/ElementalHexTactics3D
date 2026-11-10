@@ -595,8 +595,8 @@ namespace ElementalHexTactics3D.Units
                     // Humanoid casters/minions gain +2 ATK but still take burn damage if immersed in molten magma!
                     IsMagmaImmune = (archetype == UnitArchetype.Titan);
                     CurrentAttunementName = (state == TileState.Magma)
-                        ? (IsMagmaImmune ? "🔥 Magma Surge (+2 ATK, Magma Immune)" : "🔥 Magma Surge (+2 ATK, Burn Hazard!)")
-                        : "🔥 Flame Surge (+2 ATK)";
+                        ? (IsMagmaImmune ? "Magma Surge (+2 ATK, Magma Immune)" : "Magma Surge (+2 ATK, Burn Hazard!)")
+                        : "Flame Surge (+2 ATK)";
                 }
             }
             // 2. Aqua Attunement: Standing in Shallow or Deep Water
@@ -605,32 +605,32 @@ namespace ElementalHexTactics3D.Units
                 if (affinity == ElementalAffinity.Water || archetype == UnitArchetype.Titan)
                 {
                     BonusMoveRange = 1;
-                    CurrentAttunementName = "💧 Aqua Surge (+1 Move)";
+                    CurrentAttunementName = "Aqua Surge (+1 Move)";
                 }
             }
             // 3. Vapor Shroud: Standing in Steam cloud
             else if (state == TileState.Steam)
             {
-                CurrentAttunementName = "💨 Vapor Shroud (Mist Cover)";
+                CurrentAttunementName = "Vapor Shroud (Mist Cover)";
             }
             // 4. Mud: Sticky quagmire
             else if (state == TileState.Mud)
             {
-                CurrentAttunementName = "💩 Mud (Quagmire)";
+                CurrentAttunementName = "Mud (Quagmire)";
             }
 
             if (IsImmobilized)
             {
-                CurrentAttunementName += " | ⛓️ IMMOBILIZED";
+                CurrentAttunementName += " |  IMMOBILIZED";
             }
             else if (IsCrippled)
             {
-                CurrentAttunementName += " | 🦶 CRIPPLED (Move 1)";
+                CurrentAttunementName += " |  CRIPPLED (Move 1)";
             }
 
             if (isDefending)
             {
-                CurrentAttunementName += " | 🛡️ DEFENDING (-50% DMG)";
+                CurrentAttunementName += " |  DEFENDING (-50% DMG)";
             }
 
             UpdateBaseRingVisuals();
@@ -767,7 +767,7 @@ namespace ElementalHexTactics3D.Units
                 {
                     ApplyMobilityDebuff(1, 1);
                     Debug.Log($"<color=#0288D1><b>[Deep Water Submerged!]</b></color> {unitName} plunged into Deep Water! Immobilized 1 round.");
-                    CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "🌊 SUBMERGED! (Immobilized)", new Color(0.2f, 0.8f, 1.0f), 1.5f);
+                    CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "SUBMERGED! (Immobilized)", new Color(0.2f, 0.8f, 1.0f), 1.5f);
                     TacticalCameraController.Instance?.Shake(0.2f, 0.25f);
                     SoundManager3D.Instance?.PlayWaterSurge();
                 }
@@ -780,7 +780,7 @@ namespace ElementalHexTactics3D.Units
                 {
                     ApplyMobilityDebuff(1, 1);
                     Debug.Log($"<color=#8D6E63><b>[Mud Quagmire Trap!]</b></color> {unitName} caught in sticky Mud! Immobilized 1 round.");
-                    CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "💩 MUD TRAP! (Immobilized)", new Color(0.75f, 0.55f, 0.35f), 1.5f);
+                    CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "MUD TRAP! (Immobilized)", new Color(0.75f, 0.55f, 0.35f), 1.5f);
                     TacticalCameraController.Instance?.Shake(0.18f, 0.20f);
                     SoundManager3D.Instance?.PlayMudTrap();
                 }
@@ -907,8 +907,8 @@ namespace ElementalHexTactics3D.Units
                     if (CombatFeedbackManager.Instance != null)
                     {
                         string protMsg = ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance.IsStage1Active
-                            ? "🛡️ DIVINE BLESSING! (Protected)"
-                            : "🛡️ ABYSSAL WILL! (Protected)";
+                            ? "DIVINE BLESSING! (Protected)"
+                            : "ABYSSAL WILL! (Protected)";
                         CombatFeedbackManager.Instance.SpawnDamageText(transform.position, protMsg, new Color(1.0f, 0.9f, 0.25f), 1.6f);
                     }
                 }
@@ -916,7 +916,7 @@ namespace ElementalHexTactics3D.Units
 
             // 3.5. Stage 1 Raid Boss Deathbed Clamp:
             // When Demon Lord Malakor is reduced to half health (<= 750 HP) or lethal damage for the first time,
-            // clamp him at 1 HP so he remains visibly alive on his throne for his deathbed last words and the player's final coup de grâce!
+            // clamp him at 1 HP so he remains visibly alive on his throne for his deathbed last words and the player's final coup de grace!
             if (faction == UnitFaction.Enemy &&
                 ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance != null &&
                 ElementalHexTactics3D.Tutorial.TutorialScenarioManager.Instance.IsStage1Active &&
@@ -991,7 +991,7 @@ namespace ElementalHexTactics3D.Units
             UpdateBaseRingVisuals();
 
             Debug.Log($"<color=#42A5F5><b>[Defend Action]</b></color> {unitName} assumes a defensive guard stance (-50% incoming damage)!");
-            CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "🛡️ DEFENDING (-50% DMG)", new Color(0.35f, 0.75f, 1.0f), 1.6f);
+            CombatFeedbackManager.Instance?.SpawnDamageText(transform.position, "DEFENDING (-50% DMG)", new Color(0.35f, 0.75f, 1.0f), 1.6f);
             CombatVFXManager.Instance?.PlayHitSparks(transform.position + Vector3.up * 0.75f, new Color(0.35f, 0.75f, 1.0f));
             SoundManager3D.Instance?.PlayGuard();
         }

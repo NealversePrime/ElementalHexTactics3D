@@ -118,7 +118,7 @@ namespace ElementalHexTactics3D.Campaign
                 cards.Add(new ExpeditionMissionData
                 {
                     MissionId = $"EXP_{day}_SABOTAGE",
-                    Title = forceSabotage ? "⚠️ CRITICAL: Vanguard Encampment Assault" : "Crusader Vanguard Outpost Sabotage",
+                    Title = forceSabotage ? "CRITICAL: Vanguard Encampment Assault" : "Crusader Vanguard Outpost Sabotage",
                     Description = forceSabotage
                         ? "The Crusade vanguard is at our gates! Slay their vanguard captains immediately to buy the Citadel crucial days!"
                         : "Holy Inquisitors constructing siege ballistas. Infiltrate their camp, execute their officers, and stall the crusade.",

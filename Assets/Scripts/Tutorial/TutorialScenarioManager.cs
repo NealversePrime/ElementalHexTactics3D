@@ -249,7 +249,7 @@ namespace ElementalHexTactics3D.Tutorial
                             stage1MoveHintShown = true;
                             TutorialGuidanceBannerUI banner = TutorialGuidanceBannerUI.EnsureInstance();
                             banner?.ShowGuidance(
-                                "✦ TACTICAL INSIGHT",
+                                "TACTICAL INSIGHT",
                                 "The demon vanguard blocks the sanctuary path. Advance forward and strike!",
                                 "Select your Paladin, step forward, and strike the demonic frontline!",
                                 new Color(1f, 0.88f, 0.35f)
@@ -264,7 +264,7 @@ namespace ElementalHexTactics3D.Tutorial
                             stage1PushHintShown = true;
                             TutorialGuidanceBannerUI banner = TutorialGuidanceBannerUI.EnsureInstance();
                             banner?.ShowGuidance(
-                                "✦ KINETIC COMBAT",
+                                "KINETIC COMBAT",
                                 "That stone pillar behind the minion... one heavy shove will crush it!",
                                 "Select Holy Shielder and push the minion into the pillar for Wall Slam bonus damage!",
                                 new Color(0.85f, 0.65f, 0.35f)
@@ -312,7 +312,7 @@ namespace ElementalHexTactics3D.Tutorial
                         Debug.Log("<color=#FF7043><b>[Stage 2]</b></color> Elemental Reaction Triggered: Scorched -> Molten Magma!");
 
                         CombatFeedbackManager.Instance?.ShowBanner(
-                            "🔥 ELEMENTAL ALCHEMY: MOLTEN MAGMA! 🔥",
+                            "ELEMENTAL ALCHEMY: MOLTEN MAGMA! ",
                             "Scorched earth erupted into molten Magma! Units shoved into this hazard suffer 3 Burn damage!",
                             3.0f,
                             new Color(1.00f, 0.44f, 0.26f)
@@ -344,7 +344,7 @@ namespace ElementalHexTactics3D.Tutorial
                         stage2HazardPushCompleted = true;
                         Debug.Log("<color=#FFD54F><b>[Stage 2]</b></color> Kinetic Shove Triggered: Scout Defender shoved!");
 
-                        string hazardTitle = stage2MagmaIgnited ? "💥 KINETIC HAZARD: TACTICAL SHOVE! 💥" : "💥 KINETIC SHOVE: ENEMY DISPLACED! 💥";
+                        string hazardTitle = stage2MagmaIgnited ? "KINETIC HAZARD: TACTICAL SHOVE! " : "KINETIC SHOVE: ENEMY DISPLACED! ";
                         string hazardDesc = stage2MagmaIgnited ? 
                             "Brutal impact into the magma hazard! Environmental collision damage executed!" : 
                             "Scout Defender was shoved onto Scorched Earth! Cast Fireball on it to breach into Magma!";
@@ -474,8 +474,8 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(slimeStrikeTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Strike");
                     banner?.ShowGuidance(
-                        "[STEP 3/6] ☀️ RADIANT SMITE (HOLY FIRE)",
-                        "Unleash holy flame! Radiant Smite purges the minion and scorches the velvet carpet into blazing Scorched Earth!",
+                        "[STEP 3/6] RADIANT SMITE (HOLY JUDGMENT)",
+                        "Unleash solar judgment! Radiant Smite calls down a pillar of holy light to purge the abyssal minion!",
                         "Click [Radiant Smite] or [Holy Strike], then attack the Demon Slime at (0, 0)!",
                         new Color(1f, 0.65f, 0.25f)
                     );
@@ -498,8 +498,8 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(slimeShoveTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
                     banner?.ShowGuidance(
-                        "[STEP 5/6] 🛡️ KINETIC SHOVE: WALL SLAM & HAZARDS",
-                        "Notice that solid Stone Pillar behind the slime at (1, 0)! Shoving enemies into pillars inflicts 3 Wall Slam damage! You can also shove enemies onto Scorched tiles to burn them!",
+                        "[STEP 5/6] KINETIC SHOVE: WALL SLAM",
+                        "Notice that solid Stone Pillar behind the slime at (1, 0)! Shoving enemies into pillars or obstacles inflicts massive bonus Wall Slam damage!",
                         "Click [Shield Shove / Push] on the action bar, then target the slime at (0, 0) to slam it into the pillar!",
                         new Color(0.85f, 0.65f, 0.35f)
                     );
@@ -531,8 +531,8 @@ namespace ElementalHexTactics3D.Tutorial
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "⚔️ [FREE COMBAT] SLAY DEMON LORD MALAKOR ⚔️",
-                        "The training wheels are off—take full tactical command! Freely move, cast Radiant Smite, or shove enemies into stone pillars and scorched hazards to finish the raid!",
+                        "[FREE COMBAT] SLAY DEMON LORD MALAKOR",
+                        "The training wheels are off - take full tactical command! Freely move, unleash Sacred Arts, or shove enemies into the throne room pillars to finish the raid!",
                         "Purge the minions and defeat Demon Lord Malakor to finish the raid!",
                         new Color(1f, 0.88f, 0.35f)
                     );
@@ -600,7 +600,7 @@ namespace ElementalHexTactics3D.Tutorial
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("DeployCommander");
                     banner?.ShowGuidance(
                         "[STAGE 2 - STEP 2/5] DEPLOY FROM CITADEL RESERVE",
-                        "The rift conduit is humming! Now deploy my Demon Lord into battle—Basalt Vanguard will follow through the portal!",
+                        "The rift conduit is humming! Now deploy my Demon Lord into battle-Basalt Vanguard will follow through the portal!",
                         "Click [Deploy Commander], then target the hex at (1, -2)!",
                         new Color(0.65f, 0.35f, 0.95f)
                     );
@@ -623,9 +623,9 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(scorchedTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Fireball");
                     banner?.ShowGuidance(
-                        "🔥 [TACTICAL DIRECTIVE 1/2] ELEMENTAL ALCHEMY",
+                        "[TACTICAL DIRECTIVE 1/2] ELEMENTAL ALCHEMY",
                         "My vessel is Level 1, but primal flame resonates with this scorched soil... Cast Fireball on (0, 0) to ignite Molten Magma!",
-                        "Select Demon Lord, choose [Special ➔ Fireball], and target the Scorched Earth at (0, 0)!",
+                        "Select Demon Lord, choose [Special -> Fireball], and target the Scorched Earth at (0, 0)!",
                         new Color(1.00f, 0.44f, 0.26f)
                     );
                     break;
@@ -644,7 +644,7 @@ namespace ElementalHexTactics3D.Tutorial
                     SetTutorialHighlightedTile(shielderTile);
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton("Push");
                     banner?.ShowGuidance(
-                        "💥 [TACTICAL DIRECTIVE 2/2] KINETIC HAZARD SHOVE",
+                        "[TACTICAL DIRECTIVE 2/2] KINETIC HAZARD SHOVE",
                         "Scout Defender stands on the precipice of our magma pit! Basalt Vanguard, crush their stance and shove them into the inferno!",
                         "Select Basalt Vanguard, click [Push / Golem Slam], and shove the Scout Defender at (0, -1) into the Magma!",
                         new Color(1.00f, 0.84f, 0.31f)
@@ -655,7 +655,7 @@ namespace ElementalHexTactics3D.Tutorial
                     ClearTutorialHighlightedTile();
                     CombatHudCanvasUI.Instance?.HighlightTutorialButton(null);
                     banner?.ShowGuidance(
-                        "⚔️ [FREE COMBAT] CRUSH SYNOD SCOUTS",
+                        "[FREE COMBAT] CRUSH SYNOD SCOUTS",
                         "Both elemental alchemy and kinetic shove are mastered! Flank the Scout Archer or use [Defend] to absorb oncoming fire!",
                         "Total Tactical Freedom: Move, strike, use Defend stance, or cast spells freely to finish the battle!",
                         new Color(0.40f, 0.85f, 0.45f)
@@ -737,7 +737,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 3/7] SIPHON ELEMENTAL CORE",
                         "Summoning a Titan requires an Elemental Core. As Demon Lord, I can siphon elemental energy from the land!",
-                        "Select Demon Lord, choose [⚡ Absorb], then target the adjacent scorched earth at (0, 0)!",
+                        "Select Demon Lord, choose [ Absorb], then target the adjacent scorched earth at (0, 0)!",
                         new Color(0.35f, 0.85f, 1.0f)
                     );
                     break;
@@ -763,7 +763,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 5/7] TITAN FEAST: ABSORB THE LAND",
                         "Titans feast upon elemental land to charge their world-shattering abilities! Siphon the adjacent Scorched Earth to forge an Elemental Core!",
-                        "Select Magma Dragon, choose [⚡ Absorb], and consume the adjacent Scorched Earth at (1, -1)!",
+                        "Select Magma Dragon, choose [ Absorb], and consume the adjacent Scorched Earth at (1, -1)!",
                         new Color(1f, 0.85f, 0.2f)
                     );
                     break;
@@ -787,7 +787,7 @@ namespace ElementalHexTactics3D.Tutorial
                     banner?.ShowGuidance(
                         "[STAGE 3 - STEP 6/7] UNLEASH TITAN CATACLYSM",
                         "An Elemental Core is primed! The Magma Dragon can now rupture the crust with subterranean magma and obliterate their vanguard!",
-                        "Select Magma Dragon, open [✨ Special] ➔ [🌋 Magma Cataclysm], then target the crusaders at (0, 2)!",
+                        "Select Magma Dragon, open [ Special] -> [ Magma Cataclysm], then target the crusaders at (0, 2)!",
                         new Color(1.0f, 0.45f, 0.15f)
                     );
                     break;
@@ -989,7 +989,7 @@ namespace ElementalHexTactics3D.Tutorial
                 if (CombatFeedbackManager.Instance != null)
                 {
                     CombatFeedbackManager.Instance.ShowBanner(
-                        "⚜️ THE RADIANT CRUSADE: SLAY THE DEMON LORD ⚜️",
+                        "THE RADIANT CRUSADE: SLAY THE DEMON LORD ",
                         "Unleash Holy Strikes, Radiant Smite & Kinetic Wall Slams against the Demon Lord!",
                         4.5f,
                         new Color(1f, 0.88f, 0.35f)
@@ -1088,7 +1088,7 @@ namespace ElementalHexTactics3D.Tutorial
                 TacticalCameraController.Instance?.FocusOnPosition(DemonLordBoss.transform.position);
                 CombatFeedbackManager.Instance?.SpawnDamageText(
                     DemonLordBoss.transform.position + Vector3.up * 0.8f,
-                    "1 HP — MORTALLY WOUNDED!",
+                    "1 HP - MORTALLY WOUNDED!",
                     new Color(1.0f, 0.35f, 0.25f),
                     1.8f
                 );
@@ -1101,7 +1101,7 @@ namespace ElementalHexTactics3D.Tutorial
                 StoryDialogueUI.Instance.PlayPrebuiltSequence(StorySequenceId.HolyRaidDeathbed, () =>
                 {
                     isStage1DeathbedPlaying = false;
-                    // Refresh Crusaders so the player can immediately deliver the final coup de grâce this turn!
+                    // Refresh Crusaders so the player can immediately deliver the final coup de grace this turn!
                     if (PaladinUnit != null && PaladinUnit.CurrentHealth > 0)
                     {
                         PaladinUnit.HasActedThisTurn = false;
@@ -1117,7 +1117,7 @@ namespace ElementalHexTactics3D.Tutorial
                         SetTutorialHighlightedTile(DemonLordBoss.CurrentTile);
                     }
                     CombatFeedbackManager.Instance?.ShowBanner(
-                        "⚔️ COUP DE GRÂCE: DELIVER THE FINAL STRIKE (1 HP)! ⚔️",
+                        "COUP DE GRACE: DELIVER THE FINAL STRIKE (1 HP)! ",
                         "Malakor is kneeling at 1 HP on his throne! Strike him once more to end the raid!",
                         4.5f,
                         new Color(1.0f, 0.88f, 0.35f)
@@ -1149,11 +1149,8 @@ namespace ElementalHexTactics3D.Tutorial
                     CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: false);
                     TitleMenuCanvasUI.Instance?.ApplyTitleThemeMode(TitleMenuCanvasUI.TitleThemeMode.DemonLordRebellion);
 
-                    // Chain seamlessly into Demon Lord Awakening dialogue, then directly enter Stage 2 combat!
-                    StoryDialogueUI.Instance.PlayPrebuiltSequence(StorySequenceId.HubAwakeningDemonLord, () =>
-                    {
-                        StartStage2FrontierHazards();
-                    });
+                    // Enter Citadel Town Hub for Demon Lord Awakening scene and gateway dispatch!
+                    StartHubCitadelAwakening();
                 });
             }
             else
@@ -1161,7 +1158,7 @@ namespace ElementalHexTactics3D.Tutorial
                 CampaignSaveManager.SetTransmigrated(true);
                 CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: false);
                 TitleMenuCanvasUI.Instance?.ApplyTitleThemeMode(TitleMenuCanvasUI.TitleThemeMode.DemonLordRebellion);
-                StartStage2FrontierHazards();
+                StartHubCitadelAwakening();
             }
         }
 
@@ -1197,7 +1194,7 @@ namespace ElementalHexTactics3D.Tutorial
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "🌀 DEFEND THE ASHEN FRONTIER 🌀",
+                    "DEFEND THE ASHEN FRONTIER ",
                     "Radiant Synod scouts have crossed into our territory! Click the [Abyssal Rift Gateway] in the Citadel center!",
                     4.5f,
                     new Color(1f, 0.85f, 0.35f)
@@ -1308,7 +1305,7 @@ namespace ElementalHexTactics3D.Tutorial
                 if (CombatFeedbackManager.Instance != null)
                 {
                     CombatFeedbackManager.Instance.ShowBanner(
-                        "🌲 STAGE 2: FRONTIER SKIRMISH 🌲",
+                        "STAGE 2: FRONTIER SKIRMISH ",
                         "Underdog Tactics: Ignite Scorched Earth into Magma and shove scouts into the hazard!",
                         4.5f,
                         new Color(0.95f, 0.55f, 0.15f)
@@ -1409,6 +1406,7 @@ namespace ElementalHexTactics3D.Tutorial
         public void StartHubTitanCrisis()
         {
             CurrentStage = TutorialStage.Hub_TitanCrisis;
+            CurrentStep = TutorialStep.Hub_TitanCrisisDialogue;
             Debug.Log("<color=#FF7043><b>[Tutorial Scenario]</b></color> Entering Hub: The Titan Crisis...");
 
             PurgeAllBattlefieldUnits();
@@ -1419,24 +1417,25 @@ namespace ElementalHexTactics3D.Tutorial
                 TitleMenuCanvasUI.Instance.ShowTownHub();
             }
 
-            // Immediately set step to Hub_ClickPrimordialStatue so player remains in Town Hub with glowing Primordial Statue!
+            StartCoroutine(PlayDialogueDelayed(StorySequenceId.HubTitanCrisisDialogue, 0.4f, () =>
+            {
+                OnHubTitanCrisisDialogueFinished();
+            }));
+        }
+
+        private void OnHubTitanCrisisDialogueFinished()
+        {
             SetStep(TutorialStep.Hub_ClickPrimordialStatue);
 
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "🌋 AWAKEN THE ANCIENT TITAN 🌋",
-                    "The Holy Crusade's heavy shields cannot be pierced by blades! Click the glowing [Primordial Statue] on the cliff to awaken the Magma Dragon!",
+                    "AWAKEN THE ANCIENT TITAN",
+                    "The Holy Crusade's heavy shields cannot be pierced by blades! Click the glowing [Primordial Altar] on the cliff to awaken the Magma Dragon!",
                     4.5f,
                     new Color(1f, 0.55f, 0.15f)
                 );
             }
-        }
-
-        private void OnHubTitanCrisisDialogueFinished()
-        {
-            // Kept for backward compatibility if ever called
-            SetStep(TutorialStep.Hub_ClickPrimordialStatue);
         }
 
         #endregion
@@ -1560,7 +1559,7 @@ namespace ElementalHexTactics3D.Tutorial
                 if (CombatFeedbackManager.Instance != null)
                 {
                     CombatFeedbackManager.Instance.ShowBanner(
-                        "👑 STAGE 3: THE TITAN AWAKENING 👑",
+                        "STAGE 3: THE TITAN AWAKENING ",
                         "Tear open the Abyssal Rift, siphon an Elemental Core, and summon the Magma Dragon!",
                         4.5f,
                         new Color(1f, 0.45f, 0.15f)
@@ -1655,7 +1654,10 @@ namespace ElementalHexTactics3D.Tutorial
                 TownHubManager.Instance.AddFreedOutcasts(12);
             }
 
-            PurgeAllBattlefieldUnits();
+            // Keep player squad intact and recall them into Citadel Reserve (only clear enemies & stage props)
+            TacticalUnitSpawner.ClearAllEnemies();
+            ThroneRoomEnvironment3D.ClearEnvironment(HexGrid3D.Instance);
+            Combat.AbyssalRiftConduit3D.CloseActiveRift();
             TacticalUnitSpawner.ResetPlayerReserveUnits();
 
             if (TitleMenuCanvasUI.Instance != null)
@@ -1666,7 +1668,7 @@ namespace ElementalHexTactics3D.Tutorial
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "🏆 CITADEL SANCTUARY UNLOCKED! 🏆",
+                    "CITADEL SANCTUARY UNLOCKED! ",
                     "Primordial Titan Core acquired! The Ashen Verge expedition gateway is fully operational!",
                     4.0f,
                     new Color(0.35f, 0.95f, 0.45f)
@@ -1716,7 +1718,7 @@ namespace ElementalHexTactics3D.Tutorial
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "⚠️ RETRYING TUTORIAL ⚠️",
+                    "RETRYING TUTORIAL ",
                     "Regrouping vanguard forces...",
                     2.0f,
                     new Color(0.95f, 0.5f, 0.25f)

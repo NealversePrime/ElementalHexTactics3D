@@ -96,7 +96,7 @@ namespace ElementalHexTactics3D.InputHandling
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "🌀 ABYSSAL RIFT ESTABLISHED",
+                    "ABYSSAL RIFT ESTABLISHED",
                     "Gateway opened! Click the Rift or choose a Vanguard from the bar below.",
                     2.2f,
                     new Color(0.65f, 0.25f, 0.95f)

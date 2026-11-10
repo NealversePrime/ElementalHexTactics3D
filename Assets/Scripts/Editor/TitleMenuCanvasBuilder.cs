@@ -149,11 +149,11 @@ namespace ElementalHexTactics3D.Editor
             }
 
             // Header Texts inside Title Card (Default: Paladin Holyland Mode)
-            Text txtBadge = CreateUIText("Text_Badge", headerObj.transform, "✦ HOLY CRUSADE EDITION • PROLOGUE: THE CHOSEN HERO ✦", fontBold, 15, FontStyle.Bold, new Color(0.35f, 0.85f, 1.0f), new Vector2(0f, 75f), new Vector2(840f, 28f));
+            Text txtBadge = CreateUIText("Text_Badge", headerObj.transform, "HOLY CRUSADE EDITION - PROLOGUE: THE CHOSEN HERO ", fontBold, 15, FontStyle.Bold, new Color(0.35f, 0.85f, 1.0f), new Vector2(0f, 75f), new Vector2(840f, 28f));
             Text txtTitle1 = CreateUIText("Text_Title1", headerObj.transform, "HOLYLAND", fontBold, 36, FontStyle.Bold, Color.white, new Vector2(0f, 32f), new Vector2(840f, 48f));
             Text txtTitle2 = CreateUIText("Text_Title2", headerObj.transform, "EVOLVE", fontBold, 42, FontStyle.Bold, new Color(1f, 0.85f, 0.25f), new Vector2(0f, -14f), new Vector2(840f, 52f));
-            Text txtSubtitle = CreateUIText("Text_Subtitle", headerObj.transform, "〜 The Sacred Crusade of the Chosen Hero 〜", fontRegular, 15, FontStyle.Italic, new Color(0.85f, 0.90f, 0.98f), new Vector2(0f, -58f), new Vector2(840f, 26f));
-            Text txtVersion = CreateUIText("Text_Version", headerObj.transform, "Holyland Evolve • Pre-Alpha v1.0.0 • Sacred Empire Edition", fontRegular, 12, FontStyle.Normal, new Color(0.60f, 0.65f, 0.72f), new Vector2(0f, -86f), new Vector2(840f, 22f));
+            Text txtSubtitle = CreateUIText("Text_Subtitle", headerObj.transform, "~ The Sacred Crusade of the Chosen Hero ~", fontRegular, 15, FontStyle.Italic, new Color(0.85f, 0.90f, 0.98f), new Vector2(0f, -58f), new Vector2(840f, 26f));
+            Text txtVersion = CreateUIText("Text_Version", headerObj.transform, "Holyland Evolve - Pre-Alpha v1.0.0 - Sacred Empire Edition", fontRegular, 12, FontStyle.Normal, new Color(0.60f, 0.65f, 0.72f), new Vector2(0f, -86f), new Vector2(840f, 22f));
 
             // 8. Panel: Menu Buttons (Center)
             GameObject menuBoxObj = CreateUIObject("Panel_MenuButtons", titleRootObj.transform);
@@ -184,7 +184,7 @@ namespace ElementalHexTactics3D.Editor
 
             // Modal: Story Prologue (Default: Paladin Sacred Scriptures)
             GameObject storyCardObj;
-            GameObject storyModalObj = CreateModalPanel("Modal_StoryPrologue", modalsContainer.transform, "📖 SACRED SCRIPTURES: THE HOLY CRUSADE", fontBold, panelFrame, 880f, 650f, 245f, out storyCardObj);
+            GameObject storyModalObj = CreateModalPanel("Modal_StoryPrologue", modalsContainer.transform, "SACRED SCRIPTURES: THE HOLY CRUSADE", fontBold, panelFrame, 880f, 650f, 245f, out storyCardObj);
 
             // Subtle gold divider
             GameObject storyDivider = CreateUIObject("Divider", storyCardObj.transform);
@@ -194,7 +194,7 @@ namespace ElementalHexTactics3D.Editor
 
             string storyContent = 
                 "<b><color=#FBBF24>[ The Divine Mandate ]</color></b>\n" +
-                "Under the sacred light of the Holy Empire, the Chosen Hero—the Paladin of Radiance—marches with the consecrated vanguard to eradicate the wicked Abyssal demons.\n\n" +
+                "Under the sacred light of the Holy Empire, the Chosen Hero-the Paladin of Radiance-marches with the consecrated vanguard to eradicate the wicked Abyssal demons.\n\n" +
                 "<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\n" +
                 "Deep within the fractured underworld, the foul Demon Lord cowers on his blackened throne. Command your Holy Vanguard, smite the demonic minions, and cleanse the taint!\n\n" +
                 "<b><color=#34D399>[ The Holy Promise ]</color></b>\n" +
@@ -204,12 +204,12 @@ namespace ElementalHexTactics3D.Editor
             txtStoryBody.verticalOverflow = VerticalWrapMode.Truncate;
             txtStoryBody.lineSpacing = 1.3f;
             Text txtStoryTitle = storyCardObj.transform.Find("Text_ModalTitle")?.GetComponent<Text>();
-            Button btnBackStory = CreateCustomButton("Btn_BackStory", storyCardObj.transform, "🔙 BACK TO MENU", fontBold, 18, btnNormal, Color.white, width: 260f, height: 48f);
+            Button btnBackStory = CreateCustomButton("Btn_BackStory", storyCardObj.transform, "BACK TO MENU", fontBold, 18, btnNormal, Color.white, width: 260f, height: 48f);
             SetAnchoredPos(btnBackStory.GetComponent<RectTransform>(), new Vector2(0f, -250f), new Vector2(260f, 48f));
 
             // Modal: How to Play (Default: Holy Tactics)
             GameObject howToPlayCardObj;
-            GameObject howToPlayModalObj = CreateModalPanel("Modal_HowToPlay", modalsContainer.transform, "🎮 HOLY TACTICS: BASIC COMBAT GUIDE", fontBold, panelFrame, 880f, 650f, 240f, out howToPlayCardObj);
+            GameObject howToPlayModalObj = CreateModalPanel("Modal_HowToPlay", modalsContainer.transform, "HOLY TACTICS: BASIC COMBAT GUIDE", fontBold, panelFrame, 880f, 650f, 240f, out howToPlayCardObj);
 
             // Subtle gold divider
             GameObject htpDivider = CreateUIObject("Divider", howToPlayCardObj.transform);
@@ -218,26 +218,26 @@ namespace ElementalHexTactics3D.Editor
             hDivImg.color = new Color(0.85f, 0.72f, 0.38f, 0.6f);
 
             string howToPlayContent = 
-                "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60° | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n" +
+                "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60 deg | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n" +
                 "<b><color=#38BDF8>2. Holy Orders:</color></b> <b>Left-Click</b> to Select Unit / Strike | <b>Right-Click</b> to Cancel\n\n" +
                 "<b><color=#FBBF24>3. Tactical Movement:</color></b>\n" +
-                "• Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n" +
-                "• Click any highlighted hex to advance toward the demon lines.\n\n" +
+                "- Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n" +
+                "- Click any highlighted hex to advance toward the demon lines.\n\n" +
                 "<b><color=#EF5350>4. Righteous Strike:</color></b>\n" +
-                "• When adjacent to an enemy (red highlights), click to unleash holy damage!\n\n" +
+                "- When adjacent to an enemy (red highlights), click to unleash holy damage!\n\n" +
                 "<b><color=#34D399>5. Victory Objective:</color></b>\n" +
-                "• Slay the Demon Lord to purge the underworld and complete the sacred crusade!";
+                "- Slay the Demon Lord to purge the underworld and complete the sacred crusade!";
             Text txtHowToPlayBody = CreateUIText("Text_HowToPlayBody", howToPlayCardObj.transform, howToPlayContent, fontRegular, 15, FontStyle.Normal, new Color(0.85f, 0.88f, 0.94f), new Vector2(0f, -10f), new Vector2(700f, 360f), TextAnchor.UpperLeft);
             txtHowToPlayBody.horizontalOverflow = HorizontalWrapMode.Wrap;
             txtHowToPlayBody.verticalOverflow = VerticalWrapMode.Truncate;
             txtHowToPlayBody.lineSpacing = 1.3f;
             Text txtHowToPlayTitle = howToPlayCardObj.transform.Find("Text_ModalTitle")?.GetComponent<Text>();
-            Button btnBackHowToPlay = CreateCustomButton("Btn_BackHowToPlay", howToPlayCardObj.transform, "🔙 BACK TO MENU", fontBold, 18, btnNormal, Color.white, width: 260f, height: 48f);
+            Button btnBackHowToPlay = CreateCustomButton("Btn_BackHowToPlay", howToPlayCardObj.transform, "BACK TO MENU", fontBold, 18, btnNormal, Color.white, width: 260f, height: 48f);
             SetAnchoredPos(btnBackHowToPlay.GetComponent<RectTransform>(), new Vector2(0f, -250f), new Vector2(260f, 48f));
 
             // Modal: Options
             GameObject optionsCardObj;
-            GameObject optionsModalObj = CreateModalPanel("Modal_Options", modalsContainer.transform, "⚙️ GAME OPTIONS & SETTINGS", fontBold, panelFrame, 640f, 560f, 215f, out optionsCardObj);
+            GameObject optionsModalObj = CreateModalPanel("Modal_Options", modalsContainer.transform, "GAME OPTIONS & SETTINGS", fontBold, panelFrame, 640f, 560f, 215f, out optionsCardObj);
 
             // Subtle gold divider
             GameObject optDivider = CreateUIObject("Divider", optionsCardObj.transform);
@@ -262,12 +262,12 @@ namespace ElementalHexTactics3D.Editor
             Text txtThemeModeStatus = btnThemeModeToggle.GetComponentInChildren<Text>();
 
             CreateUIText("Text_AiTip", optionsCardObj.transform, "Tip: You can switch between Holyland (Paladin) & Rebellion (Demon Lord) themes anytime.", fontRegular, 13, FontStyle.Italic, new Color(0.6f, 0.65f, 0.72f), new Vector2(0f, -125f), new Vector2(520f, 26f));
-            Button btnBackOptions = CreateCustomButton("Btn_BackOptions", optionsCardObj.transform, "🔙 BACK", fontBold, 18, btnNormal, Color.white, width: 260f, height: 50f);
+            Button btnBackOptions = CreateCustomButton("Btn_BackOptions", optionsCardObj.transform, "BACK", fontBold, 18, btnNormal, Color.white, width: 260f, height: 50f);
             SetAnchoredPos(btnBackOptions.GetComponent<RectTransform>(), new Vector2(0f, -205f), new Vector2(260f, 50f));
 
             // Modal: In-Game Pause
             GameObject pauseCardObj;
-            GameObject pauseModalObj = CreateModalPanel("Modal_InGamePause", modalsContainer.transform, "✦ BATTLE PAUSED ✦", fontBold, panelFrame, 520f, 490f, 180f, out pauseCardObj);
+            GameObject pauseModalObj = CreateModalPanel("Modal_InGamePause", modalsContainer.transform, "BATTLE PAUSED ", fontBold, panelFrame, 520f, 490f, 180f, out pauseCardObj);
 
             // Subtle gold divider under title on dark slate
             GameObject pauseDivider = CreateUIObject("Divider", pauseCardObj.transform);
@@ -275,16 +275,16 @@ namespace ElementalHexTactics3D.Editor
             Image pDivImg = pauseDivider.AddComponent<Image>();
             pDivImg.color = new Color(0.85f, 0.72f, 0.38f, 0.6f);
 
-            Button btnResume = CreateCustomButton("Btn_Resume", pauseCardObj.transform, "▶️ RESUME BATTLE", fontBold, 19, btnHighlight != null ? btnHighlight : btnNormal, new Color(1f, 0.92f, 0.45f), width: 380f, height: 50f);
+            Button btnResume = CreateCustomButton("Btn_Resume", pauseCardObj.transform, "RESUME BATTLE", fontBold, 19, btnHighlight != null ? btnHighlight : btnNormal, new Color(1f, 0.92f, 0.45f), width: 380f, height: 50f);
             SetAnchoredPos(btnResume.GetComponent<RectTransform>(), new Vector2(0f, 85f), new Vector2(380f, 50f));
 
-            Button btnPauseOptions = CreateCustomButton("Btn_PauseOptions", pauseCardObj.transform, "⚙️ OPTIONS", fontBold, 17, btnNormal, Color.white, width: 380f, height: 50f);
+            Button btnPauseOptions = CreateCustomButton("Btn_PauseOptions", pauseCardObj.transform, "OPTIONS", fontBold, 17, btnNormal, Color.white, width: 380f, height: 50f);
             SetAnchoredPos(btnPauseOptions.GetComponent<RectTransform>(), new Vector2(0f, 25f), new Vector2(380f, 50f));
 
-            Button btnRestart = CreateCustomButton("Btn_Restart", pauseCardObj.transform, "🔄 RESTART BATTLE", fontBold, 17, btnNormal, new Color(0.98f, 0.65f, 0.25f), width: 380f, height: 50f);
+            Button btnRestart = CreateCustomButton("Btn_Restart", pauseCardObj.transform, "RESTART BATTLE", fontBold, 17, btnNormal, new Color(0.98f, 0.65f, 0.25f), width: 380f, height: 50f);
             SetAnchoredPos(btnRestart.GetComponent<RectTransform>(), new Vector2(0f, -35f), new Vector2(380f, 50f));
 
-            Button btnReturnTitle = CreateCustomButton("Btn_ReturnTitle", pauseCardObj.transform, "🏠 MAIN MENU", fontBold, 17, btnNormal, new Color(0.95f, 0.45f, 0.45f), width: 380f, height: 50f);
+            Button btnReturnTitle = CreateCustomButton("Btn_ReturnTitle", pauseCardObj.transform, "MAIN MENU", fontBold, 17, btnNormal, new Color(0.95f, 0.45f, 0.45f), width: 380f, height: 50f);
             SetAnchoredPos(btnReturnTitle.GetComponent<RectTransform>(), new Vector2(0f, -95f), new Vector2(380f, 50f));
 
             // Hide modals by default (Hides modalRoot AND its Backdrop completely!)
@@ -297,7 +297,7 @@ namespace ElementalHexTactics3D.Editor
             GameObject hudPanelObj = CreateUIObject("Panel_InGameHUD", canvasObj.transform);
             SetStretchAll(hudPanelObj.GetComponent<RectTransform>());
 
-            Button btnInGameMenu = CreateCustomButton("Btn_InGameMenu", hudPanelObj.transform, "⚙️ Menu (Esc)", fontBold, 15, btnNormal, Color.white, width: 150f, height: 42f);
+            Button btnInGameMenu = CreateCustomButton("Btn_InGameMenu", hudPanelObj.transform, "Menu (Esc)", fontBold, 15, btnNormal, Color.white, width: 150f, height: 42f);
             RectTransform inGameMenuRect = btnInGameMenu.GetComponent<RectTransform>();
             inGameMenuRect.anchorMin = new Vector2(1f, 1f);
             inGameMenuRect.anchorMax = new Vector2(1f, 1f);

@@ -302,7 +302,7 @@ namespace ElementalHexTactics3D.Combat
                 Debug.Log($"<color=#BDBDBD>[Spell Infusion]</color> {spell} struck empty tile {tile.Coordinates}.");
             }
 
-            Debug.Log($"<color=#FFA726><b>[Spell Cast]</b></color> {spell} on {tile.Coordinates} → " +
+            Debug.Log($"<color=#FFA726><b>[Spell Cast]</b></color> {spell} on {tile.Coordinates} -> " +
                       $"<b>{reaction.ReactionName}</b> ({tile.State}, Tier {tile.TierLevel}). {reaction.Description}");
 
             return reaction;

@@ -118,7 +118,7 @@ namespace ElementalHexTactics3D.InputHandling
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "👑 SURVEY THE BATTLEFIELD",
+                    "SURVEY THE BATTLEFIELD",
                     "Inspect enemy forces and terrain, then open the Abyssal Rift to lead your vanguard!",
                     2.8f,
                     new Color(0.7f, 0.35f, 1.0f)

@@ -122,8 +122,8 @@ namespace ElementalHexTactics3D.Combat
             TacticalCameraController.Instance?.Shake(0.5f, 0.45f);
             SoundManager3D.Instance?.PlayRiftOpen();
             CombatVFXManager.Instance?.PlayRiftSacrifice(spawnPos);
-            CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.2f, "🌀 ABYSSAL RIFT TORN OPEN!", new Color(0.7f, 0.2f, 1.0f), 2.2f);
-            CombatFeedbackManager.Instance?.ShowBanner("🌀 DIMENSIONAL BREACH", $"Citadel Rift Gateway anchored at {targetTile.Coordinates}!", 1.5f, new Color(0.6f, 0.2f, 0.95f));
+            CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.2f, "ABYSSAL RIFT TORN OPEN!", new Color(0.7f, 0.2f, 1.0f), 2.2f);
+            CombatFeedbackManager.Instance?.ShowBanner("DIMENSIONAL BREACH", $"Citadel Rift Gateway anchored at {targetTile.Coordinates}!", 1.5f, new Color(0.6f, 0.2f, 0.95f));
 
             return conduit;
         }
@@ -252,7 +252,7 @@ namespace ElementalHexTactics3D.Combat
             CombatVFXManager.Instance?.PlayRiftSacrifice(pos);
 
             // 3. Floating Text Announcement
-            CombatFeedbackManager.Instance?.SpawnDamageText(pos + Vector3.up * 1.0f, "🌀 VOID SACRIFICE! (+1 Core)", new Color(0.7f, 0.2f, 1.0f), 2.0f);
+            CombatFeedbackManager.Instance?.SpawnDamageText(pos + Vector3.up * 1.0f, "VOID SACRIFICE! (+1 Core)", new Color(0.7f, 0.2f, 1.0f), 2.0f);
 
             // 4. Award Elemental Core to player Commander
             TotalSacrifices++;
@@ -265,7 +265,7 @@ namespace ElementalHexTactics3D.Combat
             yield return new WaitForSeconds(0.2f);
 
             // 5. Fatal Execution
-            enemy.TakeDamage(999, "🌀 CONSUMED BY THE VOID!");
+            enemy.TakeDamage(999, "CONSUMED BY THE VOID!");
         }
 
         private TacticalUnit3D FindPlayerCommander(TacticalUnit3D fallback)
@@ -341,11 +341,11 @@ namespace ElementalHexTactics3D.Combat
             TacticalCameraController.Instance?.Shake(0.35f, 0.35f);
             SoundManager3D.Instance?.PlayVanguardEmergence();
             CombatVFXManager.Instance?.PlayRiftSacrifice(spawnPos);
-            CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.2f, "👑 COMMANDER ARRIVED!", new Color(0.7f, 0.3f, 1.0f), 2.0f);
+            CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.2f, "COMMANDER ARRIVED!", new Color(0.7f, 0.3f, 1.0f), 2.0f);
 
             if (CombatFeedbackManager.Instance != null)
             {
-                CombatFeedbackManager.Instance.ShowBanner("👑 VANGUARD DEPLOYED", $"{unit.UnitName} has stepped onto the mortal plane!", 1.3f, new Color(0.6f, 0.3f, 0.9f));
+                CombatFeedbackManager.Instance.ShowBanner("VANGUARD DEPLOYED", $"{unit.UnitName} has stepped onto the mortal plane!", 1.3f, new Color(0.6f, 0.3f, 0.9f));
             }
 
             yield return new WaitForSeconds(0.2f);
@@ -361,7 +361,7 @@ namespace ElementalHexTactics3D.Combat
             Vector3 pos = unit.transform.position;
             SoundManager3D.Instance?.PlayRiftOpen();
             CombatVFXManager.Instance?.PlayRiftSacrifice(pos);
-            CombatFeedbackManager.Instance?.SpawnDamageText(pos + Vector3.up * 1.0f, "🌀 RECALLED TO CITADEL", new Color(0.7f, 0.4f, 1.0f), 1.5f);
+            CombatFeedbackManager.Instance?.SpawnDamageText(pos + Vector3.up * 1.0f, "RECALLED TO CITADEL", new Color(0.7f, 0.4f, 1.0f), 1.5f);
 
             if (unit.CurrentTile != null && unit.CurrentTile.CurrentOccupant == unit)
             {
@@ -401,7 +401,7 @@ namespace ElementalHexTactics3D.Combat
             SoundManager3D.Instance?.PlayVanguardEmergence();
             SoundManager3D.Instance?.PlayTitanStrike();
             CombatVFXManager.Instance?.PlayTitanShockwave(spawnPos);
-            CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.5f, "🌋 TITAN EMERGENCE!", new Color(1f, 0.4f, 0f), 2.2f);
+            CombatFeedbackManager.Instance?.SpawnDamageText(spawnPos + Vector3.up * 1.5f, "TITAN EMERGENCE!", new Color(1f, 0.4f, 0f), 2.2f);
 
             yield return new WaitForSeconds(0.25f);
 

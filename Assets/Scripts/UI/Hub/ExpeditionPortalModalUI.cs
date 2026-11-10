@@ -157,7 +157,7 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 MissionId = "TUTORIAL_LOCKED_MINE",
                 Archetype = MissionArchetype.ResourceScavenge,
-                Title = "🔒 ANCIENT MANA QUARRY",
+                Title = "ANCIENT MANA QUARRY",
                 Description = "Dimensional pathway unstable. Complete the tutorial expedition on Card #1 to stabilize the Abyssal Gateway.",
                 ThreatLevel = 2,
                 Biome = BiomeTheme.AncientCrusadeRuins,
@@ -173,7 +173,7 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 MissionId = "TUTORIAL_LOCKED_RESCUE",
                 Archetype = MissionArchetype.RescueRecruit,
-                Title = "🔒 CAPTIVE RESCUE OUTPOST",
+                Title = "CAPTIVE RESCUE OUTPOST",
                 Description = "Dimensional pathway unstable. Complete the tutorial expedition on Card #1 to stabilize the Abyssal Gateway.",
                 ThreatLevel = 2,
                 Biome = BiomeTheme.FloodedBasin,
@@ -234,7 +234,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 }
                 else
                 {
-                    ShowLockedFeedback("🔒 Reroll locked during tutorial!");
+                    ShowLockedFeedback("Reroll locked during tutorial!");
                 }
             }
             else if (kb.spaceKey.wasPressedThisFrame || kb.enterKey.wasPressedThisFrame)
@@ -252,7 +252,7 @@ namespace ElementalHexTactics3D.UI.Hub
             if (Combat.CombatFeedbackManager.Instance != null)
             {
                 Combat.CombatFeedbackManager.Instance.ShowBanner(
-                    "🔒 ROUTE LOCKED",
+                    "ROUTE LOCKED",
                     msg ?? "Complete the tutorial objective on Card #1 first!",
                     1.8f,
                     new Color(0.95f, 0.45f, 0.35f)
@@ -342,7 +342,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 richText = true
             };
             titleStyle.normal.textColor = new Color(1f, 0.85f, 0.35f);
-            GUILayout.Label("🌀 <b>ABYSSAL EXPEDITION GATEWAY</b> 🌀", titleStyle);
+            GUILayout.Label("<b>ABYSSAL EXPEDITION GATEWAY</b> ", titleStyle);
 
             // Calendar HUD Strip
             int cDay = CampaignManager.Instance != null ? CampaignManager.Instance.CurrentDay : 1;
@@ -359,7 +359,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 fontStyle = FontStyle.Bold,
                 richText = true
             };
-            GUILayout.Label($"☀️ <b>DAY {cDay}</b> ({actStr})   |   ⏳ CRUSADE IN: <color={doomCol}><b>{cUntil} DAYS</b></color>   |   🍖 FOOD: <color={foodCol}><b>{cFood}</b></color>", hudStyle);
+            GUILayout.Label($"<b>DAY {cDay}</b> ({actStr})   |    CRUSADE IN: <color={doomCol}><b>{cUntil} DAYS</b></color>   |    FOOD: <color={foodCol}><b>{cFood}</b></color>", hudStyle);
 
             GUIStyle subStyle = new GUIStyle(GUI.skin.label)
             {
@@ -372,9 +372,9 @@ namespace ElementalHexTactics3D.UI.Hub
             GUILayout.Label("Peer through the dimensional rift. Select one incursion destination for today's vanguard campaign.", subStyle);
             GUILayout.EndArea();
 
-            // Close button (Top-Right '✕')
+            // Close button (Top-Right 'X')
             Rect closeBtnRect = new Rect(winX + winW - 55f, winY + 16f, 40f, 40f);
-            if (DrawButton(closeBtnRect, "<b>✕</b>", new Color(0.5f, 0.15f, 0.15f, 1f), new Color(0.85f, 0.25f, 0.25f, 1f), false))
+            if (DrawButton(closeBtnRect, "<b>X</b>", new Color(0.5f, 0.15f, 0.15f, 1f), new Color(0.85f, 0.25f, 0.25f, 1f), false))
             {
                 CloseModal();
             }
@@ -406,14 +406,14 @@ namespace ElementalHexTactics3D.UI.Hub
             Rect rerollRect = new Rect(winX + 40f, footerY, 260f, 45f);
             if (IsTutorialDispatchMode())
             {
-                if (DrawButton(rerollRect, "🔒 <b>Reroll Locked</b>", new Color(0.12f, 0.14f, 0.18f, 0.8f), new Color(0.25f, 0.30f, 0.38f, 0.5f), false))
+                if (DrawButton(rerollRect, "<b>Reroll Locked</b>", new Color(0.12f, 0.14f, 0.18f, 0.8f), new Color(0.25f, 0.30f, 0.38f, 0.5f), false))
                 {
-                    ShowLockedFeedback("🔒 Reroll locked during tutorial!");
+                    ShowLockedFeedback("Reroll locked during tutorial!");
                 }
             }
             else
             {
-                if (DrawButton(rerollRect, "🎲 <b>Reroll Incursions [R]</b>", new Color(0.18f, 0.22f, 0.32f, 1f), new Color(0.35f, 0.45f, 0.65f, 1f), false))
+                if (DrawButton(rerollRect, "<b>Reroll Incursions [R]</b>", new Color(0.18f, 0.22f, 0.32f, 1f), new Color(0.35f, 0.45f, 0.65f, 1f), false))
                 {
                     GenerateNewTrilemma();
                 }
@@ -424,7 +424,7 @@ namespace ElementalHexTactics3D.UI.Hub
             legStyle.normal.textColor = new Color(0.6f, 0.65f, 0.72f);
             if (IsTutorialDispatchMode())
             {
-                GUI.Label(legendRect, "👉 <b>[1 / Click Card 1]</b> Tutorial Objective  |  <b>[Space / Enter]</b> Embark Expedition", legStyle);
+                GUI.Label(legendRect, "<b>[1 / Click Card 1]</b> Tutorial Objective  |  <b>[Space / Enter]</b> Embark Expedition", legStyle);
             }
             else
             {
@@ -495,7 +495,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 richText = true
             };
             archStyle.normal.textColor = archColor;
-            string bannerText = isLocked ? "🔒 ROUTE LOCKED" : (isTutorial && index == 0 ? "★ TUTORIAL OBJECTIVE ★" : card.GetArchetypeName().ToUpper());
+            string bannerText = isLocked ? "ROUTE LOCKED" : (isTutorial && index == 0 ? "* TUTORIAL OBJECTIVE *" : card.GetArchetypeName().ToUpper());
             GUI.Label(archRect, bannerText, archStyle);
             curY += 34f;
 
@@ -539,7 +539,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 richText = true
             };
             affixStyle.normal.textColor = isLocked ? new Color(0.6f, 0.65f, 0.7f) : Color.white;
-            GUI.Label(new Rect(affixRect.x + 8f, affixRect.y + 4f, affixRect.width - 16f, affixRect.height - 8f), isLocked ? "🔒 Dimensional pathway unstable" : card.GetModifierTag(), affixStyle);
+            GUI.Label(new Rect(affixRect.x + 8f, affixRect.y + 4f, affixRect.width - 16f, affixRect.height - 8f), isLocked ? "Dimensional pathway unstable" : card.GetModifierTag(), affixStyle);
             curY += 54f;
 
             // 5. Mission Narrative Brief
@@ -560,11 +560,11 @@ namespace ElementalHexTactics3D.UI.Hub
 
             GUIStyle rewHeader = new GUIStyle(GUI.skin.label) { fontSize = 11, fontStyle = FontStyle.Bold, richText = true };
             rewHeader.normal.textColor = isLocked ? new Color(0.6f, 0.65f, 0.7f) : new Color(1f, 0.85f, 0.35f);
-            GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 6f, rewBox.width - 20f, 18f), "✦ EXPECTED SPOILS ✦", rewHeader);
+            GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 6f, rewBox.width - 20f, 18f), "EXPECTED SPOILS ", rewHeader);
 
             GUIStyle rewBody = new GUIStyle(GUI.skin.label) { fontSize = 12, wordWrap = true, richText = true };
             rewBody.normal.textColor = isLocked ? new Color(0.55f, 0.6f, 0.65f) : Color.white;
-            GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 26f, rewBox.width - 20f, 40f), isLocked ? "🔒 Complete tutorial objective on Card #1 to unlock." : card.GetRewardsSummary(), rewBody);
+            GUI.Label(new Rect(rewBox.x + 10f, rewBox.y + 26f, rewBox.width - 20f, 40f), isLocked ? "Complete tutorial objective on Card #1 to unlock." : card.GetRewardsSummary(), rewBody);
             curY += 82f;
 
             // Lock Overlay for Card 2 & 3
@@ -585,7 +585,7 @@ namespace ElementalHexTactics3D.UI.Hub
                     richText = true
                 };
                 lockPromptStyle.normal.textColor = new Color(1f, 0.85f, 0.4f);
-                GUI.Label(lockOverlayRect, "🔒\n<b>ROUTE LOCKED</b>\n<size=11><color=#cccccc>Select Card #1 for tutorial</color></size>", lockPromptStyle);
+                GUI.Label(lockOverlayRect, "\n<b>ROUTE LOCKED</b>\n<size=11><color=#cccccc>Select Card #1 for tutorial</color></size>", lockPromptStyle);
             }
 
             // 7. Embark Action Button
@@ -597,7 +597,7 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 Color btnCol = new Color(0.14f, 0.16f, 0.20f, 0.85f);
                 Color btnBord = new Color(0.28f, 0.32f, 0.40f, 0.6f);
-                string btnLabel = "<b>🔒 LOCKED</b>";
+                string btnLabel = "<b>LOCKED</b>";
                 if (DrawButton(embarkBtnRect, btnLabel, btnCol, btnBord, false))
                 {
                     ShowLockedFeedback();
@@ -612,8 +612,8 @@ namespace ElementalHexTactics3D.UI.Hub
                     ? new Color(1f, 0.90f, 0.40f, 1f)
                     : (isSelected ? new Color(1f, 0.90f, 0.40f, 1f) : new Color(0.40f, 0.50f, 0.65f, 1f));
                 string btnLabel = (isTutorial && index == 0)
-                    ? "<b>🔥 EMBARK EXPEDITION [1]</b>"
-                    : (isSelected ? $"<b>🔥 EMBARK INCURSION [{index + 1}]</b>" : $"<b>Select Incursion [{index + 1}]</b>");
+                    ? "<b>EMBARK EXPEDITION [1]</b>"
+                    : (isSelected ? $"<b>EMBARK INCURSION [{index + 1}]</b>" : $"<b>Select Incursion [{index + 1}]</b>");
 
                 if (DrawButton(embarkBtnRect, btnLabel, btnCol, btnBord, isSelected))
                 {

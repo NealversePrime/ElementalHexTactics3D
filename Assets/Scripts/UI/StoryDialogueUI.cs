@@ -828,7 +828,7 @@ namespace ElementalHexTactics3D.UI
             switch (id)
             {
                 case StorySequenceId.RealWorldPrologue:
-                    // === 1. REAL WORLD — PULANG KERJA OVERTIME (LIVING ROOM) ===
+                    // === 1. REAL WORLD - PULANG KERJA OVERTIME (LIVING ROOM) ===
                     lines.Add(new DialogueLine(
                         "MC (Real World)",
                         "*SLAM* ...23:45. Finally made it back. Another brutal day of unpaid overtime in this concrete cage...",
@@ -845,7 +845,7 @@ namespace ElementalHexTactics3D.UI
                         mcSilhouetteSprite, true, bgMcLivingRoom, new Color(0.4f, 0.85f, 1f)
                     ));
 
-                    // === 2. REAL WORLD — DUDUK MAIN GAME (GAMING DESK) ===
+                    // === 2. REAL WORLD - DUDUK MAIN GAME (GAMING DESK) ===
                     lines.Add(new DialogueLine(
                         "MC (Real World)",
                         "Just one final raid boss left to conquer. Demon Lord Malakor. I spent three months analyzing every hex damage multiplier, elemental terrain reaction, and boss AI pattern.",
@@ -857,7 +857,7 @@ namespace ElementalHexTactics3D.UI
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
 
-                    // === 3. WORLD INTRODUCTION — VERSI RADIANT SYNOD (PROPAGANDA) ===
+                    // === 3. WORLD INTRODUCTION - VERSI RADIANT SYNOD (PROPAGANDA) ===
                     lines.Add(new DialogueLine(
                         "The Radiant Synod (Imperial Decree)",
                         "[ IN THE REALM OF OMNITERRA, THE RADIANT SYNOD STANDS AS HUMANITY'S SOLE BASTION AGAINST THE ETERNAL ABYSS. ]",
@@ -865,12 +865,12 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "The Radiant Synod (Imperial Decree)",
-                        "For centuries, Demon Lord Malakor and his shadowy fiends have desecrated the holy frontiers—slaughtering pilgrims, burning sanctuaries, and defiling the sacred light.",
+                        "For centuries, Demon Lord Malakor and his shadowy fiends have desecrated the holy frontiers-slaughtering pilgrims, burning sanctuaries, and defiling the sacred light.",
                         null, true, bgSynodPropagandaMyth, new Color(1f, 0.88f, 0.35f)
                     ));
                     lines.Add(new DialogueLine(
                         "The Radiant Synod (Imperial Decree)",
-                        "Tonight, the Chosen Hero—the supreme ranker of the realm—leads the holy vanguard into the Abyssal Throne to extinguish the darkness forever!",
+                        "Tonight, the Chosen Hero-the supreme ranker of the realm-leads the holy vanguard into the Abyssal Throne to extinguish the darkness forever!",
                         null, true, bgCrusadeVanguardMarch, new Color(1f, 0.88f, 0.35f)
                     ));
                     break;
@@ -893,7 +893,7 @@ namespace ElementalHexTactics3D.UI
                     ));
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "He's sending his vanguard minions forward! Holy Shielder, form ranks—let us purge their center before taking down Malakor!",
+                        "He's sending his vanguard minions forward! Holy Shielder, form ranks-let us purge their center before taking down Malakor!",
                         paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
                     ));
                     break;
@@ -902,13 +902,13 @@ namespace ElementalHexTactics3D.UI
                     // Rendered directly over the 3D Throne Room while Demon Lord Malakor is alive at 1 HP on his throne!
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "You are brought to your knees, Malakor—one final strike from oblivion! Before my blade ends your reign... I grant you one last breath. Speak your final words.",
+                        "You are brought to your knees, Malakor-one final strike from oblivion! Before my blade ends your reign... I grant you one last breath. Speak your final words.",
                         paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
                     ));
 
                     lines.Add(new DialogueLine(
                         "Demon Lord Malakor (1 HP - Dying)",
-                        "Last words...? *Cough*... Look past my horns, golden puppet. Listen to the trembling beneath these floorboards... Those aren't monsters hiding in the lower vaults—they're the orphans your 'Holy Crusade' burned out of the borderlands.",
+                        "Last words...? *Cough*... Look past my horns, golden puppet. Listen to the trembling beneath these floorboards... Those aren't monsters hiding in the lower vaults-they're the orphans your 'Holy Crusade' burned out of the borderlands.",
                         demonLordPortrait, false, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
 
@@ -920,7 +920,7 @@ namespace ElementalHexTactics3D.UI
 
                     lines.Add(new DialogueLine(
                         "Paladin (Chosen Hero)",
-                        "Heresy to the last! Raise your weapons—deliver the final blow and purge this shadow in the name of the Radiant Synod!",
+                        "Heresy to the last! Raise your weapons-deliver the final blow and purge this shadow in the name of the Radiant Synod!",
                         paladinPortrait, true, null, new Color(1f, 0.85f, 0.25f)
                     ));
                     break;
@@ -934,7 +934,7 @@ namespace ElementalHexTactics3D.UI
 
                     lines.Add(new DialogueLine(
                         "MC (Real World)",
-                        "Phew... damn, the writers went hard on the boss's last words before the final blow. Still—solo raid clear! Server's #1 solo ranker, locked in. Why does my chest feel this tight though...",
+                        "Phew... damn, the writers went hard on the boss's last words before the final blow. Still-solo raid clear! Server's #1 solo ranker, locked in. Why does my chest feel this tight though...",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.4f, 0.85f, 1f)
                     ));
 
@@ -946,7 +946,7 @@ namespace ElementalHexTactics3D.UI
 
                     lines.Add(new DialogueLine(
                         "The Architect (System Creator)",
-                        "[ ACHIEVEMENT CONFIRMED: 100% SOLO CLEAR — 'OMNITERRA' ]",
+                        "[ ACHIEVEMENT CONFIRMED: 100% SOLO CLEAR - 'OMNITERRA' ]",
                         null, true, null, new Color(0.2f, 0.95f, 0.6f), true
                     ));
 
@@ -971,7 +971,7 @@ namespace ElementalHexTactics3D.UI
 
                     lines.Add(new DialogueLine(
                         "MC (Real World)",
-                        "W-what is this?! Stop—AAAAAAAGH!!",
+                        "W-what is this?! Stop-AAAAAAAGH!!",
                         mcSilhouetteSprite, true, bgMcRoom, new Color(0.95f, 0.3f, 0.3f), true
                     ));
                     break;
@@ -980,37 +980,37 @@ namespace ElementalHexTactics3D.UI
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
                         "Ugh... my head... These hands... black claws? This mantle...?",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        demonLordPortrait, true, bgCitadelSanctuary, new Color(0.95f, 0.4f, 0.4f)
                     ));
 
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "Lord Malakor! Your consciousness has returned! The core altar held through the dimensional collapse!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, bgCitadelSanctuary, new Color(0.85f, 0.7f, 0.4f)
                     ));
 
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
                         "(Basalt Vanguard...? The general of the outcast sanctuary... I really transmigrated into the Demon Lord I just killed...)",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        demonLordPortrait, true, bgCitadelSanctuary, new Color(0.95f, 0.4f, 0.4f)
                     ));
 
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Status Window!\n[ MALAKOR — LEVEL 1 ]\n[ HP: 18/18 | MANA: 10/10 | CORES: 0 ]\nEverything is gone...?",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.35f, 0.35f), true
+                        "Status Window!\n[ MALAKOR - LEVEL 1 ]\n[ HP: 18/18 | MANA: 10/10 | CORES: 0 ]\nEverything is gone...?",
+                        demonLordPortrait, true, bgCitadelSanctuary, new Color(0.95f, 0.35f, 0.35f), true
                     ));
 
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "Your abyssal core fractured, Sire. Even a basic Fireball will drain what little remains.",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, bgCitadelSanctuary, new Color(0.85f, 0.7f, 0.4f)
                     ));
 
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
                         "(Level 1... But I was the server's number one. I know every formula, every terrain reaction, every weakness of the Radiant Synod. Knowledge is all I have left.)",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.4f, 0.85f, 1f)
+                        demonLordPortrait, true, bgCitadelSanctuary, new Color(0.4f, 0.85f, 1f)
                     ));
 
                     lines.Add(new DialogueLine(
@@ -1033,8 +1033,8 @@ namespace ElementalHexTactics3D.UI
 
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Steady, General. I know their tactics better than they do. Lead the way. We hold this line.",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        "Steady, General. Open the [Abyssal Rift] gateway in the center of the Citadel. I know their tactics better than they do-we hold this line.",
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
 
@@ -1070,40 +1070,45 @@ namespace ElementalHexTactics3D.UI
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "The scout unit has fallen! Your elemental command was magnificent, Lord Malakor! Even with a Level 1 core, you weaponized the terrain flawlessly!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
                         "Hold your celebration, General. Look at their armor insignia... this was merely a forward reconnaissance detachment.",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "[Deep brass war horns echo in the distance] ...Sire! That horn! The main crusader vanguard of the Radiant Synod is approaching our Abyssal Gateway!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, bgCrusadeVanguardMarch, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "They have deployed Heavy Divine Wardens shielded by consecrated Aegis barriers! Our normal blades cannot pierce their holy enchantments!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, bgCrusadeVanguardMarch, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
-                        "Then we shall answer divine barriers with primordial might. Look towards the Citadel's cliff—the Primordial Statue is blazing with draconic flame!",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        "Then we shall answer divine barriers with primordial might. Look towards the Citadel's cliff-the Primordial Statue is blazing with draconic flame!",
+                        demonLordPortrait, true, bgCitadelSanctuary, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "By the Ancients... the Primordial Statue! It is awakening the dormant slumber of the Magma Dragon! Let us return to the Citadel Hub and awaken our first Titan!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, bgCitadelSanctuary, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     break;
 
                 case StorySequenceId.HubTitanCrisisDialogue:
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
-                        "Lord Malakor, the Primordial Statue on the cliff is resonating with flame energy! Commune with the statue and awaken our first Titan!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        "Lord Malakor, look to the eastern cliff of the Citadel! The Primordial Altar is resonating with draconic flame!",
+                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
+                    ));
+                    lines.Add(new DialogueLine(
+                        "MC / Demon Lord",
+                        "Its ancient seal is responding to the Crusade's threat. Let us commune with the [Primordial Altar] on the cliff and awaken the Magma Dragon Titan!",
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
 
@@ -1134,32 +1139,32 @@ namespace ElementalHexTactics3D.UI
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "The holy crusade vanguard has been obliterated! The Magma Dragon's cataclysm shattered their divine barriers into ash!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, null, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
                         "And with their defeat, our sanctuary gateway is secured.",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        demonLordPortrait, true, null, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "System (Primordial Altar)",
                         "[ PRIMORDIAL RESONANCE DETECTED: CITADEL DEFENSE TRIUMPHANT ]",
-                        null, true, bgDemonLordThrone, new Color(1f, 0.85f, 0.25f)
+                        null, true, bgCitadelSanctuary, new Color(1f, 0.85f, 0.25f)
                     ));
                     lines.Add(new DialogueLine(
                         "System (Primordial Altar)",
                         "[ REWARD ACQUIRED: PRIMORDIAL TITAN CORE x1 ]",
-                        null, true, bgDemonLordThrone, new Color(0.3f, 0.9f, 1f)
+                        null, true, bgCitadelSanctuary, new Color(0.3f, 0.9f, 1f)
                     ));
                     lines.Add(new DialogueLine(
                         "Basalt Vanguard",
                         "A Primordial Titan Core! With this ancient relic, our Citadel Sanctuary can now sustain permanent daily expedition gateways across the Ashen Verge!",
-                        basaltVanguardPortrait, false, bgDemonLordThrone, new Color(0.85f, 0.7f, 0.4f)
+                        basaltVanguardPortrait, false, bgCitadelSanctuary, new Color(0.85f, 0.7f, 0.4f)
                     ));
                     lines.Add(new DialogueLine(
                         "MC / Demon Lord",
                         "Our survival begins today. Let us return to the Citadel Hub and forge our campaign to liberate this world!",
-                        demonLordPortrait, true, bgDemonLordThrone, new Color(0.95f, 0.4f, 0.4f)
+                        demonLordPortrait, true, bgCitadelSanctuary, new Color(0.95f, 0.4f, 0.4f)
                     ));
                     break;
             }

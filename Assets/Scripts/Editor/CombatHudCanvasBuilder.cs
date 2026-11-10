@@ -113,7 +113,7 @@ namespace ElementalHexTactics3D.Editor
             nameRect.sizeDelta = new Vector2(175f, 22f);
 
             // Archetype
-            Text txtArchetype = CreateLabel("Txt_Archetype", unitCardObj.transform, "Vanguard • Commander", fontRegular, 11, new Color(0.72f, 0.78f, 0.84f, 1f), TextAnchor.UpperLeft);
+            Text txtArchetype = CreateLabel("Txt_Archetype", unitCardObj.transform, "Vanguard - Commander", fontRegular, 11, new Color(0.72f, 0.78f, 0.84f, 1f), TextAnchor.UpperLeft);
             RectTransform archRect = txtArchetype.GetComponent<RectTransform>();
             archRect.anchorMin = new Vector2(0f, 1f);
             archRect.anchorMax = new Vector2(0f, 1f);
@@ -122,7 +122,7 @@ namespace ElementalHexTactics3D.Editor
             archRect.sizeDelta = new Vector2(175f, 18f);
 
             // Turn Readiness Text
-            Text txtTurnStatus = CreateLabel("Txt_TurnStatus", unitCardObj.transform, "✓ READY", fontBold, 12, new Color(0.41f, 0.94f, 0.68f, 1f), TextAnchor.UpperRight);
+            Text txtTurnStatus = CreateLabel("Txt_TurnStatus", unitCardObj.transform, "READY", fontBold, 12, new Color(0.41f, 0.94f, 0.68f, 1f), TextAnchor.UpperRight);
             RectTransform statusRect = txtTurnStatus.GetComponent<RectTransform>();
             statusRect.anchorMin = new Vector2(1f, 1f);
             statusRect.anchorMax = new Vector2(1f, 1f);
@@ -170,7 +170,7 @@ namespace ElementalHexTactics3D.Editor
             SetStretchAll(txtHpVal.GetComponent<RectTransform>());
 
             // Stats Text
-            Text txtStats = CreateLabel("Txt_Stats", unitCardObj.transform, "⚔️ ATK: 3    🏃 MOV: 3", fontBold, 12, new Color(0.92f, 0.94f, 0.96f, 1f), TextAnchor.UpperLeft);
+            Text txtStats = CreateLabel("Txt_Stats", unitCardObj.transform, "ATK: 3     MOV: 3", fontBold, 12, new Color(0.92f, 0.94f, 0.96f, 1f), TextAnchor.UpperLeft);
             RectTransform statsRect = txtStats.GetComponent<RectTransform>();
             statsRect.anchorMin = new Vector2(0f, 1f);
             statsRect.anchorMax = new Vector2(0f, 1f);
@@ -192,11 +192,11 @@ namespace ElementalHexTactics3D.Editor
             attBg.type = Image.Type.Sliced;
             attBg.color = new Color(0.20f, 0.22f, 0.28f, 0.90f);
 
-            Text txtAtt = CreateLabel("Text", attunementBadgeObj.transform, "⚪ Neutral", fontBold, 11, Color.white, TextAnchor.MiddleCenter);
+            Text txtAtt = CreateLabel("Text", attunementBadgeObj.transform, "Neutral", fontBold, 11, Color.white, TextAnchor.MiddleCenter);
             SetStretchAll(txtAtt.GetComponent<RectTransform>());
 
             // Elemental Cores Text
-            Text txtCores = CreateLabel("Txt_Cores", unitCardObj.transform, "✦ 0 Cores", fontBold, 12, new Color(1.0f, 0.84f, 0.20f, 1f), TextAnchor.MiddleRight);
+            Text txtCores = CreateLabel("Txt_Cores", unitCardObj.transform, "0 Cores", fontBold, 12, new Color(1.0f, 0.84f, 0.20f, 1f), TextAnchor.MiddleRight);
             RectTransform coresRect = txtCores.GetComponent<RectTransform>();
             coresRect.anchorMin = new Vector2(1f, 0f);
             coresRect.anchorMax = new Vector2(1f, 0f);
@@ -226,7 +226,7 @@ namespace ElementalHexTactics3D.Editor
             roundRect.anchoredPosition = new Vector2(0f, -6f);
             roundRect.sizeDelta = new Vector2(0f, 16f);
 
-            Text txtPhase = CreateLabel("Txt_Phase", ribbonObj.transform, "⚔️ PLAYER PHASE", fontBold, 16, Color.white, TextAnchor.LowerCenter);
+            Text txtPhase = CreateLabel("Txt_Phase", ribbonObj.transform, "PLAYER PHASE", fontBold, 16, Color.white, TextAnchor.LowerCenter);
             RectTransform phaseRect = txtPhase.GetComponent<RectTransform>();
             phaseRect.anchorMin = new Vector2(0f, 0f);
             phaseRect.anchorMax = new Vector2(1f, 0f);
@@ -259,16 +259,16 @@ namespace ElementalHexTactics3D.Editor
             actCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             // Direct Children in Right-Side Command Dock
-            Text txtUnanchoredHeader = CreateLabel("Txt_UnanchoredHeader", actionBarObj.transform, "🌀 <b>CITADEL GATEWAY</b>", fontBold, 11, new Color(0.85f, 0.65f, 1.0f, 1f), TextAnchor.MiddleCenter);
+            Text txtUnanchoredHeader = CreateLabel("Txt_UnanchoredHeader", actionBarObj.transform, "<b>CITADEL GATEWAY</b>", fontBold, 11, new Color(0.85f, 0.65f, 1.0f, 1f), TextAnchor.MiddleCenter);
             txtUnanchoredHeader.GetComponent<LayoutElement>().preferredHeight = 22f;
 
-            Button btnTearRift = CreateActionButton("Btn_TearRift", actionBarObj.transform, "🌀 <b>Tear Open Rift</b>", fontBold, 11, btnNormal, new Color(0.42f, 0.16f, 0.65f, 1f), width: 155f, height: 34f);
-            Button btnRandomizeMap = CreateActionButton("Btn_RandomizeMap", actionBarObj.transform, "🎲 <b>Roll Map [R]</b>", fontBold, 10, btnNormal, new Color(0.20f, 0.28f, 0.40f, 1f), width: 155f, height: 30f);
+            Button btnTearRift = CreateActionButton("Btn_TearRift", actionBarObj.transform, "<b>Tear Open Rift</b>", fontBold, 11, btnNormal, new Color(0.42f, 0.16f, 0.65f, 1f), width: 155f, height: 34f);
+            Button btnRandomizeMap = CreateActionButton("Btn_RandomizeMap", actionBarObj.transform, "<b>Roll Map [R]</b>", fontBold, 10, btnNormal, new Color(0.20f, 0.28f, 0.40f, 1f), width: 155f, height: 30f);
 
-            Text txtRiftHeader = CreateLabel("Txt_RiftHeader", actionBarObj.transform, "🌀 <b>CITADEL RIFT</b>", fontBold, 11, new Color(0.85f, 0.65f, 1.0f, 1f), TextAnchor.MiddleCenter);
+            Text txtRiftHeader = CreateLabel("Txt_RiftHeader", actionBarObj.transform, "<b>CITADEL RIFT</b>", fontBold, 11, new Color(0.85f, 0.65f, 1.0f, 1f), TextAnchor.MiddleCenter);
             txtRiftHeader.GetComponent<LayoutElement>().preferredHeight = 22f;
 
-            Button btnOpenRiftDispatch = CreateActionButton("Btn_OpenRiftDispatch", actionBarObj.transform, "📦 <b>Squad Dispatch</b>", fontBold, 11, btnNormal, new Color(0.40f, 0.15f, 0.65f, 1f), width: 155f, height: 34f);
+            Button btnOpenRiftDispatch = CreateActionButton("Btn_OpenRiftDispatch", actionBarObj.transform, "<b>Squad Dispatch</b>", fontBold, 11, btnNormal, new Color(0.40f, 0.15f, 0.65f, 1f), width: 155f, height: 34f);
 
             // Dummy legacy sections placed outside actionBarObj so layout is never corrupted
             GameObject unanchoredSecObj = CreateUIObject("Section_Unanchored", container.transform);
@@ -280,19 +280,19 @@ namespace ElementalHexTactics3D.Editor
             GameObject unitSecObj = CreateUIObject("Section_UnitAbilities", container.transform);
             unitSecObj.SetActive(false);
 
-            Button btnMove = CreateActionButton("Btn_Move", unitSecObj.transform, "🚶 Move", fontBold, 11, btnNormal, new Color(0.18f, 0.35f, 0.58f, 1f), width: 85f, height: 32f);
-            Button btnFire = CreateActionButton("Btn_Fireball", unitSecObj.transform, "🔥 Fireball", fontBold, 11, btnNormal, new Color(0.65f, 0.22f, 0.10f, 1f), width: 85f, height: 32f);
-            Button btnWater = CreateActionButton("Btn_WaterSurge", unitSecObj.transform, "💧 Water", fontBold, 11, btnNormal, new Color(0.10f, 0.42f, 0.68f, 1f), width: 85f, height: 32f);
-            Button btnEarth = CreateActionButton("Btn_EarthPillar", unitSecObj.transform, "⛰️ Earth", fontBold, 11, btnNormal, new Color(0.48f, 0.32f, 0.18f, 1f), width: 85f, height: 32f);
-            Button btnPush = CreateActionButton("Btn_Push", unitSecObj.transform, "💨 Push", fontBold, 11, btnNormal, new Color(0.38f, 0.18f, 0.52f, 1f), width: 85f, height: 32f);
-            Button btnHarvest = CreateActionButton("Btn_HarvestCore", unitSecObj.transform, "⚡ Siphon", fontBold, 11, btnNormal, new Color(0.65f, 0.55f, 0.12f, 1f), width: 85f, height: 32f);
-            Button btnStrike = CreateActionButton("Btn_TitanStrike", unitSecObj.transform, "🐾 Strike", fontBold, 11, btnNormal, new Color(0.55f, 0.20f, 0.15f, 1f), width: 85f, height: 32f);
-            Button btnCata = CreateActionButton("Btn_Cataclysm", unitSecObj.transform, "🌋 Cataclysm", fontBold, 11, btnNormal, new Color(0.72f, 0.22f, 0.08f, 1f), width: 85f, height: 32f);
-            Button btnSummonAbility = CreateActionButton("Btn_SummonTitanAbility", unitSecObj.transform, "🌋 Titan", fontBold, 11, btnNormal, new Color(0.65f, 0.25f, 0.12f, 1f), width: 85f, height: 32f);
-            Button btnRecall = CreateActionButton("Btn_Recall", unitSecObj.transform, "🌀 Recall", fontBold, 11, btnNormal, new Color(0.42f, 0.18f, 0.58f, 1f), width: 85f, height: 32f);
+            Button btnMove = CreateActionButton("Btn_Move", unitSecObj.transform, "Move", fontBold, 11, btnNormal, new Color(0.18f, 0.35f, 0.58f, 1f), width: 85f, height: 32f);
+            Button btnFire = CreateActionButton("Btn_Fireball", unitSecObj.transform, "Fireball", fontBold, 11, btnNormal, new Color(0.65f, 0.22f, 0.10f, 1f), width: 85f, height: 32f);
+            Button btnWater = CreateActionButton("Btn_WaterSurge", unitSecObj.transform, "Water", fontBold, 11, btnNormal, new Color(0.10f, 0.42f, 0.68f, 1f), width: 85f, height: 32f);
+            Button btnEarth = CreateActionButton("Btn_EarthPillar", unitSecObj.transform, "Earth", fontBold, 11, btnNormal, new Color(0.48f, 0.32f, 0.18f, 1f), width: 85f, height: 32f);
+            Button btnPush = CreateActionButton("Btn_Push", unitSecObj.transform, "Push", fontBold, 11, btnNormal, new Color(0.38f, 0.18f, 0.52f, 1f), width: 85f, height: 32f);
+            Button btnHarvest = CreateActionButton("Btn_HarvestCore", unitSecObj.transform, "Siphon", fontBold, 11, btnNormal, new Color(0.65f, 0.55f, 0.12f, 1f), width: 85f, height: 32f);
+            Button btnStrike = CreateActionButton("Btn_TitanStrike", unitSecObj.transform, "Strike", fontBold, 11, btnNormal, new Color(0.55f, 0.20f, 0.15f, 1f), width: 85f, height: 32f);
+            Button btnCata = CreateActionButton("Btn_Cataclysm", unitSecObj.transform, "Cataclysm", fontBold, 11, btnNormal, new Color(0.72f, 0.22f, 0.08f, 1f), width: 85f, height: 32f);
+            Button btnSummonAbility = CreateActionButton("Btn_SummonTitanAbility", unitSecObj.transform, "Titan", fontBold, 11, btnNormal, new Color(0.65f, 0.25f, 0.12f, 1f), width: 85f, height: 32f);
+            Button btnRecall = CreateActionButton("Btn_Recall", unitSecObj.transform, "Recall", fontBold, 11, btnNormal, new Color(0.42f, 0.18f, 0.58f, 1f), width: 85f, height: 32f);
 
             // Dedicated Bottom-Right End Turn Button (Decoupled from right dock)
-            Button btnEndTurn = CreateActionButton("Btn_EndTurn", container.transform, "⏳ <b>END TURN</b>\n<size=11><color=#CFD8DC>[Space / Click]</color></size>", fontBold, 13, btnNormal, new Color(0.72f, 0.20f, 0.16f, 0.95f), width: 180f, height: 56f);
+            Button btnEndTurn = CreateActionButton("Btn_EndTurn", container.transform, "<b>END TURN</b>\n<size=11><color=#CFD8DC>[Space / Click]</color></size>", fontBold, 13, btnNormal, new Color(0.72f, 0.20f, 0.16f, 0.95f), width: 180f, height: 56f);
             RectTransform endTurnRect = btnEndTurn.GetComponent<RectTransform>();
             endTurnRect.anchorMin = new Vector2(1f, 0f);
             endTurnRect.anchorMax = new Vector2(1f, 0f);

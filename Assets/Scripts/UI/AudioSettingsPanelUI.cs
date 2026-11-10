@@ -136,7 +136,7 @@ namespace ElementalHexTactics3D.UI
             pImg.type = Image.Type.Sliced;
 
             // 4. Header Title & Divider
-            titleLabel = MakeLabel(panel.transform, "Title", "✦ SOUND & MUSIC SETTINGS ✦", 20, new Vector2(0, -32), new Vector2(400, 32), TextAnchor.MiddleCenter);
+            titleLabel = MakeLabel(panel.transform, "Title", "SOUND & MUSIC SETTINGS ", 20, new Vector2(0, -32), new Vector2(400, 32), TextAnchor.MiddleCenter);
             titleLabel.fontStyle = FontStyle.Bold;
             var tShadow = titleLabel.gameObject.AddComponent<Shadow>();
             tShadow.effectColor = new Color(0f, 0f, 0f, 0.95f);
@@ -161,7 +161,7 @@ namespace ElementalHexTactics3D.UI
             muteToggle = MakeToggle(panel.transform, "Mute all audio", new Vector2(0, -255));
 
             // 6. Fantasy RPG Maker Close Button
-            closeBtn = MakeButton(panel.transform, "CloseButton", "🔙 CLOSE", new Vector2(220, 48));
+            closeBtn = MakeButton(panel.transform, "CloseButton", "CLOSE", new Vector2(220, 48));
             var cbRt = closeBtn.GetComponent<RectTransform>();
             cbRt.anchorMin = cbRt.anchorMax = cbRt.pivot = new Vector2(0.5f, 1f);
             cbRt.anchoredPosition = new Vector2(0, -325);
@@ -284,8 +284,8 @@ namespace ElementalHexTactics3D.UI
 
         private void RefreshLabels()
         {
-            bgmLabel.text = "🎵 Music (BGM):  " + Mathf.RoundToInt(bgmSlider.value * 100f) + "%";
-            sfxLabel.text = "⚔️ Effects (SFX):  " + Mathf.RoundToInt(sfxSlider.value * 100f) + "%";
+            bgmLabel.text = "Music (BGM):  " + Mathf.RoundToInt(bgmSlider.value * 100f) + "%";
+            sfxLabel.text = "Effects (SFX):  " + Mathf.RoundToInt(sfxSlider.value * 100f) + "%";
         }
 
         private Button MakeButton(Transform parent, string name, string text, Vector2 size)

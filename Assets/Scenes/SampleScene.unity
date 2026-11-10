@@ -205,7 +205,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u26D3\uFE0F SHATTER COLLAR (-30 Embers)"
+  m_Text: "SHATTER COLLAR (-30 Embers)"
 --- !u!222 &26500207
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2164,7 +2164,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u26CF\uFE0F MANA MINE & SPORE FARMS"
+  m_Text: "MANA MINE & SPORE FARMS"
 --- !u!222 &149389680
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2587,7 +2587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.UI.Hub.TownBuildingNode
   facilityType: 4
-  facilityTitle: "\u2726 MANA MINE & SPORE FARMS \u2726"
+  facilityTitle: "MANA MINE & SPORE FARMS "
   facilityLore: Subterranean mana crystal veins and blighted dark soil plots. Assign freed outcasts to harvest passive resources.
   facilityStatus: '<color=#AA88FF>Yield: +50 Mana / Expedition</color>'
   targetGraphic: {fileID: 173837847}
@@ -3116,7 +3116,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u23E9 SKIP (Esc)"
+  m_Text: "SKIP (Esc)"
 --- !u!222 &187454556
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3287,7 +3287,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F30B Titan\n<size=10>(1 Core)</size>"
+  m_Text: "Titan\n<size=10>(1 Core)</size>"
 --- !u!222 &213045872
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3654,7 +3654,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u26F0\uFE0F Earth\n<size=10>(Pillar/Mud)</size>"
+  m_Text: "Earth\n<size=10>(Pillar/Mud)</size>"
 --- !u!222 &241977758
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4483,7 +4483,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u26A1 Siphon\n<size=10>(+1 Core)</size>"
+  m_Text: "Siphon\n<size=10>(+1 Core)</size>"
 --- !u!222 &300076405
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4883,7 +4883,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u26AA Neutral"
+  m_Text: "Neutral"
 --- !u!222 &326555847
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5622,7 +5622,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F519 BACK TO MENU"
+  m_Text: "BACK TO MENU"
 --- !u!222 &393291162
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6530,7 +6530,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F300 CITADEL GATEWAY\n<size=10>(Rift Unanchored)</size>"
+  m_Text: "CITADEL GATEWAY\n<size=10>(Rift Unanchored)</size>"
 --- !u!222 &430692739
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6746,7 +6746,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F504 RESTART BATTLE"
+  m_Text: "RESTART BATTLE"
 --- !u!222 &450930526
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7129,7 +7129,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F300 CITADEL RIFT\n<size=10>(Base Panel)</size>"
+  m_Text: "CITADEL RIFT\n<size=10>(Base Panel)</size>"
 --- !u!222 &508427317
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7224,7 +7224,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F6B6 Move\n<size=10>(Tactical)</size>"
+  m_Text: "Move\n<size=10>(Tactical)</size>"
 --- !u!222 &509442154
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7516,7 +7516,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2694\uFE0F PLAYER PHASE"
+  m_Text: "PLAYER PHASE"
 --- !u!222 &555920375
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7860,7 +7860,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F525 Fireball\n<size=10>(3 Dmg)</size>"
+  m_Text: "Fireball\n<size=10>(3 Dmg)</size>"
 --- !u!222 &596367670
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7955,7 +7955,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F3E0 MAIN MENU"
+  m_Text: "MAIN MENU"
 --- !u!222 &599541454
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8050,7 +8050,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2726 CITADEL OF THE OUTCASTS \u2014 EDGE OF THE WORLD \u2726"
+  m_Text: "CITADEL OF THE OUTCASTS - EDGE OF THE WORLD "
 --- !u!222 &601817337
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8145,7 +8145,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F5E1\uFE0F RECRUIT MINION (-60 Crystals)"
+  m_Text: "RECRUIT MINION (-60 Crystals)"
 --- !u!222 &606384885
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9046,7 +9046,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2726 0 Cores"
+  m_Text: "0 Cores"
 --- !u!222 &658475761
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9421,7 +9421,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2692\uFE0F EMANCIPATION FORGE"
+  m_Text: "EMANCIPATION FORGE"
 --- !u!222 &670259712
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11644,7 +11644,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F3AE HOLY TACTICS: BASIC COMBAT GUIDE"
+  m_Text: "HOLY TACTICS: BASIC COMBAT GUIDE"
 --- !u!1 &857644256
 GameObject:
   m_ObjectHideFlags: 0
@@ -11731,7 +11731,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2716 CLOSE"
+  m_Text: "X CLOSE"
 --- !u!222 &857644260
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -11985,7 +11985,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2694\uFE0F ATK: 3    \U0001F3C3 MOV: 3"
+  m_Text: "ATK: 3    MOV: 3"
 --- !u!222 &864298987
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12738,7 +12738,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u25B6\uFE0F RESUME BATTLE"
+  m_Text: "RESUME BATTLE"
 --- !u!222 &936517952
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13475,7 +13475,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2699\uFE0F GAME OPTIONS & SETTINGS"
+  m_Text: "GAME OPTIONS & SETTINGS"
 --- !u!222 &996726641
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13578,7 +13578,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u301C The Sacred Crusade of the Chosen Hero \u301C"
+  m_Text: "~ The Sacred Crusade of the Chosen Hero ~"
 --- !u!1 &1014419008
 GameObject:
   m_ObjectHideFlags: 0
@@ -14309,7 +14309,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2726 BATTLE PAUSED \u2726"
+  m_Text: "BATTLE PAUSED "
 --- !u!222 &1051727074
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14507,7 +14507,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2726 HOLY CRUSADE EDITION \u2022 PROLOGUE: THE CHOSEN HERO \u2726"
+  m_Text: "HOLY CRUSADE EDITION - PROLOGUE: THE CHOSEN HERO "
 --- !u!1 &1060466793
 GameObject:
   m_ObjectHideFlags: 0
@@ -14594,7 +14594,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F3E0 TITLE"
+  m_Text: "TITLE"
 --- !u!222 &1060466797
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14841,7 +14841,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "<b><color=#FBBF24>[ The Radiant Mandate ]</color></b>\nUnder the sacred light of the Holy Empire, the Chosen Hero\u2014the Paladin of Radiance\u2014marches with the consecrated vanguard into the fractured underworld to eradicate all demonic existence.\n\n<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\nDeep within the Ashen Bastion, the reviled Demon Lord cowers upon his blackened throne. Command your Holy Vanguard, smite the monstrous heretics, and cleanse the taint!\n\n<b><color=#34D399>[ The Synod's Promise ]</color></b>\nPurity through fire. Purge the dark underworld and claim immortal salvation in Omniterra!"
+  m_Text: "<b><color=#FBBF24>[ The Radiant Mandate ]</color></b>\nUnder the sacred light of the Holy Empire, the Chosen Hero-the Paladin of Radiance-marches with the consecrated vanguard into the fractured underworld to eradicate all demonic existence.\n\n<b><color=#38BDF8>[ The Final Stronghold ]</color></b>\nDeep within the Ashen Bastion, the reviled Demon Lord cowers upon his blackened throne. Command your Holy Vanguard, smite the monstrous heretics, and cleanse the taint!\n\n<b><color=#34D399>[ The Synod's Promise ]</color></b>\nPurity through fire. Purge the dark underworld and claim immortal salvation in Omniterra!"
 --- !u!1 &1068486647
 GameObject:
   m_ObjectHideFlags: 0
@@ -14981,7 +14981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.UI.Hub.TownBuildingNode
   facilityType: 1
-  facilityTitle: "\u2726 EMANCIPATION FORGE \u2726"
+  facilityTitle: "EMANCIPATION FORGE "
   facilityLore: The anvil of liberation. Shatter Cursed Slave Collars from rescued demi-humans and forge abyssal dark weaponry.
   facilityStatus: '<color=#FF8844>Collars Pending: 2 Rescued</color>'
   targetGraphic: {fileID: 1070894537}
@@ -15381,7 +15381,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F477 ASSIGN LABORER (-1 Outcast)"
+  m_Text: "ASSIGN LABORER (-1 Outcast)"
 --- !u!222 &1093615468
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15945,7 +15945,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "Omniterra: Ascendance \u2022 Pre-Alpha v1.0.0 \u2022 Sacred Synod Edition"
+  m_Text: "Omniterra: Ascendance - Pre-Alpha v1.0.0 - Sacred Synod Edition"
 --- !u!114 &1135930049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16585,7 +16585,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F3B2 Randomize Map [R]\n<size=11>(Roll Incursion)</size>"
+  m_Text: "Randomize Map [R]\n<size=11>(Roll Incursion)</size>"
 --- !u!222 &1156975115
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -16960,7 +16960,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2716 CLOSE"
+  m_Text: "X CLOSE"
 --- !u!222 &1174644981
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17917,7 +17917,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2699\uFE0F Menu (Esc)"
+  m_Text: "Menu (Esc)"
 --- !u!222 &1266253833
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -18024,7 +18024,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.UI.Hub.TownBuildingNode
   facilityType: 3
-  facilityTitle: "\u2726 MONSTER BARRACKS & DEN \u2726"
+  facilityTitle: "MONSTER BARRACKS & DEN "
   facilityLore: Warcamp built from leviathan rib bones. Inspect, arm, and recruit companion minions (Goblins, Kobolds, Slimes).
   facilityStatus: '<color=#66CCFF>Squad: 2/4 Active</color>'
   targetGraphic: {fileID: 1272773239}
@@ -18167,7 +18167,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F6E1\uFE0F 16 Outcasts"
+  m_Text: "16 Outcasts"
 --- !u!1 &1281970164
 GameObject:
   m_ObjectHideFlags: 0
@@ -19080,7 +19080,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F525 180 Embers"
+  m_Text: "180 Embers"
 --- !u!1 &1338468809
 GameObject:
   m_ObjectHideFlags: 0
@@ -19311,7 +19311,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F30B Summon Titan\n<size=11>(Req 1 Core)</size>"
+  m_Text: "Summon Titan\n<size=11>(Req 1 Core)</size>"
 --- !u!222 &1339937157
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19901,9 +19901,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.UI.Hub.TownBuildingNode
   facilityType: 0
-  facilityTitle: "\u2726 DEMON LORD CITADEL \u2726"
+  facilityTitle: "DEMON LORD CITADEL "
   facilityLore: Sanctum of the exiled sovereign. Unlock Demon Lord System perks, upgrade domain attributes, and issue decrees.
-  facilityStatus: "<color=#FFCC00>Rank I Citadel \u2022 3 Perks Available</color>"
+  facilityStatus: "<color=#FFCC00>Rank I Citadel - 3 Perks Available</color>"
   targetGraphic: {fileID: 1360435209}
   scaleRoot: {fileID: 1360435207}
   groundShadow: {fileID: 0}
@@ -20212,7 +20212,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u25BC Klik / Spasi"
+  m_Text: "v Klik / Spasi"
 --- !u!222 &1375017025
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20326,7 +20326,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F4A7 Water\n<size=10>(2 Dmg)</size>"
+  m_Text: "Water\n<size=10>(2 Dmg)</size>"
 --- !u!222 &1385968032
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20683,7 +20683,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F513 UNLOCK PERK (-50 Embers)"
+  m_Text: "UNLOCK PERK (-50 Embers)"
 --- !u!222 &1412491379
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21520,7 +21520,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F464 Deploy Commander\n<size=11>(Free Vanguard)</size>"
+  m_Text: "Deploy Commander\n<size=11>(Free Vanguard)</size>"
 --- !u!222 &1457576128
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -21887,7 +21887,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F4A8 Push\n<size=10>(Shove 1)</size>"
+  m_Text: "Push\n<size=10>(Shove 1)</size>"
 --- !u!222 &1466433865
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22313,7 +22313,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2699\uFE0F OPTIONS"
+  m_Text: "OPTIONS"
 --- !u!222 &1491940729
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -22720,7 +22720,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60\xB0 | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n<b><color=#38BDF8>2. Holy Orders:</color></b> <b>Left-Click</b> to Select Unit / Strike | <b>Right-Click</b> to Cancel\n\n<b><color=#FBBF24>3. Tactical Movement:</color></b>\n\u2022 Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n\u2022 Click any highlighted hex to advance toward the demon lines.\n\n<b><color=#EF5350>4. Righteous Strike:</color></b>\n\u2022 When adjacent to an enemy (red highlights), click to unleash holy damage!\n\n<b><color=#34D399>5. Victory Objective:</color></b>\n\u2022 Slay the Demon Lord to purge the underworld and complete the sacred crusade!"
+  m_Text: "<b><color=#38BDF8>1. Camera Controls:</color></b> <b>Q / E</b> Rotate 60\xB0 | <b>WASD</b> Pan | <b>Scroll</b> Zoom in/out\n<b><color=#38BDF8>2. Holy Orders:</color></b> <b>Left-Click</b> to Select Unit / Strike | <b>Right-Click</b> to Cancel\n\n<b><color=#FBBF24>3. Tactical Movement:</color></b>\n- Click your Paladin or Shielder to view reachable tiles (cyan highlights).\n- Click any highlighted hex to advance toward the demon lines.\n\n<b><color=#EF5350>4. Righteous Strike:</color></b>\n- When adjacent to an enemy (red highlights), click to unleash holy damage!\n\n<b><color=#34D399>5. Victory Objective:</color></b>\n- Slay the Demon Lord to purge the underworld and complete the sacred crusade!"
 --- !u!1 &1504439533
 GameObject:
   m_ObjectHideFlags: 0
@@ -23120,9 +23120,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.UI.Hub.TownBuildingNode
   facilityType: 5
-  facilityTitle: "\u2726 ANCIENT DEITY SHRINE \u2726"
+  facilityTitle: "ANCIENT DEITY SHRINE "
   facilityLore: Colossal horned idol on the cliff's edge. Offer soul embers in the sacrificial brazier for ancient beast summoning (Gacha)!
-  facilityStatus: "<color=#FF55AA>Ritual Ready \u2022 1x Summon Available</color>"
+  facilityStatus: "<color=#FF55AA>Ritual Ready - 1x Summon Available</color>"
   targetGraphic: {fileID: 1521608499}
   scaleRoot: {fileID: 1521608497}
   groundShadow: {fileID: 0}
@@ -23897,7 +23897,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F52E ANCIENT HORNED DEITY SHRINE"
+  m_Text: "ANCIENT HORNED DEITY SHRINE"
 --- !u!222 &1573114227
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23992,7 +23992,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2716 CLOSE"
+  m_Text: "X CLOSE"
 --- !u!222 &1587204402
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24207,7 +24207,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "Vanguard \u2022 Commander"
+  m_Text: "Vanguard - Commander"
 --- !u!222 &1596555803
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25340,7 +25340,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F300 Tear Open Abyssal Rift\n<size=11>(Choose Landing Hex)</size>"
+  m_Text: "Tear Open Abyssal Rift\n<size=11>(Choose Landing Hex)</size>"
 --- !u!222 &1641998933
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25435,7 +25435,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F43A MONSTER DEN & BARRACKS"
+  m_Text: "MONSTER DEN & BARRACKS"
 --- !u!222 &1646474750
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25674,7 +25674,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2716 CLOSE"
+  m_Text: "X CLOSE"
 --- !u!222 &1663454814
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -29846,9 +29846,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementalHexTactics3D.UI.Hub.TownBuildingNode
   facilityType: 2
-  facilityTitle: "\u2726 ABYSSAL RIFT [ENTER BATTLE] \u2726"
+  facilityTitle: "ABYSSAL RIFT [ENTER BATTLE] "
   facilityLore: Gateway across the sanctuary border. Deploy your vanguard forces onto the 3D Hex tactical battlefield!
-  facilityStatus: "<color=#44FF88>Rift Stable \u2022 Click to Embark</color>"
+  facilityStatus: "<color=#44FF88>Rift Stable - Click to Embark</color>"
   targetGraphic: {fileID: 1787391939}
   scaleRoot: {fileID: 1787391937}
   groundShadow: {fileID: 0}
@@ -30133,7 +30133,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2726 BUILDING TITLE \u2726"
+  m_Text: "BUILDING TITLE "
 --- !u!1 &1812138865
 GameObject:
   m_ObjectHideFlags: 0
@@ -30507,7 +30507,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F4D6 SACRED SCRIPTURES: THE HOLY CRUSADE"
+  m_Text: "SACRED SCRIPTURES: THE HOLY CRUSADE"
 --- !u!1 &1845055732
 GameObject:
   m_ObjectHideFlags: 0
@@ -30738,7 +30738,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2716 CLOSE"
+  m_Text: "X CLOSE"
 --- !u!222 &1855004008
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30833,7 +30833,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F525 SUMMON BEAST (-80 Embers)"
+  m_Text: "SUMMON BEAST (-80 Embers)"
 --- !u!222 &1864322122
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30928,7 +30928,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F519 BACK"
+  m_Text: "BACK"
 --- !u!222 &1865656294
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31355,7 +31355,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F300 Recall\n<size=10>(Citadel)</size>"
+  m_Text: "Recall\n<size=10>(Citadel)</size>"
 --- !u!222 &1916290119
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31450,7 +31450,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u23F3 END TURN"
+  m_Text: "END TURN"
 --- !u!222 &1929994477
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31640,7 +31640,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F451 DEMON LORD CITADEL"
+  m_Text: "DEMON LORD CITADEL"
 --- !u!222 &1937055898
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31871,7 +31871,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F43E Strike\n<size=10>(Crit)</size>"
+  m_Text: "Strike\n<size=10>(Crit)</size>"
 --- !u!222 &1943037094
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33090,7 +33090,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F48E 450 Mana"
+  m_Text: "450 Mana"
 --- !u!1 &2046342265
 GameObject:
   m_ObjectHideFlags: 0
@@ -33177,7 +33177,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F519 BACK TO MENU"
+  m_Text: "BACK TO MENU"
 --- !u!222 &2046342269
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33408,7 +33408,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\U0001F30B Cataclysm\n<size=10>(1 Core Ult)</size>"
+  m_Text: "Cataclysm\n<size=10>(1 Core Ult)</size>"
 --- !u!222 &2054027839
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -33662,7 +33662,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\u2713 READY"
+  m_Text: "READY"
 --- !u!222 &2066903257
 CanvasRenderer:
   m_ObjectHideFlags: 0

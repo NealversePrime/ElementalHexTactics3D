@@ -140,7 +140,7 @@ namespace ElementalHexTactics3D.Turn
                 if (tile != null && tile.State == TileState.Magma && !u.IsMagmaImmune)
                 {
                     Debug.Log($"<color=#FF3D00><b>[Turn Hazard]</b></color> {u.UnitName} is standing in molten Magma! Took 3 burn damage.");
-                    u.TakeDamage(3, "🔥 MAGMA BURN! -3");
+                    u.TakeDamage(3, "MAGMA BURN! -3");
                     TacticalCameraController.Instance?.Shake(0.32f, 0.35f);
                     SoundManager3D.Instance?.PlayFireball();
                     yield return new WaitForSeconds(0.35f);
@@ -153,7 +153,7 @@ namespace ElementalHexTactics3D.Turn
                         {
                             u.ApplyMobilityDebuff(1, 1);
                             Debug.Log($"<color=#0288D1><b>[Turn Hazard]</b></color> {u.UnitName} is submerged in Deep Water! Immobilized 1 turn.");
-                            CombatFeedbackManager.Instance?.SpawnDamageText(u.transform.position, "🌊 SUBMERGED! (Immobilized)", new Color(0.2f, 0.8f, 1.0f), 1.5f);
+                            CombatFeedbackManager.Instance?.SpawnDamageText(u.transform.position, "SUBMERGED! (Immobilized)", new Color(0.2f, 0.8f, 1.0f), 1.5f);
                             TacticalCameraController.Instance?.Shake(0.2f, 0.25f);
                             SoundManager3D.Instance?.PlayWaterSurge();
                             yield return new WaitForSeconds(0.35f);
@@ -168,7 +168,7 @@ namespace ElementalHexTactics3D.Turn
                         {
                             u.ApplyMobilityDebuff(1, 1);
                             Debug.Log($"<color=#8D6E63><b>[Turn Hazard]</b></color> {u.UnitName} is stuck in Mud! Immobilized 1 turn.");
-                            CombatFeedbackManager.Instance?.SpawnDamageText(u.transform.position, "💩 MUD TRAP! (Immobilized)", new Color(0.75f, 0.55f, 0.35f), 1.5f);
+                            CombatFeedbackManager.Instance?.SpawnDamageText(u.transform.position, "MUD TRAP! (Immobilized)", new Color(0.75f, 0.55f, 0.35f), 1.5f);
                             TacticalCameraController.Instance?.Shake(0.18f, 0.20f);
                             SoundManager3D.Instance?.PlayMudTrap();
                             yield return new WaitForSeconds(0.35f);
@@ -264,7 +264,7 @@ namespace ElementalHexTactics3D.Turn
                 if (CombatFeedbackManager.Instance != null && activeMission != null)
                 {
                     CombatFeedbackManager.Instance.ShowBanner(
-                        "👑 EXPEDITION VICTORIOUS! 👑",
+                        "EXPEDITION VICTORIOUS! ",
                         $"Secured: {activeMission.GetRewardsSummary()}",
                         2.5f,
                         new Color(1.0f, 0.85f, 0.25f)
@@ -305,7 +305,7 @@ namespace ElementalHexTactics3D.Turn
                 feedbackObj.AddComponent<CombatFeedbackManager>();
             }
 
-            CombatFeedbackManager.Instance.ShowBanner("⚔️ ENEMY PHASE", "Enemy squad is coordinating attacks...", 1.2f, new Color(0.95f, 0.25f, 0.2f));
+            CombatFeedbackManager.Instance.ShowBanner("ENEMY PHASE", "Enemy squad is coordinating attacks...", 1.2f, new Color(0.95f, 0.25f, 0.2f));
             // If Enemy AI is disabled for environment testing, skip enemy actions entirely!
             if (disableEnemyAI)
             {
@@ -457,7 +457,7 @@ namespace ElementalHexTactics3D.Turn
 
                 if (woundedAlly != null)
                 {
-                    CombatFeedbackManager.Instance?.ShowBanner("✨ SACRED BLESSING!", $"{enemy.UnitName} heals {woundedAlly.UnitName}!", 1.1f, new Color(0.3f, 1.0f, 0.6f));
+                    CombatFeedbackManager.Instance?.ShowBanner("SACRED BLESSING!", $"{enemy.UnitName} heals {woundedAlly.UnitName}!", 1.1f, new Color(0.3f, 1.0f, 0.6f));
                     yield return enemy.PlayAttackLunge(woundedAlly.transform.position, 0.22f);
                     SoundManager3D.Instance?.PlayWaterSurge();
 
@@ -469,14 +469,14 @@ namespace ElementalHexTactics3D.Turn
                 }
                 else if (newDist <= 3)
                 {
-                    CombatFeedbackManager.Instance?.ShowBanner("💧 SACRED CASCADE!", $"{enemy.UnitName} casts holy water at {targetPlayer.UnitName}!", 1.1f, new Color(0.2f, 0.7f, 1.0f));
+                    CombatFeedbackManager.Instance?.ShowBanner("SACRED CASCADE!", $"{enemy.UnitName} casts purifying light at {targetPlayer.UnitName}!", 1.1f, new Color(0.2f, 0.7f, 1.0f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
                     SoundManager3D.Instance?.PlayWaterSurge();
 
                     Vector3 casterHand = enemy.transform.position + Vector3.up * 0.8f;
                     Vector3 targetChest = targetPlayer.transform.position + Vector3.up * 0.8f;
                     yield return CombatFeedbackManager.Instance?.SpawnSpellProjectile(casterHand, targetChest, new Color(0.2f, 0.7f, 1.0f), 0.28f);
-                    TerrainReactionSystem.ApplySpell(targetPlayer.CurrentTile, ElementType.Water, damage: 2);
+                    targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
                     yield return new WaitForSeconds(0.6f);
                 }
                 else
@@ -488,7 +488,7 @@ namespace ElementalHexTactics3D.Turn
             {
                 if (newDist <= 3)
                 {
-                    CombatFeedbackManager.Instance?.ShowBanner("🏹 SUNFIRE ARROW!", $"{enemy.UnitName} snipes {targetPlayer.UnitName}!", 1.1f, new Color(1.0f, 0.9f, 0.3f));
+                    CombatFeedbackManager.Instance?.ShowBanner("SUNFIRE ARROW!", $"{enemy.UnitName} snipes {targetPlayer.UnitName}!", 1.1f, new Color(1.0f, 0.9f, 0.3f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
                     SoundManager3D.Instance?.PlayMonsterAttack();
 
@@ -507,7 +507,7 @@ namespace ElementalHexTactics3D.Turn
             {
                 if (newDist == 1)
                 {
-                    CombatFeedbackManager.Instance?.ShowBanner("🛡️ SHIELD SLAM!", $"{enemy.UnitName} bashes {targetPlayer.UnitName}!", 1.0f, new Color(0.9f, 0.75f, 0.3f));
+                    CombatFeedbackManager.Instance?.ShowBanner("SHIELD SLAM!", $"{enemy.UnitName} bashes {targetPlayer.UnitName}!", 1.0f, new Color(0.9f, 0.75f, 0.3f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
                     SoundManager3D.Instance?.PlayKineticPush();
                     targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
@@ -523,7 +523,7 @@ namespace ElementalHexTactics3D.Turn
             {
                 if (newDist == 1)
                 {
-                    CombatFeedbackManager.Instance?.ShowBanner("⚔️ RADIANT SMITE!", $"{enemy.UnitName} strikes down on {targetPlayer.UnitName}!", 1.1f, new Color(1.0f, 0.85f, 0.2f));
+                    CombatFeedbackManager.Instance?.ShowBanner("RADIANT SMITE!", $"{enemy.UnitName} strikes down on {targetPlayer.UnitName}!", 1.1f, new Color(1.0f, 0.85f, 0.2f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
                     SoundManager3D.Instance?.PlayMonsterAttack();
                     targetPlayer.TakeDamage(enemy.EffectiveAttackDamage);
@@ -538,10 +538,10 @@ namespace ElementalHexTactics3D.Turn
             {
                 if (newDist <= 3)
                 {
-                    string bannerTitle = (newDist == 1) ? "🔥 POINT-BLANK FIRE!" : "ENEMY SPELL!";
+                    string bannerTitle = (newDist == 1) ? "POINT-BLANK FIRE!" : "ENEMY SPELL!";
                     string bannerMsg = (newDist == 1)
                         ? $"{enemy.UnitName} scorches {targetPlayer.UnitName} with point-blank flames!"
-                        : $"{enemy.UnitName} casts 🔥 Fireball at {targetPlayer.UnitName}!";
+                        : $"{enemy.UnitName} casts  Fireball at {targetPlayer.UnitName}!";
 
                     CombatFeedbackManager.Instance?.ShowBanner(bannerTitle, bannerMsg, 1.1f, new Color(1.0f, 0.45f, 0.1f));
                     yield return enemy.PlayAttackLunge(targetPlayer.transform.position, 0.22f);
@@ -563,9 +563,9 @@ namespace ElementalHexTactics3D.Turn
             {
                 if (newDist == 1)
                 {
-                    // MELEE: 💀 ABYSSAL CLEAVE & SHOCKWAVE (3 Dmg + Kinetic Push + Screen Shake)
+                    // MELEE:  ABYSSAL CLEAVE & SHOCKWAVE (3 Dmg + Kinetic Push + Screen Shake)
                     CombatFeedbackManager.Instance?.ShowBanner(
-                        "💀 ABYSSAL CLEAVE!",
+                        "ABYSSAL CLEAVE!",
                         $"{enemy.UnitName} cleaves {targetPlayer.UnitName} with crushing abyssal shockwaves!",
                         1.2f,
                         new Color(0.85f, 0.2f, 0.2f)
@@ -580,9 +580,9 @@ namespace ElementalHexTactics3D.Turn
                 }
                 else if (newDist <= 3)
                 {
-                    // RANGED: 🔥 HELLFIRE BLAST (3 Dmg + Fiery Projectile)
+                    // RANGED:  HELLFIRE BLAST (3 Dmg + Fiery Projectile)
                     CombatFeedbackManager.Instance?.ShowBanner(
-                        "🔥 HELLFIRE BLAST!",
+                        "HELLFIRE BLAST!",
                         $"{enemy.UnitName} hurls dark abyssal hellfire at {targetPlayer.UnitName}!",
                         1.2f,
                         new Color(1.0f, 0.35f, 0.1f)
@@ -613,7 +613,7 @@ namespace ElementalHexTactics3D.Turn
                 if (newDist <= 2)
                 {
                     CombatFeedbackManager.Instance?.ShowBanner(
-                        "🔥 IMP FIRE SPIT!",
+                        "IMP FIRE SPIT!",
                         $"{enemy.UnitName} spits demonic flames at {targetPlayer.UnitName}!",
                         1.0f,
                         new Color(1.0f, 0.5f, 0.15f)

@@ -465,7 +465,7 @@ namespace ElementalHexTactics3D.Combat
             };
             titleStyle.normal.textColor = isVictory ? new Color(1.0f, 0.85f, 0.2f) : new Color(1.0f, 0.3f, 0.3f);
             Rect titleRect = new Rect(cardX, cardY + 22, cardW, 34);
-            GUI.Label(titleRect, isVictory ? "🏆 VICTORY!" : "💀 DEFEAT", titleStyle);
+            GUI.Label(titleRect, isVictory ? "VICTORY!" : "DEFEAT", titleStyle);
 
             // Subtitle
             GUIStyle subStyle = new GUIStyle(GUI.skin.label)

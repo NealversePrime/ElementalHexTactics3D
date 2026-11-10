@@ -129,7 +129,7 @@ namespace ElementalHexTactics3D.UI
             };
             headerStyle.normal.textColor = isVictory ? new Color(1f, 0.85f, 0.30f) : new Color(1f, 0.35f, 0.35f);
 
-            string headerTitle = isVictory ? "👑 <b>EXPEDITION VICTORIOUS!</b> 👑" : "💀 <b>EXPEDITION DEFEAT</b> 💀";
+            string headerTitle = isVictory ? "<b>EXPEDITION VICTORIOUS!</b> " : "<b>EXPEDITION DEFEAT</b> ";
             GUI.Label(new Rect(winX, topY, winW, 40f), headerTitle, headerStyle);
 
             // Subtitle
@@ -143,9 +143,9 @@ namespace ElementalHexTactics3D.UI
             subStyle.normal.textColor = new Color(0.80f, 0.86f, 0.94f);
 
             string missionName = currentMission != null ? currentMission.Title : "Tactical Skirmish";
-            string threatStars = currentMission != null ? currentMission.GetThreatStars() : "★★★☆☆";
+            string threatStars = currentMission != null ? currentMission.GetThreatStars() : "Threat 3/5";
             string archName = currentMission != null ? currentMission.GetArchetypeName() : "Expedition";
-            GUI.Label(new Rect(winX, topY + 42f, winW, 25f), $"\"{missionName}\" — {archName}  [{threatStars}]", subStyle);
+            GUI.Label(new Rect(winX, topY + 42f, winW, 25f), $"\"{missionName}\" - {archName}  [{threatStars}]", subStyle);
 
             // 4. Panel: Spoils of War
             float spoilsY = topY + 75f;
@@ -160,7 +160,7 @@ namespace ElementalHexTactics3D.UI
                 richText = true
             };
             panelHeaderStyle.normal.textColor = new Color(0.70f, 0.85f, 1f);
-            GUI.Label(new Rect(spoilsRect.x + 20f, spoilsRect.y + 12f, spoilsRect.width - 40f, 22f), isVictory ? "📦 <b>SPOILS SECURED FOR CITADEL</b>" : "⚠️ <b>CASUALTY & RECOVERY REPORT</b>", panelHeaderStyle);
+            GUI.Label(new Rect(spoilsRect.x + 20f, spoilsRect.y + 12f, spoilsRect.width - 40f, 22f), isVictory ? "<b>SPOILS SECURED FOR CITADEL</b>" : "<b>CASUALTY & RECOVERY REPORT</b>", panelHeaderStyle);
 
             GUIStyle itemStyle = new GUIStyle(GUI.skin.label) { fontSize = 13, richText = true };
             itemStyle.normal.textColor = Color.white;
@@ -171,19 +171,19 @@ namespace ElementalHexTactics3D.UI
 
             if (isVictory)
             {
-                GUI.Label(new Rect(col1X, itemLineY, 280f, 22f), $"💎 Mana Crystals: <color=#00E5FF><b>+{manaGained}</b></color>", itemStyle);
-                GUI.Label(new Rect(col2X, itemLineY, 280f, 22f), $"🔥 Soul Embers: <color=#FF7043><b>+{embersGained}</b></color>", itemStyle);
+                GUI.Label(new Rect(col1X, itemLineY, 280f, 22f), $"Mana Crystals: <color=#00E5FF><b>+{manaGained}</b></color>", itemStyle);
+                GUI.Label(new Rect(col2X, itemLineY, 280f, 22f), $"Soul Embers: <color=#FF7043><b>+{embersGained}</b></color>", itemStyle);
                 itemLineY += 28f;
 
-                GUI.Label(new Rect(col1X, itemLineY, 280f, 22f), $"👥 Freed Outcasts: <color=#81C784><b>+{outcastsGained}</b></color>", itemStyle);
+                GUI.Label(new Rect(col1X, itemLineY, 280f, 22f), $"Freed Outcasts: <color=#81C784><b>+{outcastsGained}</b></color>", itemStyle);
                 string foodStr = (foodGained > 0) ? $"<color=#FFA726><b>+{foodGained}</b></color>" : "<color=#888888>+0</color>";
-                GUI.Label(new Rect(col2X, itemLineY, 280f, 22f), $"🍖 Rations Foraged: {foodStr}", itemStyle);
+                GUI.Label(new Rect(col2X, itemLineY, 280f, 22f), $"Rations Foraged: {foodStr}", itemStyle);
                 itemLineY += 28f;
 
                 string delayStr = (daysDelayed > 0) 
                     ? $"<color=#FFD54F><b>+{daysDelayed} DAYS (Crusade Stalled!)</b></color>" 
                     : "<color=#888888>+0 Days</color>";
-                GUI.Label(new Rect(col1X, itemLineY, 400f, 22f), $"⏳ Vanguard Sabotage: {delayStr}", itemStyle);
+                GUI.Label(new Rect(col1X, itemLineY, 400f, 22f), $"Vanguard Sabotage: {delayStr}", itemStyle);
             }
             else
             {
@@ -197,7 +197,7 @@ namespace ElementalHexTactics3D.UI
             Rect calRect = new Rect(winX + 35f, calY, winW - 70f, calH);
             DrawSolidPanel(calRect, new Color(0.05f, 0.07f, 0.11f, 0.95f), new Color(0.25f, 0.30f, 0.45f, 0.8f), 1);
 
-            GUI.Label(new Rect(calRect.x + 20f, calRect.y + 12f, calRect.width - 40f, 22f), "🌅 <b>DAWN PROGRESSION & CITADEL OUTLOOK</b>", panelHeaderStyle);
+            GUI.Label(new Rect(calRect.x + 20f, calRect.y + 12f, calRect.width - 40f, 22f), "<b>DAWN PROGRESSION & CITADEL OUTLOOK</b>", panelHeaderStyle);
 
             int curDay = CampaignManager.Instance != null ? CampaignManager.Instance.CurrentDay : 1;
             int nextDay = curDay + 1;
@@ -207,18 +207,18 @@ namespace ElementalHexTactics3D.UI
             string actStr = CampaignManager.Instance != null ? CampaignManager.Instance.ActTitle : "Act I: Survival";
 
             float cLineY = calRect.y + 42f;
-            GUI.Label(new Rect(col1X, cLineY, 320f, 22f), $"☀️ Campaign Day: <b>Day {curDay}</b> ➔ <color=#FFD54F><b>Day {nextDay} (Dawn)</b></color>", itemStyle);
-            GUI.Label(new Rect(col2X, cLineY, 320f, 22f), $"⚔️ {actStr}", itemStyle);
+            GUI.Label(new Rect(col1X, cLineY, 320f, 22f), $"Campaign Day: <b>Day {curDay}</b> -> <color=#FFD54F><b>Day {nextDay} (Dawn)</b></color>", itemStyle);
+            GUI.Label(new Rect(col2X, cLineY, 320f, 22f), $" {actStr}", itemStyle);
             cLineY += 28f;
 
             string doomColor = (daysUntil <= 3) ? "#FF5252" : (daysUntil <= 7) ? "#FFB74D" : "#81C784";
-            GUI.Label(new Rect(col1X, cLineY, 320f, 22f), $"⏳ Holy Crusade Countdown: <color={doomColor}><b>{daysUntil} Days Until Arrival</b></color>", itemStyle);
-            GUI.Label(new Rect(col2X, cLineY, 320f, 22f), $"🍖 Daily Sustenance Upkeep: <color=#FF7043>-{upkeep} Food</color> (Stock: {foodStock})", itemStyle);
+            GUI.Label(new Rect(col1X, cLineY, 320f, 22f), $"Holy Crusade Countdown: <color={doomColor}><b>{daysUntil} Days Until Arrival</b></color>", itemStyle);
+            GUI.Label(new Rect(col2X, cLineY, 320f, 22f), $"Daily Sustenance Upkeep: <color=#FF7043>-{upkeep} Food</color> (Stock: {foodStock})", itemStyle);
             cLineY += 28f;
 
             if (CampaignManager.Instance != null && CampaignManager.Instance.IsInFamine)
             {
-                GUI.Label(new Rect(col1X, cLineY, calRect.width - 50f, 22f), "<color=#FF5252>⚠️ <b>FAMINE IN CITADEL:</b> Outcasts starving! Troops suffer -1 Action Point in battle!</color>", itemStyle);
+                GUI.Label(new Rect(col1X, cLineY, calRect.width - 50f, 22f), "<color=#FF5252> <b>FAMINE IN CITADEL:</b> Outcasts starving! Troops suffer -1 Action Point in battle!</color>", itemStyle);
             }
 
             // 6. Return Button
@@ -228,7 +228,7 @@ namespace ElementalHexTactics3D.UI
             Color btnNorm = isVictory ? new Color(0.18f, 0.45f, 0.28f, 1f) : new Color(0.45f, 0.20f, 0.20f, 1f);
             Color btnHover = isVictory ? new Color(0.28f, 0.65f, 0.38f, 1f) : new Color(0.65f, 0.30f, 0.30f, 1f);
 
-            if (DrawButton(btnRect, "🏰 <b>Return to Citadel (Dawn) [Space / Enter]</b>", btnNorm, btnHover))
+            if (DrawButton(btnRect, "<b>Return to Citadel (Dawn) [Space / Enter]</b>", btnNorm, btnHover))
             {
                 OnReturnClicked();
             }

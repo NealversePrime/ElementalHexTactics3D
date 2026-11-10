@@ -188,7 +188,7 @@ namespace ElementalHexTactics3D.InputHandling
 
             if (CombatFeedbackManager.Instance != null)
             {
-                CombatFeedbackManager.Instance.ShowBanner("⚡ LAND HARVESTED!", $"{currentSelectedUnit.UnitName} harvested energy from {prevState} into an Elemental Core!", 1.3f, new Color(1.0f, 0.85f, 0.2f));
+                CombatFeedbackManager.Instance.ShowBanner("LAND HARVESTED!", $"{currentSelectedUnit.UnitName} harvested energy from {prevState} into an Elemental Core!", 1.3f, new Color(1.0f, 0.85f, 0.2f));
             }
 
             yield return new WaitForSeconds(0.2f);
@@ -220,7 +220,7 @@ namespace ElementalHexTactics3D.InputHandling
 
             if (CombatFeedbackManager.Instance != null)
             {
-                CombatFeedbackManager.Instance.ShowBanner("🌋 TITAN ULTIMATE: MAGMA CATACLYSM!", "A subterranean cataclysm ruptures the earth with molten fury!", 1.6f, new Color(1.0f, 0.35f, 0.1f));
+                CombatFeedbackManager.Instance.ShowBanner("TITAN ULTIMATE: MAGMA CATACLYSM!", "A subterranean cataclysm ruptures the earth with molten fury!", 1.6f, new Color(1.0f, 0.35f, 0.1f));
                 CombatFeedbackManager.Instance.StartCoroutine(
                     CombatFeedbackManager.Instance.SpawnShockwaveEffect(centerTile.transform.position, new Color(1.0f, 0.45f, 0.1f), maxRadius: 3.2f, duration: 0.55f));
             }
@@ -343,6 +343,35 @@ namespace ElementalHexTactics3D.InputHandling
             PlayCasterSpellVFX(caster, element, casterPos, targetPos, skillId);
 
             TacticalUnit3D targetOccupant = targetTile.GetOccupant();
+            string lowerCaster = caster.UnitName.ToLowerInvariant();
+            bool isHeroCaster = lowerCaster.Contains("paladin") || lowerCaster.Contains("hero") || lowerCaster.Contains("shielder");
+            bool isHeroSkill = isHeroCaster ||
+                               skillId == "RadiantSmite" ||
+                               skillId == "JudgmentBeam" ||
+                               skillId == "HeavensPillar" ||
+                               skillId == "CleansingFlood" ||
+                               skillId == "SacredBulwark" ||
+                               skillId == "SanctifyingWave";
+
+            if (isHeroSkill)
+            {
+                // Hero Crusade skills deal direct Holy damage and kinetic knockback without modifying terrain
+                TacticalCameraController.Instance?.Shake(0.28f, 0.28f);
+                CombatVFXManager.Instance?.PlayHitSparks(targetTile.GetTopCenterPosition() + Vector3.up * 0.6f, projColor);
+
+                if (targetOccupant != null && targetOccupant.CurrentHealth > 0)
+                {
+                    targetOccupant.TakeDamage(dmg);
+
+                    if ((skillId == "HeavensPillar" || skillId == "SacredBulwark") &&
+                        targetOccupant != null && targetOccupant.CurrentHealth > 0 && HexGrid3D.Instance != null)
+                    {
+                        yield return PushMechanic3D.ExecutePushRoutine(caster, targetOccupant, HexGrid3D.Instance);
+                    }
+                }
+                yield break;
+            }
+
             TerrainReactionResult reaction = TerrainReactionSystem.PredictReaction(targetTile.State, targetTile.TierLevel, element);
 
             if (element == ElementType.Earth && targetOccupant != null && reaction.ResultingState == TileState.StonePillar)
@@ -501,7 +530,7 @@ namespace ElementalHexTactics3D.InputHandling
             {
                 CombatFeedbackManager.Instance?.SpawnDamageText(
                     occupant.transform.position + Vector3.up * 1.0f,
-                    "⛰️ SEISMIC LAUNCH!",
+                    "SEISMIC LAUNCH!",
                     new Color(0.85f, 0.55f, 0.25f),
                     1.6f
                 );

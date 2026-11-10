@@ -233,9 +233,9 @@ namespace ElementalHexTactics3D.Campaign
             // Announce Dawn Arrival banner
             if (CombatFeedbackManager.Instance != null)
             {
-                string famineText = IsInFamine ? "\n<color=#EF5350>⚠️ FAMINE: Food depleted! Troops weakened.</color>" : "";
+                string famineText = IsInFamine ? "\n<color=#EF5350> FAMINE: Food depleted! Troops weakened.</color>" : "";
                 CombatFeedbackManager.Instance.ShowBanner(
-                    $"☀️ DAWN OF DAY {currentDay}",
+                    $"DAWN OF DAY {currentDay}",
                     $"Crusade arrives in {DaysUntilCrusade} days. Upkeep: -{dailyFoodUpkeep} Food (Stock: {food}).{famineText}",
                     2.8f,
                     new Color(1f, 0.88f, 0.35f)
@@ -357,7 +357,7 @@ namespace ElementalHexTactics3D.Campaign
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "🔄 CAMPAIGN RESET",
+                    "CAMPAIGN RESET",
                     "A fresh incursion begins on Day 1. The Holy Crusade is 24 days away.",
                     2.8f,
                     new Color(0.4f, 0.8f, 1f)

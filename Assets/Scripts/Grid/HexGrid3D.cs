@@ -198,7 +198,7 @@ namespace ElementalHexTactics3D.Grid
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    $"✦ {mission.Title.ToUpper()} ✦",
+                    $" {mission.Title.ToUpper()} ",
                     $"{mission.GetArchetypeName()} ({mission.GetThreatStars()}) | {mission.GetModifierTag()}\nSurvey the battlefield, then click [Tear Open Abyssal Rift]!",
                     3.5f,
                     new Color(0.35f, 0.85f, 1.0f)

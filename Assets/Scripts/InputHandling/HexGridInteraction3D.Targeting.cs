@@ -164,7 +164,7 @@ namespace ElementalHexTactics3D.InputHandling
             if (CombatFeedbackManager.Instance != null)
             {
                 CombatFeedbackManager.Instance.ShowBanner(
-                    "🌀 CHOOSE ENTRY POINT",
+                    "CHOOSE ENTRY POINT",
                     "Click any open hex to tear open the Abyssal Rift and lead your vanguard!",
                     2.2f,
                     new Color(0.75f, 0.35f, 1.0f)

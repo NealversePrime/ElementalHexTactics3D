@@ -320,7 +320,7 @@ namespace ElementalHexTactics3D.Tutorial
             txtAvatarIcon.font = font;
             txtAvatarIcon.fontSize = 28;
             txtAvatarIcon.alignment = TextAnchor.MiddleCenter;
-            txtAvatarIcon.text = mcPort != null ? "" : "✦";
+            txtAvatarIcon.text = mcPort != null ? "" : "";
             txtAvatarIcon.color = Color.white;
             txtAvatarIcon.raycastTarget = false;
 
@@ -516,7 +516,7 @@ namespace ElementalHexTactics3D.Tutorial
 
             if (txtHint != null)
             {
-                txtHint.text = $"👉 {hint}";
+                txtHint.text = $" {hint}";
             }
 
             // Start gentle outline pulse

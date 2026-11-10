@@ -288,7 +288,7 @@ namespace ElementalHexTactics3D.UI
                 fontStyle = FontStyle.Bold
             };
             badgeStyle.normal.textColor = new Color(0.35f, 0.85f, 1.0f);
-            GUI.Label(new Rect(bannerX, bannerY + 12, bannerW, 20), "✦ LIGHT NOVEL / MANHWA EDITION • PROLOGUE: RANK-F ✦", badgeStyle);
+            GUI.Label(new Rect(bannerX, bannerY + 12, bannerW, 20), "LIGHT NOVEL / MANHWA EDITION - PROLOGUE: RANK-F ", badgeStyle);
 
             // Main Title: Line 1
             GUIStyle title1Style = new GUIStyle(GUI.skin.label)
@@ -318,7 +318,7 @@ namespace ElementalHexTactics3D.UI
                 fontStyle = FontStyle.Italic
             };
             subStyle.normal.textColor = new Color(0.80f, 0.85f, 0.92f);
-            GUI.Label(new Rect(bannerX, bannerY + 112, bannerW, 24), "〜 2.5D Tactical Hex Battle & Primordial Resonance 〜", subStyle);
+            GUI.Label(new Rect(bannerX, bannerY + 112, bannerW, 24), "~ 2.5D Tactical Hex Battle & Primordial Resonance ~", subStyle);
 
             // Version info tag
             GUIStyle verStyle = new GUIStyle(GUI.skin.label)
@@ -327,7 +327,7 @@ namespace ElementalHexTactics3D.UI
                 fontSize = 11
             };
             verStyle.normal.textColor = new Color(0.6f, 0.65f, 0.72f);
-            GUI.Label(new Rect(bannerX, bannerY + 140, bannerW, 20), "Elemental Hex Tactics 3D • TGFI Pre-Alpha v0.2.0 • Solo Dev by Neal Sage", verStyle);
+            GUI.Label(new Rect(bannerX, bannerY + 140, bannerW, 20), "Elemental Hex Tactics 3D - TGFI Pre-Alpha v0.2.0 - Solo Dev by Neal Sage", verStyle);
 
             // 3. Center Menu Buttons Card
             float menuW = 380f;
@@ -345,31 +345,31 @@ namespace ElementalHexTactics3D.UI
             float spacingY = 54f;
 
             // Button 1: PLAY GAME
-            if (DrawCustomButton(new Rect(menuX + 24, startBtnY, btnW, btnH), "⚔️ PLAY ADVENTURE", new Color(0.18f, 0.65f, 0.38f), new Color(0.28f, 0.85f, 0.48f)))
+            if (DrawCustomButton(new Rect(menuX + 24, startBtnY, btnW, btnH), "PLAY ADVENTURE", new Color(0.18f, 0.65f, 0.38f), new Color(0.28f, 0.85f, 0.48f)))
             {
                 StartGame();
             }
 
             // Button 2: STORY PROLOGUE
-            if (DrawCustomButton(new Rect(menuX + 24, startBtnY + spacingY, btnW, btnH), "📖 STORY & LORE (Rank-F)", new Color(0.15f, 0.42f, 0.68f), new Color(0.25f, 0.58f, 0.92f)))
+            if (DrawCustomButton(new Rect(menuX + 24, startBtnY + spacingY, btnW, btnH), "STORY & LORE (Rank-F)", new Color(0.15f, 0.42f, 0.68f), new Color(0.25f, 0.58f, 0.92f)))
             {
                 OpenStoryPrologue();
             }
 
             // Button 3: HOW TO PLAY
-            if (DrawCustomButton(new Rect(menuX + 24, startBtnY + spacingY * 2, btnW, btnH), "🎮 HOW TO PLAY (Tactics)", new Color(0.45f, 0.32f, 0.68f), new Color(0.62f, 0.45f, 0.92f)))
+            if (DrawCustomButton(new Rect(menuX + 24, startBtnY + spacingY * 2, btnW, btnH), "HOW TO PLAY (Tactics)", new Color(0.45f, 0.32f, 0.68f), new Color(0.62f, 0.45f, 0.92f)))
             {
                 OpenHowToPlay();
             }
 
             // Button 4: OPTIONS
-            if (DrawCustomButton(new Rect(menuX + 24, startBtnY + spacingY * 3, btnW, btnH), "⚙️ OPTIONS (Settings)", new Color(0.30f, 0.35f, 0.42f), new Color(0.42f, 0.48f, 0.58f)))
+            if (DrawCustomButton(new Rect(menuX + 24, startBtnY + spacingY * 3, btnW, btnH), "OPTIONS (Settings)", new Color(0.30f, 0.35f, 0.42f), new Color(0.42f, 0.48f, 0.58f)))
             {
                 OpenOptions(TitleMenuState.TitleScreen);
             }
 
             // Button 5: EXIT
-            if (DrawCustomButton(new Rect(menuX + 24, startBtnY + spacingY * 4, btnW, btnH), "🚪 EXIT GAME", new Color(0.48f, 0.18f, 0.20f), new Color(0.70f, 0.25f, 0.28f)))
+            if (DrawCustomButton(new Rect(menuX + 24, startBtnY + spacingY * 4, btnW, btnH), "EXIT GAME", new Color(0.48f, 0.18f, 0.20f), new Color(0.70f, 0.25f, 0.28f)))
             {
                 QuitGame();
             }
@@ -396,7 +396,7 @@ namespace ElementalHexTactics3D.UI
                 fontStyle = FontStyle.Bold
             };
             headerStyle.normal.textColor = new Color(1.0f, 0.85f, 0.3f);
-            GUI.Label(new Rect(cardX, cardY + 16, cardW, 30), "📖 STORY PROLOGUE: THE WEAKEST TAMER'S AWAKENING", headerStyle);
+            GUI.Label(new Rect(cardX, cardY + 16, cardW, 30), "STORY PROLOGUE: THE WEAKEST TAMER'S AWAKENING", headerStyle);
 
             // Content Box
             Rect bodyRect = new Rect(cardX + 24, cardY + 54, cardW - 48, cardH - 130);
@@ -406,7 +406,7 @@ namespace ElementalHexTactics3D.UI
             GUILayout.BeginArea(new Rect(bodyRect.x + 16, bodyRect.y + 12, bodyRect.width - 32, bodyRect.height - 24));
             
             GUILayout.Label("<color=#64B5F6><b>[ The Reincarnation ]</b></color>");
-            GUILayout.Label("You were suddenly transported from modern Earth into the fantasy continent of <b>Terranox</b>—a world where power and nobility are dictated by the ferocious beasts you command.");
+            GUILayout.Label("You were suddenly transported from modern Earth into the fantasy continent of <b>Terranox</b>-a world where power and nobility are dictated by the ferocious beasts you command.");
             GUILayout.Space(6);
 
             GUILayout.Label("<color=#EF5350><b>[ The Tyrant's Cruelty: Cursed Collars ]</b></color>");
@@ -423,7 +423,7 @@ namespace ElementalHexTactics3D.UI
             GUILayout.EndArea();
 
             // Back button
-            if (DrawCustomButton(new Rect(cardX + (cardW - 200f) * 0.5f, cardY + cardH - 58f, 200f, 40f), "🔙 BACK TO MENU", new Color(0.25f, 0.35f, 0.45f), new Color(0.4f, 0.55f, 0.7f)))
+            if (DrawCustomButton(new Rect(cardX + (cardW - 200f) * 0.5f, cardY + cardH - 58f, 200f, 40f), "BACK TO MENU", new Color(0.25f, 0.35f, 0.45f), new Color(0.4f, 0.55f, 0.7f)))
             {
                 CloseModal();
             }
@@ -450,7 +450,7 @@ namespace ElementalHexTactics3D.UI
                 fontStyle = FontStyle.Bold
             };
             headerStyle.normal.textColor = new Color(1.0f, 0.85f, 0.3f);
-            GUI.Label(new Rect(cardX, cardY + 16, cardW, 30), "🎮 TACTICAL COMBAT & TERRAFORM GUIDE", headerStyle);
+            GUI.Label(new Rect(cardX, cardY + 16, cardW, 30), "TACTICAL COMBAT & TERRAFORM GUIDE", headerStyle);
 
             Rect bodyRect = new Rect(cardX + 24, cardY + 54, cardW - 48, cardH - 130);
             DrawSolidRect(bodyRect, new Color(0f, 0f, 0f, 0.45f));
@@ -458,28 +458,28 @@ namespace ElementalHexTactics3D.UI
 
             GUILayout.BeginArea(new Rect(bodyRect.x + 16, bodyRect.y + 12, bodyRect.width - 32, bodyRect.height - 24));
             
-            GUILayout.Label("<color=#64B5F6><b>1. Camera Controls:</b></color> <b>Q / E</b> Rotate 60° | <b>WASD</b> Pan Focus | <b>Mouse Scroll</b> Zoom");
+            GUILayout.Label("<color=#64B5F6><b>1. Camera Controls:</b></color> <b>Q / E</b> Rotate 60 deg | <b>WASD</b> Pan Focus | <b>Mouse Scroll</b> Zoom");
             GUILayout.Label("<color=#64B5F6><b>2. Tactical Selection:</b></color> <b>Left-Click</b> to Select Unit / Cast Spell | <b>Right-Click</b> to Deselect/Cancel");
             GUILayout.Space(6);
 
             GUILayout.Label("<color=#FFA726><b>3. Dynamic Terraforming (Divinity Style):</b></color>");
-            GUILayout.Label("• 🔥 <b>Fireball:</b> Chars grass into <b>Scorched Earth (Tier 1)</b>; a second Fireball melts it into molten <b>Magma (Tier 2)</b> (damages enemies, gives Fire Titan +2 ATK!).");
-            GUILayout.Label("• 💧 <b>Water Blast:</b> Extinguishes flames into <b>Steam Smokescreens</b>; creates <b>Puddles/Lakes</b>.");
-            GUILayout.Label("• 🪨 <b>Earth Spire:</b> Erupts massive <b>Stone Pillars</b> (creates physical barriers and collision walls).");
+            GUILayout.Label("-  <b>Fireball:</b> Chars grass into <b>Scorched Earth (Tier 1)</b>; a second Fireball melts it into molten <b>Magma (Tier 2)</b> (damages enemies, gives Fire Titan +2 ATK!).");
+            GUILayout.Label("-  <b>Water Blast:</b> Extinguishes flames into <b>Steam Smokescreens</b>; creates <b>Puddles/Lakes</b>.");
+            GUILayout.Label("-  <b>Earth Spire:</b> Erupts massive <b>Stone Pillars</b> (creates physical barriers and collision walls).");
             GUILayout.Space(6);
 
             GUILayout.Label("<color=#EF5350><b>4. Kinetic Push & Wall Slams (Into the Breach):</b></color>");
-            GUILayout.Label("• 💥 <b>Kinetic Shove:</b> Push enemies 1 hex away. Slamming an enemy into a Stone Pillar, cliff, or another unit inflicts <b>💥 -2 HP WALL SLAM damage</b>!");
-            GUILayout.Label("• Shove fragile enemy Tamers into their own lava or deep water to neutralize them instantly!");
+            GUILayout.Label("-  <b>Kinetic Shove:</b> Push enemies 1 hex away. Slamming an enemy into a Stone Pillar, cliff, or another unit inflicts <b>-2 HP WALL SLAM damage</b>!");
+            GUILayout.Label("- Shove fragile enemy Tamers into their own lava or deep water to neutralize them instantly!");
             GUILayout.Space(6);
 
             GUILayout.Label("<color=#FFD54F><b>5. Siphon Land & Cataclysm:</b></color>");
-            GUILayout.Label("• ⚡ <b>Siphon:</b> Your Titan drains active lava, turning it into Barren Earth to harvest <b>Elemental Cores</b>.");
-            GUILayout.Label("• 🌋 <b>Magma Cataclysm:</b> Spend 3 Cores to trigger a screen-shattering volcanic explosion wiping the field!");
+            GUILayout.Label("-  <b>Siphon:</b> Your Titan drains active lava, turning it into Barren Earth to harvest <b>Elemental Cores</b>.");
+            GUILayout.Label("-  <b>Magma Cataclysm:</b> Spend 3 Cores to trigger a screen-shattering volcanic explosion wiping the field!");
 
             GUILayout.EndArea();
 
-            if (DrawCustomButton(new Rect(cardX + (cardW - 200f) * 0.5f, cardY + cardH - 58f, 200f, 40f), "🔙 BACK TO MENU", new Color(0.25f, 0.35f, 0.45f), new Color(0.4f, 0.55f, 0.7f)))
+            if (DrawCustomButton(new Rect(cardX + (cardW - 200f) * 0.5f, cardY + cardH - 58f, 200f, 40f), "BACK TO MENU", new Color(0.25f, 0.35f, 0.45f), new Color(0.4f, 0.55f, 0.7f)))
             {
                 CloseModal();
             }
@@ -505,7 +505,7 @@ namespace ElementalHexTactics3D.UI
                 fontStyle = FontStyle.Bold
             };
             headerStyle.normal.textColor = Color.white;
-            GUI.Label(new Rect(cardX, cardY + 16, cardW, 30), "⚙️ GAME OPTIONS & SETTINGS", headerStyle);
+            GUI.Label(new Rect(cardX, cardY + 16, cardW, 30), "GAME OPTIONS & SETTINGS", headerStyle);
 
             Rect bodyRect = new Rect(cardX + 24, cardY + 56, cardW - 48, cardH - 130);
             DrawSolidRect(bodyRect, new Color(0f, 0f, 0f, 0.45f));
@@ -516,7 +516,7 @@ namespace ElementalHexTactics3D.UI
             // 1. Audio Mute Toggle
             GUILayout.BeginHorizontal();
             GUILayout.Label("<b>Sound & Audio:</b>", GUILayout.Width(130));
-            string audioBtnText = isMuted ? "🔇 Unmute Audio" : "🔊 Mute Audio";
+            string audioBtnText = isMuted ? "Unmute Audio" : "Mute Audio";
             if (GUILayout.Button(audioBtnText, GUILayout.Height(28)))
             {
                 isMuted = !isMuted;
@@ -532,7 +532,7 @@ namespace ElementalHexTactics3D.UI
             // 2. Enemy AI Toggle (Testing Mode)
             GUILayout.BeginHorizontal();
             GUILayout.Label("<b>Enemy AI:</b>", GUILayout.Width(130));
-            string aiBtnText = disableAi ? "🤖 AI: DISABLED (Testing Mode)" : "🤖 AI: ENABLED (Normal Battle)";
+            string aiBtnText = disableAi ? "AI: DISABLED (Testing Mode)" : "AI: ENABLED (Normal Battle)";
             Color aiCol = disableAi ? new Color(0.9f, 0.4f, 0.2f) : new Color(0.3f, 0.8f, 0.4f);
             GUI.color = aiCol;
             if (GUILayout.Button(aiBtnText, GUILayout.Height(28)))
@@ -551,7 +551,7 @@ namespace ElementalHexTactics3D.UI
             // 3. Screen Resolution / Fullscreen
             GUILayout.BeginHorizontal();
             GUILayout.Label("<b>Display Mode:</b>", GUILayout.Width(130));
-            string fsBtnText = Screen.fullScreen ? "🖥️ Windowed Mode" : "🔲 Fullscreen Mode";
+            string fsBtnText = Screen.fullScreen ? "Windowed Mode" : "Fullscreen Mode";
             if (GUILayout.Button(fsBtnText, GUILayout.Height(28)))
             {
                 Screen.fullScreen = !Screen.fullScreen;
@@ -563,7 +563,7 @@ namespace ElementalHexTactics3D.UI
 
             GUILayout.EndArea();
 
-            if (DrawCustomButton(new Rect(cardX + (cardW - 180f) * 0.5f, cardY + cardH - 58f, 180f, 40f), "🔙 BACK", new Color(0.25f, 0.35f, 0.45f), new Color(0.4f, 0.55f, 0.7f)))
+            if (DrawCustomButton(new Rect(cardX + (cardW - 180f) * 0.5f, cardY + cardH - 58f, 180f, 40f), "BACK", new Color(0.25f, 0.35f, 0.45f), new Color(0.4f, 0.55f, 0.7f)))
             {
                 CloseModal();
             }
@@ -589,24 +589,24 @@ namespace ElementalHexTactics3D.UI
                 fontStyle = FontStyle.Bold
             };
             headerStyle.normal.textColor = new Color(1.0f, 0.85f, 0.3f);
-            GUI.Label(new Rect(cardX, cardY + 18, cardW, 30), "⏸️ BATTLE PAUSED", headerStyle);
+            GUI.Label(new Rect(cardX, cardY + 18, cardW, 30), "BATTLE PAUSED", headerStyle);
 
             float btnW = cardW - 60f;
             float btnH = 42f;
             float startY = cardY + 68f;
             float spacing = 50f;
 
-            if (DrawCustomButton(new Rect(cardX + 30, startY, btnW, btnH), "▶️ RESUME BATTLE", new Color(0.18f, 0.65f, 0.38f), new Color(0.28f, 0.85f, 0.48f)))
+            if (DrawCustomButton(new Rect(cardX + 30, startY, btnW, btnH), "RESUME BATTLE", new Color(0.18f, 0.65f, 0.38f), new Color(0.28f, 0.85f, 0.48f)))
             {
                 ResumeGame();
             }
 
-            if (DrawCustomButton(new Rect(cardX + 30, startY + spacing, btnW, btnH), "⚙️ OPTIONS", new Color(0.30f, 0.38f, 0.48f), new Color(0.42f, 0.52f, 0.65f)))
+            if (DrawCustomButton(new Rect(cardX + 30, startY + spacing, btnW, btnH), "OPTIONS", new Color(0.30f, 0.38f, 0.48f), new Color(0.42f, 0.52f, 0.65f)))
             {
                 OpenOptions(TitleMenuState.InGamePauseModal);
             }
 
-            if (DrawCustomButton(new Rect(cardX + 30, startY + spacing * 2, btnW, btnH), "🔄 RESTART BATTLE", new Color(0.72f, 0.45f, 0.15f), new Color(0.92f, 0.60f, 0.25f)))
+            if (DrawCustomButton(new Rect(cardX + 30, startY + spacing * 2, btnW, btnH), "RESTART BATTLE", new Color(0.72f, 0.45f, 0.15f), new Color(0.92f, 0.60f, 0.25f)))
             {
                 ResumeGame();
                 if (TurnManager3D.Instance != null)
@@ -615,7 +615,7 @@ namespace ElementalHexTactics3D.UI
                 }
             }
 
-            if (DrawCustomButton(new Rect(cardX + 30, startY + spacing * 3, btnW, btnH), "🏠 MAIN MENU", new Color(0.55f, 0.20f, 0.22f), new Color(0.75f, 0.28f, 0.30f)))
+            if (DrawCustomButton(new Rect(cardX + 30, startY + spacing * 3, btnW, btnH), "MAIN MENU", new Color(0.55f, 0.20f, 0.22f), new Color(0.75f, 0.28f, 0.30f)))
             {
                 ReturnToTitleScreen();
             }
@@ -630,7 +630,7 @@ namespace ElementalHexTactics3D.UI
             float btnY = 16f;
             Rect menuBtnRect = new Rect(btnX, btnY, btnW, btnH);
 
-            if (DrawCustomButton(menuBtnRect, "⚙️ Menu (Esc)", new Color(0.12f, 0.16f, 0.22f, 0.95f), new Color(0.22f, 0.32f, 0.45f, 1f), fontSize: 11))
+            if (DrawCustomButton(menuBtnRect, "Menu (Esc)", new Color(0.12f, 0.16f, 0.22f, 0.95f), new Color(0.22f, 0.32f, 0.45f, 1f), fontSize: 11))
             {
                 OpenPauseMenu();
             }

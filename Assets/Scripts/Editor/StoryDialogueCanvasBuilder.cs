@@ -281,7 +281,7 @@ namespace ElementalHexTactics3D.Editor
             txtSkip.fontStyle = FontStyle.Bold;
             txtSkip.color = Color.white;
             txtSkip.alignment = TextAnchor.MiddleCenter;
-            txtSkip.text = "⏩ SKIP (Esc)";
+            txtSkip.text = "SKIP (Esc)";
 
             // 12. Wire references into StoryDialogueUI
             SerializedObject so = new SerializedObject(dialogueUI);

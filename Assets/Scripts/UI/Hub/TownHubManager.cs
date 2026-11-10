@@ -8,7 +8,7 @@ using ElementalHexTactics3D.Campaign;
 namespace ElementalHexTactics3D.UI.Hub
 {
     /// <summary>
-    /// Master controller for the Citadel Town Hub ("Edge of the World" sanctuary).
+    /// Master controller for the Citadel Town Hub ("Edge of the World"sanctuary).
     /// Manages domain resources, dynamic tooltip banners, facility modals,
     /// and the expedition transition into the 3D Hex Tactical battlefield.
     /// </summary>
@@ -150,15 +150,15 @@ namespace ElementalHexTactics3D.UI.Hub
 
         private void SnapBuildingNodes()
         {
-            SnapNode("Building_DemonCastle", new Vector2(-753.3f, 122.8f), new Vector2(735.0f, 735.0f));
-            SnapNode("Building_EmancipationForge", new Vector2(-395.6f, -72.6f), new Vector2(385.0f, 385.0f));
-            SnapNode("Building_AbyssalPortal", new Vector2(-26.5f, -53.5f), new Vector2(427f, 427f));
-            SnapNode("Building_MonsterBarracks", new Vector2(313.5f, -55.5f), new Vector2(449f, 449f));
-            SnapNode("Building_ManaMineFarm", new Vector2(643.2f, -136.4f), new Vector2(492.5f, 488.8f));
-            SnapNode("Building_AncientDeityShrine", new Vector2(786.0f, 174.0f), new Vector2(348f, 348f));
+            SnapNode("Building_DemonCastle", new Vector2(-753.3f, 122.8f), new Vector2(735.0f, 735.0f), "UNDER CONSTRUCTION", false, badgeOffsetY: -220f);
+            SnapNode("Building_EmancipationForge", new Vector2(-395.6f, -72.6f), new Vector2(385.0f, 385.0f), "UNDER CONSTRUCTION", false, badgeOffsetY: -130f);
+            SnapNode("Building_AbyssalPortal", new Vector2(-26.5f, -53.5f), new Vector2(427f, 427f), "ABYSSAL RIFT [ENTER BATTLE]", true, badgeOffsetY: -170f);
+            SnapNode("Building_MonsterBarracks", new Vector2(313.5f, -55.5f), new Vector2(449f, 449f), "UNDER CONSTRUCTION", false, badgeOffsetY: -160f);
+            SnapNode("Building_ManaMineFarm", new Vector2(643.2f, -136.4f), new Vector2(492.5f, 488.8f), "UNDER CONSTRUCTION", false, badgeOffsetY: -140f);
+            SnapNode("Building_AncientDeityShrine", new Vector2(786.0f, 174.0f), new Vector2(348f, 348f), "PRIMORDIAL ALTAR", true, badgeOffsetY: -125f);
         }
 
-        private void SnapNode(string name, Vector2 pos, Vector2 size)
+        private void SnapNode(string name, Vector2 pos, Vector2 size, string badgeLabel = null, bool isActiveFacility = false, float badgeOffsetY = -70f)
         {
             Transform t = transform.Find($"Container_Buildings/{name}");
             if (t != null)
@@ -177,8 +177,76 @@ namespace ElementalHexTactics3D.UI.Hub
                 if (img != null)
                 {
                     img.color = new Color(1f, 1f, 1f, 0f);
+                    // Match the precise pixel silhouette of the building artwork
+                    if (img.sprite != null)
+                    {
+                        img.alphaHitTestMinimumThreshold = 0.15f;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(badgeLabel))
+                {
+                    EnsureFacilityBadge(t, badgeLabel, isActiveFacility, badgeOffsetY);
                 }
             }
+        }
+
+        private void EnsureFacilityBadge(Transform buildingTransform, string labelText, bool isActiveFacility, float badgeOffsetY = -70f)
+        {
+            Transform badgeTrans = buildingTransform.Find("FacilityTagBadge");
+            if (badgeTrans == null)
+            {
+                GameObject badgeObj = new GameObject("FacilityTagBadge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                badgeObj.transform.SetParent(buildingTransform, false);
+                badgeTrans = badgeObj.transform;
+            }
+
+            RectTransform brt = badgeTrans.GetComponent<RectTransform>();
+            brt.anchorMin = new Vector2(0.5f, 0.5f);
+            brt.anchorMax = new Vector2(0.5f, 0.5f);
+            brt.pivot = new Vector2(0.5f, 0.5f);
+            brt.anchoredPosition = new Vector2(0f, badgeOffsetY);
+            brt.sizeDelta = new Vector2(isActiveFacility ? 236f : 196f, 28f);
+
+            Image bImg = badgeTrans.GetComponent<Image>();
+            bImg.color = isActiveFacility
+                ? new Color(0.06f, 0.14f, 0.12f, 0.92f)
+                : new Color(0.07f, 0.07f, 0.09f, 0.84f);
+            bImg.raycastTarget = false;
+
+            Outline bOutline = badgeTrans.GetComponent<Outline>() ?? badgeTrans.gameObject.AddComponent<Outline>();
+            bOutline.effectColor = isActiveFacility
+                ? new Color(0.35f, 0.90f, 0.65f, 0.85f)
+                : new Color(0.55f, 0.45f, 0.30f, 0.55f);
+            bOutline.effectDistance = new Vector2(1f, -1f);
+
+            Transform txtTrans = badgeTrans.Find("Text_Badge");
+            if (txtTrans == null)
+            {
+                GameObject txtObj = new GameObject("Text_Badge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                txtObj.transform.SetParent(badgeTrans, false);
+                txtTrans = txtObj.transform;
+            }
+
+            RectTransform trt = txtTrans.GetComponent<RectTransform>();
+            trt.anchorMin = Vector2.zero;
+            trt.anchorMax = Vector2.one;
+            trt.offsetMin = Vector2.zero;
+            trt.offsetMax = Vector2.zero;
+
+            Text txt = txtTrans.GetComponent<Text>();
+            if (txt.font == null)
+            {
+                txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            }
+            txt.text = labelText;
+            txt.fontSize = isActiveFacility ? 12 : 11;
+            txt.fontStyle = FontStyle.Bold;
+            txt.alignment = TextAnchor.MiddleCenter;
+            txt.color = isActiveFacility
+                ? new Color(0.45f, 1.0f, 0.72f, 1.0f)
+                : new Color(0.85f, 0.72f, 0.45f, 0.92f);
+            txt.raycastTarget = false;
         }
 
         private void Start()
@@ -294,12 +362,12 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 string doomColor = (daysUntil <= 3) ? "#FF5252" : (daysUntil <= 7) ? "#FFB74D" : "#81C784";
                 string foodColor = (foodStock <= 15) ? "#FF5252" : "#FFA726";
-                txtDomainTitle.text = $"☀️ DAY {day} ({actStr})  |  ⏳ CRUSADE: <color={doomColor}>{daysUntil} DAYS</color>  |  🍖 FOOD: <color={foodColor}>{foodStock}</color>";
+                txtDomainTitle.text = $"DAY {day} ({actStr})  |   CRUSADE: <color={doomColor}>{daysUntil} DAYS</color>  |   FOOD: <color={foodColor}>{foodStock}</color>";
             }
 
-            if (txtManaCrystals != null) txtManaCrystals.text = $"💎 {manaCrystals} Mana";
-            if (txtSoulEmbers != null) txtSoulEmbers.text = $"🔥 {soulEmbers} Embers";
-            if (txtFreedOutcasts != null) txtFreedOutcasts.text = $"🛡️ {freedOutcasts} Outcasts";
+            if (txtManaCrystals != null) txtManaCrystals.text = $" {manaCrystals} Mana";
+            if (txtSoulEmbers != null) txtSoulEmbers.text = $" {soulEmbers} Embers";
+            if (txtFreedOutcasts != null) txtFreedOutcasts.text = $" {freedOutcasts} Outcasts";
         }
 
         public void AddManaCrystals(int amount)
@@ -420,7 +488,7 @@ namespace ElementalHexTactics3D.UI.Hub
                     else
                     {
                         PlaySound(sfxCloseModal, 0.8f);
-                        ShowNoticeBanner("⚠️ COMMUNE WITH THE SHRINE", "The Primordial Statue on the eastern cliff is glowing! Commune with the statue first to awaken a Titan!");
+                        ShowNoticeBanner("COMMUNE WITH THE SHRINE", "The Primordial Statue on the eastern cliff is glowing! Commune with the statue first to awaken a Titan!");
                         return;
                     }
                 }
@@ -448,7 +516,7 @@ namespace ElementalHexTactics3D.UI.Hub
                         string portalMsg = (tut.CurrentStage == Tutorial.TutorialStage.Hub_TitanCrisis)
                             ? "The heavy crusade approaches! Enter the Abyssal Portal to deploy the Magma Dragon!"
                             : "Radiant Synod forces are encroaching on the gateway! Enter the Abyssal Portal immediately!";
-                        ShowNoticeBanner("⚠️ DEFENSE PRIORITY", portalMsg);
+                        ShowNoticeBanner("DEFENSE PRIORITY", portalMsg);
                         return;
                     }
                 }
@@ -456,23 +524,20 @@ namespace ElementalHexTactics3D.UI.Hub
 
             switch (building.FacilityType)
             {
-                case HubFacilityType.DemonCastle:
-                    OpenModal(modalCastle);
-                    break;
-                case HubFacilityType.EmancipationForge:
-                    OpenModal(modalForge);
-                    break;
                 case HubFacilityType.AbyssalPortal:
                     EmbarkToExpedition();
                     break;
-                case HubFacilityType.MonsterBarracks:
-                    OpenModal(modalBarracks);
-                    break;
-                case HubFacilityType.ManaMine:
-                    OpenModal(modalMine);
-                    break;
                 case HubFacilityType.AncientDeityShrine:
-                    OpenModal(modalShrine);
+                    PlaySound(sfxCloseModal, 0.8f);
+                    ShowNoticeBanner("UNDER CONSTRUCTION", "Magma Dragon Titan has already been awakened! Further Primordial Altar rituals are under construction in this prototype demo.");
+                    break;
+                case HubFacilityType.DemonCastle:
+                case HubFacilityType.EmancipationForge:
+                case HubFacilityType.MonsterBarracks:
+                case HubFacilityType.ManaMine:
+                default:
+                    PlaySound(sfxCloseModal, 0.8f);
+                    ShowNoticeBanner("UNDER CONSTRUCTION", "This Citadel facility is currently under construction and does not have an active effect in this prototype demo.");
                     break;
             }
         }
@@ -513,7 +578,7 @@ namespace ElementalHexTactics3D.UI.Hub
             if (titleTrans != null)
             {
                 Text t = titleTrans.GetComponent<Text>();
-                if (t != null) t.text = "🌋 PRIMORDIAL ALTAR: TITAN AWAKENING";
+                if (t != null) t.text = "PRIMORDIAL ALTAR: TITAN AWAKENING";
             }
 
             Transform loreTrans = modalShrine.transform.Find("CardFrame/Text_Lore");
@@ -534,11 +599,11 @@ namespace ElementalHexTactics3D.UI.Hub
                 Text s = statsTrans.GetComponent<Text>();
                 if (s != null)
                 {
-                    s.text = "<b><color=#FFD54F>✦ S-RANK TITAN: MAGMA DRAGON</color></b> <size=11><color=#FF8A80>(FLAME)</color></size>\n" +
-                             "❤️ <b>HP:</b> 24    ⚔️ <b>ATK:</b> 3    🏃 <b>MOV:</b> 3    🎯 <b>RNG:</b> 1-2 Hex\n" +
-                             "🌋 <b>Skills:</b> Dragon Strike • Magma Cataclysm • Tail Shove\n" +
-                             "✨ <b>Passives:</b> Magma Immunity • Emergence Radial Knockback\n" +
-                             "💎 <b>Awakening:</b> <color=#69F0AE><b>FREE (Primordial Blessing)</b></color>";
+                    s.text = "<b><color=#FFD54F> S-RANK TITAN: MAGMA DRAGON</color></b> <size=11><color=#FF8A80>(FLAME)</color></size>\n" +
+                             "<b>HP:</b> 24     <b>ATK:</b> 3     <b>MOV:</b> 3     <b>RNG:</b> 1-2 Hex\n" +
+                             "<b>Skills:</b> Dragon Strike - Magma Cataclysm - Tail Shove\n" +
+                             "<b>Passives:</b> Magma Immunity - Emergence Radial Knockback\n" +
+                             "<b>Awakening:</b> <color=#69F0AE><b>FREE (Primordial Blessing)</b></color>";
                     s.horizontalOverflow = HorizontalWrapMode.Wrap;
                     s.verticalOverflow = VerticalWrapMode.Overflow;
                 }
@@ -554,7 +619,7 @@ namespace ElementalHexTactics3D.UI.Hub
                     btn.onClick.AddListener(PerformTutorialTitanAwaken);
                 }
                 Text bTxt = btnActionTrans.GetComponentInChildren<Text>();
-                if (bTxt != null) bTxt.text = "🔥 AWAKEN MAGMA DRAGON";
+                if (bTxt != null) bTxt.text = "AWAKEN MAGMA DRAGON";
             }
 
             if (Tutorial.TutorialScenarioManager.Instance != null)
@@ -774,7 +839,7 @@ namespace ElementalHexTactics3D.UI.Hub
             // Save starter titan claim in persistent progress
             CampaignSaveManager.SaveTutorialProgress(stage1: true, stage2: true, starterTitan: true);
 
-            ShowNoticeBanner("🌋 TITAN AWAKENED!", "✦ S-RANK TITAN: MAGMA DRAGON ✦ has awakened and joined your Citadel Reserve!");
+            ShowNoticeBanner("TITAN AWAKENED!", "S-RANK TITAN: MAGMA DRAGON  has awakened and joined your Citadel Reserve!");
 
             CloseActiveModal();
 
@@ -793,7 +858,7 @@ namespace ElementalHexTactics3D.UI.Hub
             if (titleTrans != null)
             {
                 Text t = titleTrans.GetComponent<Text>();
-                if (t != null) t.text = "🔮 ANCIENT HORNED DEITY SHRINE";
+                if (t != null) t.text = "ANCIENT HORNED DEITY SHRINE";
             }
 
             Transform loreTrans = modalShrine.transform.Find("CardFrame/Text_Lore");
@@ -814,7 +879,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 Text s = statsTrans.GetComponent<Text>();
                 if (s != null)
                 {
-                    s.text = "✦ RITUAL SACRIFICE ✦\nCost: 80 Soul Embers\nPool: Legendary Beasts & Primordial Titans";
+                    s.text = "RITUAL SACRIFICE \nCost: 80 Soul Embers\nPool: Legendary Beasts & Primordial Titans";
                     s.horizontalOverflow = HorizontalWrapMode.Wrap;
                     s.verticalOverflow = VerticalWrapMode.Overflow;
                 }
@@ -830,7 +895,7 @@ namespace ElementalHexTactics3D.UI.Hub
                     btn.onClick.AddListener(ActionPerformGachaSummon);
                 }
                 Text bTxt = btnActionTrans.GetComponentInChildren<Text>();
-                if (bTxt != null) bTxt.text = "🔮 SUMMON (80 Embers)";
+                if (bTxt != null) bTxt.text = "SUMMON (80 Embers)";
             }
         }
 
@@ -883,11 +948,11 @@ namespace ElementalHexTactics3D.UI.Hub
                 AddFreedOutcasts(-1);
                 AddManaCrystals(50);
                 PlaySound(sfxActionSuccess, 1.0f);
-                ShowNoticeBanner("⛏️ Laborer Assigned", "Assigned 1 Kobold Miner. Gained +50 Mana Crystals!");
+                ShowNoticeBanner("Laborer Assigned", "Assigned 1 Kobold Miner. Gained +50 Mana Crystals!");
             }
             else
             {
-                ShowNoticeBanner("⚠️ Insufficient Outcasts", "Free more demi-humans from Holy Empire in battle!");
+                ShowNoticeBanner("Insufficient Outcasts", "Free more demi-humans from Holy Empire in battle!");
             }
         }
 
@@ -898,11 +963,11 @@ namespace ElementalHexTactics3D.UI.Hub
                 AddSoulEmbers(-30);
                 AddFreedOutcasts(1);
                 PlaySound(sfxActionSuccess, 1.0f);
-                ShowNoticeBanner("⚒️ Cursed Collar Shattered", "Dark Elf unbound! +1 Freed Outcast joined the Sanctuary!");
+                ShowNoticeBanner("Cursed Collar Shattered", "Dark Elf unbound! +1 Freed Outcast joined the Sanctuary!");
             }
             else
             {
-                ShowNoticeBanner("⚠️ Need 30 Soul Embers", "Harvest more embers from holy inquisitors in battle!");
+                ShowNoticeBanner("Need 30 Soul Embers", "Harvest more embers from holy inquisitors in battle!");
             }
         }
 
@@ -912,11 +977,11 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 AddManaCrystals(-60);
                 PlaySound(sfxActionSuccess, 1.0f);
-                ShowNoticeBanner("🐺 Minion Recruited", "Goblin Skirmisher armed and assigned to Vanguard Roster!");
+                ShowNoticeBanner("Minion Recruited", "Goblin Skirmisher armed and assigned to Vanguard Roster!");
             }
             else
             {
-                ShowNoticeBanner("⚠️ Need 60 Mana Crystals", "Mine more magic crystals or harvest from expeditions!");
+                ShowNoticeBanner("Need 60 Mana Crystals", "Mine more magic crystals or harvest from expeditions!");
             }
         }
 
@@ -926,11 +991,11 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 AddSoulEmbers(-50);
                 PlaySound(sfxActionSuccess, 1.0f);
-                ShowNoticeBanner("👑 Demon Lord Perk Unlocked", "[Territory Domain] Elemental skills cost -1 AP on corrupted hexes!");
+                ShowNoticeBanner("Demon Lord Perk Unlocked", "[Territory Domain] Elemental skills cost -1 AP on corrupted hexes!");
             }
             else
             {
-                ShowNoticeBanner("⚠️ Need 50 Soul Embers", "Earn more embers by winning tactical incursions!");
+                ShowNoticeBanner("Need 50 Soul Embers", "Earn more embers by winning tactical incursions!");
             }
         }
 
@@ -940,11 +1005,11 @@ namespace ElementalHexTactics3D.UI.Hub
             {
                 AddSoulEmbers(-80);
                 PlaySound(sfxActionSuccess, 1.0f);
-                ShowNoticeBanner("🔮 Ancient Deity Summoned", "✦ S-RANK BEAST: OBSIDIAN GOLEM ✦ awoken from the abyss!");
+                ShowNoticeBanner("Ancient Deity Summoned", "S-RANK BEAST: OBSIDIAN GOLEM  awoken from the abyss!");
             }
             else
             {
-                ShowNoticeBanner("⚠️ Need 80 Soul Embers", "Gather soul embers from defeated high-tier angels!");
+                ShowNoticeBanner("Need 80 Soul Embers", "Gather soul embers from defeated high-tier angels!");
             }
         }
 
@@ -1075,7 +1140,7 @@ namespace ElementalHexTactics3D.UI.Hub
             hudStyle.normal.textColor = Color.white;
 
             Rect textRect = new Rect(barRect.x + 14f, barRect.y, barRect.width - 230f, barRect.height);
-            string info = $"☀️ <b>DAY {day}</b> ({actStr})  |  ⏳ CRUSADE IN: <color={doomColor}><b>{daysUntil} DAYS</b></color>  |  🍖 FOOD: <color={foodColor}><b>{foodStock}</b></color>  |  💎 <b>{manaCrystals}</b>  |  🔥 <b>{soulEmbers}</b>  |  👥 <b>{freedOutcasts}</b>";
+            string info = $"<b>DAY {day}</b> ({actStr})  |   CRUSADE IN: <color={doomColor}><b>{daysUntil} DAYS</b></color>  |   FOOD: <color={foodColor}><b>{foodStock}</b></color>  |   <b>{manaCrystals}</b>  |   <b>{soulEmbers}</b>  |   <b>{freedOutcasts}</b>";
             GUI.Label(textRect, info, hudStyle);
 
             // Auto-Save Indicator
@@ -1088,13 +1153,13 @@ namespace ElementalHexTactics3D.UI.Hub
             };
             saveStyle.normal.textColor = new Color(0.6f, 0.85f, 0.6f, 0.9f);
             Rect saveRect = new Rect(barRect.x + barRect.width - 225f, barRect.y, 90f, barRect.height);
-            GUI.Label(saveRect, "💾 Auto-Saved", saveStyle);
+            GUI.Label(saveRect, "Auto-Saved", saveStyle);
 
             // Reset Campaign Button
             Rect btnResetRect = new Rect(barRect.x + barRect.width - 120f, barRect.y + 7f, 105f, 32f);
             Color oldBg = GUI.backgroundColor;
             GUI.backgroundColor = new Color(0.85f, 0.25f, 0.25f, 0.95f);
-            if (GUI.Button(btnResetRect, "<b>🔄 Reset Run</b>"))
+            if (GUI.Button(btnResetRect, "<b>Reset Run</b>"))
             {
                 showResetConfirmModal = true;
             }
@@ -1141,7 +1206,7 @@ namespace ElementalHexTactics3D.UI.Hub
                 richText = true
             };
             titleStyle.normal.textColor = new Color(1f, 0.4f, 0.4f);
-            GUI.Label(new Rect(modalX, modalY + 18f, modalW, 30f), "⚠️ RESTART CAMPAIGN RUN?", titleStyle);
+            GUI.Label(new Rect(modalX, modalY + 18f, modalW, 30f), "RESTART CAMPAIGN RUN?", titleStyle);
 
             // Warning Desc
             GUIStyle descStyle = new GUIStyle(GUI.skin.label)

@@ -29,14 +29,14 @@ namespace ElementalHexTactics3D.UI.Hub
         [SerializeField] private string facilityTitle = "Facility Name";
         [TextArea(2, 4)]
         [SerializeField] private string facilityLore = "Facility description...";
-        [SerializeField] private string facilityStatus = "Active • Ready";
+        [SerializeField] private string facilityStatus = "Active - Ready";
 
         [Header("Visual Feedback")]
         [SerializeField] private Graphic targetGraphic;
         [SerializeField] private Transform scaleRoot;
         [SerializeField] private Transform groundShadow;
-        [SerializeField] private Color normalColor = Color.white;
-        [SerializeField] private Color hoverColor = new Color(1.2f, 1.15f, 0.95f, 1.0f); // Bright subtle highlight
+        [SerializeField] private Color normalColor = new Color(1f, 1f, 1f, 0f);
+        [SerializeField] private Color hoverColor = new Color(1.18f, 1.12f, 0.9f, 0.35f); // Subtle highlight
         [SerializeField] private float hoverScaleFactor = 1.04f;
 
         [Header("Audio")]
@@ -59,6 +59,15 @@ namespace ElementalHexTactics3D.UI.Hub
             if (scaleRoot == null) scaleRoot = transform;
             originalScale = scaleRoot.localScale;
             if (groundShadow != null) originalShadowScale = groundShadow.localScale;
+            normalColor = new Color(1f, 1f, 1f, 0f);
+
+            // Enable per-pixel alpha raycasting so the clickable / hoverable area
+            // matches the exact silhouette of the building artwork (ignoring transparent margins)
+            Image img = GetComponent<Image>();
+            if (img != null && img.sprite != null)
+            {
+                img.alphaHitTestMinimumThreshold = 0.15f;
+            }
         }
 
         private void OnEnable()
@@ -71,42 +80,71 @@ namespace ElementalHexTactics3D.UI.Hub
             ResetVisualState();
         }
 
+        private bool CanTintTargetGraphic()
+        {
+            // Never tint the duplicate cutout sprite on top of Background_Landscape (full.png).
+            // Drawing a semi-transparent scaled duplicate over the painted background causes
+            // a double-vision (diplopia/ghosting) blur that triggers eye strain and headaches.
+            return false;
+        }
+
         private void Update()
         {
-            var tut = Tutorial.TutorialScenarioManager.Instance;
+            if (targetGraphic != null && targetGraphic.color.a > 0f)
+            {
+                targetGraphic.color = new Color(1f, 1f, 1f, 0f);
+            }
 
-            // Tutorial Highlight Pulse: When player is prompted to click Abyssal Rift, pulsate with warm golden aura!
+            var tut = Tutorial.TutorialScenarioManager.Instance;
+            Transform badgeTrans = transform.Find("FacilityTagBadge");
+            Image badgeImg = badgeTrans != null ? badgeTrans.GetComponent<Image>() : null;
+            Outline badgeOutline = badgeTrans != null ? badgeTrans.GetComponent<Outline>() : null;
+            Text badgeTxt = badgeTrans != null ? badgeTrans.Find("Text_Badge")?.GetComponent<Text>() : null;
+
+            // Tutorial Highlight Pulse: When player is prompted to click Abyssal Rift, highlight the badge cleanly
             if (facilityType == HubFacilityType.AbyssalPortal &&
                 tut != null && tut.IsHubAwakeningActive && tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickAbyssalRift)
             {
-                if (!isHovered)
-                {
-                    float pulse = (Mathf.Sin(Time.unscaledTime * 4.5f) + 1f) * 0.5f;
-                    if (targetGraphic != null)
-                    {
-                        targetGraphic.color = Color.Lerp(normalColor, new Color(1.35f, 1.2f, 0.7f, 1f), pulse);
-                    }
-                    if (scaleRoot != null)
-                    {
-                        scaleRoot.localScale = originalScale * (1f + 0.045f * pulse);
-                    }
-                }
+                float pulse = (Mathf.Sin(Time.unscaledTime * 3.0f) + 1f) * 0.5f;
+                if (badgeTxt != null) badgeTxt.text = "[!] CLICK TO ENTER BATTLE";
+                if (badgeImg != null) badgeImg.color = Color.Lerp(new Color(0.08f, 0.18f, 0.12f, 0.96f), new Color(0.18f, 0.34f, 0.16f, 0.98f), pulse);
+                if (badgeOutline != null) badgeOutline.effectColor = Color.Lerp(new Color(0.4f, 0.95f, 0.55f, 0.9f), new Color(1f, 0.92f, 0.35f, 1f), pulse);
+                if (badgeTrans != null) badgeTrans.localScale = Vector3.one;
             }
-            // Tutorial Highlight Pulse: When player is prompted to awaken a Titan, pulsate Primordial Statue with blazing flame aura!
+            // Tutorial Highlight Pulse: When player is prompted to awaken a Titan, highlight the Primordial Altar badge cleanly
             else if (facilityType == HubFacilityType.AncientDeityShrine &&
                      tut != null && tut.IsHubAwakeningActive && tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickPrimordialStatue)
             {
-                if (!isHovered)
+                float pulse = (Mathf.Sin(Time.unscaledTime * 3.0f) + 1f) * 0.5f;
+                if (badgeTxt != null) badgeTxt.text = "[!] AWAKEN TITAN HERE";
+                if (badgeImg != null) badgeImg.color = Color.Lerp(new Color(0.22f, 0.08f, 0.04f, 0.96f), new Color(0.40f, 0.16f, 0.05f, 0.98f), pulse);
+                if (badgeOutline != null) badgeOutline.effectColor = Color.Lerp(new Color(1f, 0.55f, 0.2f, 0.9f), new Color(1f, 0.9f, 0.35f, 1f), pulse);
+                if (badgeTrans != null) badgeTrans.localScale = Vector3.one;
+            }
+            else if (badgeTrans != null)
+            {
+                bool isActiveFacility = (facilityType == HubFacilityType.AbyssalPortal || facilityType == HubFacilityType.AncientDeityShrine);
+                if (badgeTxt != null)
                 {
-                    float pulse = (Mathf.Sin(Time.unscaledTime * 4.5f) + 1f) * 0.5f;
-                    if (targetGraphic != null)
-                    {
-                        targetGraphic.color = Color.Lerp(normalColor, new Color(1.5f, 0.8f, 0.35f, 1f), pulse);
-                    }
-                    if (scaleRoot != null)
-                    {
-                        scaleRoot.localScale = originalScale * (1f + 0.055f * pulse);
-                    }
+                    if (facilityType == HubFacilityType.AbyssalPortal) badgeTxt.text = "ABYSSAL RIFT [ENTER BATTLE]";
+                    else if (facilityType == HubFacilityType.AncientDeityShrine) badgeTxt.text = "PRIMORDIAL ALTAR";
+                    else badgeTxt.text = "UNDER CONSTRUCTION";
+                }
+                if (badgeImg != null)
+                {
+                    badgeImg.color = isHovered
+                        ? (isActiveFacility ? new Color(0.14f, 0.30f, 0.22f, 0.98f) : new Color(0.16f, 0.14f, 0.12f, 0.96f))
+                        : (isActiveFacility ? new Color(0.06f, 0.14f, 0.12f, 0.92f) : new Color(0.07f, 0.07f, 0.09f, 0.88f));
+                }
+                if (badgeOutline != null)
+                {
+                    badgeOutline.effectColor = isHovered
+                        ? (isActiveFacility ? new Color(0.55f, 1.0f, 0.78f, 1.0f) : new Color(0.95f, 0.78f, 0.38f, 0.95f))
+                        : (isActiveFacility ? new Color(0.35f, 0.90f, 0.65f, 0.85f) : new Color(0.55f, 0.45f, 0.30f, 0.55f));
+                }
+                if (badgeTrans != null)
+                {
+                    badgeTrans.localScale = Vector3.one;
                 }
             }
         }
@@ -139,22 +177,56 @@ namespace ElementalHexTactics3D.UI.Hub
 
             isHovered = true;
 
-            // 1. Color highlight
+            // Keep targetGraphic invisible so it never creates a ghosted double-image over full.png
             if (targetGraphic != null)
             {
-                targetGraphic.color = hoverColor;
+                targetGraphic.color = new Color(1f, 1f, 1f, 0f);
             }
 
-            // 2. Smooth scale bounce
-            StartScaleTween(originalScale * hoverScaleFactor, 0.12f);
-
-            // 3. Play hover sound
+            // Play hover sound
             PlayAudio(hoverSfx, 0.85f, 1.1f);
 
             // 4. Trigger top header tooltip banner
             if (TownHubManager.Instance != null)
             {
-                TownHubManager.Instance.ShowTooltip(facilityTitle, facilityLore, facilityStatus);
+                if (facilityType == HubFacilityType.DemonCastle ||
+                    facilityType == HubFacilityType.EmancipationForge ||
+                    facilityType == HubFacilityType.MonsterBarracks ||
+                    facilityType == HubFacilityType.ManaMine)
+                {
+                    TownHubManager.Instance.ShowTooltip(
+                        "FACILITY UNDER CONSTRUCTION",
+                        "This Citadel facility is currently being rebuilt and does not have an active effect in this prototype demo.",
+                        "<color=#FFB74D> Under Construction - Prototype Demo</color>"
+                    );
+                }
+                else if (facilityType == HubFacilityType.AncientDeityShrine)
+                {
+                    var tut = Tutorial.TutorialScenarioManager.Instance;
+                    bool isTitanTutorial = tut != null && tut.IsHubAwakeningActive &&
+                                           (tut.CurrentStep == Tutorial.TutorialStep.Hub_ClickPrimordialStatue ||
+                                            tut.CurrentStep == Tutorial.TutorialStep.Hub_AwakenMagmaDragon);
+                    if (isTitanTutorial)
+                    {
+                        TownHubManager.Instance.ShowTooltip(
+                            "PRIMORDIAL ALTAR [AWAKEN TITAN]",
+                            "The ancient cliffside idol resonates with draconic flame! Click to awaken the Magma Dragon Titan!",
+                            "<color=#FF7043> Primordial Resonance - Click to Awaken</color>"
+                        );
+                    }
+                    else
+                    {
+                        TownHubManager.Instance.ShowTooltip(
+                            "PRIMORDIAL ALTAR",
+                            "Magma Dragon Titan has been awakened. Further primordial rituals are under construction in this demo.",
+                            "<color=#FFB74D> Further Rituals Under Construction</color>"
+                        );
+                    }
+                }
+                else
+                {
+                    TownHubManager.Instance.ShowTooltip(facilityTitle, facilityLore, facilityStatus);
+                }
             }
         }
 
@@ -192,7 +264,7 @@ namespace ElementalHexTactics3D.UI.Hub
         {
             if (targetGraphic != null)
             {
-                targetGraphic.color = normalColor;
+                targetGraphic.color = new Color(1f, 1f, 1f, 0f);
             }
 
             if (scaleCoroutine != null)

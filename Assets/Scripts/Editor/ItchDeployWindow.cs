@@ -33,7 +33,7 @@ namespace ElementalHexTactics3D.Editor
         private float deployProgress = 0f;
         private string deployStatusText = "";
 
-        [MenuItem("Elemental Hex 3D/🚀 Deploy to Itch.io (WebGL)", false, 200)]
+        [MenuItem("Elemental Hex 3D/ Deploy to Itch.io (WebGL)", false, 200)]
         [MenuItem("Window/Itch.io Deployer", false, 300)]
         public static void OpenWindow()
         {
@@ -126,7 +126,7 @@ namespace ElementalHexTactics3D.Editor
                 fontSize = 16,
                 alignment = TextAnchor.MiddleCenter
             };
-            EditorGUILayout.LabelField("🎮 ITCH.IO WEBGL 1-CLICK DEPLOYER", headerStyle);
+            EditorGUILayout.LabelField("ITCH.IO WEBGL 1-CLICK DEPLOYER", headerStyle);
             EditorGUILayout.LabelField("Automated Unity WebGL Compilation & Butler Delta-Patching", EditorStyles.centeredGreyMiniLabel);
 
             EditorGUILayout.Space(10);
@@ -137,7 +137,7 @@ namespace ElementalHexTactics3D.Editor
             EditorGUILayout.Space(10);
 
             // Configuration Form
-            EditorGUILayout.LabelField("⚙️ Itch.io Target Settings", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Itch.io Target Settings", EditorStyles.boldLabel);
             EditorGUI.BeginChangeCheck();
 
             itchUsername = EditorGUILayout.TextField(new GUIContent("Itch.io Username", "Your itch.io URL username (e.g. nealverse)"), itchUsername);
@@ -173,7 +173,7 @@ namespace ElementalHexTactics3D.Editor
 
             // Main Build & Deploy Button
             GUI.backgroundColor = new Color(0.2f, 0.75f, 0.35f);
-            if (GUILayout.Button(new GUIContent("🚀 BUILD WEBGL & PUSH TO ITCH.IO", "Compiles the WebGL build and uploads it to itch.io via Butler"), GUILayout.Height(42)))
+            if (GUILayout.Button(new GUIContent("BUILD WEBGL & PUSH TO ITCH.IO", "Compiles the WebGL build and uploads it to itch.io via Butler"), GUILayout.Height(42)))
             {
                 StartBuildAndDeploy(true);
             }
@@ -188,14 +188,14 @@ namespace ElementalHexTactics3D.Editor
             bool buildExists = Directory.Exists(fullBuildPath) && File.Exists(Path.Combine(fullBuildPath, "index.html"));
             GUI.enabled = canRun && butlerAvailable && buildExists;
 
-            if (GUILayout.Button(new GUIContent("⚡ Push Existing Build Only", "Uploads the current WebGL folder without re-compiling Unity"), GUILayout.Height(30)))
+            if (GUILayout.Button(new GUIContent("Push Existing Build Only", "Uploads the current WebGL folder without re-compiling Unity"), GUILayout.Height(30)))
             {
                 StartBuildAndDeploy(false);
             }
 
             // Open Itch Page Button
             GUI.enabled = !string.IsNullOrEmpty(itchUsername) && !string.IsNullOrEmpty(gameSlug);
-            if (GUILayout.Button(new GUIContent("🌐 Open Itch.io Page", "Opens your game's page in the web browser"), GUILayout.Height(30)))
+            if (GUILayout.Button(new GUIContent("Open Itch.io Page", "Opens your game's page in the web browser"), GUILayout.Height(30)))
             {
                 Application.OpenURL($"https://{itchUsername.Trim()}.itch.io/{gameSlug.Trim()}");
             }
@@ -236,16 +236,16 @@ namespace ElementalHexTactics3D.Editor
                 if (hasCreds)
                 {
                     GUI.color = new Color(0.25f, 0.85f, 0.35f);
-                    EditorGUILayout.LabelField("● Butler CLI: Ready & Authenticated", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("Butler CLI: Ready & Authenticated", EditorStyles.boldLabel);
                     GUI.color = Color.white;
                     EditorGUILayout.LabelField($"Location: {butlerPath}", EditorStyles.miniLabel);
                 }
                 else
                 {
                     GUI.color = new Color(1.0f, 0.75f, 0.2f);
-                    EditorGUILayout.LabelField("▲ Butler CLI: Found, but not logged in yet!", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("Butler CLI: Found, but not logged in yet!", EditorStyles.boldLabel);
                     GUI.color = Color.white;
-                    if (GUILayout.Button("🔑 Run 'butler login' now", GUILayout.Height(24)))
+                    if (GUILayout.Button("Run 'butler login' now", GUILayout.Height(24)))
                     {
                         RunButlerLogin(butlerPath);
                     }
@@ -254,7 +254,7 @@ namespace ElementalHexTactics3D.Editor
             else
             {
                 GUI.color = new Color(0.95f, 0.35f, 0.35f);
-                EditorGUILayout.LabelField("✕ Butler CLI: Not Found!", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("X Butler CLI: Not Found!", EditorStyles.boldLabel);
                 GUI.color = Color.white;
                 EditorGUILayout.LabelField("Place 'butler.exe' in 'Tools/butler.exe' or add to Windows PATH.", EditorStyles.wordWrappedMiniLabel);
             }
@@ -336,7 +336,7 @@ namespace ElementalHexTactics3D.Editor
                 // Save any modified scenes before compiling
                 EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
 
-                deployStatusText = "🔨 Compiling WebGL Build...";
+                deployStatusText = "Compiling WebGL Build...";
                 deployProgress = 0.2f;
                 isDeploying = true;
                 Repaint();
@@ -345,7 +345,7 @@ namespace ElementalHexTactics3D.Editor
                 if (!buildSuccess)
                 {
                     isDeploying = false;
-                    deployStatusText = "✕ WebGL Build Failed!";
+                    deployStatusText = "X WebGL Build Failed!";
                     deployProgress = 0f;
                     EditorUtility.DisplayDialog("Build Failed", "Unity WebGL compilation failed. Please check the Console window for errors.", "OK");
                     return;
@@ -419,7 +419,7 @@ namespace ElementalHexTactics3D.Editor
 
         private void ExecuteButlerPush(string butlerExe, string buildDir, string target)
         {
-            deployStatusText = $"🚀 Pushing to {target} via Butler...";
+            deployStatusText = $"Pushing to {target} via Butler...";
             deployProgress = 0.7f;
             isDeploying = true;
             lastLogOutput = $"[Butler] Running: butler push \"{buildDir}\" {target}\n";
@@ -476,12 +476,12 @@ namespace ElementalHexTactics3D.Editor
 
                         if (exitCode == 0)
                         {
-                            deployStatusText = "✅ Deployment Succeeded!";
+                            deployStatusText = "Deployment Succeeded!";
                             UnityEngine.Debug.Log($"<color=#69F0AE><b>[ItchDeploy]</b></color> Successfully deployed to Itch.io: <b>{target}</b>!");
 
                             string liveUrl = $"https://{itchUsername.Trim()}.itch.io/{gameSlug.Trim()}";
                             bool open = EditorUtility.DisplayDialog(
-                                "🚀 Deployment Complete!",
+                                "Deployment Complete!",
                                 $"Your latest WebGL build has been successfully pushed to Itch.io!\n\nTarget: {target}\n\nWould you like to open the game in your browser?",
                                 "Open in Browser", "Done"
                             );
@@ -493,7 +493,7 @@ namespace ElementalHexTactics3D.Editor
                         }
                         else
                         {
-                            deployStatusText = $"✕ Push Failed (Exit Code: {exitCode})";
+                            deployStatusText = $"X Push Failed (Exit Code: {exitCode})";
                             UnityEngine.Debug.LogError($"[ItchDeploy] Butler push failed with exit code {exitCode}.\nLog:\n{lastLogOutput}");
                             EditorUtility.DisplayDialog("Butler Push Failed", $"Failed to push build to {target}.\n\nCheck the window log for details:\n{lastLogOutput}", "OK");
                         }
@@ -507,7 +507,7 @@ namespace ElementalHexTactics3D.Editor
             catch (Exception ex)
             {
                 isDeploying = false;
-                deployStatusText = "✕ Error Launching Butler";
+                deployStatusText = "X Error Launching Butler";
                 lastLogOutput += $"\n[Exception] {ex.Message}";
                 UnityEngine.Debug.LogError($"[ItchDeploy] Butler execution exception: {ex}");
                 EditorUtility.DisplayDialog("Deployment Error", ex.Message, "OK");
